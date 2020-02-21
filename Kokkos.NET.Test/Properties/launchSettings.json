@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Kokkos.NET.Test": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

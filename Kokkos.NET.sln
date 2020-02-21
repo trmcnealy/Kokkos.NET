@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29311.281
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kokkos.NET", "Kokkos.NET\Kokkos.NET.csproj", "{7DA40B99-583E-4185-BE6A-44C572B8A7CD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "runtime.Kokkos.NET", "runtime.Kokkos.NET\runtime.Kokkos.NET.vcxproj", "{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kokkos.NET.Test", "Kokkos.NET.Test\Kokkos.NET.Test.csproj", "{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD} = {7DA40B99-583E-4185-BE6A-44C572B8A7CD}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildTools", "BuildTools", "{433841EF-D27E-4710-828B-B4B5193DD21C}"
+	ProjectSection(SolutionItems) = preProject
+		..\BuildTools\Build.props = ..\BuildTools\Build.props
+		..\BuildTools\Clang.props = ..\BuildTools\Clang.props
+		..\BuildTools\Clang.targets = ..\BuildTools\Clang.targets
+		..\BuildTools\ClangLink.targets = ..\BuildTools\ClangLink.targets
+		..\BuildTools\Native.props = ..\BuildTools\Native.props
+		..\BuildTools\Native.targets = ..\BuildTools\Native.targets
+		..\BuildTools\NativeBuild.props = ..\BuildTools\NativeBuild.props
+		..\BuildTools\Types.hpp = ..\BuildTools\Types.hpp
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|x64.ActiveCfg = Debug|x64
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|x64.Build.0 = Debug|x64
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Debug|x86.Build.0 = Debug|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|x64.ActiveCfg = Release|x64
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|x64.Build.0 = Release|x64
+		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|x86.ActiveCfg = Release|Any CPU
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x64.ActiveCfg = Debug|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x64.Build.0 = Debug|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x86.ActiveCfg = Debug|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|Any CPU.ActiveCfg = Release|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x64.ActiveCfg = Release|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x64.Build.0 = Release|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x86.ActiveCfg = Release|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x64.ActiveCfg = Debug|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x64.Build.0 = Debug|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x86.ActiveCfg = Debug|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|Any CPU.ActiveCfg = Release|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.ActiveCfg = Release|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.Build.0 = Release|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x86.ActiveCfg = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {47276E32-41D7-4665-B166-5DF2B1C3BE87}
+	EndGlobalSection
+EndGlobal

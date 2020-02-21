@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>any;win-x64</RuntimeIdentifiers>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Kokkos</RootNamespace>
+    <Platforms>AnyCPU;x64</Platforms>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Authors>Timothy R. McNealy</Authors>
+    <PackageIcon>nindra.png</PackageIcon>
+    <PackageIconUrl />
+    <PackageProjectUrl>https://github.com/trmcnealy/Kokkos.NET</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/trmcnealy/Kokkos.NET</RepositoryUrl>
+    <Copyright>© Timothy R. McNealy</Copyright>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>false</TieredCompilation>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+    <Version>0.3.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Kokkos.NET.csproj.DotSettings" />
+    <None Include="..\..\trmcnealy.github.io\assets\nindra.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NvAPIWrapper.Net" Version="0.7.0.57" />
+    <PackageReference Include="native.Kokkos.NET" Version="0.3.0" />
+    <PackageReference Include="System.Management" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\kokkos.net" />
+  </Target>
+
+</Project>

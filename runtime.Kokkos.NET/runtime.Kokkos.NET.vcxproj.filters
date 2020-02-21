@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="runtime.Kokkos">
+      <UniqueIdentifier>{6c2562c2-e293-4949-a43b-dca6222e82e0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{c94c4e15-0a56-40dd-9cd0-43a06b3522a0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewProperties.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="KokkosAPI.hpp" />
+    <ClInclude Include="runtime.Kokkos\ViewTypes.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\KokkosApi.h">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateManager.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateManager_Def.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateIterator.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="runtime.Kokkos.NET.nuspec" />
+  </ItemGroup>
+</Project>

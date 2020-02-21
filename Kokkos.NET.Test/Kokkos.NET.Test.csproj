@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <IsPackable>false</IsPackable>
+    <Platforms>x64</Platforms>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <StartupObject>Kokkos.Program</StartupObject>
+    <RootNamespace>Kokkos</RootNamespace>
+    <PublishTrimmed>true</PublishTrimmed>
+    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+    <TieredCompilation>false</TieredCompilation>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Kokkos.NET" Version="0.3.0" />
+    <PackageReference Include="RuntimeGeneration" Version="1.0.1" />
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="cd /D &quot;D:\TFS_Sources\Github\Compilation\trmcnealy\Kokkos.NET\Kokkos.NET.Test&quot; &amp; dotnet restore" />
+  </Target>
+
+</Project>
