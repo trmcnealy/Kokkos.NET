@@ -5,6 +5,7 @@ using System.Runtime.Versioning;
 
 namespace Kokkos
 {
+    [NonVersionable]
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public unsafe struct NdArray
     {
@@ -94,22 +95,13 @@ namespace Kokkos
     [NonVersionable]
     public abstract class View : IDisposable
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static View()
-        {
-            if(!KokkosLibrary.IsInitialized())
-            {
-                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
-            }
-        }
-
-        public NdArray NdArray
+        public NativePointer Pointer
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
         }
 
-        public NativePointer Pointer
+        public NdArray NdArray
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get;
@@ -119,6 +111,15 @@ namespace Kokkos
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return NdArray.Rank; }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static View()
+        {
+            if(!KokkosLibrary.IsInitialized())
+            {
+                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
+            }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -233,65 +234,6 @@ namespace Kokkos
         private static readonly DataTypeKind dataType;
 
         private static readonly ExecutionSpaceKind executionSpace;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static View()
-        {
-            dataType       = DataType<TDataType>.GetKind();
-            executionSpace = ExecutionSpace<TExecutionSpace>.GetKind();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public View(string label)
-            : base(dataType,
-                   0,
-                   ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
-                   label)
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public View(string label,
-                    ulong  n0)
-            : base(dataType,
-                   1,
-                   ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
-                   label,
-                   n0)
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public View(string label,
-                    ulong  n0,
-                    ulong  n1)
-            : base(dataType,
-                   2,
-                   ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
-                   label,
-                   n0,
-                   n1)
-        {
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public View(string label,
-                    ulong  n0,
-                    ulong  n1,
-                    ulong  n2)
-            : base(dataType,
-                   3,
-                   ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
-                   label,
-                   n0,
-                   n1,
-                   n2)
-        {
-        }
 
         //public View(string label,
         //            bool   isConst = false)
@@ -493,6 +435,191 @@ namespace Kokkos
                                        i1,
                                        i2);
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static View()
+        {
+            dataType       = DataType<TDataType>.GetKind();
+            executionSpace = ExecutionSpace<TExecutionSpace>.GetKind();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label)
+            : base(dataType,
+                   0,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    int    n0)
+            : base(dataType,
+                   1,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    int    n0,
+                    int    n1)
+            : base(dataType,
+                   2,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0,
+                   (ulong)n1)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    int    n0,
+                    int    n1,
+                    int    n2)
+            : base(dataType,
+                   3,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0,
+                   (ulong)n1,
+                   (ulong)n2)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    uint   n0)
+            : base(dataType,
+                   1,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    uint   n0,
+                    uint   n1)
+            : base(dataType,
+                   2,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0,
+                   n1)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    uint   n0,
+                    uint   n1,
+                    uint   n2)
+            : base(dataType,
+                   3,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0,
+                   n1,
+                   n2)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    long   n0)
+            : base(dataType,
+                   1,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    long   n0,
+                    long   n1)
+            : base(dataType,
+                   2,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0,
+                   (ulong)n1)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    long   n0,
+                    long   n1,
+                    long   n2)
+            : base(dataType,
+                   3,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   (ulong)n0,
+                   (ulong)n1,
+                   (ulong)n2)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    ulong  n0)
+            : base(dataType,
+                   1,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    ulong  n0,
+                    ulong  n1)
+            : base(dataType,
+                   2,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0,
+                   n1)
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(string label,
+                    ulong  n0,
+                    ulong  n1,
+                    ulong  n2)
+            : base(dataType,
+                   3,
+                   ExecutionSpace<TExecutionSpace>.GetLayout(),
+                   executionSpace,
+                   label,
+                   n0,
+                   n1,
+                   n2)
+        {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
