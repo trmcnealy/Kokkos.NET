@@ -2,7 +2,7 @@
 <package >
     <metadata>
       <id>native.Kokkos.NET</id>
-      <version>0.3.0</version>
+      <version>0.3.1</version>
       <authors>Timothy R. McNealy</authors>
       <owners>Timothy R. McNealy</owners>
       <license type="expression">MIT</license>
@@ -19,6 +19,7 @@
       <file src="..\..\trmcnealy.github.io\assets\nindra.png"
             target="" />
 
+      <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll" target="runtimes\win-$Platform$\native" /> -->
       <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll" target="runtimes\win-$Platform$\native" />
 
        <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.pdb" target="runtimes\win-$Platform$\native" />  -->

@@ -62,11 +62,9 @@
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\Native.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\Native.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -173,11 +171,13 @@
     <Lib>
       <SubSystem>
       </SubSystem>
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner />
     </Lib>
     <PostBuildEvent>
-      <Command>NuGet.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages
-rd /s /q C:\Users\tehgo\.nuget\packages\runtime.kokkos.net</Command>
+      <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages</Command>
     </PostBuildEvent>
+    <ProjectReference />
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -321,8 +321,15 @@ rd /s /q C:\Users\tehgo\.nuget\packages\runtime.kokkos.net</Command>
       </AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>NuGet.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages</Command>
+      <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages</Command>
     </PostBuildEvent>
+    <ProjectReference />
+    <Lib>
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Lib>
+    <Lib>
+      <SuppressStartupBanner />
+    </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(RootSolutionDir)..\BuildTools\Clang.targets" />

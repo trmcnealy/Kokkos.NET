@@ -19,7 +19,8 @@ struct NativeString
     std::string ToString() const;
 };
 
-union ValueType {
+union ValueType
+{
     float  Single;
     double Double;
     bool   Bool;
@@ -282,9 +283,9 @@ KOKKOS_NET_API_EXTERN void SetValue(void* instance, const NdArray& ndArray, cons
 
 struct KokkosApi
 {
-    void* (*Allocate)(const ExecutionSpaceKind&, const size_type&)noexcept;
+    void* (*Allocate)(const ExecutionSpaceKind&, const size_type&) noexcept;
 
-    void* (*Reallocate)(const ExecutionSpaceKind&, void*, const size_type&)noexcept;
+    void* (*Reallocate)(const ExecutionSpaceKind&, void*, const size_type&) noexcept;
 
     void (*Free)(const ExecutionSpaceKind&, void*) noexcept;
 
@@ -330,3 +331,63 @@ struct KokkosApi
 
     void (*SetValue)(void*, const NdArray&, const ValueType&, const size_type&, const size_type&, const size_type&) noexcept;
 };
+
+#define externally_visible __attribute__((__externally_visible__))
+
+__forceinline void* operator new(size_type size) throw() externally_visible
+{
+    //#if defined(__CUDA_ARCH__)
+    //    return Kokkos::kokkos_malloc<Kokkos::Cuda::memory_space>(size);
+    //#else
+    return Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(size);
+}
+
+__forceinline void* operator new[](const size_type size) throw() externally_visible { return operator new(size); }
+
+//__forceinline void* operator new(const size_type size, void* ptr) throw() externally_visible { return ptr; }
+//
+//__forceinline void* operator new[](const size_type size, void* ptr) throw() externally_visible { return ptr; }
+
+//template<typename DataType, class ExecutionSpace>
+//__forceinline void* operator new(const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw() externally_visible
+//{
+//    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);
+//}
+//
+//template<typename DataType, class ExecutionSpace>
+//__forceinline void* operator new[](const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw() externally_visible
+//{
+//    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);
+//}
+
+__forceinline void operator delete(void* ptr) noexcept externally_visible
+{
+    if(ptr != nullptr)
+    {
+        return Kokkos::kokkos_free<Kokkos::Serial::memory_space>(ptr);
+    }
+}
+
+__forceinline void operator delete[](void* ptr) noexcept externally_visible
+{
+    if(ptr != nullptr)
+    {
+        return operator delete(ptr);
+    }
+}
+
+__forceinline void operator delete(void* ptr, const size_type size) noexcept externally_visible
+{
+    if(ptr != nullptr)
+    {
+        return operator delete(ptr);
+    }
+}
+
+__forceinline void operator delete[](void* ptr, const size_type size) noexcept externally_visible
+{
+    if(ptr != nullptr)
+    {
+        return operator delete(ptr);
+    }
+}
