@@ -332,7 +332,7 @@ struct KokkosApi
     void (*SetValue)(void*, const NdArray&, const ValueType&, const size_type&, const size_type&, const size_type&) noexcept;
 };
 
-__forceinline void* operator new(size_type size) throw()
+__forceinline void* operator new(size_type size)
 {
     //#if defined(__CUDA_ARCH__)
     //    return Kokkos::kokkos_malloc<Kokkos::Cuda::memory_space>(size);
@@ -340,7 +340,7 @@ __forceinline void* operator new(size_type size) throw()
     return Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(size);
 }
 
-__forceinline void* operator new[](const size_type size) throw() { return operator new(size); }
+__forceinline void* operator new[](const size_type size) { return operator new(size); }
 
 //__forceinline void* operator new(const size_type size, void* ptr) throw() { return ptr; }
 //

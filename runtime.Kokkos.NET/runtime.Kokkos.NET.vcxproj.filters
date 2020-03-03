@@ -51,6 +51,9 @@
     <ClInclude Include="runtime.Kokkos\TemplateIterator.hpp">
       <Filter>runtime.Kokkos</Filter>
     </ClInclude>
+    <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="runtime.Kokkos.NET.nuspec" />
