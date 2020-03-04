@@ -3,7 +3,7 @@
 <package>
   <metadata>
     <id>Kokkos.NET</id>
-    <version>0.4.0</version>
+    <version>0.4.2</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>

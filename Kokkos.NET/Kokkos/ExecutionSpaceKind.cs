@@ -14,16 +14,31 @@ namespace Kokkos
     [NonVersionable]
     public struct Cuda : IExecutionSpace
     {
+        public LayoutKind DefaultLayout
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return LayoutKind.Left; }
+        }
     }
 
     [NonVersionable]
     public struct Serial : IExecutionSpace
     {
+        public LayoutKind DefaultLayout
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return LayoutKind.Right; }
+        }
     }
 
     [NonVersionable]
     public struct OpenMP : IExecutionSpace
     {
+        public LayoutKind DefaultLayout
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return LayoutKind.Right; }
+        }
     }
 
     public static class ExecutionSpace<T>

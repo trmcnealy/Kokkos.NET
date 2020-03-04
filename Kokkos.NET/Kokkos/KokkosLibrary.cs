@@ -495,20 +495,6 @@ namespace Kokkos
         internal static readonly SetValueDelegate SetValue;
 
         internal static readonly ViewToNdArrayDelegate ViewToNdArray;
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static NdArray Convert(IntPtr             view_ptr,
-                                      ExecutionSpaceKind execution_space,
-                                      LayoutKind         layoutkind,
-                                      DataTypeKind       data_type,
-                                      ushort             rank)
-        {
-            return ViewToNdArray(view_ptr,
-                                 execution_space,
-                                 layoutkind,
-                                 data_type,
-                                 rank);
-        }
 
         //[SuppressUnmanagedCodeSecurity]
         //[DllImport("kernel32.dll",

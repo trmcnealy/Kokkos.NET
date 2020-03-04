@@ -249,13 +249,15 @@ namespace Kokkos
     [NonVersionable]
     public sealed class View<TDataType, TExecutionSpace> : View
         where TDataType : struct
-        where TExecutionSpace : IExecutionSpace
+        where TExecutionSpace : IExecutionSpace, new()
     {
         //private static readonly int dataTypeSize = Unsafe.SizeOf<TDataType>();
 
         private static readonly DataTypeKind dataType;
 
-        private static readonly ExecutionSpaceKind executionSpace;
+        private static readonly IExecutionSpace executionSpace;
+
+        private static readonly ExecutionSpaceKind executionSpaceType;
 
         //public View(string label,
         //            bool   isConst = false)
@@ -463,7 +465,8 @@ namespace Kokkos
         static View()
         {
             dataType       = DataType<TDataType>.GetKind();
-            executionSpace = ExecutionSpace<TExecutionSpace>.GetKind();
+            executionSpace = new TExecutionSpace();
+            executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -471,7 +474,7 @@ namespace Kokkos
             : base(dataType,
                    0,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label)
         {
         }
@@ -482,7 +485,7 @@ namespace Kokkos
             : base(dataType,
                    1,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0)
         {
@@ -495,7 +498,7 @@ namespace Kokkos
             : base(dataType,
                    2,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0,
                    (ulong)n1)
@@ -510,7 +513,7 @@ namespace Kokkos
             : base(dataType,
                    3,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0,
                    (ulong)n1,
@@ -524,7 +527,7 @@ namespace Kokkos
             : base(dataType,
                    1,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0)
         {
@@ -537,7 +540,7 @@ namespace Kokkos
             : base(dataType,
                    2,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0,
                    n1)
@@ -552,7 +555,7 @@ namespace Kokkos
             : base(dataType,
                    3,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0,
                    n1,
@@ -566,7 +569,7 @@ namespace Kokkos
             : base(dataType,
                    1,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0)
         {
@@ -579,7 +582,7 @@ namespace Kokkos
             : base(dataType,
                    2,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0,
                    (ulong)n1)
@@ -594,7 +597,7 @@ namespace Kokkos
             : base(dataType,
                    3,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    (ulong)n0,
                    (ulong)n1,
@@ -608,7 +611,7 @@ namespace Kokkos
             : base(dataType,
                    1,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0)
         {
@@ -621,7 +624,7 @@ namespace Kokkos
             : base(dataType,
                    2,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0,
                    n1)
@@ -636,7 +639,7 @@ namespace Kokkos
             : base(dataType,
                    3,
                    ExecutionSpace<TExecutionSpace>.GetLayout(),
-                   executionSpace,
+                   executionSpaceType,
                    label,
                    n0,
                    n1,
@@ -688,6 +691,18 @@ namespace Kokkos
                                  valueTypes);
 
             //handle.AddrOfPinnedObject()handle.Free();
+        }
+
+                
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NdArray Convert(IntPtr             view_ptr,
+                                      ushort             rank)
+        {
+            return KokkosLibrary.ViewToNdArray(view_ptr,
+                                               executionSpaceType,
+                                               executionSpace.DefaultLayout,
+                                               dataType,
+                                               rank);
         }
     }
 }
