@@ -7,19 +7,29 @@
 /// </summary>
 void ParallelViews()
 {
-    Kokkos::View<int*, Kokkos::Device<Kokkos::Cuda, Kokkos::CudaUVMSpace>>   a("a", 100000);
-    Kokkos::View<int*, Kokkos::Device<Kokkos::OpenMP, Kokkos::CudaUVMSpace>> b("b", 100000);
+    Kokkos::View<int*, Kokkos::Device<Kokkos::Cuda, Kokkos::CudaUVMSpace>>   a("a", 1000);
+    Kokkos::View<int*, Kokkos::Device<Kokkos::OpenMP, Kokkos::CudaUVMSpace>> b("b", 1000);
 
+    typedef Kokkos::RangePolicy<Kokkos::OpenMP, int> range_t;
 
-//    	                Serial	OpenMP	OpenMP	Cuda	ROCm
-//HostSpace	            x	    x	    x	    -	    -
-//HBWSpace	            x	    x	    x	    -	    -
-//CudaSpace	            -	    -	    -	    x	    -
-//CudaUVMSpace	        x	    x	    x	    x	    -
-//CudaHostPinnedSpace	x	    x	    x	    x	    -
-//ROCmSpace	            -	    -	    -	    -	    x
-//ROCmHostPinnedSpace	x	    x	    x	    -	    x
+    range_t range(range_t::member_type(0), range_t::member_type(1000));
 
+    Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const range_t::member_type i)
+    {
+        for(int j = 0; j < numInner; ++j)
+        {
+            outer[i][j] = 10.0 * double(i) + double(j);
+        }
+    });
+
+    //    	                Serial	OpenMP	OpenMP	Cuda	ROCm
+    // HostSpace	            x	    x	    x	    -	    -
+    // HBWSpace	            x	    x	    x	    -	    -
+    // CudaSpace	            -	    -	    -	    x	    -
+    // CudaUVMSpace	        x	    x	    x	    x	    -
+    // CudaHostPinnedSpace	x	    x	    x	    x	    -
+    // ROCmSpace	            -	    -	    -	    -	    x
+    // ROCmHostPinnedSpace	x	    x	    x	    -	    x
 }
 
 void ViewOfViews()
@@ -49,8 +59,7 @@ void ViewOfViews()
 
     Kokkos::RangePolicy<Cuda, int> range(0, numOuter);
 
-    Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const int i)
-    {
+    Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const int i) {
         for(int j = 0; j < numInner; ++j)
         {
             outer[i][j] = 10.0 * double(i) + double(j);

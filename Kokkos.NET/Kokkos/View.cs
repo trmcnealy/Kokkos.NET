@@ -90,6 +90,18 @@ namespace Kokkos
             Dims[1] = n1;
             Dims[2] = n2;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public ulong Extent(uint rank)
+        {
+            return Dims[rank];
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public ulong Stride(uint rank)
+        {
+            return Strides[rank];
+        }
     }
 
     [NonVersionable]
@@ -123,24 +135,10 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        protected View(NativePointer      pointer,
-                       DataTypeKind       dataType,
-                       ushort             rank,
-                       LayoutKind         layout,
-                       ExecutionSpaceKind executionSpace,
-                       string             label)
+        protected View(NativePointer pointer,
+                       NdArray       ndArray)
         {
             Pointer = pointer;
-
-            NdArray ndArray = new NdArray(dataType,
-                                          rank,
-                                          layout,
-                                          executionSpace,
-                                          label);
-
-            KokkosLibrary.CreateView(Pointer,
-                                     ref ndArray);
-
             NdArray = ndArray;
         }
 
@@ -259,120 +257,6 @@ namespace Kokkos
 
         private static readonly ExecutionSpaceKind executionSpaceType;
 
-        //public View(string label,
-        //            bool   isConst = false)
-        //{
-        //    Pointer = new NativePointer();
-        //
-        //    unsafe
-        //    {
-        //        if(isConst)
-        //        {
-        //            View.KokkosLibrary.CreateViewRank0(Pointer,
-        //                                         DataType + 10,
-        //                                         ExecutionSpace,
-        //                                         label);
-        //        }
-        //        else
-        //        {
-        //            View.KokkosLibrary.CreateViewRank0(Pointer,
-        //                                         DataType,
-        //                                         ExecutionSpace,
-        //                                         label);
-        //        }
-        //    }
-        //}
-
-        //public View(string label,
-        //            ulong  n0,
-        //            bool   isConst = false)
-        //{
-        //    Pointer = new NativePointer();
-        //
-        //    unsafe
-        //    {
-        //        if(isConst)
-        //        {
-        //            View.KokkosLibrary.CreateViewRank1(Pointer,
-        //                                         DataType + 10,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0);
-        //        }
-        //        else
-        //        {
-        //            View.KokkosLibrary.CreateViewRank1(Pointer,
-        //                                         DataType,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0);
-        //        }
-        //    }
-        //}
-
-        //public View(string label,
-        //            ulong  n0,
-        //            ulong  n1,
-        //            bool   isConst = false)
-        //{
-        //    Pointer = new NativePointer();
-        //
-        //    unsafe
-        //    {
-        //        if(isConst)
-        //        {
-        //            View.KokkosLibrary.CreateViewRank2(Pointer,
-        //                                         DataType + 10,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0,
-        //                                         n1);
-        //        }
-        //        else
-        //        {
-        //            View.KokkosLibrary.CreateViewRank2(Pointer,
-        //                                         DataType,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0,
-        //                                         n1);
-        //        }
-        //    }
-        //}
-
-        //public View(string label,
-        //            ulong  n0,
-        //            ulong  n1,
-        //            ulong  n2,
-        //            bool   isConst = false)
-        //{
-        //    Pointer = new NativePointer();
-        //
-        //    unsafe
-        //    {
-        //        if(isConst)
-        //        {
-        //            View.KokkosLibrary.CreateViewRank3(Pointer,
-        //                                         DataType + 10,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0,
-        //                                         n1,
-        //                                         n2);
-        //        }
-        //        else
-        //        {
-        //            View.KokkosLibrary.CreateViewRank3(Pointer,
-        //                                         DataType,
-        //                                         ExecutionSpace,
-        //                                         label,
-        //                                         n0,
-        //                                         n1,
-        //                                         n2);
-        //        }
-        //    }
-        //}
-
         public TDataType this[ulong i0]
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -464,9 +348,17 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static View()
         {
-            dataType       = DataType<TDataType>.GetKind();
-            executionSpace = new TExecutionSpace();
+            dataType           = DataType<TDataType>.GetKind();
+            executionSpace     = new TExecutionSpace();
             executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public View(NativePointer pointer,
+                    NdArray       ndArray)
+            : base(pointer,
+                   ndArray)
+        {
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -693,10 +585,9 @@ namespace Kokkos
             //handle.AddrOfPinnedObject()handle.Free();
         }
 
-                
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static NdArray Convert(IntPtr             view_ptr,
-                                      ushort             rank)
+        public static NdArray Convert(IntPtr view_ptr,
+                                      ushort rank)
         {
             return KokkosLibrary.ViewToNdArray(view_ptr,
                                                executionSpaceType,
@@ -705,4 +596,135 @@ namespace Kokkos
                                                rank);
         }
     }
+
+    //[NonVersionable]
+    //public sealed class ConstView<TDataType, TExecutionSpace> : View
+    //    where TDataType : struct
+    //    where TExecutionSpace : IExecutionSpace, new()
+    //{
+    //    //private static readonly int dataTypeSize = Unsafe.SizeOf<TDataType>();
+
+    //    private static readonly DataTypeKind dataType;
+
+    //    private static readonly IExecutionSpace executionSpace;
+
+    //    private static readonly ExecutionSpaceKind executionSpaceType;
+
+    //    public TDataType this[ulong i0]
+    //    {
+    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //        get
+    //        {
+    //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
+    //                                                        NdArray,
+    //                                                        i0);
+
+    //            return valuePtr.As<TDataType>();
+    //        }
+    //    }
+
+    //    public TDataType this[ulong i0,
+    //                          ulong i1]
+    //    {
+    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //        get
+    //        {
+    //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
+    //                                                        NdArray,
+    //                                                        i0,
+    //                                                        i1);
+
+    //            return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
+    //        }
+    //    }
+
+    //    public TDataType this[ulong i0,
+    //                          ulong i1,
+    //                          ulong i2]
+    //    {
+    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //        get
+    //        {
+    //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
+    //                                                        NdArray,
+    //                                                        i0,
+    //                                                        i1,
+    //                                                        i2);
+
+    //            return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
+    //        }
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    static ConstView()
+    //    {
+    //        dataType           = DataType<TDataType>.GetKind(true);
+    //        executionSpace     = new TExecutionSpace();
+    //        executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public ConstView(View<TDataType, TExecutionSpace> view)
+    //        : base(pointer,
+    //               ndArray)
+    //    {
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public string Label()
+    //    {
+    //        return KokkosLibrary.GetLabel(Pointer,
+    //                                      NdArray).ToString();
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public ulong Size()
+    //    {
+    //        return KokkosLibrary.GetSize(Pointer,
+    //                                     NdArray);
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public ulong Stride(uint dim)
+    //    {
+    //        return KokkosLibrary.GetStride(Pointer,
+    //                                       NdArray,
+    //                                       dim);
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public ulong Extent(uint dim)
+    //    {
+    //        return KokkosLibrary.GetExtent(Pointer,
+    //                                       NdArray,
+    //                                       dim);
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public void CopyTo(TDataType[] values)
+    //    {
+    //        //GCHandle handle = GCHandle.Alloc(values[0],
+    //        //                                 GCHandleType.Pinned);
+
+    //        ValueType[] valueTypes = Array.ConvertAll(values,
+    //                                                  ValueType.From);
+
+    //        KokkosLibrary.CopyTo(Pointer,
+    //                             NdArray,
+    //                             valueTypes);
+
+    //        //handle.AddrOfPinnedObject()handle.Free();
+    //    }
+
+    //    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //    public static NdArray Convert(IntPtr view_ptr,
+    //                                  ushort rank)
+    //    {
+    //        return KokkosLibrary.ViewToNdArray(view_ptr,
+    //                                           executionSpaceType,
+    //                                           executionSpace.DefaultLayout,
+    //                                           dataType,
+    //                                           rank);
+    //    }
+    //}
 }

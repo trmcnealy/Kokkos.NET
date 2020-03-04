@@ -36,7 +36,19 @@ enum class DataTypeKind : uint16
     Int32,
     UInt32,
     Int64,
-    UInt64
+    UInt64,
+
+    ConstSingle = UInt64 + 1,
+    ConstDouble,
+    ConstBool,
+    ConstInt8,
+    ConstUInt8,
+    ConstInt16,
+    ConstUInt16,
+    ConstInt32,
+    ConstUInt32,
+    ConstInt64,
+    ConstUInt64
 };
 
 template<typename DataType, class ExecutionSpace, typename Layout, unsigned Rank>
@@ -76,18 +88,29 @@ struct NdArrayTraits;
         static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
     };
 
-#define TEMPLATE(DEF, EXECUTION_SPACE, LAYOUT)   \
-    DEF(Single, float, EXECUTION_SPACE, LAYOUT)  \
-    DEF(Double, double, EXECUTION_SPACE, LAYOUT) \
-    DEF(Bool, bool, EXECUTION_SPACE, LAYOUT)     \
-    DEF(Int8, int8, EXECUTION_SPACE, LAYOUT)     \
-    DEF(UInt8, uint8, EXECUTION_SPACE, LAYOUT)   \
-    DEF(Int16, int16, EXECUTION_SPACE, LAYOUT)   \
-    DEF(UInt16, uint16, EXECUTION_SPACE, LAYOUT) \
-    DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)   \
-    DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT) \
-    DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)   \
-    DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)
+#define TEMPLATE(DEF, EXECUTION_SPACE, LAYOUT)              \
+    DEF(Single, float, EXECUTION_SPACE, LAYOUT)             \
+    DEF(Double, double, EXECUTION_SPACE, LAYOUT)            \
+    DEF(Bool, bool, EXECUTION_SPACE, LAYOUT)                \
+    DEF(Int8, int8, EXECUTION_SPACE, LAYOUT)                \
+    DEF(UInt8, uint8, EXECUTION_SPACE, LAYOUT)              \
+    DEF(Int16, int16, EXECUTION_SPACE, LAYOUT)              \
+    DEF(UInt16, uint16, EXECUTION_SPACE, LAYOUT)            \
+    DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)              \
+    DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT)            \
+    DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)              \
+    DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)            \
+    DEF(ConstSingle, const float, EXECUTION_SPACE, LAYOUT)  \
+    DEF(ConstDouble, const double, EXECUTION_SPACE, LAYOUT) \
+    DEF(ConstBool, const bool, EXECUTION_SPACE, LAYOUT)     \
+    DEF(ConstInt8, const int8, EXECUTION_SPACE, LAYOUT)     \
+    DEF(ConstUInt8, const uint8, EXECUTION_SPACE, LAYOUT)   \
+    DEF(ConstInt16, const int16, EXECUTION_SPACE, LAYOUT)   \
+    DEF(ConstUInt16, const uint16, EXECUTION_SPACE, LAYOUT) \
+    DEF(ConstInt32, const int32, EXECUTION_SPACE, LAYOUT)   \
+    DEF(ConstUInt32, const uint32, EXECUTION_SPACE, LAYOUT) \
+    DEF(ConstInt64, const int64, EXECUTION_SPACE, LAYOUT)   \
+    DEF(ConstUInt64, const uint64, EXECUTION_SPACE, LAYOUT)
 
 TEMPLATE(DEF_TEMPLATE, Serial, Right)
 TEMPLATE(DEF_TEMPLATE, OpenMP, Right)
@@ -179,18 +202,29 @@ struct ViewBuilder;
 #undef TEMPLATE
 #undef DEF_TEMPLATE
 
-#define TEMPLATE(DEF, EXECUTION_SPACE)   \
-    DEF(Single, float, EXECUTION_SPACE)  \
-    DEF(Double, double, EXECUTION_SPACE) \
-    DEF(Bool, bool, EXECUTION_SPACE)     \
-    DEF(Int8, int8, EXECUTION_SPACE)     \
-    DEF(UInt8, uint8, EXECUTION_SPACE)   \
-    DEF(Int16, int16, EXECUTION_SPACE)   \
-    DEF(UInt16, uint16, EXECUTION_SPACE) \
-    DEF(Int32, int32, EXECUTION_SPACE)   \
-    DEF(UInt32, uint32, EXECUTION_SPACE) \
-    DEF(Int64, int64, EXECUTION_SPACE)   \
-    DEF(UInt64, uint64, EXECUTION_SPACE)
+#define TEMPLATE(DEF, EXECUTION_SPACE)              \
+    DEF(Single, float, EXECUTION_SPACE)             \
+    DEF(Double, double, EXECUTION_SPACE)            \
+    DEF(Bool, bool, EXECUTION_SPACE)                \
+    DEF(Int8, int8, EXECUTION_SPACE)                \
+    DEF(UInt8, uint8, EXECUTION_SPACE)              \
+    DEF(Int16, int16, EXECUTION_SPACE)              \
+    DEF(UInt16, uint16, EXECUTION_SPACE)            \
+    DEF(Int32, int32, EXECUTION_SPACE)              \
+    DEF(UInt32, uint32, EXECUTION_SPACE)            \
+    DEF(Int64, int64, EXECUTION_SPACE)              \
+    DEF(UInt64, uint64, EXECUTION_SPACE)            \
+    DEF(ConstSingle, const float, EXECUTION_SPACE)  \
+    DEF(ConstDouble, const double, EXECUTION_SPACE) \
+    DEF(ConstBool, const bool, EXECUTION_SPACE)     \
+    DEF(ConstInt8, const int8, EXECUTION_SPACE)     \
+    DEF(ConstUInt8, const uint8, EXECUTION_SPACE)   \
+    DEF(ConstInt16, const int16, EXECUTION_SPACE)   \
+    DEF(ConstUInt16, const uint16, EXECUTION_SPACE) \
+    DEF(ConstInt32, const int32, EXECUTION_SPACE)   \
+    DEF(ConstUInt32, const uint32, EXECUTION_SPACE) \
+    DEF(ConstInt64, const int64, EXECUTION_SPACE)   \
+    DEF(ConstUInt64, const uint64, EXECUTION_SPACE)
 
 #define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                   \
     template<>                                                                                                           \
@@ -221,27 +255,28 @@ TEMPLATE(DEF_TEMPLATE, Cuda)
 #undef TEMPLATE
 #undef DEF_TEMPLATE
 
-#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE) ViewBuilder<DataTypeKind::TYPE_NAME, 0, EXECUTION_SPACE>::ViewType
-
-#define TEMPLATE_RANK0(DEF, EXECUTION_SPACE)                                                                                                                \
-    DEF(Single, float, EXECUTION_SPACE), DEF(Double, double, EXECUTION_SPACE), DEF(Int8, int8, EXECUTION_SPACE), DEF(UInt8, uint8, EXECUTION_SPACE),        \
-        DEF(Int16, int16, EXECUTION_SPACE), DEF(UInt16, uint16, EXECUTION_SPACE), DEF(Int32, int32, EXECUTION_SPACE), DEF(UInt32, uint32, EXECUTION_SPACE), \
-        DEF(Int64, int64, EXECUTION_SPACE), DEF(UInt64, uint64, EXECUTION_SPACE)
-
-#define TEMPLATE_RANK1(DEF, EXECUTION_SPACE)                                                                                                                    \
-    DEF(Single, float*, EXECUTION_SPACE), DEF(Double, double*, EXECUTION_SPACE), DEF(Int8, int8*, EXECUTION_SPACE), DEF(UInt8, uint8*, EXECUTION_SPACE),        \
-        DEF(Int16, int16*, EXECUTION_SPACE), DEF(UInt16, uint16*, EXECUTION_SPACE), DEF(Int32, int32*, EXECUTION_SPACE), DEF(UInt32, uint32*, EXECUTION_SPACE), \
-        DEF(Int64, int64*, EXECUTION_SPACE), DEF(UInt64, uint64*, EXECUTION_SPACE)
-
-#define TEMPLATE_RANK2(DEF, EXECUTION_SPACE)                                                                                                                        \
-    DEF(Single, float**, EXECUTION_SPACE), DEF(Double, double**, EXECUTION_SPACE), DEF(Int8, int8**, EXECUTION_SPACE), DEF(UInt8, uint8**, EXECUTION_SPACE),        \
-        DEF(Int16, int16**, EXECUTION_SPACE), DEF(UInt16, uint16**, EXECUTION_SPACE), DEF(Int32, int32**, EXECUTION_SPACE), DEF(UInt32, uint32**, EXECUTION_SPACE), \
-        DEF(Int64, int64**, EXECUTION_SPACE), DEF(UInt64, uint64**, EXECUTION_SPACE)
-
-#define TEMPLATE_RANK3(DEF, EXECUTION_SPACE)                                                                                                                            \
-    DEF(Single, float***, EXECUTION_SPACE), DEF(Double, double***, EXECUTION_SPACE), DEF(Int8, int8***, EXECUTION_SPACE), DEF(UInt8, uint8***, EXECUTION_SPACE),        \
-        DEF(Int16, int16***, EXECUTION_SPACE), DEF(UInt16, uint16***, EXECUTION_SPACE), DEF(Int32, int32***, EXECUTION_SPACE), DEF(UInt32, uint32***, EXECUTION_SPACE), \
-        DEF(Int64, int64***, EXECUTION_SPACE), DEF(UInt64, uint64***, EXECUTION_SPACE)
+//#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE) ViewBuilder<DataTypeKind::TYPE_NAME, 0, EXECUTION_SPACE>::ViewType
+//
+//#define TEMPLATE_RANK0(DEF, EXECUTION_SPACE)                                                                                                                \
+//    DEF(Single, float, EXECUTION_SPACE) \
+//     DEF(Double, double, EXECUTION_SPACE), DEF(Int8, int8, EXECUTION_SPACE), DEF(UInt8, uint8, EXECUTION_SPACE),        \
+//        DEF(Int16, int16, EXECUTION_SPACE), DEF(UInt16, uint16, EXECUTION_SPACE), DEF(Int32, int32, EXECUTION_SPACE), DEF(UInt32, uint32, EXECUTION_SPACE), \
+//        DEF(Int64, int64, EXECUTION_SPACE), DEF(UInt64, uint64, EXECUTION_SPACE)
+//
+//#define TEMPLATE_RANK1(DEF, EXECUTION_SPACE)                                                                                                                    \
+//    DEF(Single, float*, EXECUTION_SPACE), DEF(Double, double*, EXECUTION_SPACE), DEF(Int8, int8*, EXECUTION_SPACE), DEF(UInt8, uint8*, EXECUTION_SPACE),        \
+//        DEF(Int16, int16*, EXECUTION_SPACE), DEF(UInt16, uint16*, EXECUTION_SPACE), DEF(Int32, int32*, EXECUTION_SPACE), DEF(UInt32, uint32*, EXECUTION_SPACE), \
+//        DEF(Int64, int64*, EXECUTION_SPACE), DEF(UInt64, uint64*, EXECUTION_SPACE)
+//
+//#define TEMPLATE_RANK2(DEF, EXECUTION_SPACE)                                                                                                                        \
+//    DEF(Single, float**, EXECUTION_SPACE), DEF(Double, double**, EXECUTION_SPACE), DEF(Int8, int8**, EXECUTION_SPACE), DEF(UInt8, uint8**, EXECUTION_SPACE),        \
+//        DEF(Int16, int16**, EXECUTION_SPACE), DEF(UInt16, uint16**, EXECUTION_SPACE), DEF(Int32, int32**, EXECUTION_SPACE), DEF(UInt32, uint32**, EXECUTION_SPACE), \
+//        DEF(Int64, int64**, EXECUTION_SPACE), DEF(UInt64, uint64**, EXECUTION_SPACE)
+//
+//#define TEMPLATE_RANK3(DEF, EXECUTION_SPACE)                                                                                                                            \
+//    DEF(Single, float***, EXECUTION_SPACE), DEF(Double, double***, EXECUTION_SPACE), DEF(Int8, int8***, EXECUTION_SPACE), DEF(UInt8, uint8***, EXECUTION_SPACE),        \
+//        DEF(Int16, int16***, EXECUTION_SPACE), DEF(UInt16, uint16***, EXECUTION_SPACE), DEF(Int32, int32***, EXECUTION_SPACE), DEF(UInt32, uint32***, EXECUTION_SPACE), \
+//        DEF(Int64, int64***, EXECUTION_SPACE), DEF(UInt64, uint64***, EXECUTION_SPACE)
 
 #undef TEMPLATE
 #undef DEF_TEMPLATE

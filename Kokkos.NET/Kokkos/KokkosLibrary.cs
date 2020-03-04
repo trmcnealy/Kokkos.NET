@@ -102,7 +102,7 @@ namespace Kokkos
                 KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
             }
 
-            Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString(" X ")}");
+            Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

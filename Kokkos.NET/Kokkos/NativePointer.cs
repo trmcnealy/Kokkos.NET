@@ -39,6 +39,42 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public NativePointer(IntPtr             data,
+                             uint               size,
+                             bool               mustDeallocate = false,
+                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            _data           = data;
+            _size           = (int)size;
+            _mustDeallocate = mustDeallocate;
+            _executionSpace = executionSpace;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public NativePointer(IntPtr             data,
+                             long               size,
+                             bool               mustDeallocate = false,
+                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            _data           = data;
+            _size           = (int)size;
+            _mustDeallocate = mustDeallocate;
+            _executionSpace = executionSpace;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public NativePointer(IntPtr             data,
+                             ulong              size,
+                             bool               mustDeallocate = false,
+                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            _data           = data;
+            _size           = (int)size;
+            _mustDeallocate = mustDeallocate;
+            _executionSpace = executionSpace;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public NativePointer(int                size,
                              ExecutionSpaceKind executionSpace)
             : this(KokkosLibrary.Allocate(executionSpace,
@@ -91,6 +127,75 @@ namespace Kokkos
         {
             IntPtr data = KokkosLibrary.Allocate(executionSpace,
                                                  (ulong)size);
+
+            unsafe
+            {
+                byte* d = (byte*)data.ToPointer();
+
+                for(byte* i = d; i < d + size; i++)
+                {
+                    *i = 0;
+                }
+            }
+
+            return new NativePointer(data,
+                                     size,
+                                     true,
+                                     executionSpace);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NativePointer Allocate(uint               size,
+                                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            IntPtr data = KokkosLibrary.Allocate(executionSpace,
+                                                 size);
+
+            unsafe
+            {
+                byte* d = (byte*)data.ToPointer();
+
+                for(byte* i = d; i < d + size; i++)
+                {
+                    *i = 0;
+                }
+            }
+
+            return new NativePointer(data,
+                                     size,
+                                     true,
+                                     executionSpace);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NativePointer Allocate(long               size,
+                                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            IntPtr data = KokkosLibrary.Allocate(executionSpace,
+                                                 (ulong)size);
+
+            unsafe
+            {
+                byte* d = (byte*)data.ToPointer();
+
+                for(byte* i = d; i < d + size; i++)
+                {
+                    *i = 0;
+                }
+            }
+
+            return new NativePointer(data,
+                                     size,
+                                     true,
+                                     executionSpace);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NativePointer Allocate(ulong              size,
+                                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+        {
+            IntPtr data = KokkosLibrary.Allocate(executionSpace,
+                                                 size);
 
             unsafe
             {

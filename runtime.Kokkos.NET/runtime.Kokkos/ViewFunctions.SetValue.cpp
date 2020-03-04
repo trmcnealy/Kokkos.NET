@@ -1,17 +1,17 @@
 
 #include "runtime.Kokkos/KokkosApi.h"
 
-#define TEMPLATE(DEF, EXECUTION_SPACE)   \
-    DEF(Single, float, EXECUTION_SPACE)  \
-    DEF(Double, double, EXECUTION_SPACE) \
-    DEF(Bool, bool, EXECUTION_SPACE)     \
-    DEF(Int8, int8, EXECUTION_SPACE)     \
-    DEF(UInt8, uint8, EXECUTION_SPACE)   \
-    DEF(Int16, int16, EXECUTION_SPACE)   \
-    DEF(UInt16, uint16, EXECUTION_SPACE) \
-    DEF(Int32, int32, EXECUTION_SPACE)   \
-    DEF(UInt32, uint32, EXECUTION_SPACE) \
-    DEF(Int64, int64, EXECUTION_SPACE)   \
+#define TEMPLATE(DEF, EXECUTION_SPACE)              \
+    DEF(Single, float, EXECUTION_SPACE)             \
+    DEF(Double, double, EXECUTION_SPACE)            \
+    DEF(Bool, bool, EXECUTION_SPACE)                \
+    DEF(Int8, int8, EXECUTION_SPACE)                \
+    DEF(UInt8, uint8, EXECUTION_SPACE)              \
+    DEF(Int16, int16, EXECUTION_SPACE)              \
+    DEF(UInt16, uint16, EXECUTION_SPACE)            \
+    DEF(Int32, int32, EXECUTION_SPACE)              \
+    DEF(UInt32, uint32, EXECUTION_SPACE)            \
+    DEF(Int64, int64, EXECUTION_SPACE)              \
     DEF(UInt64, uint64, EXECUTION_SPACE)
 
 #define DEF_TEMPLATE_RANK0(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                       \
