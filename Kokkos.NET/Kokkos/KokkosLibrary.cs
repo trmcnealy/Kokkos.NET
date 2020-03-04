@@ -22,7 +22,8 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosLibrary()
         {
-            //NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly, ImportResolver);
+            // NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly,
+            // ImportResolver);
 
             KokkosCoreLibrary.Initialize();
 
@@ -101,7 +102,7 @@ namespace Kokkos
                 KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
             }
 
-            Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
+            Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString(" X ")}");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -115,9 +116,10 @@ namespace Kokkos
             NativeLibrary.Free(Handle);
         }
 
-        //private static IntPtr ImportResolver(string               libraryName,
+        // private static IntPtr ImportResolver(string               libraryName,
         //                                     Assembly             assembly,
-        //                                     DllImportSearchPath? searchPath = DllImportSearchPath.UseDllDirectoryForDependencies)
+        //                                     DllImportSearchPath? searchPath =
+        //                                     DllImportSearchPath.UseDllDirectoryForDependencies)
         //{
         //    IntPtr libHandle = IntPtr.Zero;
         //
@@ -230,101 +232,99 @@ namespace Kokkos
 
         #region Calli
 
-        //public static void CalliInitialize(int      narg,
+        // public static void CalliInitialize(int      narg,
         //                                   string[] arg,
         //                                   IntPtr   funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliInitializeThreads(int    num_cpu_threads,
+        // public static void CalliInitializeThreads(int    num_cpu_threads,
         //                                          int    gpu_device_id,
         //                                          IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliInitializeArguments(in InitArguments arguments,
+        // public static void CalliInitializeArguments(in InitArguments arguments,
         //                                            IntPtr           funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliFinalize(IntPtr funcPtr)
+        // public static void CalliFinalize(IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliFinalizeAll(IntPtr funcPtr)
+        // public static void CalliFinalizeAll(IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static bool CalliIsInitialized(IntPtr funcPtr)
+        // public static bool CalliIsInitialized(IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliPrintConfiguration(bool   detail,
+        // public static void CalliPrintConfiguration(bool   detail,
         //                                           IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static uint CalliCudaGetDeviceCount(IntPtr funcPtr)
+        // public static uint CalliCudaGetDeviceCount(IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static uint CalliCudaGetComputeCapability(uint   device_id,
+        // public static uint CalliCudaGetComputeCapability(uint   device_id,
         //                                                 IntPtr funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliCreateViewRank0(IntPtr                instance,
+        // public static void CalliCreateViewRank0(IntPtr                instance,
         //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind execution_space,
-        //                                        byte[]                label,
+        //                                        in ExecutionSpaceKind
+        //                                        execution_space, byte[] label,
         //                                        IntPtr                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliCreateViewRank1(IntPtr                instance,
+        // public static void CalliCreateViewRank1(IntPtr                instance,
         //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind execution_space,
-        //                                        byte[]                label,
-        //                                        in ulong              n0,
+        //                                        in ExecutionSpaceKind
+        //                                        execution_space, byte[] label, in
+        //                                        ulong              n0, IntPtr
+        //                                        funcPtr)
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        // public static void CalliCreateViewRank2(IntPtr                instance,
+        //                                        in DataTypeKind       data_type,
+        //                                        in ExecutionSpaceKind
+        //                                        execution_space, byte[] label, in
+        //                                        ulong              n0, in ulong n1,
         //                                        IntPtr                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static void CalliCreateViewRank2(IntPtr                instance,
+        // public static void CalliCreateViewRank3(IntPtr                instance,
         //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind execution_space,
-        //                                        byte[]                label,
-        //                                        in ulong              n0,
-        //                                        in ulong              n1,
-        //                                        IntPtr                funcPtr)
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public static void CalliCreateViewRank3(IntPtr                instance,
-        //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind execution_space,
-        //                                        byte[]                label,
-        //                                        in ulong              n0,
-        //                                        in ulong              n1,
+        //                                        in ExecutionSpaceKind
+        //                                        execution_space, byte[] label, in
+        //                                        ulong              n0, in ulong n1,
         //                                        in ulong              n2,
         //                                        IntPtr                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        //public static byte[] CalliGetLabel(IntPtr                instance,
+        // public static byte[] CalliGetLabel(IntPtr                instance,
         //                                   in DataTypeKind       data_type,
         //                                   in ExecutionSpaceKind execution_space,
         //                                   in uint               rank,
@@ -333,7 +333,7 @@ namespace Kokkos
         //    throw new NotImplementedException();
         //}
 
-        //public static ulong CalliGetSize(IntPtr                instance,
+        // public static ulong CalliGetSize(IntPtr                instance,
         //                                 in DataTypeKind       data_type,
         //                                 in ExecutionSpaceKind execution_space,
         //                                 in uint               rank,
@@ -342,7 +342,7 @@ namespace Kokkos
         //    throw new NotImplementedException();
         //}
 
-        //public static ulong CalliGetStride(IntPtr                instance,
+        // public static ulong CalliGetStride(IntPtr                instance,
         //                                   in DataTypeKind       data_type,
         //                                   in ExecutionSpaceKind execution_space,
         //                                   in uint               rank,
@@ -352,7 +352,7 @@ namespace Kokkos
         //    throw new NotImplementedException();
         //}
 
-        //public static ulong CalliGetExtent(IntPtr                instance,
+        // public static ulong CalliGetExtent(IntPtr                instance,
         //                                   in DataTypeKind       data_type,
         //                                   in ExecutionSpaceKind execution_space,
         //                                   in uint               rank,
@@ -373,7 +373,7 @@ namespace Kokkos
         internal static readonly FreeDelegate Free;
 
         private static readonly InitializeDelegate initialize;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(int      narg,
                                         string[] arg)
@@ -390,7 +390,7 @@ namespace Kokkos
         }
 
         private static readonly InitializeThreadsDelegate initializeThreads;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(int num_cpu_threads,
                                         int gpu_device_id)
@@ -407,7 +407,7 @@ namespace Kokkos
         }
 
         private static readonly InitializeArgumentsDelegate initializeArguments;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(in InitArguments arguments)
         {
@@ -437,7 +437,7 @@ namespace Kokkos
         }
 
         private static readonly FinalizeAllDelegate finalizeAll;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FinalizeAll()
         {
@@ -452,7 +452,7 @@ namespace Kokkos
         }
 
         private static readonly IsInitializedDelegate isInitialized;
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool IsInitialized()
         {
@@ -491,28 +491,40 @@ namespace Kokkos
         internal static readonly CopyToDelegate CopyTo;
 
         internal static readonly GetValueDelegate GetValue;
-        
+
         internal static readonly SetValueDelegate SetValue;
 
         internal static readonly ViewToNdArrayDelegate ViewToNdArray;
-
         
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NdArray Convert(IntPtr             view_ptr,
+                                      ExecutionSpaceKind execution_space,
+                                      LayoutKind         layoutkind,
+                                      DataTypeKind       data_type,
+                                      ushort             rank)
+        {
+            return ViewToNdArray(view_ptr,
+                                 execution_space,
+                                 layoutkind,
+                                 data_type,
+                                 rank);
+        }
 
         //[SuppressUnmanagedCodeSecurity]
         //[DllImport("kernel32.dll",
         //           CharSet       = CharSet.Ansi,
         //           ExactSpelling = true,
         //           EntryPoint    = "lstrlenA")]
-        //internal static extern int lstrlenA(IntPtr ptr);
+        // internal static extern int lstrlenA(IntPtr ptr);
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static int strlen(sbyte* buffer)
+        // internal static int strlen(sbyte* buffer)
         //{
         //    return lstrlenA(*(IntPtr*)buffer);
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static string ToString(sbyte* bytes)
+        // internal static string ToString(sbyte* bytes)
         //{
         //    return new string(bytes,
         //                      0,
@@ -521,13 +533,13 @@ namespace Kokkos
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static string ToString(this byte[] bytes)
+        // internal static string ToString(this byte[] bytes)
         //{
         //    return bytes.ToString();
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static sbyte* ToSByte(this string @string)
+        // internal static sbyte* ToSByte(this string @string)
         //{
         //    if(@string[^1] != '\0')
         //    {
@@ -544,7 +556,7 @@ namespace Kokkos
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static byte[] ToBytes(this string @string)
+        // internal static byte[] ToBytes(this string @string)
         //{
         //    if(@string[^1] != char.MinValue)
         //    {
@@ -560,7 +572,7 @@ namespace Kokkos
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static string FromToBytes(this byte[] bytes)
+        // internal static string FromToBytes(this byte[] bytes)
         //{
         //    if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         //    {
@@ -571,7 +583,7 @@ namespace Kokkos
         //}
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //internal static byte[] ToBytes(this string @string)
+        // internal static byte[] ToBytes(this string @string)
         //{
         //    if(@string[^1] != '\0')
         //    {
