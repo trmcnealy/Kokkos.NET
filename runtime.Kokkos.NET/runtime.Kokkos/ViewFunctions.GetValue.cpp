@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 #define DEF_TEMPLATE_RANK0(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                       \
     case DataTypeKind::TYPE_NAME:                                                                                  \
@@ -121,7 +121,7 @@ ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, 
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.rank)
             {
@@ -129,10 +129,10 @@ ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, 
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK0, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK0, OpenMP)
                         default:
                         {
-                            std::cout << "GetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "GetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -141,10 +141,10 @@ ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, 
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK1, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK1, OpenMP)
                         default:
                         {
-                            std::cout << "GetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "GetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -153,10 +153,10 @@ ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, 
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK2, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK2, OpenMP)
                         default:
                         {
-                            std::cout << "GetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "GetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -165,17 +165,17 @@ ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, 
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK3, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK3, OpenMP)
                         default:
                         {
-                            std::cout << "GetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "GetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
                 }
                 default:
                 {
-                    std::cout << "GetValue::Threads, Rank is not supported." << std::endl;
+                    std::cout << "GetValue::OpenMP, Rank is not supported." << std::endl;
                 }
             }
             break;

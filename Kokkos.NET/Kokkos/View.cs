@@ -123,6 +123,28 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        protected View(NativePointer      pointer,
+                       DataTypeKind       dataType,
+                       ushort             rank,
+                       LayoutKind         layout,
+                       ExecutionSpaceKind executionSpace,
+                       string             label)
+        {
+            Pointer = pointer;
+
+            NdArray ndArray = new NdArray(dataType,
+                                          rank,
+                                          layout,
+                                          executionSpace,
+                                          label);
+
+            KokkosLibrary.CreateView(Pointer,
+                                     ref ndArray);
+
+            NdArray = ndArray;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         protected View(DataTypeKind       dataType,
                        ushort             rank,
                        LayoutKind         layout,

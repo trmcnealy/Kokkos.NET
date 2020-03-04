@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 // clang-format off
 static constexpr KokkosApi kokkos_api_version_1 = 
@@ -27,7 +27,8 @@ static constexpr KokkosApi kokkos_api_version_1 =
     &GetExtent,
     &CopyTo,
     &GetValue,
-    &SetValue
+    &SetValue,
+    &ViewToNdArray
 };
 // clang-format on
 

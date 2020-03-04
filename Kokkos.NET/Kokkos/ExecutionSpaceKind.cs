@@ -7,7 +7,7 @@ namespace Kokkos
     {
         Unknown = ushort.MaxValue,
         Serial  = 0,
-        Threads,
+        OpenMP,
         Cuda
     }
 
@@ -22,7 +22,7 @@ namespace Kokkos
     }
 
     [NonVersionable]
-    public struct Threads : IExecutionSpace
+    public struct OpenMP : IExecutionSpace
     {
     }
 
@@ -37,9 +37,9 @@ namespace Kokkos
                 return ExecutionSpaceKind.Serial;
             }
 
-            if(typeof(T) == typeof(Threads))
+            if(typeof(T) == typeof(OpenMP))
             {
-                return ExecutionSpaceKind.Threads;
+                return ExecutionSpaceKind.OpenMP;
             }
 
             if(typeof(T) == typeof(Cuda))
@@ -59,7 +59,7 @@ namespace Kokkos
                 return LayoutKind.Right;
             }
 
-            if(typeof(T) == typeof(Threads))
+            if(typeof(T) == typeof(OpenMP))
             {
                 return LayoutKind.Right;
             }

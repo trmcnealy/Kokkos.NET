@@ -53,5 +53,7 @@ namespace Kokkos
         public IntPtr GetValuePtr;
 
         public IntPtr SetValuePtr;
+
+        public IntPtr ViewToNdArrayPtr;
     }
 }

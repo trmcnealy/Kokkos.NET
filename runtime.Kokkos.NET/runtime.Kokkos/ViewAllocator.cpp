@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 #include <Teuchos_RCP.hpp>
 
@@ -78,14 +78,14 @@ void CreateViewRank0(void* instance, NdArray& ndArray) noexcept
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.data_type)
             {
-                TEMPLATE(DEF_TEMPLATE_RANK0, Threads)
+                TEMPLATE(DEF_TEMPLATE_RANK0, OpenMP)
                 default:
                 {
-                    std::cout << "CreateViewRank0::Threads, DataType is not supported." << std::endl;
+                    std::cout << "CreateViewRank0::OpenMP, DataType is not supported." << std::endl;
                 }
             }
             break;
@@ -125,14 +125,14 @@ void CreateViewRank1(void* instance, NdArray& ndArray, const size_type& n0) noex
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.data_type)
             {
-                TEMPLATE(DEF_TEMPLATE_RANK1, Threads)
+                TEMPLATE(DEF_TEMPLATE_RANK1, OpenMP)
                 default:
                 {
-                    std::cout << "CreateViewRank1::Threads, DataType is not supported." << std::endl;
+                    std::cout << "CreateViewRank1::OpenMP, DataType is not supported." << std::endl;
                 }
             }
             break;
@@ -172,14 +172,14 @@ void CreateViewRank2(void* instance, NdArray& ndArray, const size_type& n0, cons
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.data_type)
             {
-                TEMPLATE(DEF_TEMPLATE_RANK2, Threads)
+                TEMPLATE(DEF_TEMPLATE_RANK2, OpenMP)
                 default:
                 {
-                    std::cout << "CreateViewRank2::Threads, DataType is not supported." << std::endl;
+                    std::cout << "CreateViewRank2::OpenMP, DataType is not supported." << std::endl;
                 }
             }
             break;
@@ -219,14 +219,14 @@ void CreateViewRank3(void* instance, NdArray& ndArray, const size_type& n0, cons
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.data_type)
             {
-                TEMPLATE(DEF_TEMPLATE_RANK3, Threads)
+                TEMPLATE(DEF_TEMPLATE_RANK3, OpenMP)
                 default:
                 {
-                    std::cout << "CreateViewRank3::Threads, DataType is not supported." << std::endl;
+                    std::cout << "CreateViewRank3::OpenMP, DataType is not supported." << std::endl;
                 }
             }
             break;

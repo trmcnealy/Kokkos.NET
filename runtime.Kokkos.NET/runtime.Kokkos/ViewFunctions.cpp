@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 #define DEF_TEMPLATE_RANK0(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                        \
     case DataTypeKind::TYPE_NAME:                                                                                   \
@@ -14,7 +14,7 @@
                                                                                                                     \
         mirror_type view_mirror = Kokkos::create_mirror_view(view);                                                 \
                                                                                                                     \
-        view_mirror(0) = *data;                                                                                     \
+        view_mirror() = *data;                                                                                      \
                                                                                                                     \
         Kokkos::deep_copy(view, view_mirror);                                                                       \
         break;                                                                                                      \
@@ -171,7 +171,7 @@ void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.rank)
             {
@@ -179,10 +179,10 @@ void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK0, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK0, OpenMP)
                         default:
                         {
-                            std::cout << "CopyTo::Threads, DataType is not supported." << std::endl;
+                            std::cout << "CopyTo::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -191,10 +191,10 @@ void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK1, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK1, OpenMP)
                         default:
                         {
-                            std::cout << "CopyTo::Threads, DataType is not supported." << std::endl;
+                            std::cout << "CopyTo::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -203,10 +203,10 @@ void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK2, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK2, OpenMP)
                         default:
                         {
-                            std::cout << "CopyTo::Threads, DataType is not supported." << std::endl;
+                            std::cout << "CopyTo::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -215,17 +215,17 @@ void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK3, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK3, OpenMP)
                         default:
                         {
-                            std::cout << "CopyTo::Threads, DataType is not supported." << std::endl;
+                            std::cout << "CopyTo::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
                 }
                 default:
                 {
-                    std::cout << "CopyTo::Threads, Rank is not supported." << std::endl;
+                    std::cout << "CopyTo::OpenMP, Rank is not supported." << std::endl;
                 }
             }
             break;

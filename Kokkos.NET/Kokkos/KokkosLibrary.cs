@@ -24,6 +24,8 @@ namespace Kokkos
         {
             //NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly, ImportResolver);
 
+            KokkosCoreLibrary.Initialize();
+
             string runtimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
 
             Console.WriteLine("Loading " + runtimeKokkosLibraryName);
@@ -60,7 +62,7 @@ namespace Kokkos
 
                 finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
 
-                IsInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
+                isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
 
                 PrintConfiguration = Marshal.GetDelegateForFunctionPointer<PrintConfigurationDelegate>(Api.PrintConfigurationPtr);
 
@@ -91,6 +93,8 @@ namespace Kokkos
                 GetValue = Marshal.GetDelegateForFunctionPointer<GetValueDelegate>(Api.GetValuePtr);
 
                 SetValue = Marshal.GetDelegateForFunctionPointer<SetValueDelegate>(Api.SetValuePtr);
+
+                ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
             }
             else
             {
@@ -215,6 +219,12 @@ namespace Kokkos
                                                 in ulong     i0 = ulong.MaxValue,
                                                 in ulong     i1 = ulong.MaxValue,
                                                 in ulong     i2 = ulong.MaxValue);
+
+        internal delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
+                                                        in ExecutionSpaceKind execution_space,
+                                                        in LayoutKind         layout,
+                                                        in DataTypeKind       data_type,
+                                                        in ushort             rank);
 
         #endregion
 
@@ -441,7 +451,18 @@ namespace Kokkos
             finalizeAll();
         }
 
-        internal static readonly IsInitializedDelegate IsInitialized;
+        private static readonly IsInitializedDelegate isInitialized;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static bool IsInitialized()
+        {
+            if(!Initialized)
+            {
+                return false;
+            }
+
+            return isInitialized();
+        }
 
         internal static readonly PrintConfigurationDelegate PrintConfiguration;
 
@@ -470,8 +491,12 @@ namespace Kokkos
         internal static readonly CopyToDelegate CopyTo;
 
         internal static readonly GetValueDelegate GetValue;
-
+        
         internal static readonly SetValueDelegate SetValue;
+
+        internal static readonly ViewToNdArrayDelegate ViewToNdArray;
+
+        
 
         //[SuppressUnmanagedCodeSecurity]
         //[DllImport("kernel32.dll",

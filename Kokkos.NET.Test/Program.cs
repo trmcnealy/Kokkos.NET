@@ -83,27 +83,42 @@ namespace Kokkos
         //    RuntimeCil.Generate(typeof(Program).Assembly);
         //}
 
-        [STAThread]
+        //[STAThread]
         private static void Main(string[] args)
         {
-            ParallelProcessor.Initialize(4, 0);
+            int  num_threads      = 4;
+            int  num_numa         = 1;
+            int  device_id        = 0;
+            int  ndevices         = 1;
+            int  skip_device      = 9999;
+            bool disable_warnings = false;
 
-            //PrintConfiguration(false);
+            InitArguments arguments = new InitArguments(num_threads,
+                                                        num_numa,
+                                                        device_id,
+                                                        ndevices,
+                                                        skip_device,
+                                                        disable_warnings);
 
-            //Console.WriteLine(CudaGetDeviceCount());
+            using(ScopeGuard sg = new ScopeGuard(arguments))
+                //ParallelProcessor.Initialize();
+            {
+                //PrintConfiguration(false);
 
-            //FractureProperties<double> fd = new FractureProperties<double>();
+                //Console.WriteLine(CudaGetDeviceCount());
 
-            //fd.Height = 654.123;
-            //fd.Width  = 9876.2456;
+                //FractureProperties<double> fd = new FractureProperties<double>();
 
-            //Console.WriteLine(fd.Height);
-            //Console.WriteLine(fd.Width);
+                //fd.Height = 654.123;
+                //fd.Width  = 9876.2456;
 
-            Tests.ViewTests p = new Tests.ViewTests();
-            p.Run();
+                //Console.WriteLine(fd.Height);
+                //Console.WriteLine(fd.Width);
 
-            ParallelProcessor.Shutdown();
+                Tests.ViewTests p = new Tests.ViewTests();
+                p.Run();
+            }
+            //ParallelProcessor.Shutdown();
 
 #if DEBUG
             Console.WriteLine("press any key to exit.");

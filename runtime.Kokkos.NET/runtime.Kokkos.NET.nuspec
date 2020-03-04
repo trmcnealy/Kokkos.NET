@@ -1,30 +1,43 @@
 <?xml version="1.0"?>
-<package >
-    <metadata>
-      <id>native.Kokkos.NET</id>
-      <version>0.3.1</version>
-      <authors>Timothy R. McNealy</authors>
-      <owners>Timothy R. McNealy</owners>
-      <license type="expression">MIT</license>
-      <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
-      <icon>nindra.png</icon>
-      <requireLicenseAcceptance>false</requireLicenseAcceptance>
-      <description>Kokkos .NET</description>
-      <releaseNotes></releaseNotes>
-      <copyright>© Timothy R. McNealy</copyright>
-      <tags></tags>
-      <dependencies></dependencies>
-    </metadata>
-    <files>
-      <file src="..\..\trmcnealy.github.io\assets\nindra.png"
-            target="" />
+<package>
+  <metadata>
+    <id>native.Kokkos.NET</id>
+    <version>0.4.0</version>
+    <authors>Timothy R. McNealy</authors>
+    <owners>Timothy R. McNealy</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
+    <icon>nindra.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Kokkos .NET</description>
+    <releaseNotes></releaseNotes>
+    <copyright>© Timothy R. McNealy</copyright>
+    <tags></tags>
+    <dependencies></dependencies>
+  </metadata>
+  <files>
+    <file src="..\..\trmcnealy.github.io\assets\nindra.png"
+          target=""/>
 
-      <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll" target="runtimes\win-$Platform$\native" /> -->
-      <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll" target="runtimes\win-$Platform$\native" />
+    <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll" target="runtimes\win-$Platform$\native" /> -->
+    <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.dll"
+          target="runtimes\win-$Platform$\native"/>
 
-       <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.pdb" target="runtimes\win-$Platform$\native" />  -->
+    <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.pdb" target="runtimes\win-$Platform$\native" />  -->
 
-		   <file src="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\cudart64_101.dll" target="runtimes\win-x64\native" /> 
-		   <file src="C:\POSIX\usr\bin\mpi.dll" target="runtimes\win-x64\native" /> 
-    </files>
+    <file src="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\cudart64_101.dll"
+          target="runtimes\win-x64\native"/>
+
+    <file src="C:\POSIX\usr\bin\mpi.dll"
+          target="runtimes\win-x64\native"/>
+
+    <file src="C:\AssemblyCache\LLVM\bin\libomp.dll"
+          target="runtimes\win-x64\native"/>
+
+    <file src="C:\AssemblyCache\kokkos\bin\libkokkoscore.dll"
+          target="runtimes\win-x64\native"/>
+
+    <file src="C:\AssemblyCache\kokkos\bin\libkokkoscontainers.dll"
+          target="runtimes\win-x64\native"/>
+  </files>
 </package>

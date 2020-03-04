@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewTypes.hpp"
+#include "runtime.Kokkos/ViewTypes.hpp"
 
 __inline static bool isNullTerminating(const std::string& str) { return str[str.size() - 1] == '\0'; }
 
@@ -241,7 +241,7 @@ KOKKOS_NET_API_EXTERN void Free(const ExecutionSpaceKind& execution_space, void*
 
 KOKKOS_NET_API_EXTERN void Initialize(int& narg, char* arg[]) noexcept;
 
-KOKKOS_NET_API_EXTERN void InitializeThreads(int num_cpu_threads, int gpu_device_id) noexcept;
+KOKKOS_NET_API_EXTERN void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept;
 
 KOKKOS_NET_API_EXTERN void InitializeArguments(const Kokkos::InitArguments& arguments) noexcept;
 
@@ -280,6 +280,9 @@ KOKKOS_NET_API_EXTERN void CopyTo(void* instance, const NdArray& ndArray, ValueT
 KOKKOS_NET_API_EXTERN ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, const size_type& i1, const size_type& i2) noexcept;
 
 KOKKOS_NET_API_EXTERN void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, const size_type& i0, const size_type& i1, const size_type& i2) noexcept;
+
+KOKKOS_NET_API_EXTERN NdArray
+ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept;
 
 struct KokkosApi
 {
@@ -330,6 +333,8 @@ struct KokkosApi
     ValueType (*GetValue)(void*, const NdArray&, const size_type&, const size_type&, const size_type&) noexcept;
 
     void (*SetValue)(void*, const NdArray&, const ValueType&, const size_type&, const size_type&, const size_type&) noexcept;
+
+    NdArray (*ViewToNdArray)(void*, const ExecutionSpaceKind&, const LayoutKind&, const DataTypeKind&, const uint16&) noexcept;
 };
 
 __forceinline void* operator new(size_type size)
@@ -346,13 +351,13 @@ __forceinline void* operator new[](const size_type size) { return operator new(s
 //
 //__forceinline void* operator new[](const size_type size, void* ptr) throw() { return ptr; }
 
-//template<typename DataType, class ExecutionSpace>
+// template<typename DataType, class ExecutionSpace>
 //__forceinline void* operator new(const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
 //{
 //    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);
 //}
 //
-//template<typename DataType, class ExecutionSpace>
+// template<typename DataType, class ExecutionSpace>
 //__forceinline void* operator new[](const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
 //{
 //    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);

@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 #define TEMPLATE(DEF, EXECUTION_SPACE)   \
     DEF(Single, float, EXECUTION_SPACE)  \
@@ -24,7 +24,7 @@
                                                                                                                    \
         const value_type& val = (const value_type&)(value);                                                        \
                                                                                                                    \
-        view(0) = val;                                                                                             \
+        view() = val;                                                                                              \
         break;                                                                                                     \
     }
 
@@ -133,7 +133,7 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
             }
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
             switch(ndArray.rank)
             {
@@ -141,10 +141,10 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK0, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK0, OpenMP)
                         default:
                         {
-                            std::cout << "SetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "SetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -153,10 +153,10 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK1, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK1, OpenMP)
                         default:
                         {
-                            std::cout << "SetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "SetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -165,10 +165,10 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK2, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK2, OpenMP)
                         default:
                         {
-                            std::cout << "SetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "SetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
@@ -177,17 +177,17 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
                 {
                     switch(ndArray.data_type)
                     {
-                        TEMPLATE(DEF_TEMPLATE_RANK3, Threads)
+                        TEMPLATE(DEF_TEMPLATE_RANK3, OpenMP)
                         default:
                         {
-                            std::cout << "SetValue::Threads, DataType is not supported." << std::endl;
+                            std::cout << "SetValue::OpenMP, DataType is not supported." << std::endl;
                         }
                     }
                     break;
                 }
                 default:
                 {
-                    std::cout << "SetValue::Threads, Rank is not supported." << std::endl;
+                    std::cout << "SetValue::OpenMP, Rank is not supported." << std::endl;
                 }
             }
             break;

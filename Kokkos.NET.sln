@@ -18,10 +18,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildTools", "BuildTools", 
 		..\BuildTools\Clang.props = ..\BuildTools\Clang.props
 		..\BuildTools\Clang.targets = ..\BuildTools\Clang.targets
 		..\BuildTools\ClangLink.targets = ..\BuildTools\ClangLink.targets
+		..\BuildTools\Complex.hpp = ..\BuildTools\Complex.hpp
+		..\BuildTools\Constants.hpp = ..\BuildTools\Constants.hpp
+		..\BuildTools\MathExtensions.hpp = ..\BuildTools\MathExtensions.hpp
 		..\BuildTools\Native.props = ..\BuildTools\Native.props
 		..\BuildTools\Native.targets = ..\BuildTools\Native.targets
 		..\BuildTools\NativeBuild.props = ..\BuildTools\NativeBuild.props
+		..\BuildTools\StdExtensions.hpp = ..\BuildTools\StdExtensions.hpp
 		..\BuildTools\Types.hpp = ..\BuildTools\Types.hpp
+		..\BuildTools\ValueLimits.hpp = ..\BuildTools\ValueLimits.hpp
 	EndProjectSection
 EndProject
 Global
@@ -46,12 +51,10 @@ Global
 		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|x64.Build.0 = Release|x64
 		{7DA40B99-583E-4185-BE6A-44C572B8A7CD}.Release|x86.ActiveCfg = Release|Any CPU
 		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x64.ActiveCfg = Debug|x64
-		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x64.Build.0 = Debug|x64
+		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x64.ActiveCfg = Release|x64
 		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Debug|x86.ActiveCfg = Debug|x64
 		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|Any CPU.ActiveCfg = Release|x64
 		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x64.ActiveCfg = Release|x64
-		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x64.Build.0 = Release|x64
 		{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}.Release|x86.ActiveCfg = Release|x64
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|Any CPU.ActiveCfg = Debug|x64
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x64.ActiveCfg = Debug|x64

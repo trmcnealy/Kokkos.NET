@@ -1,5 +1,5 @@
 
-#include "KokkosApi.h"
+#include "runtime.Kokkos/KokkosApi.h"
 
 void* Allocate(const ExecutionSpaceKind& execution_space, const size_type& arg_alloc_size) noexcept
 {
@@ -9,9 +9,9 @@ void* Allocate(const ExecutionSpaceKind& execution_space, const size_type& arg_a
         {
             return Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(arg_alloc_size);
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
-            return Kokkos::kokkos_malloc<Kokkos::Threads::memory_space>(arg_alloc_size);
+            return Kokkos::kokkos_malloc<Kokkos::OpenMP::memory_space>(arg_alloc_size);
         }
         case ExecutionSpaceKind::Cuda:
         {
@@ -33,9 +33,9 @@ void* Reallocate(const ExecutionSpaceKind& execution_space, void* instance, cons
         {
             return Kokkos::kokkos_realloc<Kokkos::Serial::memory_space>(instance, arg_alloc_size);
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
-            return Kokkos::kokkos_realloc<Kokkos::Threads::memory_space>(instance, arg_alloc_size);
+            return Kokkos::kokkos_realloc<Kokkos::OpenMP::memory_space>(instance, arg_alloc_size);
         }
         case ExecutionSpaceKind::Cuda:
         {
@@ -58,9 +58,9 @@ void Free(const ExecutionSpaceKind& execution_space, void* instance) noexcept
             Kokkos::kokkos_free<Kokkos::Serial::memory_space>(instance);
             break;
         }
-        case ExecutionSpaceKind::Threads:
+        case ExecutionSpaceKind::OpenMP:
         {
-            Kokkos::kokkos_free<Kokkos::Threads::memory_space>(instance);
+            Kokkos::kokkos_free<Kokkos::OpenMP::memory_space>(instance);
             break;
         }
         case ExecutionSpaceKind::Cuda:
@@ -82,11 +82,17 @@ void Initialize(int& narg, char* arg[]) noexcept
     Kokkos::initialize(narg, arg);
 }
 
-void InitializeThreads(int num_cpu_threads, int gpu_device_id) noexcept
+void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept
 {
     std::cout << "Initializing Kokkos." << std::endl;
 
-    const Kokkos::InitArguments arguments(num_cpu_threads, -1, gpu_device_id);
+    Kokkos::InitArguments arguments;
+    arguments.num_threads      = num_cpu_threads;
+    arguments.num_numa         = 1;
+    arguments.device_id        = gpu_device_id;
+    arguments.ndevices         = 1;
+    arguments.skip_device      = 9999;
+    arguments.disable_warnings = false;
 
     Kokkos::initialize(arguments);
 }

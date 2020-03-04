@@ -402,11 +402,11 @@ namespace Kokkos.Tests
 
             view.CopyTo(values);
 
-            Assert.IsTrue(Math.Abs(view[0] - values[0]) < double.Epsilon);
+            Assert.IsTrue(Math.Abs(view[0] - values[0]) <= double.Epsilon);
 
-            Assert.IsTrue(Math.Abs(view[1] - values[1]) < double.Epsilon);
+            Assert.IsTrue(Math.Abs(view[1] - values[1]) <= double.Epsilon);
 
-            Assert.IsTrue(Math.Abs(view[2] - values[2]) < double.Epsilon);
+            Assert.IsTrue(Math.Abs(view[2] - values[2]) <= double.Epsilon);
         }
 
         public void GetSetValueVector()
@@ -420,9 +420,9 @@ namespace Kokkos.Tests
             double value0 = view[0];
             double value1 = view[1];
 
-            Assert.IsTrue(Math.Abs(value0 - 1321.258) < double.Epsilon);
+            Assert.IsTrue(Math.Abs(value0 - 1321.258) <= double.Epsilon);
 
-            Assert.IsTrue(Math.Abs(value1 - 123123.12) < double.Epsilon);
+            Assert.IsTrue(Math.Abs(value1 - 123123.12) <= double.Epsilon);
         }
     }
 }

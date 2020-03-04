@@ -3,6 +3,7 @@
 #include "KokkosAPI.hpp"
 
 #include <Kokkos_Core.hpp>
+#include <Teuchos_RCP.hpp>
 
 #define NDARRAY_MAX_RANK 8
 
@@ -18,7 +19,7 @@ enum class ExecutionSpaceKind : uint16
 {
     Unknown = 0xFFFF,
     Serial  = 0,
-    Threads,
+    OpenMP,
     Cuda
 };
 
@@ -38,6 +39,63 @@ enum class DataTypeKind : uint16
     UInt64
 };
 
+template<typename DataType, class ExecutionSpace, typename Layout, unsigned Rank>
+struct NdArrayTraits;
+
+#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE, LAYOUT)                                     \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 0>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 0;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 1>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 1;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 2>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 2;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 3>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 3;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };
+
+#define TEMPLATE(DEF, EXECUTION_SPACE, LAYOUT)   \
+    DEF(Single, float, EXECUTION_SPACE, LAYOUT)  \
+    DEF(Double, double, EXECUTION_SPACE, LAYOUT) \
+    DEF(Bool, bool, EXECUTION_SPACE, LAYOUT)     \
+    DEF(Int8, int8, EXECUTION_SPACE, LAYOUT)     \
+    DEF(UInt8, uint8, EXECUTION_SPACE, LAYOUT)   \
+    DEF(Int16, int16, EXECUTION_SPACE, LAYOUT)   \
+    DEF(UInt16, uint16, EXECUTION_SPACE, LAYOUT) \
+    DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)   \
+    DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT) \
+    DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)   \
+    DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)
+
+TEMPLATE(DEF_TEMPLATE, Serial, Right)
+TEMPLATE(DEF_TEMPLATE, OpenMP, Right)
+TEMPLATE(DEF_TEMPLATE, Cuda, Left)
+TEMPLATE(DEF_TEMPLATE, Serial, Left)
+TEMPLATE(DEF_TEMPLATE, OpenMP, Left)
+TEMPLATE(DEF_TEMPLATE, Cuda, Right)
+
 struct NdArray
 {
     DataTypeKind       data_type;
@@ -52,27 +110,27 @@ struct NdArray
 
 namespace Compatible
 {
-#define TEMPLATE(DEF, EXECUTION_SPACE)   \
-    DEF(Single, float, EXECUTION_SPACE)  \
-    DEF(Double, double, EXECUTION_SPACE) \
-    DEF(Bool, bool, EXECUTION_SPACE)     \
-    DEF(Int8, int8, EXECUTION_SPACE)     \
-    DEF(UInt8, uint8, EXECUTION_SPACE)   \
-    DEF(Int16, int16, EXECUTION_SPACE)   \
-    DEF(UInt16, uint16, EXECUTION_SPACE) \
-    DEF(Int32, int32, EXECUTION_SPACE)   \
-    DEF(UInt32, uint32, EXECUTION_SPACE) \
-    DEF(Int64, int64, EXECUTION_SPACE)   \
-    DEF(UInt64, uint64, EXECUTION_SPACE)
+    //#define TEMPLATE(DEF, EXECUTION_SPACE)   \
+//    DEF(Single, float, EXECUTION_SPACE)  \
+//    DEF(Double, double, EXECUTION_SPACE) \
+//    DEF(Bool, bool, EXECUTION_SPACE)     \
+//    DEF(Int8, int8, EXECUTION_SPACE)     \
+//    DEF(UInt8, uint8, EXECUTION_SPACE)   \
+//    DEF(Int16, int16, EXECUTION_SPACE)   \
+//    DEF(UInt16, uint16, EXECUTION_SPACE) \
+//    DEF(Int32, int32, EXECUTION_SPACE)   \
+//    DEF(UInt32, uint32, EXECUTION_SPACE) \
+//    DEF(Int64, int64, EXECUTION_SPACE)   \
+//    DEF(UInt64, uint64, EXECUTION_SPACE)
 
-#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                                                                           \
-    typedef Kokkos::View<TYPE, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>    View_##TYPE_NAME##_##EXECUTION_SPACE##_0d_t; \
-    typedef Kokkos::View<TYPE*, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>   View_##TYPE_NAME##_##EXECUTION_SPACE##_1d_t; \
-    typedef Kokkos::View<TYPE**, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>  View_##TYPE_NAME##_##EXECUTION_SPACE##_2d_t; \
-    typedef Kokkos::View<TYPE***, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged> View_##TYPE_NAME##_##EXECUTION_SPACE##_3d_t;
+    //#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                                                                           \
+//    typedef Kokkos::View<TYPE, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>    View_##TYPE_NAME##_##EXECUTION_SPACE##_0d_t; \
+//    typedef Kokkos::View<TYPE*, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>   View_##TYPE_NAME##_##EXECUTION_SPACE##_1d_t; \
+//    typedef Kokkos::View<TYPE**, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged>  View_##TYPE_NAME##_##EXECUTION_SPACE##_2d_t; \
+//    typedef Kokkos::View<TYPE***, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE, Kokkos::MemoryUnmanaged> View_##TYPE_NAME##_##EXECUTION_SPACE##_3d_t;
 
     // TEMPLATE(DEF_TEMPLATE, Serial)
-    // TEMPLATE(DEF_TEMPLATE, Threads)
+    // TEMPLATE(DEF_TEMPLATE, OpenMP)
     // TEMPLATE(DEF_TEMPLATE, Cuda)
 
     // template<typename DataType>
@@ -118,6 +176,9 @@ namespace Compatible
 template<DataTypeKind TDataType, unsigned Rank, ExecutionSpaceKind TExecutionSpace>
 struct ViewBuilder;
 
+#undef TEMPLATE
+#undef DEF_TEMPLATE
+
 #define TEMPLATE(DEF, EXECUTION_SPACE)   \
     DEF(Single, float, EXECUTION_SPACE)  \
     DEF(Double, double, EXECUTION_SPACE) \
@@ -153,11 +214,8 @@ struct ViewBuilder;
         using ViewType = Kokkos::View<TYPE***, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>; \
     };
 
-#include <Kokkos_Core.hpp>
-#include <Teuchos_RCP.hpp>
-
 TEMPLATE(DEF_TEMPLATE, Serial)
-TEMPLATE(DEF_TEMPLATE, Threads)
+TEMPLATE(DEF_TEMPLATE, OpenMP)
 TEMPLATE(DEF_TEMPLATE, Cuda)
 
 #undef TEMPLATE

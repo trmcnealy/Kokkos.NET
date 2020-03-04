@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ViewTypes.hpp"
+#include "runtime.Kokkos/ViewTypes.hpp"
 
 /// <summary>
 /// https://github.com/kokkos/kokkos/wiki/View
@@ -8,10 +8,10 @@
 void ParallelViews()
 {
     Kokkos::View<int*, Kokkos::Device<Kokkos::Cuda, Kokkos::CudaUVMSpace>>   a("a", 100000);
-    Kokkos::View<int*, Kokkos::Device<Kokkos::Threads, Kokkos::CudaUVMSpace>> b("b", 100000);
+    Kokkos::View<int*, Kokkos::Device<Kokkos::OpenMP, Kokkos::CudaUVMSpace>> b("b", 100000);
 
 
-//    	                Serial	OpenMP	Threads	Cuda	ROCm
+//    	                Serial	OpenMP	OpenMP	Cuda	ROCm
 //HostSpace	            x	    x	    x	    -	    -
 //HBWSpace	            x	    x	    x	    -	    -
 //CudaSpace	            -	    -	    -	    x	    -

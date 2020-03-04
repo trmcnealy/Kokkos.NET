@@ -37,5 +37,20 @@ namespace Kokkos
             skip_device      = 9999;
             disable_warnings = dw;
         }
+
+        public InitArguments(int num_threads,
+                             int num_numa,
+                             int device_id,
+                             int ndevices,
+                             int skip_device,
+                             bool disable_warnings)
+        {
+            this.num_threads = num_threads;
+            this.num_numa = num_numa;
+            this.device_id = device_id;
+            this.ndevices = ndevices;
+            this.skip_device = skip_device;
+            this.disable_warnings = disable_warnings;
+        }
     }
 }

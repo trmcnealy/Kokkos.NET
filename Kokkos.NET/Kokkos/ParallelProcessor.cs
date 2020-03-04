@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace Kokkos
 {
@@ -14,17 +13,26 @@ namespace Kokkos
             //    KokkosLibraryException.Throw("Kokkos Library must be initialized on the main (STA) thread.");
             //}
 
-            if (KokkosLibrary.IsLoaded())
+            if(KokkosLibrary.IsLoaded())
             {
                 KokkosLibraryException.Throw("Kokkos Library has not been initialized.");
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void Initialize(int numCpuThreads = -1,
-                                      int gpuDeviceId   = 0)
+        public static void Initialize(int gpuDeviceId = 0)
         {
-            KokkosLibrary.Initialize(numCpuThreads == -1 ? Environment.ProcessorCount : numCpuThreads,
+            KokkosLibrary.Initialize(Environment.ProcessorCount,
+                                     gpuDeviceId);
+
+            //AppDomain.CurrentDomain.ProcessExit += View_Dtor;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Initialize(int numCpuThreads,
+                                      int gpuDeviceId)
+        {
+            KokkosLibrary.Initialize(numCpuThreads <= 0 ? Environment.ProcessorCount : numCpuThreads,
                                      gpuDeviceId);
 
             //AppDomain.CurrentDomain.ProcessExit += View_Dtor;
@@ -53,6 +61,12 @@ namespace Kokkos
             }
 
             return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Print()
+        {
+            KokkosLibrary.PrintConfiguration(true);
         }
 
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
