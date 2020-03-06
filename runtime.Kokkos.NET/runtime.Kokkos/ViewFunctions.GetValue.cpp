@@ -56,18 +56,7 @@
     DEF(Int32, int32, EXECUTION_SPACE)              \
     DEF(UInt32, uint32, EXECUTION_SPACE)            \
     DEF(Int64, int64, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE)
+    DEF(UInt64, uint64, EXECUTION_SPACE)
 
 ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, const size_type& i1, const size_type& i2) noexcept
 {

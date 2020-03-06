@@ -1,6 +1,7 @@
 #pragma once
 
 #include "runtime.Kokkos/ViewTypes.hpp"
+#include "StdExtensions.hpp"
 
 __inline static bool isNullTerminating(const std::string& str) { return str[str.size() - 1] == '\0'; }
 
@@ -337,60 +338,70 @@ struct KokkosApi
     NdArray (*ViewToNdArray)(void*, const ExecutionSpaceKind&, const LayoutKind&, const DataTypeKind&, const uint16&) noexcept;
 };
 
-__forceinline void* operator new(size_type size)
-{
-    //#if defined(__CUDA_ARCH__)
-    //    return Kokkos::kokkos_malloc<Kokkos::Cuda::memory_space>(size);
-    //#else
-    return Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(size);
-}
+#define KOKKOS_POLICY_TAG(NAME, RANK)                                                                                                             \
+    struct NAME##Tag                                                                                                                              \
+    {                                                                                                                                             \
+    };                                                                                                                                            \
+    typedef Kokkos::TeamPolicy<ExecutionSpace, NAME##Tag>                                                      NAME##Rank##RANK##_TeamPolicyType; \
+    typedef typename NAME##Rank##RANK##_TeamPolicyType::member_type                                            NAME##Rank##RANK##_TeamMemberType; \
+    typedef Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<RANK>, Kokkos::IndexType<size_type>, NAME##Tag> NAME##Rank##RANK##_MDRangeType;    \
+    typedef typename NAME##Rank##RANK##_MDRangeType::point_type                                                NAME##Rank##RANK##_PointType;      \
+    typedef Kokkos::RangePolicy<ExecutionSpace, Kokkos::IndexType<size_type>, NAME##Tag>                       NAME##Rank##RANK##_RangeType;
 
-__forceinline void* operator new[](const size_type size) { return operator new(size); }
-
-//__forceinline void* operator new(const size_type size, void* ptr) throw() { return ptr; }
+// inline void* operator new(size_type size)
+// {
+//     //#if defined(__CUDA_ARCH__)
+//     //    return Kokkos::kokkos_malloc<Kokkos::Cuda::memory_space>(size);
+//     //#else
+//     return Kokkos::kokkos_malloc<Kokkos::DefaultExecutionSpace::memory_space>(size);
+// }
 //
-//__forceinline void* operator new[](const size_type size, void* ptr) throw() { return ptr; }
+// inline void* operator new[](const size_type size) { return operator new(size); }
+
+// void* operator new(const size_type size, void* ptr) throw() { return ptr; }
+//
+// void* operator new[](const size_type size, void* ptr) throw() { return ptr; }
 
 // template<typename DataType, class ExecutionSpace>
-//__forceinline void* operator new(const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
+// void* operator new(const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
 //{
 //    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);
 //}
 //
 // template<typename DataType, class ExecutionSpace>
-//__forceinline void* operator new[](const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
+// void* operator new[](const size_type size, void* ptr, const std::string& label, const size_type& n0, const size_type& n1, const size_type& n2) throw()
 //{
 //    return new(ptr) Kokkos::View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>(label, n0, n1, n2);
 //}
 
-__forceinline void operator delete(void* ptr) noexcept
-{
-    if(ptr != nullptr)
-    {
-        return Kokkos::kokkos_free<Kokkos::Serial::memory_space>(ptr);
-    }
-}
+// inline void operator delete(void* ptr) noexcept
+// {
+//     if(ptr != nullptr)
+//     {
+//         return Kokkos::kokkos_free<Kokkos::DefaultExecutionSpace::memory_space>(ptr);
+//     }
+// }
+//
+// inline void operator delete[](void* ptr) noexcept
+// {
+//     if(ptr != nullptr)
+//     {
+//         return operator delete(ptr);
+//     }
+// }
 
-__forceinline void operator delete[](void* ptr) noexcept
-{
-    if(ptr != nullptr)
-    {
-        return operator delete(ptr);
-    }
-}
-
-__forceinline void operator delete(void* ptr, const size_type size) noexcept
-{
-    if(ptr != nullptr)
-    {
-        return operator delete(ptr);
-    }
-}
-
-__forceinline void operator delete[](void* ptr, const size_type size) noexcept
-{
-    if(ptr != nullptr)
-    {
-        return operator delete(ptr);
-    }
-}
+// inline void operator delete(void* ptr, const size_type size) noexcept
+//{
+//    if(ptr != nullptr)
+//    {
+//        return operator delete(ptr);
+//    }
+//}
+//
+// inline void operator delete[](void* ptr, const size_type size) noexcept
+//{
+//    if(ptr != nullptr)
+//    {
+//        return operator delete(ptr);
+//    }
+//}

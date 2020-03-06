@@ -38,17 +38,17 @@ enum class DataTypeKind : uint16
     Int64,
     UInt64,
 
-    ConstSingle = UInt64 + 1,
-    ConstDouble,
-    ConstBool,
-    ConstInt8,
-    ConstUInt8,
-    ConstInt16,
-    ConstUInt16,
-    ConstInt32,
-    ConstUInt32,
-    ConstInt64,
-    ConstUInt64
+    //ConstSingle = UInt64 + 1,
+    //ConstDouble,
+    //ConstBool,
+    //ConstInt8,
+    //ConstUInt8,
+    //ConstInt16,
+    //ConstUInt16,
+    //ConstInt32,
+    //ConstUInt32,
+    //ConstInt64,
+    //ConstUInt64
 };
 
 template<typename DataType, class ExecutionSpace, typename Layout, unsigned Rank>
@@ -99,18 +99,7 @@ struct NdArrayTraits;
     DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)              \
     DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT)            \
     DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE, LAYOUT)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE, LAYOUT) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE, LAYOUT)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE, LAYOUT)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE, LAYOUT)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE, LAYOUT)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE, LAYOUT) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE, LAYOUT)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE, LAYOUT) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE, LAYOUT)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE, LAYOUT)
+    DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)
 
 TEMPLATE(DEF_TEMPLATE, Serial, Right)
 TEMPLATE(DEF_TEMPLATE, OpenMP, Right)
@@ -192,8 +181,8 @@ namespace Compatible
     //    return Kokkos::View<DataType, Kokkos::LayoutStride, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(reinterpret_cast<value_type*>(ndarray.data), layout);
     //}
 
-#undef TEMPLATE
-#undef DEF_TEMPLATE
+//#undef TEMPLATE
+//#undef DEF_TEMPLATE
 }
 
 template<DataTypeKind TDataType, unsigned Rank, ExecutionSpaceKind TExecutionSpace>
@@ -213,18 +202,7 @@ struct ViewBuilder;
     DEF(Int32, int32, EXECUTION_SPACE)              \
     DEF(UInt32, uint32, EXECUTION_SPACE)            \
     DEF(Int64, int64, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE)
+    DEF(UInt64, uint64, EXECUTION_SPACE)
 
 #define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                   \
     template<>                                                                                                           \

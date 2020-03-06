@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\Versioning.props" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -73,6 +74,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>$(TargetName)</TargetName>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -331,6 +333,16 @@
     <Lib>
       <SuppressStartupBanner />
     </Lib>
+    <CustomBuildStep>
+      <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(RUNTIME_KOKKOS_VERSION) -OutputDirectory C:\AssemblyCache\_packages
+    </Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Outputs>C:\AssemblyCache\_packages\native.Kokkos.NET.$(Platform).$(RUNTIME_KOKKOS_VERSION).nupkg</Outputs>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(RootSolutionDir)..\BuildTools\Clang.targets" />

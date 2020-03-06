@@ -20,18 +20,7 @@
     DEF(Int32, int32, EXECUTION_SPACE)              \
     DEF(UInt32, uint32, EXECUTION_SPACE)            \
     DEF(Int64, int64, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE)
+    DEF(UInt64, uint64, EXECUTION_SPACE)
 
 #define TEMPLATE_RANK1(DEF, EXECUTION_SPACE)         \
     DEF(Single, float*, EXECUTION_SPACE)             \
@@ -44,18 +33,7 @@
     DEF(Int32, int32*, EXECUTION_SPACE)              \
     DEF(UInt32, uint32*, EXECUTION_SPACE)            \
     DEF(Int64, int64*, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64*, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float*, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double*, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool*, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8*, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8*, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16*, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16*, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32*, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32*, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64*, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64*, EXECUTION_SPACE)
+    DEF(UInt64, uint64*, EXECUTION_SPACE)
 
 #define TEMPLATE_RANK2(DEF, EXECUTION_SPACE)          \
     DEF(Single, float**, EXECUTION_SPACE)             \
@@ -68,18 +46,7 @@
     DEF(Int32, int32**, EXECUTION_SPACE)              \
     DEF(UInt32, uint32**, EXECUTION_SPACE)            \
     DEF(Int64, int64**, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64**, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float**, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double**, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool*, EXECUTION_SPACE)      \
-    DEF(ConstInt8, const int8**, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8**, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16**, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16**, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32**, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32**, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64**, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64**, EXECUTION_SPACE)
+    DEF(UInt64, uint64**, EXECUTION_SPACE)
 
 #define TEMPLATE_RANK3(DEF, EXECUTION_SPACE)           \
     DEF(Single, float***, EXECUTION_SPACE)             \
@@ -92,18 +59,7 @@
     DEF(Int32, int32***, EXECUTION_SPACE)              \
     DEF(UInt32, uint32***, EXECUTION_SPACE)            \
     DEF(Int64, int64***, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64***, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float***, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double***, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool***, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8***, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8***, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16***, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16***, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32***, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32***, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64***, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64***, EXECUTION_SPACE)
+    DEF(UInt64, uint64***, EXECUTION_SPACE)
 
 const NativeString GetLabel(void* instance, const NdArray& ndArray) noexcept
 {
@@ -1001,18 +957,7 @@ __inline static NdArray ViewToNdArrayRank3(void* instance) noexcept
     DEF(Int32, int32, EXECUTION_SPACE, RANK)              \
     DEF(UInt32, uint32, EXECUTION_SPACE, RANK)            \
     DEF(Int64, int64, EXECUTION_SPACE, RANK)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE, RANK)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE, RANK)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE, RANK) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE, RANK)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE, RANK)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE, RANK)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE, RANK)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE, RANK) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE, RANK)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE, RANK) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE, RANK)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE, RANK)
+    DEF(UInt64, uint64, EXECUTION_SPACE, RANK)
 
 NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept
 {

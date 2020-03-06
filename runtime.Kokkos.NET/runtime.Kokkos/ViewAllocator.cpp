@@ -9,29 +9,18 @@
 //    return p;
 //}
 
-#define TEMPLATE(DEF, EXECUTION_SPACE)              \
-    DEF(Single, float, EXECUTION_SPACE)             \
-    DEF(Double, double, EXECUTION_SPACE)            \
-    DEF(Bool, bool, EXECUTION_SPACE)                \
-    DEF(Int8, int8, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8, EXECUTION_SPACE)              \
-    DEF(Int16, int16, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16, EXECUTION_SPACE)            \
-    DEF(Int32, int32, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32, EXECUTION_SPACE)            \
-    DEF(Int64, int64, EXECUTION_SPACE)              \
-    DEF(UInt64, uint64, EXECUTION_SPACE)            \
-    DEF(ConstSingle, const float, EXECUTION_SPACE)  \
-    DEF(ConstDouble, const double, EXECUTION_SPACE) \
-    DEF(ConstBool, const bool, EXECUTION_SPACE)     \
-    DEF(ConstInt8, const int8, EXECUTION_SPACE)     \
-    DEF(ConstUInt8, const uint8, EXECUTION_SPACE)   \
-    DEF(ConstInt16, const int16, EXECUTION_SPACE)   \
-    DEF(ConstUInt16, const uint16, EXECUTION_SPACE) \
-    DEF(ConstInt32, const int32, EXECUTION_SPACE)   \
-    DEF(ConstUInt32, const uint32, EXECUTION_SPACE) \
-    DEF(ConstInt64, const int64, EXECUTION_SPACE)   \
-    DEF(ConstUInt64, const uint64, EXECUTION_SPACE)
+#define TEMPLATE(DEF, EXECUTION_SPACE)   \
+    DEF(Single, float, EXECUTION_SPACE)  \
+    DEF(Double, double, EXECUTION_SPACE) \
+    DEF(Bool, bool, EXECUTION_SPACE)     \
+    DEF(Int8, int8, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8, EXECUTION_SPACE)   \
+    DEF(Int16, int16, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16, EXECUTION_SPACE) \
+    DEF(Int32, int32, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32, EXECUTION_SPACE) \
+    DEF(Int64, int64, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64, EXECUTION_SPACE)
 
 #define DEF_TEMPLATE_RANK0(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                                             \
     case DataTypeKind::TYPE_NAME:                                                                                                                        \
