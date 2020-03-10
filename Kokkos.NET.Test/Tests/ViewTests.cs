@@ -435,12 +435,12 @@ namespace Kokkos.Tests
             view[0] = 1321.258;
             view[1] = 123123.12;
 
-            NdArray viewNdArray = View<float, Cuda>.Convert(view.Pointer,
-                                                            1);
+            NdArray viewNdArray = View<double, Cuda>.RcpConvert(view.Pointer,
+                                                                1);
 
-            View<float, Cuda> cachedView = new View<float, Cuda>(new NativePointer(view.Pointer,
-                                                                                   sizeof(float) * viewNdArray.Extent(0)),
-                                                                 viewNdArray);
+            View<double, Cuda> cachedView = new View<double, Cuda>(new NativePointer(view.Pointer,
+                                                                                     sizeof(double) * viewNdArray.Extent(0)),
+                                                                   viewNdArray);
 
             double viewValue0 = view[0];
             double viewValue1 = view[1];
@@ -450,7 +450,7 @@ namespace Kokkos.Tests
 
             Assert.IsTrue(Math.Abs(viewValue0 - cachedViewValue0) <= double.Epsilon);
 
-            Assert.IsTrue(Math.Abs(viewValue0 - cachedViewValue1) <= double.Epsilon);
+            Assert.IsTrue(Math.Abs(viewValue1 - cachedViewValue1) <= double.Epsilon);
         }
     }
 }
