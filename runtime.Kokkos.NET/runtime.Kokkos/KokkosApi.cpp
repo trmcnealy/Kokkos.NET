@@ -28,6 +28,7 @@ static constexpr KokkosApi kokkos_api_version_1 =
     &CopyTo,
     &GetValue,
     &SetValue,
+    &RcpViewToNdArray,
     &ViewToNdArray
 };
 // clang-format on

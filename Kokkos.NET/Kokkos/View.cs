@@ -6,24 +6,33 @@ using System.Runtime.Versioning;
 namespace Kokkos
 {
     [NonVersionable]
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit,
+                  Pack = sizeof(ulong))]
     public unsafe struct NdArray
     {
+        [FieldOffset(0)]
         public DataTypeKind DataType;
 
+        [FieldOffset(sizeof(ushort))]
         public ushort Rank;
 
+        [FieldOffset(sizeof(ushort) * 2)]
         public LayoutKind Layout;
 
+        [FieldOffset(sizeof(ushort) * 3)]
         public ExecutionSpaceKind ExecutionSpace;
 
+        [FieldOffset(sizeof(ushort) * 4)]
         public fixed ulong Dims[8];
 
+        [FieldOffset(sizeof(ushort) * 4 + sizeof(ulong) * 8)]
         public fixed ulong Strides[8];
 
+        [FieldOffset(sizeof(ushort) * 4 + sizeof(ulong) * 8 * 2)]
         public IntPtr Data;
 
         //[MarshalAs(UnmanagedType.LPUTF8Str)] string
+        [FieldOffset(sizeof(ushort) * 4 + sizeof(ulong) * 8 * 2 + sizeof(ulong))]
         public IntPtr Label;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -1726,6 +1735,17 @@ namespace Kokkos
                                  valueTypes);
 
             //handle.AddrOfPinnedObject()handle.Free();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static NdArray RcpConvert(IntPtr rcp_view_ptr,
+                                         ushort rank)
+        {
+            return KokkosLibrary.RcpViewToNdArray(rcp_view_ptr,
+                                                  executionSpaceType,
+                                                  executionSpace.DefaultLayout,
+                                                  dataType,
+                                                  rank);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

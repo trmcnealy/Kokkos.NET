@@ -66,8 +66,8 @@ Global
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x64.Build.0 = Debug|x64
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Debug|x86.ActiveCfg = Debug|x64
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|Any CPU.ActiveCfg = Release|x64
-		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.ActiveCfg = Release|x64
-		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.Build.0 = Release|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.ActiveCfg = Debug|x64
+		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x64.Build.0 = Debug|x64
 		{D9E6B3E8-6DE4-4BE7-91D8-657B93049084}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution

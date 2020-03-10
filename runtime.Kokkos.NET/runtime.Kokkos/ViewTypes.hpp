@@ -52,7 +52,7 @@ enum class DataTypeKind : uint16
 };
 
 template<typename DataType, class ExecutionSpace, typename Layout, unsigned Rank>
-struct NdArrayTraits;
+struct __declspec(align(sizeof(uint64))) NdArrayTraits;
 
 #define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE, LAYOUT)                                     \
     template<>                                                                                     \

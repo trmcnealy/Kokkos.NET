@@ -495,3 +495,8 @@ ValueType GetValue(void*            instance,
 #undef DEF_TEMPLATE_RANK1
 #undef DEF_TEMPLATE_RANK2
 #undef DEF_TEMPLATE_RANK3
+#undef DEF_TEMPLATE_RANK4
+#undef DEF_TEMPLATE_RANK5
+#undef DEF_TEMPLATE_RANK6
+#undef DEF_TEMPLATE_RANK7
+#undef DEF_TEMPLATE_RANK8

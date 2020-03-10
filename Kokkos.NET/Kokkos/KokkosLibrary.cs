@@ -95,6 +95,8 @@ namespace Kokkos
 
                 SetValue = Marshal.GetDelegateForFunctionPointer<SetValueDelegate>(Api.SetValuePtr);
 
+                RcpViewToNdArray = Marshal.GetDelegateForFunctionPointer<RcpViewToNdArrayDelegate>(Api.RcpViewToNdArrayPtr);
+
                 ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
             }
             else
@@ -231,6 +233,12 @@ namespace Kokkos
                                                 in ulong     i6 = ulong.MaxValue,
                                                 in ulong     i7 = ulong.MaxValue,
                                                 in ulong     i8 = ulong.MaxValue);
+
+        internal delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
+                                                           in ExecutionSpaceKind execution_space,
+                                                           in LayoutKind         layout,
+                                                           in DataTypeKind       data_type,
+                                                           in ushort             rank);
 
         internal delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
                                                         in ExecutionSpaceKind execution_space,
@@ -503,6 +511,8 @@ namespace Kokkos
         internal static readonly GetValueDelegate GetValue;
 
         internal static readonly SetValueDelegate SetValue;
+
+        internal static readonly RcpViewToNdArrayDelegate RcpViewToNdArray;
 
         internal static readonly ViewToNdArrayDelegate ViewToNdArray;
 

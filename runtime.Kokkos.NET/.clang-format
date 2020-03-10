@@ -51,7 +51,7 @@ BreakConstructorInitializers: AfterColon                    # BeforeColon, Befor
 BreakInheritanceList: AfterColon                            # BeforeColon, BeforeComma, AfterColon
 BreakStringLiterals: false                                  #
 #                                                           #
-ColumnLimit: 185                                            #
+ColumnLimit: 200                                            #
 #                                                           #
 CommentPragmas: '^ IWYU pragma: '                           #
 #                                                           #

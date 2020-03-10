@@ -313,6 +313,8 @@ namespace Kokkos.Tests
             CopyToVector();
 
             GetSetValueVector();
+
+            Convert();
         }
 
         #region Create Tests
@@ -423,6 +425,32 @@ namespace Kokkos.Tests
             Assert.IsTrue(Math.Abs(value0 - 1321.258) <= double.Epsilon);
 
             Assert.IsTrue(Math.Abs(value1 - 123123.12) <= double.Epsilon);
+        }
+
+        public void Convert()
+        {
+            View<double, Cuda> view = new View<double, Cuda>("CreateVector",
+                                                             2);
+
+            view[0] = 1321.258;
+            view[1] = 123123.12;
+
+            NdArray viewNdArray = View<float, Cuda>.Convert(view.Pointer,
+                                                            1);
+
+            View<float, Cuda> cachedView = new View<float, Cuda>(new NativePointer(view.Pointer,
+                                                                                   sizeof(float) * viewNdArray.Extent(0)),
+                                                                 viewNdArray);
+
+            double viewValue0 = view[0];
+            double viewValue1 = view[1];
+
+            double cachedViewValue0 = cachedView[0];
+            double cachedViewValue1 = cachedView[1];
+
+            Assert.IsTrue(Math.Abs(viewValue0 - cachedViewValue0) <= double.Epsilon);
+
+            Assert.IsTrue(Math.Abs(viewValue0 - cachedViewValue1) <= double.Epsilon);
         }
     }
 }

@@ -140,7 +140,17 @@
         break;                                                                                                     \
     }
 
-void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, const size_type& i0, const size_type& i1, const size_type& i2, const size_type& i3, const size_type& i4, const size_type& i5, const size_type& i6, const size_type& i7) noexcept
+void SetValue(void*            instance,
+              const NdArray&   ndArray,
+              const ValueType& value,
+              const size_type& i0,
+              const size_type& i1,
+              const size_type& i2,
+              const size_type& i3,
+              const size_type& i4,
+              const size_type& i5,
+              const size_type& i6,
+              const size_type& i7) noexcept
 {
     switch(ndArray.execution_space)
     {
@@ -512,3 +522,8 @@ void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, co
 #undef DEF_TEMPLATE_RANK1
 #undef DEF_TEMPLATE_RANK2
 #undef DEF_TEMPLATE_RANK3
+#undef DEF_TEMPLATE_RANK4
+#undef DEF_TEMPLATE_RANK5
+#undef DEF_TEMPLATE_RANK6
+#undef DEF_TEMPLATE_RANK7
+#undef DEF_TEMPLATE_RANK8

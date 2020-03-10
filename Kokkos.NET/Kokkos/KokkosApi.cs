@@ -54,6 +54,8 @@ namespace Kokkos
 
         public IntPtr SetValuePtr;
 
+        public IntPtr RcpViewToNdArrayPtr;
+
         public IntPtr ViewToNdArrayPtr;
     }
 }

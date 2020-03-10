@@ -33,6 +33,9 @@
     <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp">
       <Filter>runtime.Kokkos</Filter>
     </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewConvert.cpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KokkosAPI.hpp" />

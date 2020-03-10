@@ -29,6 +29,7 @@
     <ClCompile Include="runtime.Kokkos\KokkosApi.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp" />
+    <ClCompile Include="runtime.Kokkos\ViewConvert.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp" />
