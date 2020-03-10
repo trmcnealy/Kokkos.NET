@@ -38,17 +38,17 @@ enum class DataTypeKind : uint16
     Int64,
     UInt64,
 
-    //ConstSingle = UInt64 + 1,
-    //ConstDouble,
-    //ConstBool,
-    //ConstInt8,
-    //ConstUInt8,
-    //ConstInt16,
-    //ConstUInt16,
-    //ConstInt32,
-    //ConstUInt32,
-    //ConstInt64,
-    //ConstUInt64
+    // ConstSingle = UInt64 + 1,
+    // ConstDouble,
+    // ConstBool,
+    // ConstInt8,
+    // ConstUInt8,
+    // ConstInt16,
+    // ConstUInt16,
+    // ConstInt32,
+    // ConstUInt32,
+    // ConstInt64,
+    // ConstUInt64
 };
 
 template<typename DataType, class ExecutionSpace, typename Layout, unsigned Rank>
@@ -86,19 +86,59 @@ struct NdArrayTraits;
         static constexpr uint16             rank            = 3;                                   \
         static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
         static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 4>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 4;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 5>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 5;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 6>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 6;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 7>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 7;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
+    };                                                                                             \
+    template<>                                                                                     \
+    struct NdArrayTraits<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::Layout##LAYOUT, 8>                 \
+    {                                                                                              \
+        static constexpr DataTypeKind       data_type       = DataTypeKind::TYPE_NAME;             \
+        static constexpr uint16             rank            = 8;                                   \
+        static constexpr LayoutKind         layout          = LayoutKind::LAYOUT;                  \
+        static constexpr ExecutionSpaceKind execution_space = ExecutionSpaceKind::EXECUTION_SPACE; \
     };
 
-#define TEMPLATE(DEF, EXECUTION_SPACE, LAYOUT)              \
-    DEF(Single, float, EXECUTION_SPACE, LAYOUT)             \
-    DEF(Double, double, EXECUTION_SPACE, LAYOUT)            \
-    DEF(Bool, bool, EXECUTION_SPACE, LAYOUT)                \
-    DEF(Int8, int8, EXECUTION_SPACE, LAYOUT)                \
-    DEF(UInt8, uint8, EXECUTION_SPACE, LAYOUT)              \
-    DEF(Int16, int16, EXECUTION_SPACE, LAYOUT)              \
-    DEF(UInt16, uint16, EXECUTION_SPACE, LAYOUT)            \
-    DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)              \
-    DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT)            \
-    DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)              \
+#define TEMPLATE(DEF, EXECUTION_SPACE, LAYOUT)   \
+    DEF(Single, float, EXECUTION_SPACE, LAYOUT)  \
+    DEF(Double, double, EXECUTION_SPACE, LAYOUT) \
+    DEF(Bool, bool, EXECUTION_SPACE, LAYOUT)     \
+    DEF(Int8, int8, EXECUTION_SPACE, LAYOUT)     \
+    DEF(UInt8, uint8, EXECUTION_SPACE, LAYOUT)   \
+    DEF(Int16, int16, EXECUTION_SPACE, LAYOUT)   \
+    DEF(UInt16, uint16, EXECUTION_SPACE, LAYOUT) \
+    DEF(Int32, int32, EXECUTION_SPACE, LAYOUT)   \
+    DEF(UInt32, uint32, EXECUTION_SPACE, LAYOUT) \
+    DEF(Int64, int64, EXECUTION_SPACE, LAYOUT)   \
     DEF(UInt64, uint64, EXECUTION_SPACE, LAYOUT)
 
 TEMPLATE(DEF_TEMPLATE, Serial, Right)
@@ -181,8 +221,8 @@ namespace Compatible
     //    return Kokkos::View<DataType, Kokkos::LayoutStride, Kokkos::HostSpace, Kokkos::MemoryUnmanaged>(reinterpret_cast<value_type*>(ndarray.data), layout);
     //}
 
-//#undef TEMPLATE
-//#undef DEF_TEMPLATE
+    //#undef TEMPLATE
+    //#undef DEF_TEMPLATE
 }
 
 template<DataTypeKind TDataType, unsigned Rank, ExecutionSpaceKind TExecutionSpace>
@@ -191,39 +231,64 @@ struct ViewBuilder;
 #undef TEMPLATE
 #undef DEF_TEMPLATE
 
-#define TEMPLATE(DEF, EXECUTION_SPACE)              \
-    DEF(Single, float, EXECUTION_SPACE)             \
-    DEF(Double, double, EXECUTION_SPACE)            \
-    DEF(Bool, bool, EXECUTION_SPACE)                \
-    DEF(Int8, int8, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8, EXECUTION_SPACE)              \
-    DEF(Int16, int16, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16, EXECUTION_SPACE)            \
-    DEF(Int32, int32, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32, EXECUTION_SPACE)            \
-    DEF(Int64, int64, EXECUTION_SPACE)              \
+#define TEMPLATE(DEF, EXECUTION_SPACE)   \
+    DEF(Single, float, EXECUTION_SPACE)  \
+    DEF(Double, double, EXECUTION_SPACE) \
+    DEF(Bool, bool, EXECUTION_SPACE)     \
+    DEF(Int8, int8, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8, EXECUTION_SPACE)   \
+    DEF(Int16, int16, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16, EXECUTION_SPACE) \
+    DEF(Int32, int32, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32, EXECUTION_SPACE) \
+    DEF(Int64, int64, EXECUTION_SPACE)   \
     DEF(UInt64, uint64, EXECUTION_SPACE)
 
-#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                   \
-    template<>                                                                                                           \
-    struct ViewBuilder<DataTypeKind::TYPE_NAME, 0, ExecutionSpaceKind::EXECUTION_SPACE>                                  \
-    {                                                                                                                    \
-        using ViewType = Kokkos::View<TYPE, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;    \
-    };                                                                                                                   \
-    template<>                                                                                                           \
-    struct ViewBuilder<DataTypeKind::TYPE_NAME, 1, ExecutionSpaceKind::EXECUTION_SPACE>                                  \
-    {                                                                                                                    \
-        using ViewType = Kokkos::View<TYPE*, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;   \
-    };                                                                                                                   \
-    template<>                                                                                                           \
-    struct ViewBuilder<DataTypeKind::TYPE_NAME, 2, ExecutionSpaceKind::EXECUTION_SPACE>                                  \
-    {                                                                                                                    \
-        using ViewType = Kokkos::View<TYPE**, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;  \
-    };                                                                                                                   \
-    template<>                                                                                                           \
-    struct ViewBuilder<DataTypeKind::TYPE_NAME, 3, ExecutionSpaceKind::EXECUTION_SPACE>                                  \
-    {                                                                                                                    \
-        using ViewType = Kokkos::View<TYPE***, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>; \
+#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE)                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 0, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;         \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 1, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE*, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;        \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 2, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE**, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;       \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 3, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE***, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;      \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 4, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE****, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;     \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 5, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE*****, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;    \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 6, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE******, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;   \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 7, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE*******, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>;  \
+    };                                                                                                                        \
+    template<>                                                                                                                \
+    struct ViewBuilder<DataTypeKind::TYPE_NAME, 8, ExecutionSpaceKind::EXECUTION_SPACE>                                       \
+    {                                                                                                                         \
+        using ViewType = Kokkos::View<TYPE********, typename Kokkos::EXECUTION_SPACE::array_layout, Kokkos::EXECUTION_SPACE>; \
     };
 
 TEMPLATE(DEF_TEMPLATE, Serial)

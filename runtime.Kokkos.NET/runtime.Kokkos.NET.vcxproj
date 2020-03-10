@@ -71,6 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(TargetName)</TargetName>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>$(TargetName)</TargetName>
@@ -84,7 +85,7 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <AdditionalIncludeDirectories>../../BuildTools;./;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.1 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj </AdditionalOptions>
+      <AdditionalOptions>-shared -gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.1 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -181,6 +182,12 @@
       <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages</Command>
     </PostBuildEvent>
     <ProjectReference />
+    <CustomBuildStep>
+      <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(RUNTIME_KOKKOS_VERSION) -OutputDirectory C:\AssemblyCache\_packages
+    </Command>
+      <Outputs>C:\AssemblyCache\_packages\native.Kokkos.NET.$(Platform).$(RUNTIME_KOKKOS_VERSION).nupkg</Outputs>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

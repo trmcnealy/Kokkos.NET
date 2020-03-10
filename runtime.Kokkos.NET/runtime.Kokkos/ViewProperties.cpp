@@ -9,57 +9,122 @@
         return NativeString(label);                                                                                                                                                   \
     }
 
-#define TEMPLATE_RANK0(DEF, EXECUTION_SPACE)        \
-    DEF(Single, float, EXECUTION_SPACE)             \
-    DEF(Double, double, EXECUTION_SPACE)            \
-    DEF(Bool, bool, EXECUTION_SPACE)                \
-    DEF(Int8, int8, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8, EXECUTION_SPACE)              \
-    DEF(Int16, int16, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16, EXECUTION_SPACE)            \
-    DEF(Int32, int32, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32, EXECUTION_SPACE)            \
-    DEF(Int64, int64, EXECUTION_SPACE)              \
+#define TEMPLATE_RANK0(DEF, EXECUTION_SPACE) \
+    DEF(Single, float, EXECUTION_SPACE)      \
+    DEF(Double, double, EXECUTION_SPACE)     \
+    DEF(Bool, bool, EXECUTION_SPACE)         \
+    DEF(Int8, int8, EXECUTION_SPACE)         \
+    DEF(UInt8, uint8, EXECUTION_SPACE)       \
+    DEF(Int16, int16, EXECUTION_SPACE)       \
+    DEF(UInt16, uint16, EXECUTION_SPACE)     \
+    DEF(Int32, int32, EXECUTION_SPACE)       \
+    DEF(UInt32, uint32, EXECUTION_SPACE)     \
+    DEF(Int64, int64, EXECUTION_SPACE)       \
     DEF(UInt64, uint64, EXECUTION_SPACE)
 
-#define TEMPLATE_RANK1(DEF, EXECUTION_SPACE)         \
-    DEF(Single, float*, EXECUTION_SPACE)             \
-    DEF(Double, double*, EXECUTION_SPACE)            \
-    DEF(Bool, bool*, EXECUTION_SPACE)                \
-    DEF(Int8, int8*, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8*, EXECUTION_SPACE)              \
-    DEF(Int16, int16*, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16*, EXECUTION_SPACE)            \
-    DEF(Int32, int32*, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32*, EXECUTION_SPACE)            \
-    DEF(Int64, int64*, EXECUTION_SPACE)              \
+#define TEMPLATE_RANK1(DEF, EXECUTION_SPACE) \
+    DEF(Single, float*, EXECUTION_SPACE)     \
+    DEF(Double, double*, EXECUTION_SPACE)    \
+    DEF(Bool, bool*, EXECUTION_SPACE)        \
+    DEF(Int8, int8*, EXECUTION_SPACE)        \
+    DEF(UInt8, uint8*, EXECUTION_SPACE)      \
+    DEF(Int16, int16*, EXECUTION_SPACE)      \
+    DEF(UInt16, uint16*, EXECUTION_SPACE)    \
+    DEF(Int32, int32*, EXECUTION_SPACE)      \
+    DEF(UInt32, uint32*, EXECUTION_SPACE)    \
+    DEF(Int64, int64*, EXECUTION_SPACE)      \
     DEF(UInt64, uint64*, EXECUTION_SPACE)
 
-#define TEMPLATE_RANK2(DEF, EXECUTION_SPACE)          \
-    DEF(Single, float**, EXECUTION_SPACE)             \
-    DEF(Double, double**, EXECUTION_SPACE)            \
-    DEF(Bool, bool**, EXECUTION_SPACE)                \
-    DEF(Int8, int8**, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8**, EXECUTION_SPACE)              \
-    DEF(Int16, int16**, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16**, EXECUTION_SPACE)            \
-    DEF(Int32, int32**, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32**, EXECUTION_SPACE)            \
-    DEF(Int64, int64**, EXECUTION_SPACE)              \
+#define TEMPLATE_RANK2(DEF, EXECUTION_SPACE) \
+    DEF(Single, float**, EXECUTION_SPACE)    \
+    DEF(Double, double**, EXECUTION_SPACE)   \
+    DEF(Bool, bool**, EXECUTION_SPACE)       \
+    DEF(Int8, int8**, EXECUTION_SPACE)       \
+    DEF(UInt8, uint8**, EXECUTION_SPACE)     \
+    DEF(Int16, int16**, EXECUTION_SPACE)     \
+    DEF(UInt16, uint16**, EXECUTION_SPACE)   \
+    DEF(Int32, int32**, EXECUTION_SPACE)     \
+    DEF(UInt32, uint32**, EXECUTION_SPACE)   \
+    DEF(Int64, int64**, EXECUTION_SPACE)     \
     DEF(UInt64, uint64**, EXECUTION_SPACE)
 
-#define TEMPLATE_RANK3(DEF, EXECUTION_SPACE)           \
-    DEF(Single, float***, EXECUTION_SPACE)             \
-    DEF(Double, double***, EXECUTION_SPACE)            \
-    DEF(Bool, bool***, EXECUTION_SPACE)                \
-    DEF(Int8, int8***, EXECUTION_SPACE)                \
-    DEF(UInt8, uint8***, EXECUTION_SPACE)              \
-    DEF(Int16, int16***, EXECUTION_SPACE)              \
-    DEF(UInt16, uint16***, EXECUTION_SPACE)            \
-    DEF(Int32, int32***, EXECUTION_SPACE)              \
-    DEF(UInt32, uint32***, EXECUTION_SPACE)            \
-    DEF(Int64, int64***, EXECUTION_SPACE)              \
+#define TEMPLATE_RANK3(DEF, EXECUTION_SPACE) \
+    DEF(Single, float***, EXECUTION_SPACE)   \
+    DEF(Double, double***, EXECUTION_SPACE)  \
+    DEF(Bool, bool***, EXECUTION_SPACE)      \
+    DEF(Int8, int8***, EXECUTION_SPACE)      \
+    DEF(UInt8, uint8***, EXECUTION_SPACE)    \
+    DEF(Int16, int16***, EXECUTION_SPACE)    \
+    DEF(UInt16, uint16***, EXECUTION_SPACE)  \
+    DEF(Int32, int32***, EXECUTION_SPACE)    \
+    DEF(UInt32, uint32***, EXECUTION_SPACE)  \
+    DEF(Int64, int64***, EXECUTION_SPACE)    \
     DEF(UInt64, uint64***, EXECUTION_SPACE)
+
+#define TEMPLATE_RANK4(DEF, EXECUTION_SPACE) \
+    DEF(Single, float****, EXECUTION_SPACE)  \
+    DEF(Double, double****, EXECUTION_SPACE) \
+    DEF(Bool, bool****, EXECUTION_SPACE)     \
+    DEF(Int8, int8****, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8****, EXECUTION_SPACE)   \
+    DEF(Int16, int16****, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16****, EXECUTION_SPACE) \
+    DEF(Int32, int32****, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32****, EXECUTION_SPACE) \
+    DEF(Int64, int64****, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64****, EXECUTION_SPACE)
+
+#define TEMPLATE_RANK5(DEF, EXECUTION_SPACE)  \
+    DEF(Single, float*****, EXECUTION_SPACE)  \
+    DEF(Double, double*****, EXECUTION_SPACE) \
+    DEF(Bool, bool*****, EXECUTION_SPACE)     \
+    DEF(Int8, int8*****, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8*****, EXECUTION_SPACE)   \
+    DEF(Int16, int16*****, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16*****, EXECUTION_SPACE) \
+    DEF(Int32, int32*****, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32*****, EXECUTION_SPACE) \
+    DEF(Int64, int64*****, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64*****, EXECUTION_SPACE)
+
+#define TEMPLATE_RANK6(DEF, EXECUTION_SPACE)   \
+    DEF(Single, float******, EXECUTION_SPACE)  \
+    DEF(Double, double******, EXECUTION_SPACE) \
+    DEF(Bool, bool******, EXECUTION_SPACE)     \
+    DEF(Int8, int8******, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8******, EXECUTION_SPACE)   \
+    DEF(Int16, int16******, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16******, EXECUTION_SPACE) \
+    DEF(Int32, int32******, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32******, EXECUTION_SPACE) \
+    DEF(Int64, int64******, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64******, EXECUTION_SPACE)
+
+#define TEMPLATE_RANK7(DEF, EXECUTION_SPACE)    \
+    DEF(Single, float*******, EXECUTION_SPACE)  \
+    DEF(Double, double*******, EXECUTION_SPACE) \
+    DEF(Bool, bool*******, EXECUTION_SPACE)     \
+    DEF(Int8, int8*******, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8*******, EXECUTION_SPACE)   \
+    DEF(Int16, int16*******, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16*******, EXECUTION_SPACE) \
+    DEF(Int32, int32*******, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32*******, EXECUTION_SPACE) \
+    DEF(Int64, int64*******, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64*******, EXECUTION_SPACE)
+
+#define TEMPLATE_RANK8(DEF, EXECUTION_SPACE)     \
+    DEF(Single, float********, EXECUTION_SPACE)  \
+    DEF(Double, double********, EXECUTION_SPACE) \
+    DEF(Bool, bool********, EXECUTION_SPACE)     \
+    DEF(Int8, int8********, EXECUTION_SPACE)     \
+    DEF(UInt8, uint8********, EXECUTION_SPACE)   \
+    DEF(Int16, int16********, EXECUTION_SPACE)   \
+    DEF(UInt16, uint16********, EXECUTION_SPACE) \
+    DEF(Int32, int32********, EXECUTION_SPACE)   \
+    DEF(UInt32, uint32********, EXECUTION_SPACE) \
+    DEF(Int64, int64********, EXECUTION_SPACE)   \
+    DEF(UInt64, uint64********, EXECUTION_SPACE)
 
 const NativeString GetLabel(void* instance, const NdArray& ndArray) noexcept
 {
@@ -110,6 +175,66 @@ const NativeString GetLabel(void* instance, const NdArray& ndArray) noexcept
                     switch(ndArray.data_type)
                     {
                         TEMPLATE_RANK3(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Serial)
                         default:
                         {
                             std::cout << "GetLabel::Serial, DataType is not supported." << std::endl;
@@ -175,6 +300,66 @@ const NativeString GetLabel(void* instance, const NdArray& ndArray) noexcept
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetLabel::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetLabel::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetLabel::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetLabel::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetLabel::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetLabel::OpenMP, Rank is not supported." << std::endl;
@@ -226,6 +411,66 @@ const NativeString GetLabel(void* instance, const NdArray& ndArray) noexcept
                     switch(ndArray.data_type)
                     {
                         TEMPLATE_RANK3(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Cuda)
                         default:
                         {
                             std::cout << "GetLabel::Cuda, DataType is not supported." << std::endl;
@@ -312,12 +557,71 @@ uint64 GetSize(void* instance, const NdArray& ndArray) noexcept
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetSize::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetSize::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetSize::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetSize::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetSize::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetSize::Serial, Rank is not supported." << std::endl;
                 }
             }
-            break;
         }
         case ExecutionSpaceKind::OpenMP:
         {
@@ -371,12 +675,71 @@ uint64 GetSize(void* instance, const NdArray& ndArray) noexcept
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetSize::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetSize::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetSize::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetSize::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetSize::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetSize::OpenMP, Rank is not supported." << std::endl;
                 }
             }
-            break;
         }
         case ExecutionSpaceKind::Cuda:
         {
@@ -430,12 +793,71 @@ uint64 GetSize(void* instance, const NdArray& ndArray) noexcept
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetSize::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetSize::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetSize::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetSize::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetSize::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetSize::Cuda, Rank is not supported." << std::endl;
                 }
             }
-            break;
         }
         default:
         {
@@ -510,6 +932,66 @@ uint64 GetStride(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetStride::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetStride::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetStride::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetStride::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetStride::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetStride::Serial, Rank is not supported." << std::endl;
@@ -568,6 +1050,66 @@ uint64 GetStride(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetStride::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetStride::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetStride::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetStride::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetStride::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetStride::OpenMP, Rank is not supported." << std::endl;
@@ -619,6 +1161,66 @@ uint64 GetStride(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     switch(ndArray.data_type)
                     {
                         TEMPLATE_RANK3(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Cuda)
                         default:
                         {
                             std::cout << "GetStride::Cuda, DataType is not supported." << std::endl;
@@ -705,6 +1307,66 @@ uint64 GetExtent(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetExtent::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetExtent::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetExtent::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetExtent::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Serial)
+                        default:
+                        {
+                            std::cout << "GetExtent::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetExtent::Serial, Rank is not supported." << std::endl;
@@ -763,6 +1425,66 @@ uint64 GetExtent(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetExtent::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetExtent::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetExtent::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetExtent::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, OpenMP)
+                        default:
+                        {
+                            std::cout << "GetExtent::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "GetExtent::OpenMP, Rank is not supported." << std::endl;
@@ -814,6 +1536,66 @@ uint64 GetExtent(void* instance, const NdArray& ndArray, const uint32& dim) noex
                     switch(ndArray.data_type)
                     {
                         TEMPLATE_RANK3(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK4(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK5(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK6(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK7(DEF_TEMPLATE, Cuda)
+                        default:
+                        {
+                            std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(ndArray.data_type)
+                    {
+                        TEMPLATE_RANK8(DEF_TEMPLATE, Cuda)
                         default:
                         {
                             std::cout << "GetExtent::Cuda, DataType is not supported." << std::endl;
@@ -894,7 +1676,7 @@ __inline static NdArray ViewToNdArrayRank2(void* instance) noexcept
 
     NdArray ndArray;
     ndArray.data_type       = ndarray_traits::data_type;
-    ndArray.rank            = 1;
+    ndArray.rank            = 2;
     ndArray.layout          = ndarray_traits::layout;
     ndArray.execution_space = ndarray_traits::execution_space;
     ndArray.data            = (*view)->data();
@@ -917,7 +1699,7 @@ __inline static NdArray ViewToNdArrayRank3(void* instance) noexcept
 
     NdArray ndArray;
     ndArray.data_type       = ndarray_traits::data_type;
-    ndArray.rank            = 1;
+    ndArray.rank            = 3;
     ndArray.layout          = ndarray_traits::layout;
     ndArray.execution_space = ndarray_traits::execution_space;
     ndArray.data            = (*view)->data();
@@ -926,6 +1708,141 @@ __inline static NdArray ViewToNdArrayRank3(void* instance) noexcept
     ndArray.dims[0] = (*view)->extent(0);
     ndArray.dims[1] = (*view)->extent(1);
     ndArray.dims[2] = (*view)->extent(2);
+
+    return ndArray;
+}
+
+template<typename DataType, class ExecutionSpace, typename Layout>
+__inline static NdArray ViewToNdArrayRank4(void* instance) noexcept
+{
+    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+
+    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+
+    NdArray ndArray;
+    ndArray.data_type       = ndarray_traits::data_type;
+    ndArray.rank            = 4;
+    ndArray.layout          = ndarray_traits::layout;
+    ndArray.execution_space = ndarray_traits::execution_space;
+    ndArray.data            = (*view)->data();
+    ndArray.label           = (*view)->label().c_str();
+
+    ndArray.dims[0] = (*view)->extent(0);
+    ndArray.dims[1] = (*view)->extent(1);
+    ndArray.dims[2] = (*view)->extent(2);
+    ndArray.dims[3] = (*view)->extent(3);
+
+    return ndArray;
+}
+
+template<typename DataType, class ExecutionSpace, typename Layout>
+__inline static NdArray ViewToNdArrayRank5(void* instance) noexcept
+{
+    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+
+    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+
+    NdArray ndArray;
+    ndArray.data_type       = ndarray_traits::data_type;
+    ndArray.rank            = 5;
+    ndArray.layout          = ndarray_traits::layout;
+    ndArray.execution_space = ndarray_traits::execution_space;
+    ndArray.data            = (*view)->data();
+    ndArray.label           = (*view)->label().c_str();
+
+    ndArray.dims[0] = (*view)->extent(0);
+    ndArray.dims[1] = (*view)->extent(1);
+    ndArray.dims[2] = (*view)->extent(2);
+    ndArray.dims[3] = (*view)->extent(3);
+    ndArray.dims[4] = (*view)->extent(4);
+
+    return ndArray;
+}
+
+template<typename DataType, class ExecutionSpace, typename Layout>
+__inline static NdArray ViewToNdArrayRank6(void* instance) noexcept
+{
+    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+
+    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+
+    NdArray ndArray;
+    ndArray.data_type       = ndarray_traits::data_type;
+    ndArray.rank            = 6;
+    ndArray.layout          = ndarray_traits::layout;
+    ndArray.execution_space = ndarray_traits::execution_space;
+    ndArray.data            = (*view)->data();
+    ndArray.label           = (*view)->label().c_str();
+
+    ndArray.dims[0] = (*view)->extent(0);
+    ndArray.dims[1] = (*view)->extent(1);
+    ndArray.dims[2] = (*view)->extent(2);
+    ndArray.dims[3] = (*view)->extent(3);
+    ndArray.dims[4] = (*view)->extent(4);
+    ndArray.dims[5] = (*view)->extent(5);
+
+    return ndArray;
+}
+
+template<typename DataType, class ExecutionSpace, typename Layout>
+__inline static NdArray ViewToNdArrayRank7(void* instance) noexcept
+{
+    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+
+    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+
+    NdArray ndArray;
+    ndArray.data_type       = ndarray_traits::data_type;
+    ndArray.rank            = 7;
+    ndArray.layout          = ndarray_traits::layout;
+    ndArray.execution_space = ndarray_traits::execution_space;
+    ndArray.data            = (*view)->data();
+    ndArray.label           = (*view)->label().c_str();
+
+    ndArray.dims[0] = (*view)->extent(0);
+    ndArray.dims[1] = (*view)->extent(1);
+    ndArray.dims[2] = (*view)->extent(2);
+    ndArray.dims[3] = (*view)->extent(3);
+    ndArray.dims[4] = (*view)->extent(4);
+    ndArray.dims[5] = (*view)->extent(5);
+    ndArray.dims[6] = (*view)->extent(6);
+
+    return ndArray;
+}
+
+template<typename DataType, class ExecutionSpace, typename Layout>
+__inline static NdArray ViewToNdArrayRank8(void* instance) noexcept
+{
+    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+
+    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+
+    NdArray ndArray;
+    ndArray.data_type       = ndarray_traits::data_type;
+    ndArray.rank            = 8;
+    ndArray.layout          = ndarray_traits::layout;
+    ndArray.execution_space = ndarray_traits::execution_space;
+    ndArray.data            = (*view)->data();
+    ndArray.label           = (*view)->label().c_str();
+
+    ndArray.dims[0] = (*view)->extent(0);
+    ndArray.dims[1] = (*view)->extent(1);
+    ndArray.dims[2] = (*view)->extent(2);
+    ndArray.dims[3] = (*view)->extent(3);
+    ndArray.dims[4] = (*view)->extent(4);
+    ndArray.dims[5] = (*view)->extent(5);
+    ndArray.dims[6] = (*view)->extent(6);
+    ndArray.dims[7] = (*view)->extent(7);
 
     return ndArray;
 }
@@ -946,17 +1863,17 @@ __inline static NdArray ViewToNdArrayRank3(void* instance) noexcept
         }                                                                                                     \
     }
 
-#define TEMPLATE_RANK(DEF, EXECUTION_SPACE, RANK)         \
-    DEF(Single, float, EXECUTION_SPACE, RANK)             \
-    DEF(Double, double, EXECUTION_SPACE, RANK)            \
-    DEF(Bool, bool, EXECUTION_SPACE, RANK)                \
-    DEF(Int8, int8, EXECUTION_SPACE, RANK)                \
-    DEF(UInt8, uint8, EXECUTION_SPACE, RANK)              \
-    DEF(Int16, int16, EXECUTION_SPACE, RANK)              \
-    DEF(UInt16, uint16, EXECUTION_SPACE, RANK)            \
-    DEF(Int32, int32, EXECUTION_SPACE, RANK)              \
-    DEF(UInt32, uint32, EXECUTION_SPACE, RANK)            \
-    DEF(Int64, int64, EXECUTION_SPACE, RANK)              \
+#define TEMPLATE_RANK(DEF, EXECUTION_SPACE, RANK) \
+    DEF(Single, float, EXECUTION_SPACE, RANK)     \
+    DEF(Double, double, EXECUTION_SPACE, RANK)    \
+    DEF(Bool, bool, EXECUTION_SPACE, RANK)        \
+    DEF(Int8, int8, EXECUTION_SPACE, RANK)        \
+    DEF(UInt8, uint8, EXECUTION_SPACE, RANK)      \
+    DEF(Int16, int16, EXECUTION_SPACE, RANK)      \
+    DEF(UInt16, uint16, EXECUTION_SPACE, RANK)    \
+    DEF(Int32, int32, EXECUTION_SPACE, RANK)      \
+    DEF(UInt32, uint32, EXECUTION_SPACE, RANK)    \
+    DEF(Int64, int64, EXECUTION_SPACE, RANK)      \
     DEF(UInt64, uint64, EXECUTION_SPACE, RANK)
 
 NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept
@@ -1008,6 +1925,66 @@ NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space,
                     switch(data_type)
                     {
                         TEMPLATE_RANK(DEF_TEMPLATE, Serial, 3)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Serial, 4)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Serial, 5)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Serial, 6)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Serial, 7)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Serial, 8)
                         default:
                         {
                             std::cout << "ViewToNdArray::Serial, DataType is not supported." << std::endl;
@@ -1073,6 +2050,66 @@ NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space,
                     }
                     break;
                 }
+                case 4:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, OpenMP, 4)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, OpenMP, 5)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, OpenMP, 6)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, OpenMP, 7)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, OpenMP, 8)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::OpenMP, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
                 default:
                 {
                     std::cout << "ViewToNdArray::OpenMP, Rank is not supported." << std::endl;
@@ -1124,6 +2161,66 @@ NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space,
                     switch(data_type)
                     {
                         TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 3)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 4:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 4)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 5:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 5)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 6:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 6)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 7:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 7)
+                        default:
+                        {
+                            std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;
+                        }
+                    }
+                    break;
+                }
+                case 8:
+                {
+                    switch(data_type)
+                    {
+                        TEMPLATE_RANK(DEF_TEMPLATE, Cuda, 8)
                         default:
                         {
                             std::cout << "ViewToNdArray::Cuda, DataType is not supported." << std::endl;

@@ -16,18 +16,18 @@
     <dependencies>
       <group targetFramework=".NETCoreApp3.1">
         <dependency id="native.Kokkos.NET"
-                    version="$RuntimeVersion$" />
+                    version="$RuntimeVersion$"/>
       </group>
     </dependencies>
   </metadata>
   <files>
     <file src="..\..\trmcnealy.github.io\assets\nindra.png"
-          target="" />
+          target=""/>
 
     <file src="bin\$Platform$\$Configuration$\netcoreapp3.1\Kokkos.NET.dll"
-          target="lib\netcoreapp3.1\Kokkos.NET.dll" />
+          target="lib\netcoreapp3.1\Kokkos.NET.dll"/>
 
-    <!-- <file src="bin\$Platform$\$Configuration$\netcoreapp3.1\Kokkos.NET.pdb" -->
-    <!--       target="lib\netcoreapp3.1\Kokkos.NET.pdb" /> -->
+    <file src="bin\$Platform$\$Configuration$\netcoreapp3.1\Kokkos.NET.pdb"
+          target="lib\netcoreapp3.1\Kokkos.NET.pdb"/>
   </files>
 </package>

@@ -278,9 +278,9 @@ KOKKOS_NET_API_EXTERN uint64 GetExtent(void* instance, const NdArray& ndArray, c
 
 KOKKOS_NET_API_EXTERN void CopyTo(void* instance, const NdArray& ndArray, ValueType* values) noexcept;
 
-KOKKOS_NET_API_EXTERN ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, const size_type& i1, const size_type& i2) noexcept;
+KOKKOS_NET_API_EXTERN ValueType GetValue(void* instance, const NdArray& ndArray, const size_type& i0, const size_type& i1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
 
-KOKKOS_NET_API_EXTERN void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, const size_type& i0, const size_type& i1, const size_type& i2) noexcept;
+KOKKOS_NET_API_EXTERN void SetValue(void* instance, const NdArray& ndArray, const ValueType& value, const size_type& i0, const size_type& i1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG, const size_type& i7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
 
 KOKKOS_NET_API_EXTERN NdArray
 ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept;
@@ -331,9 +331,9 @@ struct KokkosApi
 
     void (*CopyTo)(void*, const NdArray&, ValueType*) noexcept;
 
-    ValueType (*GetValue)(void*, const NdArray&, const size_type&, const size_type&, const size_type&) noexcept;
+    ValueType (*GetValue)(void*, const NdArray&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&) noexcept;
 
-    void (*SetValue)(void*, const NdArray&, const ValueType&, const size_type&, const size_type&, const size_type&) noexcept;
+    void (*SetValue)(void*, const NdArray&, const ValueType&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&) noexcept;
 
     NdArray (*ViewToNdArray)(void*, const ExecutionSpaceKind&, const LayoutKind&, const DataTypeKind&, const uint16&) noexcept;
 };

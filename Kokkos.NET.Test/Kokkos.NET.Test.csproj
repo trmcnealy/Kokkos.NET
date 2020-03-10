@@ -17,8 +17,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.4.3" />
     <PackageReference Include="RuntimeGeneration" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Kokkos.NET\Kokkos.NET.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

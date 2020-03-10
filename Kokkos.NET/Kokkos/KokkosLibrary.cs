@@ -213,14 +213,24 @@ namespace Kokkos
                                                      in NdArray nArray,
                                                      in ulong   i0 = ulong.MaxValue,
                                                      in ulong   i1 = ulong.MaxValue,
-                                                     in ulong   i2 = ulong.MaxValue);
+                                                     in ulong   i2 = ulong.MaxValue,
+                                                     in ulong   i4 = ulong.MaxValue,
+                                                     in ulong   i5 = ulong.MaxValue,
+                                                     in ulong   i6 = ulong.MaxValue,
+                                                     in ulong   i7 = ulong.MaxValue,
+                                                     in ulong   i8 = ulong.MaxValue);
 
         internal delegate void SetValueDelegate(IntPtr       instance,
                                                 in NdArray   nArray,
                                                 in ValueType value,
                                                 in ulong     i0 = ulong.MaxValue,
                                                 in ulong     i1 = ulong.MaxValue,
-                                                in ulong     i2 = ulong.MaxValue);
+                                                in ulong     i2 = ulong.MaxValue,
+                                                in ulong     i4 = ulong.MaxValue,
+                                                in ulong     i5 = ulong.MaxValue,
+                                                in ulong     i6 = ulong.MaxValue,
+                                                in ulong     i7 = ulong.MaxValue,
+                                                in ulong     i8 = ulong.MaxValue);
 
         internal delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
                                                         in ExecutionSpaceKind execution_space,
