@@ -1715,9 +1715,9 @@ __inline static NdArray ViewToNdArrayRank3(void* instance) noexcept
 template<typename DataType, class ExecutionSpace, typename Layout>
 __inline static NdArray ViewToNdArrayRank4(void* instance) noexcept
 {
-    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+    typedef Kokkos::View<DataType****, Layout, ExecutionSpace> view_type;
 
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 4> ndarray_traits;
 
     Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
 
@@ -1740,9 +1740,9 @@ __inline static NdArray ViewToNdArrayRank4(void* instance) noexcept
 template<typename DataType, class ExecutionSpace, typename Layout>
 __inline static NdArray ViewToNdArrayRank5(void* instance) noexcept
 {
-    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+    typedef Kokkos::View<DataType*****, Layout, ExecutionSpace> view_type;
 
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 5> ndarray_traits;
 
     Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
 
@@ -1766,9 +1766,9 @@ __inline static NdArray ViewToNdArrayRank5(void* instance) noexcept
 template<typename DataType, class ExecutionSpace, typename Layout>
 __inline static NdArray ViewToNdArrayRank6(void* instance) noexcept
 {
-    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+    typedef Kokkos::View<DataType******, Layout, ExecutionSpace> view_type;
 
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 6> ndarray_traits;
 
     Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
 
@@ -1793,9 +1793,9 @@ __inline static NdArray ViewToNdArrayRank6(void* instance) noexcept
 template<typename DataType, class ExecutionSpace, typename Layout>
 __inline static NdArray ViewToNdArrayRank7(void* instance) noexcept
 {
-    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+    typedef Kokkos::View<DataType*******, Layout, ExecutionSpace> view_type;
 
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 7> ndarray_traits;
 
     Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
 
@@ -1821,9 +1821,9 @@ __inline static NdArray ViewToNdArrayRank7(void* instance) noexcept
 template<typename DataType, class ExecutionSpace, typename Layout>
 __inline static NdArray ViewToNdArrayRank8(void* instance) noexcept
 {
-    typedef Kokkos::View<DataType***, Layout, ExecutionSpace> view_type;
+    typedef Kokkos::View<DataType********, Layout, ExecutionSpace> view_type;
 
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 3> ndarray_traits;
+    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 8> ndarray_traits;
 
     Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
 
