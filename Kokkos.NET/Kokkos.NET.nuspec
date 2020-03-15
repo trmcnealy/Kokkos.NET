@@ -17,6 +17,8 @@
       <group targetFramework=".NETCoreApp3.1">
         <dependency id="native.Kokkos.NET"
                     version="$RuntimeVersion$"/>
+        <dependency id="NvAPIWrapper.Net"
+                    version="0.7.0.57"/>
       </group>
     </dependencies>
   </metadata>
