@@ -198,6 +198,23 @@ namespace Kokkos
         public static readonly IntPtr CudartHandle;
 
         public static volatile bool Initialized;
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static string GetLibraryPath()
+        {
+            string fullPath = typeof(KokkosCoreLibrary).Assembly.Location;
+
+            if(string.IsNullOrEmpty(fullPath))
+            {
+                return null;
+            }
+
+            int lastIndex = fullPath.LastIndexOf("\\", StringComparison.Ordinal);
+
+
+            return fullPath.Substring(0,
+                                      lastIndex);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosCoreLibrary()
@@ -205,7 +222,7 @@ namespace Kokkos
             string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
             string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
 
-            string nativeLibraryPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory ?? throw new NullReferenceException(),
+            string nativeLibraryPath = Path.Combine(GetLibraryPath() ?? throw new NullReferenceException("typeof(KokkosCoreLibrary).Assembly.Location is empty."),
                                                     $"runtimes\\{operatingSystem}-{platformArchitecture}\\native");
 
             nativeLibraryPath = Kernel32.GetShortPath(nativeLibraryPath);
