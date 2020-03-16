@@ -22,14 +22,15 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosLibrary()
         {
-            // NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly,
-            // ImportResolver);
+            // NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly, ImportResolver);
 
             KokkosCoreLibrary.Initialize();
 
             string runtimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
-
+            
+#if DEBUG
             Console.WriteLine("Loading " + runtimeKokkosLibraryName);
+#endif
 
             if(!NativeLibrary.TryLoad(runtimeKokkosLibraryName,
                                       typeof(KokkosLibrary).Assembly,
@@ -103,8 +104,10 @@ namespace Kokkos
             {
                 KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
             }
-
+            
+#if DEBUG
             Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
+#endif
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

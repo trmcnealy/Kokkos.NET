@@ -1,4 +1,8 @@
-﻿using System;
+﻿// ReSharper disable InconsistentNaming
+// ReSharper disable UnusedMember.Local
+
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -155,23 +159,28 @@ namespace Kokkos
                 return false;
             }
 
-            string[] array = text.Split(Path.PathSeparator);
+            //string[] array = text.Split(Path.PathSeparator);
+
             text += Path.PathSeparator;
-            text =  text.Replace(dirToAdd + Path.PathSeparator, "");
+
+            text = text.Replace(dirToAdd + Path.PathSeparator,
+                                "");
 
             if(text[^1] == Path.PathSeparator)
             {
-                text = text.Substring(0, text.Length - 1);
+                text = text.Substring(0,
+                                      text.Length - 1);
             }
 
             string value = dirToAdd + Path.PathSeparator + text;
-            Environment.SetEnvironmentVariable("PATH", value);
+
+            Environment.SetEnvironmentVariable("PATH",
+                                               value);
 #if DEBUG
             string PATH = Environment.GetEnvironmentVariable("PATH");
 #endif
             return true;
         }
-
     }
 
     [NonVersionable]
@@ -198,22 +207,71 @@ namespace Kokkos
         public static readonly IntPtr CudartHandle;
 
         public static volatile bool Initialized;
-        
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static string GetNativePackagePath(string nativePackagePath)
+        {
+            Version lastestVersion = new Version(0,
+                                                 0,
+                                                 0,
+                                                 0);
+
+            Version currentVersion;
+
+            foreach(DirectoryInfo di in new DirectoryInfo(nativePackagePath).GetDirectories())
+            {
+                currentVersion = new Version(di.Name);
+
+                if(lastestVersion < currentVersion)
+                {
+                    lastestVersion = currentVersion;
+                }
+            }
+
+            return Path.Combine(nativePackagePath,
+                                lastestVersion.ToString());
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static string GetLibraryPath()
         {
-            string fullPath = typeof(KokkosCoreLibrary).Assembly.Location;
+            string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
 
-            if(string.IsNullOrEmpty(fullPath))
+            if(!string.IsNullOrEmpty(fullPath) && !fullPath.Contains(".nuget"))
             {
-                return null;
+                int lastIndex = fullPath.LastIndexOf("\\",
+                                                     StringComparison.Ordinal);
+
+                return fullPath.Substring(0,
+                                          lastIndex);
             }
 
-            int lastIndex = fullPath.LastIndexOf("\\", StringComparison.Ordinal);
+            string nugetPackagesEnvironmentVariable = Environment.GetEnvironmentVariable("NUGET_PACKAGES");
 
+            if(!string.IsNullOrEmpty(nugetPackagesEnvironmentVariable))
+            {
+                string nativePackagePath = Path.Combine(nugetPackagesEnvironmentVariable,
+                                                        "native.kokkos.net");
 
-            return fullPath.Substring(0,
-                                      lastIndex);
+                return GetNativePackagePath(nativePackagePath);
+            }
+
+            //const string dotnetProfileDirectoryName = ".dotnet";
+            //const string toolsShimFolderName        = "tools";
+
+            string userProfile = Environment.GetEnvironmentVariable(RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "USERPROFILE" : "HOME");
+
+            if(!string.IsNullOrEmpty(userProfile))
+            {
+                string nativePackagePath = Path.Combine(userProfile,
+                                                        ".nuget",
+                                                        "packages",
+                                                        "native.kokkos.net");
+
+                return GetNativePackagePath(nativePackagePath);
+            }
+
+            return null;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -222,14 +280,21 @@ namespace Kokkos
             string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
             string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
 
-            string nativeLibraryPath = Path.Combine(GetLibraryPath() ?? throw new NullReferenceException("typeof(KokkosCoreLibrary).Assembly.Location is empty."),
+            string libraryPath = GetLibraryPath() ?? throw new NullReferenceException("typeof(KokkosCoreLibrary).Assembly.Location is empty.");
+
+#if DEBUG
+            Console.WriteLine("libraryPath: " + libraryPath);
+#endif
+
+            string nativeLibraryPath = Path.Combine(libraryPath,
                                                     $"runtimes\\{operatingSystem}-{platformArchitecture}\\native");
 
             nativeLibraryPath = Kernel32.GetShortPath(nativeLibraryPath);
-            
-            bool addedToPath = Kernel32.AddToPath(nativeLibraryPath);
 
-            Console.WriteLine("nativeLibraryPath:" + nativeLibraryPath);
+            Kernel32.AddToPath(nativeLibraryPath);
+#if DEBUG
+            Console.WriteLine("nativeLibraryPath: " + nativeLibraryPath);
+#endif
 
             //Kernel32.AddDllDirectory(nativeLibraryPath,
             //                         out ErrorCode _);
@@ -237,32 +302,37 @@ namespace Kokkos
             OpenMpHandle = Kernel32.LoadLibraryEx(OpenMpLibraryName + ".dll",
                                                   Kernel32.LoadLibraryFlags.None,
                                                   out ErrorCode _);
-
+#if DEBUG
             Console.WriteLine($"OpenMpHandle: 0x{OpenMpHandle.ToString("X")}");
+#endif
 
             MpiHandle = Kernel32.LoadLibraryEx(MpiLibraryName + ".dll",
                                                Kernel32.LoadLibraryFlags.None,
                                                out ErrorCode _);
-
+#if DEBUG
             Console.WriteLine($"MpiHandle: 0x{MpiHandle.ToString("X")}");
+#endif
 
             CudartHandle = Kernel32.LoadLibraryEx(CudartLibraryName + ".dll",
                                                   Kernel32.LoadLibraryFlags.None,
                                                   out ErrorCode _);
-
+#if DEBUG
             Console.WriteLine($"CudartHandle: 0x{CudartHandle.ToString("X")}");
+#endif
 
             KokkosCoreHandle = Kernel32.LoadLibraryEx(KokkosCoreLibraryName + ".dll",
                                                       Kernel32.LoadLibraryFlags.None,
                                                       out ErrorCode _);
-
+#if DEBUG
             Console.WriteLine($"KokkosCoreHandle: 0x{KokkosCoreHandle.ToString("X")}");
+#endif
 
             KokkosContainersHandle = Kernel32.LoadLibraryEx(KokkosContainersLibraryName + ".dll",
                                                             Kernel32.LoadLibraryFlags.None,
                                                             out ErrorCode _);
-
+#if DEBUG
             Console.WriteLine($"KokkosContainersHandle: 0x{KokkosContainersHandle.ToString("X")}");
+#endif
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]

@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <IsPackable>false</IsPackable>
-    <Platforms>x64</Platforms>
+    <Platforms>x64;AnyCPU</Platforms>
     <OutputType>Exe</OutputType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <StartupObject>Kokkos.Program</StartupObject>
@@ -17,11 +17,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="RuntimeGeneration" Version="1.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Kokkos.NET\Kokkos.NET.csproj" />
+    <PackageReference Include="Kokkos.NET" Version="0.5.5" />
+    <PackageReference Include="RuntimeGeneration" Version="1.0.2" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

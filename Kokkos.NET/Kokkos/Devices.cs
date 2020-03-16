@@ -108,19 +108,19 @@ namespace Kokkos
 
             foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfProcessors from Win32_ComputerSystem").Get())
             {
-                numberOfProcessors = int.Parse(item["NumberOfProcessors"].ToString());
+                numberOfProcessors = int.Parse(item["NumberOfProcessors"].ToString() ?? throw new NullReferenceException("NumberOfProcessors"));
             }
 
             Cpu = new List<CpuDevice>(numberOfProcessors);
 
             foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfLogicalProcessors from Win32_ComputerSystem").Get())
             {
-                numberOfLogicalProcessors = int.Parse(item["NumberOfLogicalProcessors"].ToString());
+                numberOfLogicalProcessors = int.Parse(item["NumberOfLogicalProcessors"].ToString() ?? throw new NullReferenceException("NumberOfLogicalProcessors"));
             }
 
             foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfCores from Win32_Processor").Get())
             {
-                numberOfCores.Add(int.Parse(item["NumberOfCores"].ToString()));
+                numberOfCores.Add(int.Parse(item["NumberOfCores"].ToString() ?? throw new NullReferenceException("NumberOfCores")));
                 numberOfHyperThreads.Add(numberOfLogicalProcessors / numberOfCores.Last());
             }
 
@@ -145,14 +145,85 @@ namespace Kokkos
 
             foreach(PhysicalGPU physicalGpu in PhysicalGPU.GetPhysicalGPUs())
             {
+                uint gpuVersion = KokkosLibrary.GetComputeCapability(gpuId);
+
                 Gpu.Add(new GpuDevice((int)gpuId,
                                       "Cuda",
                                       physicalGpu.ArchitectInformation.NumberOfCores,
                                       physicalGpu.ArchitectInformation.NumberOfCores,
-                                      new DeviceArch(KokkosLibrary.GetComputeCapability(gpuId).ToString())));
+                                      new DeviceArch(GetCudaDeviceName(gpuVersion), (int)gpuVersion)));
 
                 ++gpuId;
             }
+        }
+
+        private static string GetCudaDeviceName(uint version)
+        {
+            switch(version)
+            {
+                case 200:
+                {
+                    return "Kepler";
+                }
+                case 210:
+                {
+                    return "Kepler";
+                }
+                case 300:
+                {
+                    return "Kepler";
+                }
+                case 320:
+                {
+                    return "Kepler";
+                }
+                case 350:
+                {
+                    return "Kepler";
+                }
+                case 370:
+                {
+                    return "Kepler";
+                }
+                case 500:
+                {
+                    return "Maxwell";
+                }
+                case 520:
+                {
+                    return "Maxwell";
+                }
+                case 530:
+                {
+                    return "Maxwell";
+                }
+                case 600:
+                {
+                    return "Pascal";
+                }
+                case 610:
+                {
+                    return "Pascal";
+                }
+                case 620:
+                {
+                    return "Pascal";
+                }
+                case 700:
+                {
+                    return "Volta";
+                }
+                case 720:
+                {
+                    return "Volta";
+                }
+                case 1000:
+                {
+                    return "Turing";
+                }
+            }
+
+            return "Unknown";
         }
     }
 }
