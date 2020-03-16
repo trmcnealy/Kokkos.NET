@@ -101,14 +101,14 @@ namespace Kokkos
             get { return NdArray.Rank; }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static View()
-        {
-            if(!KokkosLibrary.IsInitialized())
-            {
-                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
-            }
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static View()
+        //{
+        //    if(!KokkosLibrary.IsInitialized())
+        //    {
+        //        KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
+        //    }
+        //}
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         protected View(NativePointer pointer,

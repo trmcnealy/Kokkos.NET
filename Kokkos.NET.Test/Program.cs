@@ -118,6 +118,25 @@ namespace Kokkos
                 Tests.ViewTests p = new Tests.ViewTests();
                 p.Run();
             }
+
+            using(ScopeGuard sg = new ScopeGuard(arguments))
+                //ParallelProcessor.Initialize();
+            {
+                //PrintConfiguration(false);
+
+                //Console.WriteLine(CudaGetDeviceCount());
+
+                //FractureProperties<double> fd = new FractureProperties<double>();
+
+                //fd.Height = 654.123;
+                //fd.Width  = 9876.2456;
+
+                //Console.WriteLine(fd.Height);
+                //Console.WriteLine(fd.Width);
+
+                Tests.ViewTests p = new Tests.ViewTests();
+                p.Run();
+            }
             //ParallelProcessor.Shutdown();
 
 #if DEBUG

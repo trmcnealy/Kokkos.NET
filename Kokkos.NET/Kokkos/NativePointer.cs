@@ -9,14 +9,14 @@ namespace Kokkos
     [NonVersionable]
     public sealed class NativePointer : IDisposable
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static NativePointer()
-        {
-            if(!KokkosLibrary.IsInitialized())
-            {
-                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
-            }
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static NativePointer()
+        //{
+        //    if(!KokkosLibrary.IsInitialized())
+        //    {
+        //        KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
+        //    }
+        //}
 
         private IntPtr _data;
 

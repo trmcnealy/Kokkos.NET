@@ -13,26 +13,36 @@ namespace Kokkos
     {
         public const string LibraryName = "runtime.Kokkos.NET";
 
-        public static readonly IntPtr Handle;
+        public static readonly string RuntimeKokkosLibraryName;
 
-        public static readonly KokkosApi Api;
+        public static IntPtr Handle;
+
+        public static KokkosApi Api;
 
         public static volatile bool Initialized;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosLibrary()
         {
-            // NativeLibrary.SetDllImportResolver(typeof(KokkosLibrary).Assembly, ImportResolver);
+            RuntimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
+        }
 
-            KokkosCoreLibrary.Initialize();
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static bool IsLoaded()
+        {
+            return Handle != IntPtr.Zero;
+        }
 
-            string runtimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
-            
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void Load()
+        {
+            KokkosCoreLibrary.Load();
+
 #if DEBUG
             Console.WriteLine("Loading " + runtimeKokkosLibraryName);
 #endif
 
-            if(!NativeLibrary.TryLoad(runtimeKokkosLibraryName,
+            if(!NativeLibrary.TryLoad(RuntimeKokkosLibraryName,
                                       typeof(KokkosLibrary).Assembly,
                                       DllImportSearchPath.UseDllDirectoryForDependencies,
                                       out Handle))
@@ -54,15 +64,15 @@ namespace Kokkos
 
                 Free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
 
-                initialize = Marshal.GetDelegateForFunctionPointer<InitializeDelegate>(Api.InitializePtr);
+                _initialize = Marshal.GetDelegateForFunctionPointer<InitializeDelegate>(Api.InitializePtr);
 
-                initializeThreads = Marshal.GetDelegateForFunctionPointer<InitializeThreadsDelegate>(Api.InitializeThreadsPtr);
+                _initializeThreads = Marshal.GetDelegateForFunctionPointer<InitializeThreadsDelegate>(Api.InitializeThreadsPtr);
 
-                initializeArguments = Marshal.GetDelegateForFunctionPointer<InitializeArgumentsDelegate>(Api.InitializeArgumentsPtr);
+                _initializeArguments = Marshal.GetDelegateForFunctionPointer<InitializeArgumentsDelegate>(Api.InitializeArgumentsPtr);
 
-                finalize = Marshal.GetDelegateForFunctionPointer<FinalizeDelegate>(Api.FinalizePtr);
+                _finalize = Marshal.GetDelegateForFunctionPointer<FinalizeDelegate>(Api.FinalizePtr);
 
-                finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
+                _finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
 
                 isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
 
@@ -104,40 +114,19 @@ namespace Kokkos
             {
                 KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
             }
-            
+
 #if DEBUG
             Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
 #endif
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool IsLoaded()
-        {
-            return Handle != IntPtr.Zero;
-        }
-
         internal static void Unload()
         {
             NativeLibrary.Free(Handle);
-        }
 
-        // private static IntPtr ImportResolver(string               libraryName,
-        //                                     Assembly             assembly,
-        //                                     DllImportSearchPath? searchPath =
-        //                                     DllImportSearchPath.UseDllDirectoryForDependencies)
-        //{
-        //    IntPtr libHandle = IntPtr.Zero;
-        //
-        //    if(libraryName == LibraryName)
-        //    {
-        //        NativeLibrary.TryLoad(LibraryName,
-        //                              assembly,
-        //                              searchPath,
-        //                              out libHandle);
-        //    }
-        //
-        //    return libHandle;
-        //}
+            KokkosCoreLibrary.Unload();
+        }
 
         #region Delegates
 
@@ -385,94 +374,79 @@ namespace Kokkos
 
         #endregion
 
-        internal static readonly GetApiDelegate GetApi;
+        internal static GetApiDelegate GetApi;
 
-        internal static readonly AllocateDelegate Allocate;
+        internal static AllocateDelegate Allocate;
 
-        internal static readonly ReallocateDelegate Reallocate;
+        internal static ReallocateDelegate Reallocate;
 
-        internal static readonly FreeDelegate Free;
+        internal static FreeDelegate Free;
 
-        private static readonly InitializeDelegate initialize;
+        private static InitializeDelegate _initialize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(int      narg,
                                         string[] arg)
         {
-            if(Initialized)
-            {
-                KokkosLibraryException.Throw("Kokkos Library has already been initialized.");
-            }
+            Load();
+
+            _initialize(narg,
+                        arg);
 
             Initialized = true;
-
-            initialize(narg,
-                       arg);
         }
 
-        private static readonly InitializeThreadsDelegate initializeThreads;
+        private static InitializeThreadsDelegate _initializeThreads;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(int num_cpu_threads,
                                         int gpu_device_id)
         {
-            if(Initialized)
-            {
-                KokkosLibraryException.Throw("Kokkos Library has already been initialized.");
-            }
+            Load();
+
+            _initializeThreads(num_cpu_threads,
+                               gpu_device_id);
 
             Initialized = true;
-
-            initializeThreads(num_cpu_threads,
-                              gpu_device_id);
         }
 
-        private static readonly InitializeArgumentsDelegate initializeArguments;
+        private static InitializeArgumentsDelegate _initializeArguments;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Initialize(in InitArguments arguments)
         {
-            if(Initialized)
-            {
-                KokkosLibraryException.Throw("Kokkos Library has already been initialized.");
-            }
+            Load();
+
+            _initializeArguments(arguments);
 
             Initialized = true;
-
-            initializeArguments(arguments);
         }
 
-        private static readonly FinalizeDelegate finalize;
+        private static FinalizeDelegate _finalize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void Finalize()
         {
-            if(!Initialized)
-            {
-                KokkosLibraryException.Throw("Kokkos Library has not been initialized.");
-            }
+            _finalize();
+
+            Unload();
 
             Initialized = false;
-
-            finalize();
         }
 
-        private static readonly FinalizeAllDelegate finalizeAll;
+        private static FinalizeAllDelegate _finalizeAll;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static void FinalizeAll()
         {
-            if(!Initialized)
-            {
-                KokkosLibraryException.Throw("Kokkos Library has not been initialized.");
-            }
+            _finalizeAll();
+
+            Unload();
 
             Initialized = false;
-
-            finalizeAll();
         }
 
-        private static readonly IsInitializedDelegate isInitialized;
+        private static IsInitializedDelegate isInitialized;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         internal static bool IsInitialized()
@@ -485,39 +459,39 @@ namespace Kokkos
             return isInitialized();
         }
 
-        internal static readonly PrintConfigurationDelegate PrintConfiguration;
+        internal static PrintConfigurationDelegate PrintConfiguration;
 
-        internal static readonly CudaGetComputeCapabilityDelegate GetComputeCapability;
+        internal static CudaGetComputeCapabilityDelegate GetComputeCapability;
 
-        internal static readonly CudaGetDeviceCountDelegate GetDeviceCount;
+        internal static CudaGetDeviceCountDelegate GetDeviceCount;
 
-        internal static readonly CreateViewRank0Delegate CreateViewRank0;
+        internal static CreateViewRank0Delegate CreateViewRank0;
 
-        internal static readonly CreateViewRank1Delegate CreateViewRank1;
+        internal static CreateViewRank1Delegate CreateViewRank1;
 
-        internal static readonly CreateViewRank2Delegate CreateViewRank2;
+        internal static CreateViewRank2Delegate CreateViewRank2;
 
-        internal static readonly CreateViewRank3Delegate CreateViewRank3;
+        internal static CreateViewRank3Delegate CreateViewRank3;
 
-        internal static readonly CreateViewDelegate CreateView;
+        internal static CreateViewDelegate CreateView;
 
-        internal static readonly GetLabelDelegate GetLabel;
+        internal static GetLabelDelegate GetLabel;
 
-        internal static readonly GetSizeDelegate GetSize;
+        internal static GetSizeDelegate GetSize;
 
-        internal static readonly GetStrideDelegate GetStride;
+        internal static GetStrideDelegate GetStride;
 
-        internal static readonly GetExtentDelegate GetExtent;
+        internal static GetExtentDelegate GetExtent;
 
-        internal static readonly CopyToDelegate CopyTo;
+        internal static CopyToDelegate CopyTo;
 
-        internal static readonly GetValueDelegate GetValue;
+        internal static GetValueDelegate GetValue;
 
-        internal static readonly SetValueDelegate SetValue;
+        internal static SetValueDelegate SetValue;
 
-        internal static readonly RcpViewToNdArrayDelegate RcpViewToNdArray;
+        internal static RcpViewToNdArrayDelegate RcpViewToNdArray;
 
-        internal static readonly ViewToNdArrayDelegate ViewToNdArray;
+        internal static ViewToNdArrayDelegate ViewToNdArray;
 
         //[SuppressUnmanagedCodeSecurity]
         //[DllImport("kernel32.dll",

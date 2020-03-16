@@ -26,13 +26,13 @@ namespace Kokkos
         {
             _sgInit = false;
 
-            if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            {
+            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
+            //{
                 KokkosLibrary.Initialize(Environment.ProcessorCount,
                                          0);
 
                 _sgInit = true;
-            }
+            //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -40,13 +40,13 @@ namespace Kokkos
         {
             _sgInit = false;
 
-            if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            {
+            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
+            //{
                 KokkosLibrary.Initialize(Environment.ProcessorCount,
                                          gpu_device_id);
 
                 _sgInit = true;
-            }
+            //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -55,13 +55,13 @@ namespace Kokkos
         {
             _sgInit = false;
 
-            if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            {
+            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
+            //{
                 KokkosLibrary.Initialize(num_cpu_threads,
                                          gpu_device_id);
 
                 _sgInit = true;
-            }
+            //}
         }
         
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -69,12 +69,12 @@ namespace Kokkos
         {
             _sgInit = false;
 
-            if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            {
+            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
+            //{
                 KokkosLibrary.Initialize(arguments);
 
                 _sgInit = true;
-            }
+            //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -97,7 +97,7 @@ namespace Kokkos
 
         private void ReleaseUnmanagedResources()
         {
-            if(KokkosLibrary.IsLoaded() && KokkosLibrary.IsInitialized() && _sgInit)
+            if(_sgInit)
             {
                 KokkosLibrary.Finalize();
             }

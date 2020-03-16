@@ -70,6 +70,13 @@ namespace Kokkos
                                                     [In]                                   IntPtr hFile,
                                                     [In]                                   uint   dwFlags);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("kernel32",
+                   ExactSpelling = true,
+                   SetLastError  = true)]
+        public static extern bool FreeLibrary(IntPtr hModule);
+
         [SuppressUnmanagedCodeSecurity]
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         [DllImport("kernel32",
@@ -196,15 +203,15 @@ namespace Kokkos
 
         public const string CudartLibraryName = "cudart64_101";
 
-        public static readonly IntPtr KokkosCoreHandle;
+        public static IntPtr KokkosCoreHandle;
 
-        public static readonly IntPtr KokkosContainersHandle;
+        public static IntPtr KokkosContainersHandle;
 
-        public static readonly IntPtr OpenMpHandle;
+        public static IntPtr OpenMpHandle;
 
-        public static readonly IntPtr MpiHandle;
+        public static IntPtr MpiHandle;
 
-        public static readonly IntPtr CudartHandle;
+        public static IntPtr CudartHandle;
 
         public static volatile bool Initialized;
 
@@ -295,10 +302,6 @@ namespace Kokkos
 #if DEBUG
             Console.WriteLine("nativeLibraryPath: " + nativeLibraryPath);
 #endif
-
-            //Kernel32.AddDllDirectory(nativeLibraryPath,
-            //                         out ErrorCode _);
-
             OpenMpHandle = Kernel32.LoadLibraryEx(OpenMpLibraryName + ".dll",
                                                   Kernel32.LoadLibraryFlags.None,
                                                   out ErrorCode _);
@@ -319,24 +322,10 @@ namespace Kokkos
 #if DEBUG
             Console.WriteLine($"CudartHandle: 0x{CudartHandle.ToString("X")}");
 #endif
-
-            KokkosCoreHandle = Kernel32.LoadLibraryEx(KokkosCoreLibraryName + ".dll",
-                                                      Kernel32.LoadLibraryFlags.None,
-                                                      out ErrorCode _);
-#if DEBUG
-            Console.WriteLine($"KokkosCoreHandle: 0x{KokkosCoreHandle.ToString("X")}");
-#endif
-
-            KokkosContainersHandle = Kernel32.LoadLibraryEx(KokkosContainersLibraryName + ".dll",
-                                                            Kernel32.LoadLibraryFlags.None,
-                                                            out ErrorCode _);
-#if DEBUG
-            Console.WriteLine($"KokkosContainersHandle: 0x{KokkosContainersHandle.ToString("X")}");
-#endif
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void Initialize()
+        internal static void Load()
         {
             if(OpenMpHandle == IntPtr.Zero)
             {
@@ -353,17 +342,46 @@ namespace Kokkos
                 KokkosLibraryException.Throw(CudartLibraryName + "failed to load.");
             }
 
+            KokkosCoreHandle = Kernel32.LoadLibraryEx(KokkosCoreLibraryName + ".dll",
+                                                      Kernel32.LoadLibraryFlags.None,
+                                                      out ErrorCode _);
+#if DEBUG
+            Console.WriteLine($"KokkosCoreHandle: 0x{KokkosCoreHandle.ToString("X")}");
+#endif
+
             if(KokkosCoreHandle == IntPtr.Zero)
             {
                 KokkosLibraryException.Throw(KokkosCoreLibraryName + "failed to load.");
             }
 
+            KokkosContainersHandle = Kernel32.LoadLibraryEx(KokkosContainersLibraryName + ".dll",
+                                                            Kernel32.LoadLibraryFlags.None,
+                                                            out ErrorCode _);
+#if DEBUG
+            Console.WriteLine($"KokkosContainersHandle: 0x{KokkosContainersHandle.ToString("X")}");
+#endif
             if(KokkosContainersHandle == IntPtr.Zero)
             {
                 KokkosLibraryException.Throw(KokkosContainersLibraryName + "failed to load.");
             }
 
             Initialized = true;
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal static void Unload()
+        {
+            if(!Kernel32.FreeLibrary(KokkosContainersHandle))
+            {
+                KokkosLibraryException.Throw(KokkosContainersLibraryName + "failed to unload.");
+            }
+
+            if(!Kernel32.FreeLibrary(KokkosCoreHandle))
+            {
+                KokkosLibraryException.Throw(KokkosCoreLibraryName + "failed to unload.");
+            }
+
+            Initialized = false;
         }
     }
 }

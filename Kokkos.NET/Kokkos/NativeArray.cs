@@ -29,10 +29,10 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static NativeArray()
         {
-            if(!KokkosLibrary.IsInitialized())
-            {
-                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
-            }
+            //if(!KokkosLibrary.IsInitialized())
+            //{
+            //    KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
+            //}
 
             executionSpace = ExecutionSpace<TExecutionSpace>.GetKind();
 

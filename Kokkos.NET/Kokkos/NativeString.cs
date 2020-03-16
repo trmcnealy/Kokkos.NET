@@ -52,14 +52,14 @@ namespace Kokkos
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     internal unsafe struct NativeString : IDisposable
     {
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        static NativeString()
-        {
-            if(!KokkosLibrary.IsInitialized())
-            {
-                KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
-            }
-        }
+        //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        //static NativeString()
+        //{
+        //    if(!KokkosLibrary.IsInitialized())
+        //    {
+        //        KokkosLibraryException.Throw("Kokkos Library is not initialized. Use ParallelProcessor.Initialize/Shutdown in the main routine/thread.");
+        //    }
+        //}
 
         public int Length;
 

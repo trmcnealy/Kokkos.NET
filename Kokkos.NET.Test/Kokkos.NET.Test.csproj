@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\Versioning.props" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -17,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.5.5" />
+    <PackageReference Include="Kokkos.NET" Version="$(KOKKOS_VERSION)" />
     <PackageReference Include="RuntimeGeneration" Version="1.0.2" />
   </ItemGroup>
 
