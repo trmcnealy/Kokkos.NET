@@ -50,7 +50,7 @@ namespace Std
 namespace Kokkos
 {
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    internal unsafe struct NativeString : IDisposable
+    public unsafe struct NativeString : IDisposable
     {
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         //static NativeString()

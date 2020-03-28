@@ -152,8 +152,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>-lkokkoscore.dll,-lkokkoscontainers.dll,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -310,8 +309,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>
-      </AdditionalDependencies>
+      <AdditionalDependencies>-lkokkoscore.dll,-lkokkoscontainers.dll,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />

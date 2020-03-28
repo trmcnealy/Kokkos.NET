@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Kokkos
 {
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    internal struct KokkosApi
+    public struct KokkosApi
     {
         public IntPtr AllocatePtr;
 

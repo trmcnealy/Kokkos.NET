@@ -81,9 +81,10 @@ namespace Kokkos
         public void Dispose()
         {
             ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
+            //GC.SuppressFinalize(this);
         }
-
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         ~ScopeGuard()
         {
             ReleaseUnmanagedResources();

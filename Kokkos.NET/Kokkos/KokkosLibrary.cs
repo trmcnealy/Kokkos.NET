@@ -8,9 +8,34 @@ using System.Runtime.Versioning;
 
 namespace Kokkos
 {
-    [NonVersionable]
-    internal static class KokkosLibrary
+    [ComVisible(true)]
+    [Serializable]
+    public delegate void KokkosLibraryEventHandler(object sender, KokkosLibraryEventArgs e);
+
+    public enum KokkosLibraryEventKind
     {
+        Loaded,
+        Unloaded
+    }
+
+    [Serializable]
+    public sealed class KokkosLibraryEventArgs : EventArgs
+    {
+        public KokkosLibraryEventKind Type { get; }
+
+        public KokkosLibraryEventArgs(KokkosLibraryEventKind type)
+        {
+            Type = type;
+        }
+    }
+
+    [NonVersionable]
+    public static class KokkosLibrary
+    {
+        public static event KokkosLibraryEventHandler Loaded;
+
+        public static event KokkosLibraryEventHandler Unloaded;
+
         public const string LibraryName = "runtime.Kokkos.NET";
 
         public static readonly string RuntimeKokkosLibraryName;
@@ -34,7 +59,7 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void Load()
+        public static void Load()
         {
             KokkosCoreLibrary.Load();
 
@@ -74,7 +99,7 @@ namespace Kokkos
 
                 _finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
 
-                isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
+                _isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
 
                 PrintConfiguration = Marshal.GetDelegateForFunctionPointer<PrintConfigurationDelegate>(Api.PrintConfigurationPtr);
 
@@ -118,92 +143,96 @@ namespace Kokkos
 #if DEBUG
             Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
 #endif
+
+            OnLoaded();
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        internal static void Unload()
+        public static void Unload()
         {
             NativeLibrary.Free(Handle);
 
             KokkosCoreLibrary.Unload();
+
+            OnUnloaded();
         }
 
         #region Delegates
 
-        internal delegate ref KokkosApi GetApiDelegate(in uint version);
+        public delegate ref KokkosApi GetApiDelegate(in uint version);
 
-        internal delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
+        public delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
                                                   in ulong              arg_alloc_size);
 
-        internal delegate IntPtr ReallocateDelegate(in ExecutionSpaceKind execution_space,
+        public delegate IntPtr ReallocateDelegate(in ExecutionSpaceKind execution_space,
                                                     IntPtr                instance,
                                                     in ulong              arg_alloc_size);
 
-        internal delegate void FreeDelegate(in ExecutionSpaceKind execution_space,
+        public delegate void FreeDelegate(in ExecutionSpaceKind execution_space,
                                             IntPtr                instance);
 
-        internal delegate void InitializeDelegate(int narg,
+        public delegate void InitializeDelegate(int narg,
                                                   [MarshalAs(UnmanagedType.LPArray,
                                                              ArraySubType = UnmanagedType.LPStr)]
                                                   string[] arg);
 
-        internal delegate void InitializeThreadsDelegate(int num_cpu_threads,
+        public delegate void InitializeThreadsDelegate(int num_cpu_threads,
                                                          int gpu_device_id);
 
-        internal delegate void InitializeArgumentsDelegate(in InitArguments arguments);
+        public delegate void InitializeArgumentsDelegate(in InitArguments arguments);
 
-        internal delegate void FinalizeDelegate();
+        public delegate void FinalizeDelegate();
 
-        internal delegate void FinalizeAllDelegate();
+        public delegate void FinalizeAllDelegate();
 
-        internal delegate bool IsInitializedDelegate();
+        public delegate bool IsInitializedDelegate();
 
-        internal delegate void PrintConfigurationDelegate(bool detail);
+        public delegate void PrintConfigurationDelegate(bool detail);
 
-        internal delegate uint CudaGetDeviceCountDelegate();
+        public delegate uint CudaGetDeviceCountDelegate();
 
-        internal delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
+        public delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
 
-        internal delegate void CreateViewRank0Delegate(IntPtr      instance,
+        public delegate void CreateViewRank0Delegate(IntPtr      instance,
                                                        ref NdArray nArray);
 
-        internal delegate void CreateViewRank1Delegate(IntPtr      instance,
+        public delegate void CreateViewRank1Delegate(IntPtr      instance,
                                                        ref NdArray nArray,
                                                        in  ulong   n0);
 
-        internal delegate void CreateViewRank2Delegate(IntPtr      instance,
+        public delegate void CreateViewRank2Delegate(IntPtr      instance,
                                                        ref NdArray nArray,
                                                        in  ulong   n0,
                                                        in  ulong   n1);
 
-        internal delegate void CreateViewRank3Delegate(IntPtr      instance,
+        public delegate void CreateViewRank3Delegate(IntPtr      instance,
                                                        ref NdArray nArray,
                                                        in  ulong   n0,
                                                        in  ulong   n1,
                                                        in  ulong   n2);
 
-        internal delegate void CreateViewDelegate(IntPtr      instance,
+        public delegate void CreateViewDelegate(IntPtr      instance,
                                                   ref NdArray nArray);
 
-        internal delegate NativeString GetLabelDelegate(IntPtr     instance,
+        public delegate NativeString GetLabelDelegate(IntPtr     instance,
                                                         in NdArray nArray);
 
-        internal delegate ulong GetSizeDelegate(IntPtr     instance,
+        public delegate ulong GetSizeDelegate(IntPtr     instance,
                                                 in NdArray nArray);
 
-        internal delegate ulong GetStrideDelegate(IntPtr     instance,
+        public delegate ulong GetStrideDelegate(IntPtr     instance,
                                                   in NdArray nArray,
                                                   in uint    dim);
 
-        internal delegate ulong GetExtentDelegate(IntPtr     instance,
+        public delegate ulong GetExtentDelegate(IntPtr     instance,
                                                   in NdArray nArray,
                                                   in uint    dim);
 
-        internal delegate void CopyToDelegate(IntPtr      instance,
+        public delegate void CopyToDelegate(IntPtr      instance,
                                               in NdArray  nArray,
                                               ValueType[] values);
 
-        internal delegate ValueType GetValueDelegate(IntPtr     instance,
+        public delegate ValueType GetValueDelegate(IntPtr     instance,
                                                      in NdArray nArray,
                                                      in ulong   i0 = ulong.MaxValue,
                                                      in ulong   i1 = ulong.MaxValue,
@@ -214,7 +243,7 @@ namespace Kokkos
                                                      in ulong   i7 = ulong.MaxValue,
                                                      in ulong   i8 = ulong.MaxValue);
 
-        internal delegate void SetValueDelegate(IntPtr       instance,
+        public delegate void SetValueDelegate(IntPtr       instance,
                                                 in NdArray   nArray,
                                                 in ValueType value,
                                                 in ulong     i0 = ulong.MaxValue,
@@ -226,13 +255,13 @@ namespace Kokkos
                                                 in ulong     i7 = ulong.MaxValue,
                                                 in ulong     i8 = ulong.MaxValue);
 
-        internal delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
+        public delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
                                                            in ExecutionSpaceKind execution_space,
                                                            in LayoutKind         layout,
                                                            in DataTypeKind       data_type,
                                                            in ushort             rank);
 
-        internal delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
+        public delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
                                                         in ExecutionSpaceKind execution_space,
                                                         in LayoutKind         layout,
                                                         in DataTypeKind       data_type,
@@ -374,18 +403,19 @@ namespace Kokkos
 
         #endregion
 
-        internal static GetApiDelegate GetApi;
+        #region Methods
+        public static GetApiDelegate GetApi;
 
-        internal static AllocateDelegate Allocate;
+        public static AllocateDelegate Allocate;
 
-        internal static ReallocateDelegate Reallocate;
+        public static ReallocateDelegate Reallocate;
 
-        internal static FreeDelegate Free;
+        public static FreeDelegate Free;
 
         private static InitializeDelegate _initialize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Initialize(int      narg,
+        public static void Initialize(int narg,
                                         string[] arg)
         {
             Load();
@@ -399,7 +429,7 @@ namespace Kokkos
         private static InitializeThreadsDelegate _initializeThreads;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Initialize(int num_cpu_threads,
+        public static void Initialize(int num_cpu_threads,
                                         int gpu_device_id)
         {
             Load();
@@ -413,7 +443,7 @@ namespace Kokkos
         private static InitializeArgumentsDelegate _initializeArguments;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Initialize(in InitArguments arguments)
+        public static void Initialize(in InitArguments arguments)
         {
             Load();
 
@@ -425,7 +455,7 @@ namespace Kokkos
         private static FinalizeDelegate _finalize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Finalize()
+        public static void Finalize()
         {
             _finalize();
 
@@ -437,7 +467,7 @@ namespace Kokkos
         private static FinalizeAllDelegate _finalizeAll;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void FinalizeAll()
+        public static void FinalizeAll()
         {
             _finalizeAll();
 
@@ -446,136 +476,73 @@ namespace Kokkos
             Initialized = false;
         }
 
-        private static IsInitializedDelegate isInitialized;
+        private static IsInitializedDelegate _isInitialized;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static bool IsInitialized()
+        public static bool IsInitialized()
         {
-            if(!Initialized)
+            if (!Initialized)
             {
                 return false;
             }
 
-            return isInitialized();
+            return _isInitialized();
         }
 
-        internal static PrintConfigurationDelegate PrintConfiguration;
+        public static PrintConfigurationDelegate PrintConfiguration;
 
-        internal static CudaGetComputeCapabilityDelegate GetComputeCapability;
+        public static CudaGetComputeCapabilityDelegate GetComputeCapability;
 
-        internal static CudaGetDeviceCountDelegate GetDeviceCount;
+        public static CudaGetDeviceCountDelegate GetDeviceCount;
 
-        internal static CreateViewRank0Delegate CreateViewRank0;
+        public static CreateViewRank0Delegate CreateViewRank0;
 
-        internal static CreateViewRank1Delegate CreateViewRank1;
+        public static CreateViewRank1Delegate CreateViewRank1;
 
-        internal static CreateViewRank2Delegate CreateViewRank2;
+        public static CreateViewRank2Delegate CreateViewRank2;
 
-        internal static CreateViewRank3Delegate CreateViewRank3;
+        public static CreateViewRank3Delegate CreateViewRank3;
 
-        internal static CreateViewDelegate CreateView;
+        public static CreateViewDelegate CreateView;
 
-        internal static GetLabelDelegate GetLabel;
+        public static GetLabelDelegate GetLabel;
 
-        internal static GetSizeDelegate GetSize;
+        public static GetSizeDelegate GetSize;
 
-        internal static GetStrideDelegate GetStride;
+        public static GetStrideDelegate GetStride;
 
-        internal static GetExtentDelegate GetExtent;
+        public static GetExtentDelegate GetExtent;
 
-        internal static CopyToDelegate CopyTo;
+        public static CopyToDelegate CopyTo;
 
-        internal static GetValueDelegate GetValue;
+        public static GetValueDelegate GetValue;
 
-        internal static SetValueDelegate SetValue;
+        public static SetValueDelegate SetValue;
 
-        internal static RcpViewToNdArrayDelegate RcpViewToNdArray;
+        public static RcpViewToNdArrayDelegate RcpViewToNdArray;
 
-        internal static ViewToNdArrayDelegate ViewToNdArray;
+        public static ViewToNdArrayDelegate ViewToNdArray; 
+        #endregion
+        
+        private static readonly KokkosLibraryEventArgs loadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
+        private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void OnLoaded()
+        {
+            Loaded?.Invoke(null,
+                           loadedEventArgs);
 
-        //[SuppressUnmanagedCodeSecurity]
-        //[DllImport("kernel32.dll",
-        //           CharSet       = CharSet.Ansi,
-        //           ExactSpelling = true,
-        //           EntryPoint    = "lstrlenA")]
-        // internal static extern int lstrlenA(IntPtr ptr);
+            Console.WriteLine("KokkosLibrary Loaded.");
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private static void OnUnloaded()
+        {
+            Unloaded?.Invoke(null,
+                             unloadedEventArgs);
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static int strlen(sbyte* buffer)
-        //{
-        //    return lstrlenA(*(IntPtr*)buffer);
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static string ToString(sbyte* bytes)
-        //{
-        //    return new string(bytes,
-        //                      0,
-        //                      strlen(bytes),
-        //                      Encoding.UTF8);
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static string ToString(this byte[] bytes)
-        //{
-        //    return bytes.ToString();
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static sbyte* ToSByte(this string @string)
-        //{
-        //    if(@string[^1] != '\0')
-        //    {
-        //        @string += '\0';
-        //    }
-
-        //    byte[] bytes = Encoding.UTF8.GetBytes(@string);
-
-        //    fixed(byte* p = bytes)
-        //    {
-        //        //sbyte* sp = (sbyte*)p;
-        //        return (sbyte*)p;
-        //    }
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static byte[] ToBytes(this string @string)
-        //{
-        //    if(@string[^1] != char.MinValue)
-        //    {
-        //        @string += char.MinValue;
-        //    }
-
-        //    if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        //    {
-        //        return Encoding.ASCII.GetBytes(@string);
-        //    }
-
-        //    return Encoding.UTF8.GetBytes(@string);
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static string FromToBytes(this byte[] bytes)
-        //{
-        //    if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        //    {
-        //        return Encoding.ASCII.GetString(bytes);
-        //    }
-
-        //    return Encoding.UTF8.GetString(bytes);
-        //}
-
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        // internal static byte[] ToBytes(this string @string)
-        //{
-        //    if(@string[^1] != '\0')
-        //    {
-        //        @string += '\0';
-        //    }
-
-        //    byte[] bytes = Encoding.UTF8.GetBytes(@string);
-
-        //    return bytes;
-        //}
+            Console.WriteLine("KokkosLibrary Unloaded.");
+        }
     }
 }
