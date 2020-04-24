@@ -33,6 +33,7 @@ union ValueType
     uint32 UInt32;
     int64  Int64;
     uint64 UInt64;
+    void*  Ptr;
 
     ValueType(const float& value) { Single = value; }
 
@@ -56,6 +57,8 @@ union ValueType
 
     ValueType(const uint64& value) { UInt64 = value; }
 
+    ValueType(void* const value) { Ptr = value; }
+
     ValueType(float&& value) { Single = std::move(value); }
 
     ValueType(double&& value) { Double = std::move(value); }
@@ -77,6 +80,8 @@ union ValueType
     ValueType(int64&& value) { Int64 = std::move(value); }
 
     ValueType(uint64&& value) { UInt64 = std::move(value); }
+
+    ValueType(void*&& value) { Ptr = std::move(value); }
 
     ValueType& operator=(const float& value)
     {
@@ -142,6 +147,12 @@ union ValueType
     ValueType& operator=(const uint64& value)
     {
         UInt64 = value;
+        return *this;
+    }
+
+    ValueType& operator=(void* const value)
+    {
+        Ptr = value;
         return *this;
     }
 
@@ -212,6 +223,12 @@ union ValueType
         return *this;
     }
 
+    ValueType& operator=(void*&& value)
+    {
+        Ptr = std::move(value);
+        return *this;
+    }
+
     __inline operator float() const { return Single; }
     __inline operator double() const { return Double; }
     __inline operator bool() const { return Bool; }
@@ -223,6 +240,7 @@ union ValueType
     __inline operator uint32() const { return UInt32; }
     __inline operator int64() const { return Int64; }
     __inline operator uint64() const { return UInt64; }
+    __inline operator void*() const { return Ptr; }
 };
 
 #undef _In_
@@ -300,7 +318,7 @@ KOKKOS_NET_API_EXTERN void SetValue(void*            instance,
                                     const size_type& i5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                     const size_type& i6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                     const size_type& i7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
-                                    
+
 KOKKOS_NET_API_EXTERN NdArray RcpViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept;
 
 KOKKOS_NET_API_EXTERN NdArray ViewToNdArray(void* instance, const ExecutionSpaceKind& execution_space, const LayoutKind& layout, const DataTypeKind& data_type, const uint16& rank) noexcept;
@@ -351,7 +369,8 @@ struct KokkosApi
 
     void (*CopyTo)(void*, const NdArray&, ValueType*) noexcept;
 
-    ValueType (*GetValue)(void*, const NdArray&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&) noexcept;
+    ValueType (
+        *GetValue)(void*, const NdArray&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&, const size_type&) noexcept;
 
     void (*SetValue)(void*,
                      const NdArray&,
@@ -364,7 +383,7 @@ struct KokkosApi
                      const size_type&,
                      const size_type&,
                      const size_type&) noexcept;
-                     
+
     NdArray (*RcpViewToNdArray)(void*, const ExecutionSpaceKind&, const LayoutKind&, const DataTypeKind&, const uint16&) noexcept;
 
     NdArray (*ViewToNdArray)(void*, const ExecutionSpaceKind&, const LayoutKind&, const DataTypeKind&, const uint16&) noexcept;

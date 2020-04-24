@@ -28,7 +28,7 @@
 
     <!-- <file src="..\bin\$Configuration$\$Platform$\runtime.Kokkos.NET.$Platform$.pdb" target="runtimes\win-$Platform$\native" />  -->
 
-    <file src="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.1\bin\cudart64_101.dll"
+    <file src="C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin\cudart64_102.dll"
           target="runtimes\win-x64\native"/>
 
     <file src="C:\POSIX\usr\bin\mpi.dll"

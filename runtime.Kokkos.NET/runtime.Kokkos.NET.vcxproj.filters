@@ -7,6 +7,9 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{c94c4e15-0a56-40dd-9cd0-43a06b3522a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Analyzes">
+      <UniqueIdentifier>{8ad5cd4c-cee9-4002-b026-2c4958663391}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
@@ -56,6 +59,15 @@
     </ClInclude>
     <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp">
       <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions.hpp">
+      <Filter>runtime.Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\Linq.hpp">
+      <Filter>Analyzes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

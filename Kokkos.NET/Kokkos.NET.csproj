@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NvAPIWrapper.Net" Version="0.7.0.57" />
+    <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
     <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
     <PackageReference Include="System.Management" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
