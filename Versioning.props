@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Label="UserMacros">
-    <PACKAGE_VERSION>0.6.3</PACKAGE_VERSION>
+    <PACKAGE_VERSION>0.6.4</PACKAGE_VERSION>
   </PropertyGroup>
   <PropertyGroup Label="UserMacros">
     <KOKKOS_VERSION>$(PACKAGE_VERSION)</KOKKOS_VERSION>

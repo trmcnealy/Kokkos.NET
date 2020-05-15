@@ -31,6 +31,7 @@
   <ItemGroup>
     <Compile Remove="CNMeM.cs" />
     <Compile Remove="Kokkos\NativeArray.cs" />
+    <Compile Remove="MemoryMappedPtr.cs" />
     <Compile Remove="Nvml.cs" />
   </ItemGroup>
 
@@ -42,6 +43,7 @@
     </None>
     <None Include="CNMeM.cs" />
     <None Include="Kokkos\NativeArray.cs" />
+    <None Include="MemoryMappedPtr.cs" />
     <None Include="Nvml.cs" />
   </ItemGroup>
 
