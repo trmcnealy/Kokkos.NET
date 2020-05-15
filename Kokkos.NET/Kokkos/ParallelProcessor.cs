@@ -49,7 +49,7 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Shutdown()
         {
-            KokkosLibrary.Finalize();
+            KokkosLibrary.@Finalize();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

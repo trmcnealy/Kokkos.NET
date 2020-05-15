@@ -1,16 +1,19 @@
 ﻿#pragma warning disable CS0465
 
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Threading;
 
 namespace Kokkos
 {
     [ComVisible(true)]
     [Serializable]
-    public delegate void KokkosLibraryEventHandler(object sender, KokkosLibraryEventArgs e);
+    public delegate void KokkosLibraryEventHandler(object                 sender,
+                                                   KokkosLibraryEventArgs e);
 
     public enum KokkosLibraryEventKind
     {
@@ -41,14 +44,27 @@ namespace Kokkos
         public static readonly string RuntimeKokkosLibraryName;
 
         public static IntPtr Handle;
+        public static IntPtr ModuleHandle;
 
         public static KokkosApi Api;
 
         public static volatile bool Initialized;
 
+        private static readonly string nativeLibraryPath;
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosLibrary()
         {
+            if(Thread.CurrentThread.TrySetApartmentState(ApartmentState.STA))
+            {
+                Console.WriteLine("TrySetApartmentState Failed.");
+            }
+
+            string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
+            string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
+
+            nativeLibraryPath = $"runtimes\\{operatingSystem}-{platformArchitecture}\\native";
+
             RuntimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
         }
 
@@ -64,20 +80,29 @@ namespace Kokkos
             KokkosCoreLibrary.Load();
 
 #if DEBUG
-            Console.WriteLine("Loading " + runtimeKokkosLibraryName);
+            Console.WriteLine("Loading " + RuntimeKokkosLibraryName);
 #endif
 
-            if(!NativeLibrary.TryLoad(RuntimeKokkosLibraryName,
-                                      typeof(KokkosLibrary).Assembly,
-                                      DllImportSearchPath.UseDllDirectoryForDependencies,
-                                      out Handle))
+            // if(!NativeLibrary.TryLoad(RuntimeKokkosLibraryName,
+            //                           typeof(KokkosLibrary).Assembly,
+            //                           DllImportSearchPath.UseDllDirectoryForDependencies,
+            //                           out Handle))
+            // {
+            //     KokkosLibraryException.Throw();
+            // }
+
+            Handle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, RuntimeKokkosLibraryName + ".dll"), Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH, out ErrorCode _);
+
+            ModuleHandle = Kernel32.GetModuleHandleA(RuntimeKokkosLibraryName + ".dll");
+
+            IntPtr getApiHandle = Kernel32.GetProcAddress(ModuleHandle, "GetApi");
+
+            if(getApiHandle == IntPtr.Zero)
             {
-                KokkosLibraryException.Throw();
+                getApiHandle = Handle + 0x000019E0;
             }
 
-            if(NativeLibrary.TryGetExport(Handle,
-                                          "GetApi",
-                                          out IntPtr getApiHandle))
+            if(getApiHandle != IntPtr.Zero) //NativeLibrary.TryGetExport(ModuleHandle, "GetApi", out IntPtr getApiHandle))
             {
                 GetApi = Marshal.GetDelegateForFunctionPointer<GetApiDelegate>(getApiHandle);
 
@@ -141,7 +166,7 @@ namespace Kokkos
             }
 
 #if DEBUG
-            Console.WriteLine("Loaded " + runtimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
+            Console.WriteLine("Loaded " + RuntimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
 #endif
 
             OnLoaded();
@@ -150,9 +175,20 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Unload()
         {
-            NativeLibrary.Free(Handle);
+            if(!Kernel32.FreeLibrary(ModuleHandle))
+            {
+                KokkosLibraryException.Throw(RuntimeKokkosLibraryName + "failed to unload.");
+            }
+            else
+            {
+                Handle       = IntPtr.Zero;
+                ModuleHandle = IntPtr.Zero;
+            }
 
-            KokkosCoreLibrary.Unload();
+            //KokkosCoreLibrary.Unload();
+
+            //Kernel32.UnmapViewOfFile(Kernel32.GetModuleHandleA(RuntimeKokkosLibraryName + ".dll"));
+            //Kernel32.UnmapViewOfFile(Kernel32.GetModuleHandleA(KokkosCoreLibrary.KokkosCoreLibraryName));
 
             OnUnloaded();
         }
@@ -162,22 +198,20 @@ namespace Kokkos
         public delegate ref KokkosApi GetApiDelegate(in uint version);
 
         public delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
-                                                  in ulong              arg_alloc_size);
+                                                in ulong              arg_alloc_size);
 
         public delegate IntPtr ReallocateDelegate(in ExecutionSpaceKind execution_space,
-                                                    IntPtr                instance,
-                                                    in ulong              arg_alloc_size);
+                                                  IntPtr                instance,
+                                                  in ulong              arg_alloc_size);
 
         public delegate void FreeDelegate(in ExecutionSpaceKind execution_space,
-                                            IntPtr                instance);
+                                          IntPtr                instance);
 
-        public delegate void InitializeDelegate(int narg,
-                                                  [MarshalAs(UnmanagedType.LPArray,
-                                                             ArraySubType = UnmanagedType.LPStr)]
-                                                  string[] arg);
+        public delegate void InitializeDelegate(int                                                                             narg,
+                                                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] arg);
 
         public delegate void InitializeThreadsDelegate(int num_cpu_threads,
-                                                         int gpu_device_id);
+                                                       int gpu_device_id);
 
         public delegate void InitializeArgumentsDelegate(in InitArguments arguments);
 
@@ -194,78 +228,78 @@ namespace Kokkos
         public delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
 
         public delegate void CreateViewRank0Delegate(IntPtr      instance,
-                                                       ref NdArray nArray);
+                                                     ref NdArray nArray);
 
         public delegate void CreateViewRank1Delegate(IntPtr      instance,
-                                                       ref NdArray nArray,
-                                                       in  ulong   n0);
+                                                     ref NdArray nArray,
+                                                     in  ulong   n0);
 
         public delegate void CreateViewRank2Delegate(IntPtr      instance,
-                                                       ref NdArray nArray,
-                                                       in  ulong   n0,
-                                                       in  ulong   n1);
+                                                     ref NdArray nArray,
+                                                     in  ulong   n0,
+                                                     in  ulong   n1);
 
         public delegate void CreateViewRank3Delegate(IntPtr      instance,
-                                                       ref NdArray nArray,
-                                                       in  ulong   n0,
-                                                       in  ulong   n1,
-                                                       in  ulong   n2);
+                                                     ref NdArray nArray,
+                                                     in  ulong   n0,
+                                                     in  ulong   n1,
+                                                     in  ulong   n2);
 
         public delegate void CreateViewDelegate(IntPtr      instance,
-                                                  ref NdArray nArray);
+                                                ref NdArray nArray);
 
         public delegate NativeString GetLabelDelegate(IntPtr     instance,
-                                                        in NdArray nArray);
+                                                      in NdArray nArray);
 
         public delegate ulong GetSizeDelegate(IntPtr     instance,
-                                                in NdArray nArray);
+                                              in NdArray nArray);
 
         public delegate ulong GetStrideDelegate(IntPtr     instance,
-                                                  in NdArray nArray,
-                                                  in uint    dim);
+                                                in NdArray nArray,
+                                                in uint    dim);
 
         public delegate ulong GetExtentDelegate(IntPtr     instance,
-                                                  in NdArray nArray,
-                                                  in uint    dim);
+                                                in NdArray nArray,
+                                                in uint    dim);
 
         public delegate void CopyToDelegate(IntPtr      instance,
-                                              in NdArray  nArray,
-                                              ValueType[] values);
+                                            in NdArray  nArray,
+                                            ValueType[] values);
 
         public delegate ValueType GetValueDelegate(IntPtr     instance,
-                                                     in NdArray nArray,
-                                                     in ulong   i0 = ulong.MaxValue,
-                                                     in ulong   i1 = ulong.MaxValue,
-                                                     in ulong   i2 = ulong.MaxValue,
-                                                     in ulong   i4 = ulong.MaxValue,
-                                                     in ulong   i5 = ulong.MaxValue,
-                                                     in ulong   i6 = ulong.MaxValue,
-                                                     in ulong   i7 = ulong.MaxValue,
-                                                     in ulong   i8 = ulong.MaxValue);
+                                                   in NdArray nArray,
+                                                   in ulong   i0 = ulong.MaxValue,
+                                                   in ulong   i1 = ulong.MaxValue,
+                                                   in ulong   i2 = ulong.MaxValue,
+                                                   in ulong   i4 = ulong.MaxValue,
+                                                   in ulong   i5 = ulong.MaxValue,
+                                                   in ulong   i6 = ulong.MaxValue,
+                                                   in ulong   i7 = ulong.MaxValue,
+                                                   in ulong   i8 = ulong.MaxValue);
 
         public delegate void SetValueDelegate(IntPtr       instance,
-                                                in NdArray   nArray,
-                                                in ValueType value,
-                                                in ulong     i0 = ulong.MaxValue,
-                                                in ulong     i1 = ulong.MaxValue,
-                                                in ulong     i2 = ulong.MaxValue,
-                                                in ulong     i4 = ulong.MaxValue,
-                                                in ulong     i5 = ulong.MaxValue,
-                                                in ulong     i6 = ulong.MaxValue,
-                                                in ulong     i7 = ulong.MaxValue,
-                                                in ulong     i8 = ulong.MaxValue);
+                                              in NdArray   nArray,
+                                              in ValueType value,
+                                              in ulong     i0 = ulong.MaxValue,
+                                              in ulong     i1 = ulong.MaxValue,
+                                              in ulong     i2 = ulong.MaxValue,
+                                              in ulong     i4 = ulong.MaxValue,
+                                              in ulong     i5 = ulong.MaxValue,
+                                              in ulong     i6 = ulong.MaxValue,
+                                              in ulong     i7 = ulong.MaxValue,
+                                              in ulong     i8 = ulong.MaxValue);
 
         public delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
-                                                           in ExecutionSpaceKind execution_space,
-                                                           in LayoutKind         layout,
-                                                           in DataTypeKind       data_type,
-                                                           in ushort             rank);
+                                                         in ExecutionSpaceKind execution_space,
+                                                         in LayoutKind         layout,
+                                                         in DataTypeKind       data_type,
+                                                         in ushort             rank);
 
         public delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
-                                                        in ExecutionSpaceKind execution_space,
-                                                        in LayoutKind         layout,
-                                                        in DataTypeKind       data_type,
-                                                        in ushort             rank);
+                                                      in ExecutionSpaceKind execution_space,
+                                                      in LayoutKind         layout,
+                                                      in DataTypeKind       data_type,
+                                                      in ushort             rank);
 
         #endregion
 
@@ -404,6 +438,7 @@ namespace Kokkos
         #endregion
 
         #region Methods
+
         public static GetApiDelegate GetApi;
 
         public static AllocateDelegate Allocate;
@@ -415,29 +450,33 @@ namespace Kokkos
         private static InitializeDelegate _initialize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void Initialize(int narg,
-                                        string[] arg)
+        public static void Initialize(int      narg,
+                                      string[] arg)
         {
-            Load();
+            if(!IsInitialized())
+            {
+                Load();
 
-            _initialize(narg,
-                        arg);
+                _initialize(narg, arg);
 
-            Initialized = true;
+                Initialized = true;
+            }
         }
 
         private static InitializeThreadsDelegate _initializeThreads;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static void Initialize(int num_cpu_threads,
-                                        int gpu_device_id)
+                                      int gpu_device_id)
         {
-            Load();
+            if(!IsInitialized())
+            {
+                Load();
 
-            _initializeThreads(num_cpu_threads,
-                               gpu_device_id);
+                _initializeThreads(num_cpu_threads, gpu_device_id);
 
-            Initialized = true;
+                Initialized = true;
+            }
         }
 
         private static InitializeArgumentsDelegate _initializeArguments;
@@ -455,11 +494,11 @@ namespace Kokkos
         private static FinalizeDelegate _finalize;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public static void Finalize()
+        public static void @Finalize()
         {
             _finalize();
 
-            Unload();
+            //Unload();
 
             Initialized = false;
         }
@@ -471,7 +510,7 @@ namespace Kokkos
         {
             _finalizeAll();
 
-            Unload();
+            //Unload();
 
             Initialized = false;
         }
@@ -481,7 +520,7 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static bool IsInitialized()
         {
-            if (!Initialized)
+            if(!Initialized)
             {
                 return false;
             }
@@ -521,26 +560,25 @@ namespace Kokkos
 
         public static RcpViewToNdArrayDelegate RcpViewToNdArray;
 
-        public static ViewToNdArrayDelegate ViewToNdArray; 
+        public static ViewToNdArrayDelegate ViewToNdArray;
+
         #endregion
-        
-        private static readonly KokkosLibraryEventArgs loadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
+
+        private static readonly KokkosLibraryEventArgs loadedEventArgs   = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
         private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void OnLoaded()
         {
-            Loaded?.Invoke(null,
-                           loadedEventArgs);
+            Loaded?.Invoke(null, loadedEventArgs);
 
             Console.WriteLine("KokkosLibrary Loaded.");
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         private static void OnUnloaded()
         {
-            Unloaded?.Invoke(null,
-                             unloadedEventArgs);
+            Unloaded?.Invoke(null, unloadedEventArgs);
 
             Console.WriteLine("KokkosLibrary Unloaded.");
         }

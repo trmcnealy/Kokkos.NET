@@ -20,7 +20,19 @@
     <TieredCompilation>false</TieredCompilation>
     <PublishReadyToRun>true</PublishReadyToRun>
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
+    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>TRACE;TARGET_64BIT</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="CNMeM.cs" />
+    <Compile Remove="Kokkos\NativeArray.cs" />
+    <Compile Remove="Nvml.cs" />
+  </ItemGroup>
 
   <ItemGroup>
     <None Remove="Kokkos.NET.csproj.DotSettings" />
@@ -28,11 +40,15 @@
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+    <None Include="CNMeM.cs" />
+    <None Include="Kokkos\NativeArray.cs" />
+    <None Include="Nvml.cs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
     <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
+    <PackageReference Include="RuntimeGeneration" Version="1.1.0" />
     <PackageReference Include="System.Management" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />

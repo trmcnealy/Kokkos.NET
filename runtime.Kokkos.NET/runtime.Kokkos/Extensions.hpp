@@ -86,6 +86,21 @@ namespace Kokkos
                 }
             };
 
+            template<typename LayoutT>
+            struct TransposeLayout;
+
+            template<>
+            struct TransposeLayout<Kokkos::LayoutLeft>
+            {
+                using type = Kokkos::LayoutRight;
+            };
+
+            template<>
+            struct TransposeLayout<Kokkos::LayoutRight>
+            {
+                using type = Kokkos::LayoutLeft;
+            };
+
         }
 
         template<typename ViewType>
@@ -219,7 +234,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             Vector<DataType, ExecutionSpace> tmp(new DataType[n], n);
 
@@ -234,7 +249,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) += rhs(i);
@@ -247,7 +262,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) += rhs(i);
@@ -260,7 +275,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             Vector<DataType, ExecutionSpace> tmp(new DataType[n], n);
 
@@ -275,7 +290,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) -= rhs(i);
@@ -288,7 +303,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) -= rhs(i);
@@ -301,7 +316,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             Vector<DataType, ExecutionSpace> tmp(new DataType[n], n);
 
@@ -316,7 +331,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) *= rhs(i);
@@ -341,7 +356,7 @@ namespace Kokkos
         KOKKOS_INLINE_FUNCTION static DataType dot_prod(const Vector<DataType, ExecutionSpace>& lhs, const Vector<DataType, ExecutionSpace>& rhs)
         {
             const size_type n = lhs.extent(0);
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             DataType sum = 0;
 
@@ -386,7 +401,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             Vector<DataType, ExecutionSpace> tmp(new DataType[n], n);
 
@@ -401,7 +416,7 @@ namespace Kokkos
         {
             const size_type n = lhs.extent(0);
 
-            assert(N == rhs.extent(0));
+            assert(n == rhs.extent(0));
 
             for(size_type i = 0; i < n; i++)
                 lhs(i) /= rhs(i);

@@ -10,6 +10,9 @@
     <Filter Include="Analyzes">
       <UniqueIdentifier>{8ad5cd4c-cee9-4002-b026-2c4958663391}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utilities">
+      <UniqueIdentifier>{449141c6-8249-43d4-89cc-ef05f71e1bd4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
@@ -38,6 +41,12 @@
     </ClCompile>
     <ClCompile Include="runtime.Kokkos\ViewConvert.cpp">
       <Filter>runtime.Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\cnmem.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\MemoryMapped.cpp">
+      <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +77,15 @@
     </ClInclude>
     <ClInclude Include="Analyzes\Linq.hpp">
       <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\cnmem.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\GpuCsvReader.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\MemoryMapped.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

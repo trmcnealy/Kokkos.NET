@@ -5,103 +5,91 @@ namespace Kokkos
 {
     public sealed class ScopeGuard : IDisposable
     {
-        private readonly bool _sgInit;
-
-        //public ScopeGuard(int      narg,
-        //                  string[] arg)
-        //{
-        //    _sgInit = false;
-
-        //    if(!KokkosLibrary.IsInitialized())
-        //    {
-        //        KokkosLibrary.Initialize(narg,
-        //                          arg);
-
-        //        _sgInit = true;
-        //    }
-        //}
+        private static bool _initialized;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public ScopeGuard()
+        static ScopeGuard()
         {
-            _sgInit = false;
-
-            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            //{
-                KokkosLibrary.Initialize(Environment.ProcessorCount,
-                                         0);
-
-                _sgInit = true;
-            //}
+            AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public ScopeGuard(int gpu_device_id)
+        private ScopeGuard()
         {
-            _sgInit = false;
-
-            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
+            //if(_initialized)
             //{
-                KokkosLibrary.Initialize(Environment.ProcessorCount,
-                                         gpu_device_id);
-
-                _sgInit = true;
-            //}
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public ScopeGuard(int num_cpu_threads,
-                          int gpu_device_id)
-        {
-            _sgInit = false;
-
-            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            //{
-                KokkosLibrary.Initialize(num_cpu_threads,
-                                         gpu_device_id);
-
-                _sgInit = true;
-            //}
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public ScopeGuard(in InitArguments arguments)
-        {
-            _sgInit = false;
-
-            //if(KokkosLibrary.IsLoaded() && !KokkosLibrary.IsInitialized())
-            //{
-                KokkosLibrary.Initialize(arguments);
-
-                _sgInit = true;
+            //    Console.WriteLine("Kokkos can only be Initialized once per process.");
             //}
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Dispose()
         {
-            ReleaseUnmanagedResources();
-            //GC.SuppressFinalize(this);
-        }
-        
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        ~ScopeGuard()
-        {
-            ReleaseUnmanagedResources();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        public void Print()
+        private static void RrcTexasDataAdapter_Dtor(object    sender,
+                                                     EventArgs e)
+        {
+            if(KokkosLibrary.IsInitialized() || _initialized)
+            {
+                KokkosLibrary.FinalizeAll();
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ScopeGuard Get()
+        {
+            if(!_initialized)
+            {
+                KokkosLibrary.Initialize(Environment.ProcessorCount, 0);
+                _initialized = true;
+            }
+
+            return new ScopeGuard();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ScopeGuard Get(int gpuDeviceId)
+        {
+            if(!_initialized)
+            {
+                KokkosLibrary.Initialize(Environment.ProcessorCount, gpuDeviceId);
+                _initialized = true;
+            }
+
+            return new ScopeGuard();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ScopeGuard Get(int numCpuThreads,
+                                     int gpuDeviceId)
+        {
+            if(!_initialized)
+            {
+                KokkosLibrary.Initialize(numCpuThreads, gpuDeviceId);
+                _initialized = true;
+            }
+
+            return new ScopeGuard();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ScopeGuard Get(in InitArguments arguments)
+        {
+            if(!_initialized)
+            {
+                KokkosLibrary.Initialize(arguments);
+                _initialized = true;
+            }
+
+            return new ScopeGuard();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Print()
         {
             KokkosLibrary.PrintConfiguration(true);
-        }
-
-        private void ReleaseUnmanagedResources()
-        {
-            if(_sgInit)
-            {
-                KokkosLibrary.Finalize();
-            }
         }
     }
 }

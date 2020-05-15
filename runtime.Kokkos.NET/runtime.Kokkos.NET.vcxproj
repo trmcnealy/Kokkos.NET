@@ -34,6 +34,10 @@
     <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewProperties.cpp" />
+    <ClCompile Include="Utilities\cnmem.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">-shared -gfull -gcodeview -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="Utilities\MemoryMapped.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analyzes\Linq.hpp" />
@@ -46,6 +50,9 @@
     <ClInclude Include="runtime.Kokkos\TemplateManager_Def.hpp" />
     <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp" />
     <ClInclude Include="runtime.Kokkos\ViewTypes.hpp" />
+    <ClInclude Include="Utilities\cnmem.h" />
+    <ClInclude Include="Utilities\GpuCsvReader.hpp" />
+    <ClInclude Include="Utilities\MemoryMapped.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}</ProjectGuid>
@@ -152,8 +159,7 @@
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <LinkErrorReporting />
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>/DELAYLOAD:libomp.dll,/DELAYLOAD:mpi.dll,/DELAYLOAD:cudart64_102.dll,/DELAYLOAD:libkokkoscore.dll,/DELAYLOAD:libkokkoscontainers.dll</AdditionalOptions>
       <SuppressStartupBanner />
       <AdditionalDependencies>-lkokkoscore.dll,-lkokkoscontainers.dll,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
@@ -241,12 +247,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <CompileAs />
-      <UndefinePreprocessorDefinitions>_MSC_VER</UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;NDEBUG;_NDEBUG;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;_MBCS</PreprocessorDefinitions>
+      <UndefinePreprocessorDefinitions>_MT;_MSC_VER</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>_DLL;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;NDEBUG;_NDEBUG;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;_MBCS</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
       <AdditionalIncludeDirectories>../../BuildTools;./;D:/TFS_Sources/ManagedProjects/Misc/EngineeringAnalysisStudio/2 Service Layer/EAS.NumericalMethods.Native;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-shared -Xcuda-ptxas -w -w -O3 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
+      <AdditionalOptions>-Xcuda-ptxas -w -w -O3 -std=c++17 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -ftls-model=global-dynamic -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp -Xclang -flto-visibility-public-std </AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -312,7 +318,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-lkokkoscore.dll,-lkokkoscontainers.dll,-lteuchoscore</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,-lkokkoscore.dll,-lkokkoscontainers.dll,-Bstatic,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -329,8 +335,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-LD:/TFS_Sources/Github/Compilation/trmcnealy</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>"C:\Program Files (x86)\NuGet\nuget.exe" pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform) -OutputDirectory C:\AssemblyCache\_packages</Command>
