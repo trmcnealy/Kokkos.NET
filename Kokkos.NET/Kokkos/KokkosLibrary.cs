@@ -8,6 +8,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading;
 
+using PlatformApi.Win32;
+
 namespace Kokkos
 {
     [ComVisible(true)]
@@ -52,14 +54,13 @@ namespace Kokkos
 
         private static readonly string nativeLibraryPath;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         static KokkosLibrary()
         {
-            if(Thread.CurrentThread.TrySetApartmentState(ApartmentState.STA))
-            {
-                Console.WriteLine("TrySetApartmentState Failed.");
-            }
-
             string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
             string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
 
@@ -91,11 +92,11 @@ namespace Kokkos
             //     KokkosLibraryException.Throw();
             // }
 
-            Handle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, RuntimeKokkosLibraryName + ".dll"), Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH, out ErrorCode _);
+            Handle = PlatformApi.NativeLibrary.Load(RuntimeKokkosLibraryName, out ulong _);
 
-            ModuleHandle = Kernel32.GetModuleHandleA(RuntimeKokkosLibraryName + ".dll");
+            ModuleHandle = Kernel32.Native.GetModuleHandle(RuntimeKokkosLibraryName + ".dll");
 
-            IntPtr getApiHandle = Kernel32.GetProcAddress(ModuleHandle, "GetApi");
+            IntPtr getApiHandle = PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetApi", out ulong _);
 
             if(getApiHandle == IntPtr.Zero)
             {
@@ -159,6 +160,10 @@ namespace Kokkos
                 RcpViewToNdArray = Marshal.GetDelegateForFunctionPointer<RcpViewToNdArrayDelegate>(Api.RcpViewToNdArrayPtr);
 
                 ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
+                
+                Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dSingle", out ulong _));
+
+                Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dDouble", out ulong _));
             }
             else
             {
@@ -175,7 +180,7 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Unload()
         {
-            if(!Kernel32.FreeLibrary(ModuleHandle))
+            if(!PlatformApi.NativeLibrary.Free(ModuleHandle, out ulong _))
             {
                 KokkosLibraryException.Throw(RuntimeKokkosLibraryName + "failed to unload.");
             }
@@ -300,6 +305,18 @@ namespace Kokkos
                                                       in LayoutKind         layout,
                                                       in DataTypeKind       data_type,
                                                       in ushort             rank);
+
+        public delegate IntPtr Shepard2dSingleDelegate(IntPtr                xd_rcp_view_ptr,
+                                                       IntPtr                zd_rcp_view_ptr,
+                                                       in float              p,
+                                                       IntPtr                xi_rcp_view_ptr,
+                                                       in ExecutionSpaceKind execution_space);
+
+        public delegate IntPtr Shepard2dDoubleDelegate(IntPtr                xd_rcp_view_ptr,
+                                                       IntPtr                zd_rcp_view_ptr,
+                                                       in double              p,
+                                                       IntPtr                xi_rcp_view_ptr,
+                                                       in ExecutionSpaceKind execution_space);
 
         #endregion
 
@@ -449,7 +466,11 @@ namespace Kokkos
 
         private static InitializeDelegate _initialize;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void Initialize(int      narg,
                                       string[] arg)
         {
@@ -465,7 +486,11 @@ namespace Kokkos
 
         private static InitializeThreadsDelegate _initializeThreads;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void Initialize(int num_cpu_threads,
                                       int gpu_device_id)
         {
@@ -481,7 +506,11 @@ namespace Kokkos
 
         private static InitializeArgumentsDelegate _initializeArguments;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void Initialize(in InitArguments arguments)
         {
             Load();
@@ -493,7 +522,11 @@ namespace Kokkos
 
         private static FinalizeDelegate _finalize;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void @Finalize()
         {
             _finalize();
@@ -505,7 +538,11 @@ namespace Kokkos
 
         private static FinalizeAllDelegate _finalizeAll;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static void FinalizeAll()
         {
             _finalizeAll();
@@ -517,7 +554,11 @@ namespace Kokkos
 
         private static IsInitializedDelegate _isInitialized;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static bool IsInitialized()
         {
             if(!Initialized)
@@ -562,12 +603,20 @@ namespace Kokkos
 
         public static ViewToNdArrayDelegate ViewToNdArray;
 
+        public static Shepard2dSingleDelegate Shepard2dSingle;
+
+        public static Shepard2dDoubleDelegate Shepard2dDouble;
+
         #endregion
 
         private static readonly KokkosLibraryEventArgs loadedEventArgs   = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
         private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static void OnLoaded()
         {
             Loaded?.Invoke(null, loadedEventArgs);
@@ -575,7 +624,11 @@ namespace Kokkos
             Console.WriteLine("KokkosLibrary Loaded.");
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static void OnUnloaded()
         {
             Unloaded?.Invoke(null, unloadedEventArgs);

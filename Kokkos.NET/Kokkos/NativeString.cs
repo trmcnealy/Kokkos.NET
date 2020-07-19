@@ -65,7 +65,11 @@ namespace Kokkos
 
         public IntPtr Bytes;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativeString(string @string)
         {
             if(@string[^1] != char.MinValue)
@@ -97,7 +101,11 @@ namespace Kokkos
             }
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativeString(byte* bytes,
                             int   length)
         {
@@ -117,14 +125,22 @@ namespace Kokkos
             }
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public override string ToString()
         {
             return FromToBytes(Bytes,
                                Length - 1);
         }
 
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static byte* ToBytes(string @string)
         {
             if(@string[^1] != char.MinValue)
@@ -156,7 +172,11 @@ namespace Kokkos
             return bytesPtr;
         }
 
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         internal static string FromToBytes(IntPtr bytesIntPtr,
                                            int    length)
         {
@@ -179,14 +199,22 @@ namespace Kokkos
                                            length);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public void Dispose()
         {
             DisposeUnmanaged();
             //GC.SuppressFinalize(this);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private void DisposeUnmanaged()
         {
             if(Bytes != IntPtr.Zero)

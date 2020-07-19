@@ -12,7 +12,7 @@ namespace System
     {
         private static readonly ulong SizeOfT = (ulong)Unsafe.SizeOf<T>();
 
-        internal class RawArrayData
+        public class RawArrayData
         {
 #pragma warning disable CS0649, CA1823, 169
             public ulong Length; // Array._numComponents padded to IntPtr
@@ -31,7 +31,7 @@ namespace System
         }
 
         /// <summary>A byref or a native ptr.</summary>
-        internal readonly ByReference<T> _pointer;
+        public readonly ByReference<T> _pointer;
 
         /// <summary>The number of elements this MemoryMappedPtr contains.</summary>
         private readonly ulong _length;
@@ -39,7 +39,11 @@ namespace System
         /// <summary>Creates a new read-only span over the entirety of the target array.</summary>
         /// <param name="array">The target array.</param>
         /// <remarks>Returns default when <paramref name="array" /> is null.</remarks>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public MemoryMappedPtr(T[]? array)
         {
             if(array == null)
@@ -65,7 +69,11 @@ namespace System
         ///     Thrown when the specified <paramref name="start" /> or end index
         ///     is not in the range (&lt;0 or &gt;Length).
         /// </exception>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public unsafe MemoryMappedPtr(T[]?  array,
                                       ulong start,
                                       ulong length)
@@ -108,7 +116,11 @@ namespace System
         ///     and hence cannot be stored in unmanaged memory.
         /// </exception>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the specified <paramref name="length" /> is negative.</exception>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public unsafe MemoryMappedPtr(void* pointer,
                                       ulong length)
         {
@@ -126,9 +138,13 @@ namespace System
             _length  = length;
         }
 
-        // Constructor for internal use only.
+        // Constructor for public use only.
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal MemoryMappedPtr(ref T ptr,
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
+        public MemoryMappedPtr(ref T ptr,
                                  ulong length)
         {
             _pointer = new ByReference<T>(ref ptr);
@@ -145,7 +161,11 @@ namespace System
         public unsafe ref readonly T this[ulong index]
         {
             [Intrinsic]
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             [NonVersionable]
             get
             {
@@ -236,15 +256,23 @@ namespace System
 
             /// <summary>Initialize the enumerator.</summary>
             /// <param name="span">The span to enumerate.</param>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            internal Enumerator(MemoryMappedPtr<T> span)
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
+            public Enumerator(MemoryMappedPtr<T> span)
             {
                 _span  = span;
                 _index = ulong.MaxValue;
             }
 
             /// <summary>Advances the enumerator to the next element of the span.</summary>
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             public bool MoveNext()
             {
                 ulong index = _index + 1;
@@ -262,7 +290,11 @@ namespace System
             /// <summary>Gets the element at the current position of the enumerator.</summary>
             public ref readonly T Current
             {
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
                 get { return ref _span[_index]; }
             }
         }
@@ -291,7 +323,11 @@ namespace System
         ///     <param name="destination">The span to copy items into.</param>
         ///     <exception cref="System.ArgumentException">Thrown when the destination Span is shorter than the source Span.</exception>
         /// </summary>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public void CopyTo(MemoryMappedPtr<T> destination)
         {
             // Using "if (!TryCopyTo(...))" results in two branches: one for the length
@@ -367,7 +403,11 @@ namespace System
         ///     Thrown when the specified <paramref name="start" /> index is not
         ///     in range (&lt;0 or &gt;LongLength).
         /// </exception>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public unsafe MemoryMappedPtr<T> Slice(ulong start)
         {
             if(start > _length)
@@ -385,7 +425,11 @@ namespace System
         ///     Thrown when the specified <paramref name="start" /> or end index
         ///     is not in range (&lt;0 or &gt;LongLength).
         /// </exception>
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public unsafe MemoryMappedPtr<T> Slice(ulong start,
                                                ulong length)
         {

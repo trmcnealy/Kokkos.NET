@@ -13,6 +13,9 @@
     <Filter Include="Utilities">
       <UniqueIdentifier>{449141c6-8249-43d4-89cc-ef05f71e1bd4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="KokkosLapack">
+      <UniqueIdentifier>{88edb994-b1f6-4d5e-9a4b-8da0c3954fe5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
@@ -42,10 +45,13 @@
     <ClCompile Include="runtime.Kokkos\ViewConvert.cpp">
       <Filter>runtime.Kokkos</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\cnmem.cpp">
+    <ClCompile Include="Utilities\MemoryMapped.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="Utilities\MemoryMapped.cpp">
+    <ClCompile Include="Analyzes\InterpolationMethods.cpp">
+      <Filter>Analyzes</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\GpuMemoryMap.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,17 +84,42 @@
     <ClInclude Include="Analyzes\Linq.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
-    <ClInclude Include="Utilities\cnmem.h">
-      <Filter>Utilities</Filter>
-    </ClInclude>
     <ClInclude Include="Utilities\GpuCsvReader.hpp">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Utilities\MemoryMapped.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="Analyzes\Kriging.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\InterpolationMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\GpuMemoryMap.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="KokkosLapack\gelq2.hpp">
+      <Filter>KokkosLapack</Filter>
+    </ClInclude>
+    <ClInclude Include="KokkosLapack\KokkosLapack.hpp">
+      <Filter>KokkosLapack</Filter>
+    </ClInclude>
+    <ClInclude Include="KokkosLapack\KokkosLapack.config.h">
+      <Filter>KokkosLapack</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\kNearestNeighbor.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\kMeansClustering.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\CartographicMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include="runtime.Kokkos.NET.nuspec" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,11 @@ namespace Kokkos
     {
         public LayoutKind DefaultLayout
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return LayoutKind.Left; }
         }
     }
@@ -26,7 +30,11 @@ namespace Kokkos
     {
         public LayoutKind DefaultLayout
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return LayoutKind.Right; }
         }
     }
@@ -36,7 +44,11 @@ namespace Kokkos
     {
         public LayoutKind DefaultLayout
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return LayoutKind.Right; }
         }
     }
@@ -44,7 +56,11 @@ namespace Kokkos
     public static class ExecutionSpace<T>
         where T : IExecutionSpace
     {
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static ExecutionSpaceKind GetKind()
         {
             if(typeof(T) == typeof(Serial))
@@ -66,7 +82,11 @@ namespace Kokkos
         }
 
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static LayoutKind GetLayout()
         {
             if(typeof(T) == typeof(Serial))

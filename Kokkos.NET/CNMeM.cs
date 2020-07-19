@@ -82,7 +82,7 @@ namespace Kokkos
 
         public IntPtr Handle => _handle;
 
-        public bool Equals(CUstream other) => _handle.Equals(other._handle);
+        public bool Equals(in CUstream other) => _handle.Equals(other._handle);
 
         public override bool Equals(object obj) => obj is CUstream other && Equals(other);
 
@@ -90,12 +90,12 @@ namespace Kokkos
 
         public override string ToString() => "0x" + (IntPtr.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
 
-        public static bool operator ==(CUstream left,
-                                       CUstream right) =>
+        public static bool operator ==(in CUstream left,
+                                       in CUstream right) =>
             left.Equals(right);
 
-        public static bool operator !=(CUstream left,
-                                       CUstream right) =>
+        public static bool operator !=(in CUstream left,
+                                       in CUstream right) =>
             !left.Equals(right);
     }
 
@@ -149,7 +149,11 @@ namespace Kokkos
 
         public delegate IntPtr cnmemGetErrorStringDelegate(ref CNMeMStatus status);
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         static CNMeM()
         {
             RuntimeCil.Generate(typeof(CNMeM).Assembly);

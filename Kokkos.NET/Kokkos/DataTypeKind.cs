@@ -33,7 +33,11 @@ namespace Kokkos
     internal static class DataType<T>
         where T : struct
     {
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static DataTypeKind GetKind()//bool const_value = false)
         {
             //if(const_value)

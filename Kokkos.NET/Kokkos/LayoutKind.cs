@@ -29,7 +29,11 @@ namespace Kokkos
     public static class Layout<T>
         where T : ILayout
     {
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static LayoutKind GetKind()
         {
             if(typeof(T) == typeof(LayoutLeft))

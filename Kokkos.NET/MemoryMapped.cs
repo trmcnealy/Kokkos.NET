@@ -1,14 +1,17 @@
 ﻿using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
+using System.Threading;
+using System.Threading.Tasks;
 
 using RuntimeGeneration;
 #if TARGET_64BIT
 using nuint = System.UInt64;
-
 #else
 using nuint = System.UInt32;
+
 #endif
 
 namespace System
@@ -25,7 +28,15 @@ namespace System
                                           void* src,
                                           int   size);
 
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
+#endif
         public static void Memmove<T>(ref T destination,
                                       ref T source,
                                       ulong elementCount)
@@ -70,6 +81,11 @@ namespace Kokkos
                             ulong     mappedBytes = (ulong)MapRange.WholeFile,
                             CacheHint hint        = CacheHint.Normal)
         {
+            if(!File.Exists(filename))
+            {
+                throw new FileNotFoundException();
+            }
+
             Pointer = Native.CreateAndOpen(Marshal.StringToHGlobalAnsi(filename), mappedBytes, hint);
         }
 
@@ -108,7 +124,7 @@ namespace Kokkos
 
         public byte[] GetData()
         {
-            int length = Size();
+            int length = Length();
 
             byte[] bytes = new byte[length];
 
@@ -119,6 +135,14 @@ namespace Kokkos
             return bytes;
         }
 
+        public UnmanagedMemoryStream AsStream()
+        {
+            unsafe
+            {
+                return new UnmanagedMemoryStream((byte*)Pointer.ToPointer(), (long)Size());
+            }
+        }
+
         //public unsafe ReadOnlySpan<byte> GetReadOnlySpan()
         //{
         //    return new ReadOnlySpan<byte>(Native.GetData(Pointer).ToPointer(), (int)Size());
@@ -126,7 +150,18 @@ namespace Kokkos
 
         public unsafe ReadOnlySpan<byte> GetDataPointer()
         {
-            return new ReadOnlySpan<byte>(Native.GetData(Pointer).ToPointer(), Size());
+            if(Size() > 2147483647)
+            {
+                throw new Exception("Retards at Microsoft limited ReadOnlySpan to 2147483647 bytes. Use the GetPointer method.");
+            }
+
+            return new ReadOnlySpan<byte>(Native.GetData(Pointer).ToPointer(), Length());
+        }
+
+        public unsafe T* GetPointer<T>()
+            where T : unmanaged
+        {
+            return (T*)Native.GetData(Pointer).ToPointer();
         }
 
         public bool IsValid()
@@ -134,9 +169,14 @@ namespace Kokkos
             return Native.IsValid(Pointer);
         }
 
-        public int Size()
+        public int Length()
         {
             return (int)Native.Size(Pointer);
+        }
+
+        public ulong Size()
+        {
+            return Native.Size(Pointer);
         }
 
         public ulong MappedSize()
@@ -217,7 +257,11 @@ namespace Kokkos
             [NativeCall(LibraryName, "Remap", true)]
             public static RemapDelegate Remap;
 
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             static Native()
             {
                 RuntimeCil.Generate(typeof(MemoryMapped).Assembly);

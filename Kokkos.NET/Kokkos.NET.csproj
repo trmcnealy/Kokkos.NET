@@ -22,6 +22,8 @@
     <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
     <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
     <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
+    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">NETSTANDARD</DefineConstants>
+    <DefineConstants Condition="'$(TargetFramework)'=='netcoreapp3.1'">NETCOREAPP</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,8 +32,11 @@
 
   <ItemGroup>
     <Compile Remove="CNMeM.cs" />
+    <Compile Remove="Kokkos\ErrorCode.cs" />
+    <Compile Remove="Kokkos\Kernel32.cs" />
     <Compile Remove="Kokkos\NativeArray.cs" />
     <Compile Remove="MemoryMappedPtr.cs" />
+    <Compile Remove="MemoryMappedStream.cs" />
     <Compile Remove="Nvml.cs" />
   </ItemGroup>
 
@@ -42,22 +47,34 @@
       <PackagePath></PackagePath>
     </None>
     <None Include="CNMeM.cs" />
+    <None Include="Kokkos\ErrorCode.cs" />
+    <None Include="Kokkos\Kernel32.cs" />
     <None Include="Kokkos\NativeArray.cs" />
     <None Include="MemoryMappedPtr.cs" />
     <None Include="Nvml.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
     <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
     <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
-    <PackageReference Include="RuntimeGeneration" Version="1.1.0" />
+    <PackageReference Include="PlatformApi" Version="1.0.0" />
+    <PackageReference Include="RuntimeGeneration" Version="1.3.0" />
     <PackageReference Include="System.Management" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="MemoryMappedStream.cs" />
+  </ItemGroup>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(KOKKOS_VERSION);RuntimeVersion=$(RUNTIME_KOKKOS_VERSION) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\kokkos.net" />
   </Target>
+
+  <ItemGroup>
+    <!--<Analyzer Include="..\..\Utilities\CodeGeneration\CodeGeneration.csproj"/>-->
+  </ItemGroup>
 
 </Project>

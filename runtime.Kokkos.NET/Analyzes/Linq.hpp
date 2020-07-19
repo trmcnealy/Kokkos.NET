@@ -16,21 +16,25 @@
 #include <type_traits>
 #include <vector>
 
-namespace linq
+namespace Linq
 {
+#define __always_inline __attribute__((always_inline))
+#define __flatten __attribute__((flatten))
+#define __forceinline __inline
+
     typedef std::size_t size_type;
 
-    struct base_exception : std::exception
+    struct BaseException : std::exception
     {
         virtual const char* what() const noexcept { return "base_exception"; }
     };
 
-    struct programming_error_exception : base_exception
+    struct ProgrammingErrorException : BaseException
     {
         virtual const char* what() const noexcept { return "programming_error_exception"; }
     };
 
-    struct sequence_empty_exception : base_exception
+    struct SequenceEmptyException : BaseException
     {
         virtual const char* what() const noexcept { return "sequence_empty_exception"; }
     };
@@ -42,57 +46,57 @@ namespace linq
         size_type const invalid_size = static_cast<size_type>(-1);
 
         template<typename TValue>
-        struct cleanup_type
+        struct CleanupType
         {
             typedef typename std::remove_const<typename std::remove_reference<TValue>::type>::type type;
         };
 
         template<typename TRangeBuilder, typename TRange>
-        struct get_builtup_type
+        struct GetBuiltupType
         {
-            static TRangeBuilder get_builder();
-            static TRange        get_range();
+            static TRangeBuilder GetBuilder();
+            static TRange        GetRange();
 
-            typedef decltype(get_builder().build(get_range())) type;
+            typedef decltype(GetBuilder().build(GetRange())) type;
         };
 
         template<typename TPredicate, typename TValue>
-        struct get_transformed_type
+        struct GetTransformedType
         {
-            static TValue     get_value();
-            static TPredicate get_predicate();
+            static TValue     GetValue();
+            static TPredicate GetPredicate();
 
-            typedef decltype(get_predicate()(get_value())) raw_type;
-            typedef typename cleanup_type<raw_type>::type  type;
+            typedef decltype(GetPredicate()(GetValue())) raw_type;
+            typedef typename CleanupType<raw_type>::type type;
         };
 
         template<typename TArray>
-        struct get_array_properties;
+        struct GetArrayProperties;
 
         template<typename TValue, int Size>
-        struct get_array_properties<TValue[Size]>
+        struct GetArrayProperties<TValue[Size]>
         {
             enum
             {
                 size = Size,
             };
 
-            typedef typename cleanup_type<TValue>::type value_type;
-            typedef value_type const*                   iterator_type;
+            typedef typename CleanupType<TValue>::type value_type;
+            typedef value_type const*                  iterator_type;
         };
 
         template<typename TValue>
-        struct opt
+        struct Opt
         {
             typedef TValue value_type;
 
-            KOKKOS_INLINE_FUNCTION opt() noexcept : is_initialized(false) {}
+            __forceinline Opt() noexcept : is_initialized(false) {}
 
-            KOKKOS_INLINE_FUNCTION explicit opt(value_type&& value) : is_initialized(true) { new(&storage) value_type(std::move(value)); }
+            __forceinline explicit Opt(value_type&& value) : is_initialized(true) { new(&storage) value_type(std::move(value)); }
 
-            KOKKOS_INLINE_FUNCTION explicit opt(value_type const& value) : is_initialized(true) { new(&storage) value_type(value); }
+            __forceinline explicit Opt(value_type const& value) : is_initialized(true) { new(&storage) value_type(value); }
 
-            KOKKOS_INLINE_FUNCTION ~opt() noexcept
+            __forceinline ~Opt() noexcept
             {
                 auto ptr = get_ptr();
                 if(ptr)
@@ -102,7 +106,7 @@ namespace linq
                 is_initialized = false;
             }
 
-            KOKKOS_INLINE_FUNCTION opt(opt const& v) : is_initialized(v.is_initialized)
+            __forceinline Opt(Opt const& v) : is_initialized(v.is_initialized)
             {
                 if(v.is_initialized)
                 {
@@ -110,7 +114,7 @@ namespace linq
                 }
             }
 
-            KOKKOS_INLINE_FUNCTION opt(opt&& v) noexcept : is_initialized(v.is_initialized)
+            __forceinline Opt(Opt&& v) noexcept : is_initialized(v.is_initialized)
             {
                 if(v.is_initialized)
                 {
@@ -119,7 +123,7 @@ namespace linq
                 v.is_initialized = false;
             }
 
-            KOKKOS_FUNCTION void swap(opt& v)
+            KOKKOS_FUNCTION void swap(Opt& v) noexcept
             {
                 if(is_initialized && v.is_initialized)
                 {
@@ -147,21 +151,21 @@ namespace linq
                 }
             }
 
-            KOKKOS_INLINE_FUNCTION opt& operator=(opt const& v)
+            __forceinline Opt& operator=(Opt const& v)
             {
                 if(this == std::addressof(v))
                 {
                     return *this;
                 }
 
-                opt<value_type> o(v);
+                Opt<value_type> o(v);
 
                 swap(o);
 
                 return *this;
             }
 
-            KOKKOS_INLINE_FUNCTION opt& operator=(opt&& v)
+            __forceinline Opt& operator=(Opt&& v) noexcept
             {
                 if(this == std::addressof(v))
                 {
@@ -173,64 +177,58 @@ namespace linq
                 return *this;
             }
 
-            KOKKOS_INLINE_FUNCTION opt& operator=(value_type v) { return *this = opt(std::move(v)); }
+            __forceinline Opt& operator=(value_type v) { return *this = Opt(std::move(v)); }
 
-            KOKKOS_INLINE_FUNCTION void clear() noexcept
+            __forceinline void clear() noexcept
             {
-                opt empty;
+                Opt empty;
                 swap(empty);
             }
 
-            KOKKOS_INLINE_FUNCTION value_type const* get_ptr() const noexcept
+            __forceinline value_type const* get_ptr() const noexcept
             {
                 if(is_initialized)
                 {
                     return reinterpret_cast<value_type const*>(&storage);
                 }
-                else
-                {
-                    return nullptr;
-                }
+                return nullptr;
             }
 
-            KOKKOS_INLINE_FUNCTION value_type* get_ptr() noexcept
+            __forceinline value_type* get_ptr() noexcept
             {
                 if(is_initialized)
                 {
                     return reinterpret_cast<value_type*>(&storage);
                 }
-                else
-                {
-                    return nullptr;
-                }
+                return nullptr;
             }
 
-            KOKKOS_INLINE_FUNCTION value_type const& get() const noexcept
+            __forceinline value_type const& get() const noexcept
             {
                 Assert(is_initialized);
                 return *get_ptr();
             }
 
-            KOKKOS_INLINE_FUNCTION value_type& get() noexcept
+            __forceinline value_type& get() noexcept
             {
                 Assert(is_initialized);
                 return *get_ptr();
             }
 
-            KOKKOS_INLINE_FUNCTION bool has_value() const noexcept { return is_initialized; }
+            __forceinline bool has_value() const noexcept { return is_initialized; }
 
             // TODO: To be replaced with explicit operator bool ()
-            typedef bool (opt::*type_safe_bool_type)() const;
+            typedef bool (Opt::*type_safe_bool_type)() const;
 
-            KOKKOS_INLINE_FUNCTION operator type_safe_bool_type() const noexcept { return is_initialized ? &opt::has_value : nullptr; }
+            __forceinline operator type_safe_bool_type() const noexcept { return is_initialized ? &Opt::has_value : nullptr; }
 
-            KOKKOS_INLINE_FUNCTION value_type const& operator*() const noexcept { return get(); }
+            __forceinline value_type const& operator*() const noexcept { return get(); }
 
-            KOKKOS_INLINE_FUNCTION value_type& operator*() noexcept { return get(); }
+            __forceinline value_type& operator*() noexcept { return get(); }
 
-            KOKKOS_INLINE_FUNCTION value_type const* operator->() const noexcept { return get_ptr(); }
+            __forceinline value_type const* operator->() const noexcept { return get_ptr(); }
 
-            KOKKOS_INLINE_FUNCTION value_type* operator->() noexcept { return get_ptr(); }
+            __forceinline value_type* operator->() noexcept { return get_ptr(); }
 
         private:
             typedef typename std::aligned_storage<sizeof(value_type), std::alignment_of<value_type>::value>::type storage_type;
@@ -238,14 +236,14 @@ namespace linq
             storage_type storage;
             bool         is_initialized;
 
-            KOKKOS_INLINE_FUNCTION static void move(storage_type* to, storage_type* from) noexcept
+            __forceinline static void move(storage_type* to, storage_type* from) noexcept
             {
                 auto f = reinterpret_cast<value_type*>(from);
                 new(to) value_type(std::move(*f));
                 f->~value_type();
             }
 
-            KOKKOS_INLINE_FUNCTION static void copy(storage_type* to, storage_type const* from)
+            __forceinline static void copy(storage_type* to, storage_type const* from)
             {
                 auto f = reinterpret_cast<value_type const*>(from);
                 new(to) value_type(*f);
@@ -275,57 +273,57 @@ namespace linq
         //      template<typename TRange>
         //      TAggregated build (TRange range) const
 
-        struct base_range
+        struct BaseRange
         {
 #ifdef CPPLINQ_DETECT_INVALID_METHODS
         protected:
             // In order to prevent object slicing
 
-            KOKKOS_INLINE_FUNCTION base_range() noexcept {}
+            __forceinline base_range() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION base_range(base_range const&) noexcept {}
+            __forceinline base_range(base_range const&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION base_range(base_range&&) noexcept {}
+            __forceinline base_range(base_range&&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION ~base_range() noexcept {}
+            __forceinline ~base_range() noexcept {}
 
         private:
-            KOKKOS_INLINE_FUNCTION base_range& operator=(base_range const&);
-            KOKKOS_INLINE_FUNCTION base_range& operator=(base_range&&);
+            __forceinline base_range& operator=(base_range const&);
+            __forceinline base_range& operator=(base_range&&);
 #endif
         };
 
-        struct base_builder
+        struct BaseBuilder
         {
 #ifdef CPPLINQ_DETECT_INVALID_METHODS
         protected:
             // In order to prevent object slicing
 
-            KOKKOS_INLINE_FUNCTION base_builder() noexcept {}
+            __forceinline base_builder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION base_builder(base_builder const&) noexcept {}
+            __forceinline base_builder(base_builder const&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION base_builder(base_builder&&) noexcept {}
+            __forceinline base_builder(base_builder&&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION ~base_builder() noexcept {}
+            __forceinline ~base_builder() noexcept {}
 
         private:
-            KOKKOS_INLINE_FUNCTION base_builder& operator=(base_builder const&);
-            KOKKOS_INLINE_FUNCTION base_builder& operator=(base_builder&&);
+            __forceinline base_builder& operator=(base_builder const&);
+            __forceinline base_builder& operator=(base_builder&&);
 #endif
         };
 
         template<typename TValueIterator>
-        struct from_range : base_range
+        struct FromRange : BaseRange
         {
-            static TValueIterator get_iterator();
+            static TValueIterator GetIterator();
 
-            typedef from_range<TValueIterator> this_type;
-            typedef TValueIterator             iterator_type;
+            typedef FromRange<TValueIterator> this_type;
+            typedef TValueIterator            iterator_type;
 
-            typedef decltype(*get_iterator())                   raw_value_type;
-            typedef typename cleanup_type<raw_value_type>::type value_type;
-            typedef value_type const&                           return_type;
+            typedef decltype(*GetIterator())                   raw_value_type;
+            typedef typename CleanupType<raw_value_type>::type value_type;
+            typedef value_type const&                          return_type;
             enum
             {
                 returns_reference = 1,
@@ -335,19 +333,19 @@ namespace linq
             iterator_type upcoming;
             iterator_type end;
 
-            KOKKOS_INLINE_FUNCTION from_range(iterator_type begin, iterator_type end) noexcept : current(std::move(begin)), upcoming(current), end(std::move(end)) {}
+            __forceinline FromRange(iterator_type begin, iterator_type end) noexcept : current(std::move(begin)), upcoming(current), end(std::move(end)) {}
 
-            KOKKOS_INLINE_FUNCTION from_range(from_range const& v) noexcept : current(v.current), upcoming(v.upcoming), end(v.end) {}
+            __forceinline FromRange(FromRange const& v) noexcept : current(v.current), upcoming(v.upcoming), end(v.end) {}
 
-            KOKKOS_INLINE_FUNCTION from_range(from_range&& v) noexcept : current(std::move(v.current)), upcoming(std::move(v.upcoming)), end(std::move(v.end)) {}
+            __forceinline FromRange(FromRange&& v) noexcept : current(std::move(v.current)), upcoming(std::move(v.upcoming)), end(std::move(v.end)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(current != upcoming);
                 Assert(current != end);
@@ -355,7 +353,7 @@ namespace linq
                 return *current;
             }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
                 if(upcoming == end)
                 {
@@ -369,9 +367,9 @@ namespace linq
         };
 
         template<typename TContainer>
-        struct from_copy_range : base_range
+        struct FromCopyRange : BaseRange
         {
-            typedef from_copy_range<TContainer> this_type;
+            typedef FromCopyRange<TContainer> this_type;
 
             typedef TContainer                          container_type;
             typedef typename TContainer::const_iterator iterator_type;
@@ -388,24 +386,29 @@ namespace linq
             iterator_type upcoming;
             iterator_type end;
 
-            KOKKOS_INLINE_FUNCTION from_copy_range(container_type&& container) : container(std::move(container)), current(container.begin()), upcoming(container.begin()), end(container.end()) {}
+            __forceinline FromCopyRange(container_type&& container) :
+                container(std::move(container)), current(container.begin()), upcoming(container.begin()), end(container.end())
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION from_copy_range(container_type const& container) : container(container), current(container.begin()), upcoming(container.begin()), end(container.end()) {}
+            __forceinline FromCopyRange(container_type const& container) : container(container), current(container.begin()), upcoming(container.begin()), end(container.end())
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION from_copy_range(from_copy_range const& v) : container(v.container), current(v.current), upcoming(v.upcoming), end(v.end) {}
+            __forceinline FromCopyRange(FromCopyRange const& v) : container(v.container), current(v.current), upcoming(v.upcoming), end(v.end) {}
 
-            KOKKOS_INLINE_FUNCTION from_copy_range(from_copy_range&& v) noexcept :
+            __forceinline FromCopyRange(FromCopyRange&& v) noexcept :
                 container(std::move(v.container)), current(std::move(v.current)), upcoming(std::move(v.upcoming)), end(std::move(v.end))
             {
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(current != upcoming);
                 Assert(current != end);
@@ -413,7 +416,7 @@ namespace linq
                 return *current;
             }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
                 if(upcoming == end)
                 {
@@ -426,11 +429,11 @@ namespace linq
             }
         };
 
-        struct int_range : base_range
+        struct IntRange : BaseRange
         {
-            typedef int_range this_type;
-            typedef int       value_type;
-            typedef int       return_type;
+            typedef IntRange this_type;
+            typedef int      value_type;
+            typedef int      return_type;
             enum
             {
                 returns_reference = 0,
@@ -439,31 +442,31 @@ namespace linq
             int current;
             int end;
 
-            static int get_current(int begin, int end)
+            static int GetCurrent(int begin, int end)
             {
                 return (begin < end ? begin : end) - 1; // -1 in order to start one-step before the first element
             }
 
-            static int get_end(int begin, int end) // -1 in order to avoid an extra test in next
+            static int GetEnd(int begin, int end) // -1 in order to avoid an extra test in next
             {
                 return (begin < end ? end : begin) - 1;
             }
 
-            KOKKOS_INLINE_FUNCTION int_range(int begin, int end) noexcept : current(get_current(begin, end)), end(get_end(begin, end)) {}
+            __forceinline IntRange(const int begin, const int end) noexcept : current(GetCurrent(begin, end)), end(GetEnd(begin, end)) {}
 
-            KOKKOS_INLINE_FUNCTION int_range(int_range const& v) noexcept : current(v.current), end(v.end) {}
+            __forceinline IntRange(IntRange const& v) noexcept : current(v.current), end(v.end) {}
 
-            KOKKOS_INLINE_FUNCTION int_range(int_range&& v) noexcept : current(std::move(v.current)), end(std::move(v.end)) {}
+            __forceinline IntRange(IntRange&& v) noexcept : current(std::move(v.current)), end(std::move(v.end)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return current; }
+            __forceinline return_type Front() const { return current; }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
                 if(current >= end)
                 {
@@ -477,11 +480,11 @@ namespace linq
         };
 
         template<typename TValue>
-        struct repeat_range : base_range
+        struct RepeatRange : BaseRange
         {
-            typedef repeat_range<TValue> this_type;
-            typedef TValue               value_type;
-            typedef TValue               return_type;
+            typedef RepeatRange<TValue> this_type;
+            typedef TValue              value_type;
+            typedef TValue              return_type;
             enum
             {
                 returns_reference = 0,
@@ -490,21 +493,21 @@ namespace linq
             TValue    value;
             size_type remaining;
 
-            KOKKOS_INLINE_FUNCTION repeat_range(value_type element, size_type count) noexcept : value(std::move(element)), remaining(count) {}
+            __forceinline RepeatRange(value_type element, const size_type count) noexcept : value(std::move(element)), remaining(count) {}
 
-            KOKKOS_INLINE_FUNCTION repeat_range(repeat_range const& v) noexcept : value(v.value), remaining(v.remaining) {}
+            __forceinline RepeatRange(RepeatRange const& v) noexcept : value(v.value), remaining(v.remaining) {}
 
-            KOKKOS_INLINE_FUNCTION repeat_range(repeat_range&& v) noexcept : value(std::move(v.value)), remaining(std::move(v.remaining)) {}
+            __forceinline RepeatRange(RepeatRange&& v) noexcept : value(std::move(v.value)), remaining(std::move(v.remaining)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return value; }
+            __forceinline return_type Front() const { return value; }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
                 if(remaining == 0U)
                 {
@@ -518,43 +521,43 @@ namespace linq
         };
 
         template<typename TValue>
-        struct empty_range : base_range
+        struct EmptyRange : BaseRange
         {
-            typedef empty_range<TValue> this_type;
-            typedef TValue              value_type;
-            typedef TValue              return_type;
+            typedef EmptyRange<TValue> this_type;
+            typedef TValue             value_type;
+            typedef TValue             return_type;
             enum
             {
                 returns_reference = 0,
             };
 
-            KOKKOS_INLINE_FUNCTION empty_range() noexcept {}
+            __forceinline EmptyRange() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION empty_range(empty_range const& v) noexcept {}
+            __forceinline EmptyRange(EmptyRange const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION empty_range(empty_range&& v) noexcept {}
+            __forceinline EmptyRange(EmptyRange&& v) noexcept {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(false);
-                throw programming_error_exception();
+                throw ProgrammingErrorException();
             }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept { return false; }
+            __forceinline bool Next() noexcept { return false; }
         };
 
         template<typename TValue>
-        struct singleton_range : base_range
+        struct SingletonRange : BaseRange
         {
-            typedef singleton_range<TValue> this_type;
-            typedef TValue                  value_type;
-            typedef TValue const&           return_type;
+            typedef SingletonRange<TValue> this_type;
+            typedef TValue                 value_type;
+            typedef TValue const&          return_type;
 
             enum
             {
@@ -564,56 +567,56 @@ namespace linq
             value_type value;
             bool       done;
 
-            KOKKOS_INLINE_FUNCTION singleton_range(TValue const& value) : value(value), done(false) {}
+            __forceinline SingletonRange(TValue const& value) : value(value), done(false) {}
 
-            KOKKOS_INLINE_FUNCTION singleton_range(TValue&& value) noexcept : value(std::move(value)), done(false) {}
+            __forceinline SingletonRange(TValue&& value) noexcept : value(std::move(value)), done(false) {}
 
-            KOKKOS_INLINE_FUNCTION singleton_range(singleton_range const& v) noexcept : value(v.value), done(v.done) {}
+            __forceinline SingletonRange(SingletonRange const& v) noexcept : value(v.value), done(v.done) {}
 
-            KOKKOS_INLINE_FUNCTION singleton_range(singleton_range&& v) noexcept : value(std::move(v.value)), done(std::move(v.done)) {}
+            __forceinline SingletonRange(SingletonRange&& v) noexcept : value(std::move(v.value)), done(std::move(v.done)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const noexcept { return value; }
+            __forceinline return_type Front() const noexcept { return value; }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
-                auto d = done;
-                done   = true;
+                const auto d = done;
+                done         = true;
                 return !d;
             }
         };
 
-        struct sorting_range : base_range
+        struct SortingRange : BaseRange
         {
 #ifdef CPPLINQ_DETECT_INVALID_METHODS
         protected:
             // In order to prevent object slicing
 
-            KOKKOS_INLINE_FUNCTION sorting_range() noexcept {}
+            __forceinline sorting_range() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION sorting_range(sorting_range const&) noexcept {}
+            __forceinline sorting_range(sorting_range const&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION sorting_range(sorting_range&&) noexcept {}
+            __forceinline sorting_range(sorting_range&&) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION ~sorting_range() noexcept {}
+            __forceinline ~sorting_range() noexcept {}
 
         private:
-            KOKKOS_INLINE_FUNCTION sorting_range& operator=(sorting_range const&);
-            KOKKOS_INLINE_FUNCTION sorting_range& operator=(sorting_range&&);
+            __forceinline sorting_range& operator=(sorting_range const&);
+            __forceinline sorting_range& operator=(sorting_range&&);
 #endif
         };
 
         template<typename TRange, typename TPredicate>
-        struct orderby_range : sorting_range
+        struct OrderbyRange : SortingRange
         {
-            typedef orderby_range<TRange, TPredicate> this_type;
-            typedef TRange                            range_type;
-            typedef TPredicate                        predicate_type;
+            typedef OrderbyRange<TRange, TPredicate> this_type;
+            typedef TRange                           range_type;
+            typedef TPredicate                       predicate_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type forwarding_return_type;
@@ -631,54 +634,56 @@ namespace linq
             size_type               current;
             std::vector<value_type> sorted_values;
 
-            KOKKOS_INLINE_FUNCTION orderby_range(range_type range, predicate_type predicate, bool sort_ascending) noexcept :
+            __forceinline OrderbyRange(range_type range, predicate_type predicate, const bool sort_ascending) noexcept :
                 range(std::move(range)), predicate(std::move(predicate)), sort_ascending(sort_ascending), current(invalid_size)
             {
-                static_assert(!std::is_convertible<range_type, sorting_range>::value, "orderby may not follow orderby or thenby");
+                static_assert(!std::is_convertible<range_type, SortingRange>::value, "orderby may not follow orderby or thenby");
             }
 
-            KOKKOS_INLINE_FUNCTION orderby_range(orderby_range const& v) : range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values)
+            __forceinline OrderbyRange(OrderbyRange const& v) :
+                range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values)
             {
             }
 
-            KOKKOS_INLINE_FUNCTION orderby_range(orderby_range&& v) noexcept :
-                range(std::move(v.range)), predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)), current(std::move(v.current)), sorted_values(std::move(v.sorted_values))
+            __forceinline OrderbyRange(OrderbyRange&& v) noexcept :
+                range(std::move(v.range)),
+                predicate(std::move(v.predicate)),
+                sort_ascending(std::move(v.sort_ascending)),
+                current(std::move(v.current)),
+                sorted_values(std::move(v.sorted_values))
             {
             }
 
-            KOKKOS_INLINE_FUNCTION forwarding_return_type forwarding_front() const { return range.front(); }
+            __forceinline forwarding_return_type ForwardingFront() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool forwarding_next() { return range.next(); }
+            __forceinline bool ForwardingNext() { return range.Next(); }
 
-            KOKKOS_INLINE_FUNCTION bool compare_values(value_type const& l, value_type const& r) const
+            __forceinline bool CompareValues(value_type const& l, value_type const& r) const
             {
                 if(sort_ascending)
                 {
                     return predicate(l) < predicate(r);
                 }
-                else
-                {
-                    return predicate(r) < predicate(l);
-                }
+                return predicate(r) < predicate(l);
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return sorted_values[current]; }
+            __forceinline return_type Front() const { return sorted_values[current]; }
 
-            KOKKOS_FUNCTION bool next()
+            KOKKOS_FUNCTION bool Next()
             {
                 if(current == invalid_size)
                 {
                     sorted_values.clear();
 
-                    while(range.next())
+                    while(range.Next())
                     {
-                        sorted_values.push_back(range.front());
+                        sorted_values.push_back(range.Front());
                     }
 
                     if(sorted_values.size() == 0)
@@ -686,7 +691,7 @@ namespace linq
                         return false;
                     }
 
-                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->compare_values(l, r); });
+                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->CompareValues(l, r); });
 
                     current = 0U;
                     return true;
@@ -702,33 +707,36 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct orderby_builder : base_builder
+        struct OrderbyBuilder : BaseBuilder
         {
-            typedef orderby_builder<TPredicate> this_type;
-            typedef TPredicate                  predicate_type;
+            typedef OrderbyBuilder<TPredicate> this_type;
+            typedef TPredicate                 predicate_type;
 
             predicate_type predicate;
             bool           sort_ascending;
 
-            KOKKOS_INLINE_FUNCTION explicit orderby_builder(predicate_type predicate, bool sort_ascending) noexcept : predicate(std::move(predicate)), sort_ascending(sort_ascending) {}
+            __forceinline explicit OrderbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept :
+                predicate(std::move(predicate)), sort_ascending(sort_ascending)
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION orderby_builder(orderby_builder const& v) : predicate(v.predicate), sort_ascending(v.sort_ascending) {}
+            __forceinline OrderbyBuilder(OrderbyBuilder const& v) : predicate(v.predicate), sort_ascending(v.sort_ascending) {}
 
-            KOKKOS_INLINE_FUNCTION orderby_builder(orderby_builder&& v) noexcept : predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)) {}
+            __forceinline OrderbyBuilder(OrderbyBuilder&& v) noexcept : predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION orderby_range<TRange, TPredicate> build(TRange range) const
+            __forceinline OrderbyRange<TRange, TPredicate> Build(TRange range) const
             {
-                return orderby_range<TRange, TPredicate>(std::move(range), predicate, sort_ascending);
+                return OrderbyRange<TRange, TPredicate>(std::move(range), predicate, sort_ascending);
             }
         };
 
         template<typename TRange, typename TPredicate>
-        struct thenby_range : sorting_range
+        struct ThenbyRange : SortingRange
         {
-            typedef thenby_range<TRange, TPredicate> this_type;
-            typedef TRange                           range_type;
-            typedef TPredicate                       predicate_type;
+            typedef ThenbyRange<TRange, TPredicate> this_type;
+            typedef TRange                          range_type;
+            typedef TPredicate                      predicate_type;
 
             typedef typename TRange::value_type             value_type;
             typedef typename TRange::forwarding_return_type forwarding_return_type;
@@ -746,30 +754,37 @@ namespace linq
             size_type               current;
             std::vector<value_type> sorted_values;
 
-            KOKKOS_INLINE_FUNCTION thenby_range(range_type range, predicate_type predicate, bool sort_ascending) noexcept :
+            __forceinline ThenbyRange(range_type range, predicate_type predicate, const bool sort_ascending) noexcept :
                 range(std::move(range)), predicate(std::move(predicate)), sort_ascending(sort_ascending), current(invalid_size)
             {
-                static_assert(std::is_convertible<range_type, sorting_range>::value, "thenby may only follow orderby or thenby");
+                static_assert(std::is_convertible<range_type, SortingRange>::value, "thenby may only follow orderby or thenby");
             }
 
-            KOKKOS_INLINE_FUNCTION thenby_range(thenby_range const& v) : range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values) {}
+            __forceinline ThenbyRange(ThenbyRange const& v) :
+                range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values)
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION thenby_range(thenby_range&& v) noexcept :
-                range(std::move(v.range)), predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)), current(std::move(v.current)), sorted_values(std::move(v.sorted_values))
+            __forceinline ThenbyRange(ThenbyRange&& v) noexcept :
+                range(std::move(v.range)),
+                predicate(std::move(v.predicate)),
+                sort_ascending(std::move(v.sort_ascending)),
+                current(std::move(v.current)),
+                sorted_values(std::move(v.sorted_values))
             {
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION forwarding_return_type forwarding_front() const { return range.front(); }
+            __forceinline forwarding_return_type ForwardingFront() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool forwarding_next() { return range.next(); }
+            __forceinline bool ForwardingNext() { return range.Next(); }
 
-            KOKKOS_INLINE_FUNCTION bool compare_values(value_type const& l, value_type const& r) const
+            __forceinline bool CompareValues(value_type const& l, value_type const& r) const
             {
                 auto pless = range.compare_values(l, r);
                 if(pless)
@@ -787,15 +802,12 @@ namespace linq
                 {
                     return predicate(l) < predicate(r);
                 }
-                else
-                {
-                    return predicate(r) < predicate(l);
-                }
+                return predicate(r) < predicate(l);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return sorted_values[current]; }
+            __forceinline return_type Front() const { return sorted_values[current]; }
 
-            KOKKOS_FUNCTION bool next()
+            KOKKOS_FUNCTION bool Next()
             {
                 if(current == invalid_size)
                 {
@@ -811,7 +823,7 @@ namespace linq
                         return false;
                     }
 
-                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->compare_values(l, r); });
+                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->CompareValues(l, r); });
 
                     current = 0U;
                     return true;
@@ -827,32 +839,37 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct thenby_builder : base_builder
+        struct ThenbyBuilder : BaseBuilder
         {
-            typedef thenby_builder<TPredicate> this_type;
-            typedef TPredicate                 predicate_type;
+            typedef ThenbyBuilder<TPredicate> this_type;
+            typedef TPredicate                predicate_type;
 
             predicate_type predicate;
             bool           sort_ascending;
 
-            KOKKOS_INLINE_FUNCTION explicit thenby_builder(predicate_type predicate, bool sort_ascending) noexcept : predicate(std::move(predicate)), sort_ascending(sort_ascending) {}
+            __forceinline explicit ThenbyBuilder(predicate_type predicate, bool sort_ascending) noexcept;
 
-            KOKKOS_INLINE_FUNCTION thenby_builder(thenby_builder const& v) : predicate(v.predicate), sort_ascending(v.sort_ascending) {}
+            __forceinline ThenbyBuilder(ThenbyBuilder const& v) : predicate(v.predicate), sort_ascending(v.sort_ascending) {}
 
-            KOKKOS_INLINE_FUNCTION thenby_builder(thenby_builder&& v) noexcept : predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)) {}
+            __forceinline ThenbyBuilder(ThenbyBuilder&& v) noexcept : predicate(std::move(v.predicate)), sort_ascending(std::move(v.sort_ascending)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION thenby_range<TRange, TPredicate> build(TRange range) const
+            __forceinline ThenbyRange<TRange, TPredicate> Build(TRange range) const
             {
-                return thenby_range<TRange, TPredicate>(std::move(range), predicate, sort_ascending);
+                return ThenbyRange<TRange, TPredicate>(std::move(range), predicate, sort_ascending);
             }
         };
 
-        template<typename TRange>
-        struct reverse_range : base_range
+        template<typename TPredicate>
+        ThenbyBuilder<TPredicate>::ThenbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept : predicate(std::move(predicate)), sort_ascending(sort_ascending)
         {
-            typedef reverse_range<TRange> this_type;
-            typedef TRange                range_type;
+        }
+
+        template<typename TRange>
+        struct ReverseRange : BaseRange
+        {
+            typedef ReverseRange<TRange> this_type;
+            typedef TRange               range_type;
 
             typedef typename TRange::value_type value_type;
             typedef value_type const&           return_type;
@@ -869,26 +886,29 @@ namespace linq
             std::vector<value_type> reversed;
             bool                    start;
 
-            KOKKOS_INLINE_FUNCTION reverse_range(range_type range, size_type capacity) noexcept : range(std::move(range)), capacity(capacity), start(true) {}
+            __forceinline ReverseRange(range_type range, const size_type capacity) noexcept : range(std::move(range)), capacity(capacity), start(true) {}
 
-            KOKKOS_INLINE_FUNCTION reverse_range(reverse_range const& v) noexcept : range(v.range), capacity(v.capacity), reversed(v.reversed), start(v.start) {}
+            __forceinline ReverseRange(ReverseRange const& v) noexcept : range(v.range), capacity(v.capacity), reversed(v.reversed), start(v.start) {}
 
-            KOKKOS_INLINE_FUNCTION reverse_range(reverse_range&& v) noexcept : range(std::move(v.range)), capacity(std::move(v.capacity)), reversed(std::move(v.reversed)), start(std::move(v.start)) {}
+            __forceinline ReverseRange(ReverseRange&& v) noexcept :
+                range(std::move(v.range)), capacity(std::move(v.capacity)), reversed(std::move(v.reversed)), start(std::move(v.start))
+            {
+            }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const noexcept
+            __forceinline return_type Front() const noexcept
             {
                 Assert(!start);
                 Assert(!reversed.empty());
                 return reversed[reversed.size() - 1];
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(start)
                 {
@@ -897,9 +917,9 @@ namespace linq
                     reversed.clear();
                     reversed.reserve(capacity);
 
-                    while(range.next())
+                    while(range.Next())
                     {
-                        reversed.push_back(range.front());
+                        reversed.push_back(range.Front());
                     }
 
                     return !reversed.empty();
@@ -916,31 +936,31 @@ namespace linq
             }
         };
 
-        struct reverse_builder : base_builder
+        struct ReverseBuilder : BaseBuilder
         {
-            typedef reverse_builder this_type;
+            typedef ReverseBuilder this_type;
 
             size_type capacity;
 
-            KOKKOS_INLINE_FUNCTION reverse_builder(size_type capacity) noexcept : capacity(capacity) {}
+            __forceinline ReverseBuilder(const size_type capacity) noexcept : capacity(capacity) {}
 
-            KOKKOS_INLINE_FUNCTION reverse_builder(reverse_builder const& v) noexcept : capacity(v.capacity) {}
+            __forceinline ReverseBuilder(ReverseBuilder const& v) noexcept : capacity(v.capacity) {}
 
-            KOKKOS_INLINE_FUNCTION reverse_builder(reverse_builder&& v) noexcept : capacity(std::move(v.capacity)) {}
+            __forceinline ReverseBuilder(ReverseBuilder&& v) noexcept : capacity(std::move(v.capacity)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION reverse_range<TRange> build(TRange range) const
+            __forceinline ReverseRange<TRange> Build(TRange range) const
             {
-                return reverse_range<TRange>(std::move(range), capacity);
+                return ReverseRange<TRange>(std::move(range), capacity);
             }
         };
 
         template<typename TRange, typename TPredicate>
-        struct where_range : base_range
+        struct WhereRange : BaseRange
         {
-            typedef where_range<TRange, TPredicate> this_type;
-            typedef TRange                          range_type;
-            typedef TPredicate                      predicate_type;
+            typedef WhereRange<TRange, TPredicate> this_type;
+            typedef TRange                         range_type;
+            typedef TPredicate                     predicate_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type return_type;
@@ -952,25 +972,25 @@ namespace linq
             range_type     range;
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION where_range(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
+            __forceinline WhereRange(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION where_range(where_range const& v) : range(v.range), predicate(v.predicate) {}
+            __forceinline WhereRange(WhereRange const& v) : range(v.range), predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION where_range(where_range&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)) {}
+            __forceinline WhereRange(WhereRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return range.front(); }
+            __forceinline return_type Front() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front()))
+                    if(predicate(range.Front()))
                     {
                         return true;
                     }
@@ -981,31 +1001,31 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct where_builder : base_builder
+        struct WhereBuilder : BaseBuilder
         {
-            typedef where_builder<TPredicate> this_type;
-            typedef TPredicate                predicate_type;
+            typedef WhereBuilder<TPredicate> this_type;
+            typedef TPredicate               predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit where_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline explicit WhereBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION where_builder(where_builder const& v) : predicate(v.predicate) {}
+            __forceinline WhereBuilder(WhereBuilder const& v) : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION where_builder(where_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline WhereBuilder(WhereBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION where_range<TRange, TPredicate> build(TRange range) const
+            __forceinline WhereRange<TRange, TPredicate> Build(TRange range) const
             {
-                return where_range<TRange, TPredicate>(std::move(range), predicate);
+                return WhereRange<TRange, TPredicate>(std::move(range), predicate);
             }
         };
 
         template<typename TRange>
-        struct take_range : base_range
+        struct TakeRange : BaseRange
         {
-            typedef take_range<TRange> this_type;
-            typedef TRange             range_type;
+            typedef TakeRange<TRange> this_type;
+            typedef TRange            range_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type return_type;
@@ -1018,21 +1038,21 @@ namespace linq
             size_type  count;
             size_type  current;
 
-            KOKKOS_INLINE_FUNCTION take_range(range_type range, size_type count) noexcept : range(std::move(range)), count(std::move(count)), current(0) {}
+            __forceinline TakeRange(range_type range, size_type count) noexcept : range(std::move(range)), count(std::move(count)), current(0) {}
 
-            KOKKOS_INLINE_FUNCTION take_range(take_range const& v) : range(v.range), count(v.count), current(v.current) {}
+            __forceinline TakeRange(TakeRange const& v) : range(v.range), count(v.count), current(v.current) {}
 
-            KOKKOS_INLINE_FUNCTION take_range(take_range&& v) noexcept : range(std::move(v.range)), count(std::move(v.count)), current(std::move(v.current)) {}
+            __forceinline TakeRange(TakeRange&& v) noexcept : range(std::move(v.range)), count(std::move(v.count)), current(std::move(v.current)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return range.front(); }
+            __forceinline return_type Front() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(current >= count)
                 {
@@ -1040,35 +1060,35 @@ namespace linq
                 }
 
                 ++current;
-                return range.next();
+                return range.Next();
             }
         };
 
-        struct take_builder : base_builder
+        struct TakeBuilder : BaseBuilder
         {
-            typedef take_builder this_type;
+            typedef TakeBuilder this_type;
 
             size_type count;
 
-            KOKKOS_INLINE_FUNCTION explicit take_builder(size_type count) noexcept : count(std::move(count)) {}
+            __forceinline explicit TakeBuilder(size_type count) noexcept : count(std::move(count)) {}
 
-            KOKKOS_INLINE_FUNCTION take_builder(take_builder const& v) noexcept : count(v.count) {}
+            __forceinline TakeBuilder(TakeBuilder const& v) noexcept : count(v.count) {}
 
-            KOKKOS_INLINE_FUNCTION take_builder(take_builder&& v) noexcept : count(std::move(v.count)) {}
+            __forceinline TakeBuilder(TakeBuilder&& v) noexcept : count(std::move(v.count)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION take_range<TRange> build(TRange range) const
+            __forceinline TakeRange<TRange> Build(TRange range) const
             {
-                return take_range<TRange>(std::move(range), count);
+                return TakeRange<TRange>(std::move(range), count);
             }
         };
 
         template<typename TRange, typename TPredicate>
-        struct take_while_range : base_range
+        struct TakeWhileRange : BaseRange
         {
-            typedef take_while_range<TRange, TPredicate> this_type;
-            typedef TRange                               range_type;
-            typedef TPredicate                           predicate_type;
+            typedef TakeWhileRange<TRange, TPredicate> this_type;
+            typedef TRange                             range_type;
+            typedef TPredicate                         predicate_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type return_type;
@@ -1081,34 +1101,34 @@ namespace linq
             predicate_type predicate;
             bool           done;
 
-            KOKKOS_INLINE_FUNCTION take_while_range(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)), done(false) {}
+            __forceinline TakeWhileRange(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)), done(false) {}
 
-            KOKKOS_INLINE_FUNCTION take_while_range(take_while_range const& v) : range(v.range), predicate(v.predicate), done(v.done) {}
+            __forceinline TakeWhileRange(TakeWhileRange const& v) : range(v.range), predicate(v.predicate), done(v.done) {}
 
-            KOKKOS_INLINE_FUNCTION take_while_range(take_while_range&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), done(std::move(v.done)) {}
+            __forceinline TakeWhileRange(TakeWhileRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), done(std::move(v.done)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return range.front(); }
+            __forceinline return_type Front() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(done)
                 {
                     return false;
                 }
 
-                if(!range.next())
+                if(!range.Next())
                 {
                     done = true;
                     return false;
                 }
 
-                if(!predicate(range.front()))
+                if(!predicate(range.Front()))
                 {
                     done = true;
                     return false;
@@ -1119,31 +1139,31 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct take_while_builder : base_builder
+        struct TakeWhileBuilder : BaseBuilder
         {
-            typedef take_while_builder<TPredicate> this_type;
-            typedef TPredicate                     predicate_type;
+            typedef TakeWhileBuilder<TPredicate> this_type;
+            typedef TPredicate                   predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION take_while_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline TakeWhileBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION take_while_builder(take_while_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline TakeWhileBuilder(TakeWhileBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION take_while_builder(take_while_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline TakeWhileBuilder(TakeWhileBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION take_while_range<TRange, TPredicate> build(TRange range) const
+            __forceinline TakeWhileRange<TRange, TPredicate> Build(TRange range) const
             {
-                return take_while_range<TRange, TPredicate>(std::move(range), predicate);
+                return TakeWhileRange<TRange, TPredicate>(std::move(range), predicate);
             }
         };
 
         template<typename TRange>
-        struct skip_range : base_range
+        struct SkipRange : BaseRange
         {
-            typedef skip_range<TRange> this_type;
-            typedef TRange             range_type;
+            typedef SkipRange<TRange> this_type;
+            typedef TRange            range_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type return_type;
@@ -1156,28 +1176,28 @@ namespace linq
             size_type  count;
             size_type  current;
 
-            KOKKOS_INLINE_FUNCTION skip_range(range_type range, size_type count) noexcept : range(std::move(range)), count(std::move(count)), current(0) {}
+            __forceinline SkipRange(range_type range, size_type count) noexcept : range(std::move(range)), count(std::move(count)), current(0) {}
 
-            KOKKOS_INLINE_FUNCTION skip_range(skip_range const& v) : range(v.range), count(v.count), current(v.current) {}
+            __forceinline SkipRange(SkipRange const& v) : range(v.range), count(v.count), current(v.current) {}
 
-            KOKKOS_INLINE_FUNCTION skip_range(skip_range&& v) noexcept : range(std::move(v.range)), count(std::move(v.count)), current(std::move(v.current)) {}
+            __forceinline SkipRange(SkipRange&& v) noexcept : range(std::move(v.range)), count(std::move(v.count)), current(std::move(v.current)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return range.front(); }
+            __forceinline return_type Front() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(current == invalid_size)
                 {
                     return false;
                 }
 
-                while(current < count && range.next())
+                while(current < count && range.Next())
                 {
                     ++current;
                 }
@@ -1188,35 +1208,35 @@ namespace linq
                     return false;
                 }
 
-                return range.next();
+                return range.Next();
             }
         };
 
-        struct skip_builder : base_builder
+        struct SkipBuilder : BaseBuilder
         {
-            typedef skip_builder this_type;
+            typedef SkipBuilder this_type;
 
             size_type count;
 
-            KOKKOS_INLINE_FUNCTION explicit skip_builder(size_type count) noexcept : count(std::move(count)) {}
+            __forceinline explicit SkipBuilder(size_type count) noexcept : count(std::move(count)) {}
 
-            KOKKOS_INLINE_FUNCTION skip_builder(skip_builder const& v) noexcept : count(v.count) {}
+            __forceinline SkipBuilder(SkipBuilder const& v) noexcept : count(v.count) {}
 
-            KOKKOS_INLINE_FUNCTION skip_builder(skip_builder&& v) noexcept : count(std::move(v.count)) {}
+            __forceinline SkipBuilder(SkipBuilder&& v) noexcept : count(std::move(v.count)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION skip_range<TRange> build(TRange range) const
+            __forceinline SkipRange<TRange> Build(TRange range) const
             {
-                return skip_range<TRange>(std::move(range), count);
+                return SkipRange<TRange>(std::move(range), count);
             }
         };
 
         template<typename TRange, typename TPredicate>
-        struct skip_while_range : base_range
+        struct SkipWhileRange : BaseRange
         {
-            typedef skip_while_range<TRange, TPredicate> this_type;
-            typedef TRange                               range_type;
-            typedef TPredicate                           predicate_type;
+            typedef SkipWhileRange<TRange, TPredicate> this_type;
+            typedef TRange                             range_type;
+            typedef TPredicate                         predicate_type;
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type return_type;
@@ -1229,30 +1249,30 @@ namespace linq
             predicate_type predicate;
             bool           skipping;
 
-            KOKKOS_INLINE_FUNCTION skip_while_range(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)), skipping(true) {}
+            __forceinline SkipWhileRange(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)), skipping(true) {}
 
-            KOKKOS_INLINE_FUNCTION skip_while_range(skip_while_range const& v) : range(v.range), predicate(v.predicate), skipping(v.skipping) {}
+            __forceinline SkipWhileRange(SkipWhileRange const& v) : range(v.range), predicate(v.predicate), skipping(v.skipping) {}
 
-            KOKKOS_INLINE_FUNCTION skip_while_range(skip_while_range&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), skipping(std::move(v.skipping)) {}
+            __forceinline SkipWhileRange(SkipWhileRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), skipping(std::move(v.skipping)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return range.front(); }
+            __forceinline return_type Front() const { return range.Front(); }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(!skipping)
                 {
-                    return range.next();
+                    return range.Next();
                 }
 
-                while(range.next())
+                while(range.Next())
                 {
-                    if(!predicate(range.front()))
+                    if(!predicate(range.Front()))
                     {
                         skipping = false;
                         return true;
@@ -1264,28 +1284,28 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct skip_while_builder : base_builder
+        struct SkipWhileBuilder : BaseBuilder
         {
-            typedef skip_while_builder<TPredicate> this_type;
-            typedef TPredicate                     predicate_type;
+            typedef SkipWhileBuilder<TPredicate> this_type;
+            typedef TPredicate                   predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION skip_while_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline SkipWhileBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION skip_while_builder(skip_while_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline SkipWhileBuilder(SkipWhileBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION skip_while_builder(skip_while_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline SkipWhileBuilder(SkipWhileBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION skip_while_range<TRange, TPredicate> build(TRange range) const
+            __forceinline SkipWhileRange<TRange, TPredicate> Build(TRange range) const
             {
-                return skip_while_range<TRange, TPredicate>(std::move(range), predicate);
+                return SkipWhileRange<TRange, TPredicate>(std::move(range), predicate);
             }
         };
 
         template<typename TRange>
-        struct ref_range : base_range
+        struct RefRange : BaseRange
         {
             typedef std::reference_wrapper<typename TRange::value_type const> value_type;
             typedef value_type                                                return_type;
@@ -1294,91 +1314,94 @@ namespace linq
                 returns_reference = 0,
             };
 
-            typedef ref_range<TRange> this_type;
-            typedef TRange            range_type;
+            typedef RefRange<TRange> this_type;
+            typedef TRange           range_type;
 
             range_type range;
 
-            KOKKOS_INLINE_FUNCTION ref_range(range_type range) noexcept : range(std::move(range)) { static_assert(TRange::returns_reference, "ref may only follow a range that returns references"); }
+            __forceinline RefRange(range_type range) noexcept : range(std::move(range))
+            {
+                static_assert(TRange::returns_reference, "ref may only follow a range that returns references");
+            }
 
-            KOKKOS_INLINE_FUNCTION ref_range(ref_range const& v) : range(v.range) {}
+            __forceinline RefRange(RefRange const& v) : range(v.range) {}
 
-            KOKKOS_INLINE_FUNCTION ref_range(ref_range&& v) noexcept : range(std::move(v.range)) {}
+            __forceinline RefRange(RefRange&& v) noexcept : range(std::move(v.range)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return value_type(range.front()); }
+            __forceinline return_type Front() const { return value_type(range.Front()); }
 
-            KOKKOS_INLINE_FUNCTION bool next() { return range.next(); }
+            __forceinline bool Next() { return range.Next(); }
         };
 
-        struct ref_builder : base_builder
+        struct RefBuilder : BaseBuilder
         {
-            typedef ref_builder this_type;
+            typedef RefBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION ref_builder() noexcept {}
+            __forceinline RefBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION ref_builder(ref_builder const& v) {}
+            __forceinline RefBuilder(RefBuilder const& v) {}
 
-            KOKKOS_INLINE_FUNCTION ref_builder(ref_builder&& v) noexcept {}
+            __forceinline RefBuilder(RefBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION ref_range<TRange> build(TRange range) const
+            __forceinline RefRange<TRange> Build(TRange range) const
             {
-                return ref_range<TRange>(std::move(range));
+                return RefRange<TRange>(std::move(range));
             }
         };
 
         template<typename TRange, typename TPredicate>
-        struct select_range : base_range
+        struct SelectRange : BaseRange
         {
-            static typename TRange::value_type get_source();
-            static TPredicate                  get_predicate();
+            static typename TRange::value_type GetSource();
+            static TPredicate                  GetPredicate();
 
-            typedef decltype(get_predicate()(get_source()))     raw_value_type;
-            typedef typename cleanup_type<raw_value_type>::type value_type;
-            typedef value_type const&                           return_type;
+            typedef decltype(GetPredicate()(GetSource()))      raw_value_type;
+            typedef typename CleanupType<raw_value_type>::type value_type;
+            typedef value_type const&                          return_type;
             enum
             {
                 returns_reference = 1,
             };
 
-            typedef select_range<TRange, TPredicate> this_type;
-            typedef TRange                           range_type;
-            typedef TPredicate                       predicate_type;
+            typedef SelectRange<TRange, TPredicate> this_type;
+            typedef TRange                          range_type;
+            typedef TPredicate                      predicate_type;
 
             range_type     range;
             predicate_type predicate;
 
-            opt<value_type> cache_value;
+            Opt<value_type> cache_value;
 
-            KOKKOS_INLINE_FUNCTION select_range(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
+            __forceinline SelectRange(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION select_range(select_range const& v) : range(v.range), predicate(v.predicate), cache_value(v.cache_value) {}
+            __forceinline SelectRange(SelectRange const& v) : range(v.range), predicate(v.predicate), cache_value(v.cache_value) {}
 
-            KOKKOS_INLINE_FUNCTION select_range(select_range&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), cache_value(std::move(v.cache_value)) {}
+            __forceinline SelectRange(SelectRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), cache_value(std::move(v.cache_value)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(cache_value);
                 return *cache_value;
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
-                if(range.next())
+                if(range.Next())
                 {
-                    cache_value = predicate(range.front());
+                    cache_value = predicate(range.Front());
                     return true;
                 }
 
@@ -1389,46 +1412,46 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct select_builder : base_builder
+        struct SelectBuilder : BaseBuilder
         {
-            typedef select_builder<TPredicate> this_type;
-            typedef TPredicate                 predicate_type;
+            typedef SelectBuilder<TPredicate> this_type;
+            typedef TPredicate                predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit select_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline explicit SelectBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION select_builder(select_builder const& v) : predicate(v.predicate) {}
+            __forceinline SelectBuilder(SelectBuilder const& v) : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION select_builder(select_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline SelectBuilder(SelectBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION select_range<TRange, TPredicate> build(TRange range) const
+            __forceinline SelectRange<TRange, TPredicate> Build(TRange range) const
             {
-                return select_range<TRange, TPredicate>(std::move(range), predicate);
+                return SelectRange<TRange, TPredicate>(std::move(range), predicate);
             }
         };
 
         // Some trickery in order to force the code to compile on VS2012
         template<typename TRange, typename TPredicate>
-        struct select_many_range_helper
+        struct SelectManyRangeHelper
         {
-            static typename TRange::value_type get_source();
-            static TPredicate                  get_predicate();
+            static typename TRange::value_type GetSource();
+            static TPredicate                  GetPredicate();
 
-            typedef decltype(get_predicate()(get_source()))           raw_inner_range_type;
-            typedef typename cleanup_type<raw_inner_range_type>::type inner_range_type;
+            typedef decltype(GetPredicate()(GetSource()))            raw_inner_range_type;
+            typedef typename CleanupType<raw_inner_range_type>::type inner_range_type;
 
-            static inner_range_type get_inner_range();
+            static inner_range_type GetInnerRange();
 
-            typedef decltype(get_inner_range().front())         raw_value_type;
-            typedef typename cleanup_type<raw_value_type>::type value_type;
+            typedef decltype(GetInnerRange().Front())          raw_value_type;
+            typedef typename CleanupType<raw_value_type>::type value_type;
         };
 
         template<typename TRange, typename TPredicate>
-        struct select_many_range : base_range
+        struct SelectManyRange : BaseRange
         {
-            typedef select_many_range_helper<TRange, TPredicate> helper_type;
+            typedef SelectManyRangeHelper<TRange, TPredicate> helper_type;
 
             typedef typename helper_type::inner_range_type inner_range_type;
             typedef typename helper_type::value_type       value_type;
@@ -1438,44 +1461,44 @@ namespace linq
                 returns_reference = 0,
             };
 
-            typedef select_many_range<TRange, TPredicate> this_type;
-            typedef TRange                                range_type;
-            typedef TPredicate                            predicate_type;
+            typedef SelectManyRange<TRange, TPredicate> this_type;
+            typedef TRange                              range_type;
+            typedef TPredicate                          predicate_type;
 
             range_type     range;
             predicate_type predicate;
 
-            opt<inner_range_type> inner_range;
+            Opt<inner_range_type> inner_range;
 
-            KOKKOS_INLINE_FUNCTION select_many_range(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
+            __forceinline SelectManyRange(range_type range, predicate_type predicate) noexcept : range(std::move(range)), predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION select_many_range(select_many_range const& v) : range(v.range), predicate(v.predicate), inner_range(v.inner_range) {}
+            __forceinline SelectManyRange(SelectManyRange const& v) : range(v.range), predicate(v.predicate), inner_range(v.inner_range) {}
 
-            KOKKOS_INLINE_FUNCTION select_many_range(select_many_range&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), inner_range(std::move(v.inner_range)) {}
+            __forceinline SelectManyRange(SelectManyRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), inner_range(std::move(v.inner_range)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(inner_range);
-                return inner_range->front();
+                return inner_range->Front();
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
-                if(inner_range && inner_range->next())
+                if(inner_range && inner_range->Next())
                 {
                     return true;
                 }
 
-                if(range.next())
+                if(range.Next())
                 {
-                    inner_range = predicate(range.front());
-                    return inner_range && inner_range->next();
+                    inner_range = predicate(range.Front());
+                    return inner_range && inner_range->Next();
                 }
 
                 inner_range.clear();
@@ -1485,57 +1508,57 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct select_many_builder : base_builder
+        struct SelectManyBuilder : BaseBuilder
         {
-            typedef select_many_builder<TPredicate> this_type;
-            typedef TPredicate                      predicate_type;
+            typedef SelectManyBuilder<TPredicate> this_type;
+            typedef TPredicate                    predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit select_many_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline explicit SelectManyBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION select_many_builder(select_many_builder const& v) : predicate(v.predicate) {}
+            __forceinline SelectManyBuilder(SelectManyBuilder const& v) : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION select_many_builder(select_many_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline SelectManyBuilder(SelectManyBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION select_many_range<TRange, TPredicate> build(TRange range) const
+            __forceinline SelectManyRange<TRange, TPredicate> Build(TRange range) const
             {
-                return select_many_range<TRange, TPredicate>(std::move(range), predicate);
+                return SelectManyRange<TRange, TPredicate>(std::move(range), predicate);
             }
         };
 
         template<typename TRange, typename TOtherRange, typename TKeySelector, typename TOtherKeySelector, typename TCombiner>
-        struct join_range : base_range
+        struct JoinRange : BaseRange
         {
-            static typename TRange::value_type      get_source();
-            static typename TOtherRange::value_type get_other_source();
-            static TKeySelector                     get_key_selector();
-            static TOtherKeySelector                get_other_key_selector();
-            static TCombiner                        get_combiner();
+            static typename TRange::value_type      GetSource();
+            static typename TOtherRange::value_type GetOtherSource();
+            static TKeySelector                     GetKeySelector();
+            static TOtherKeySelector                GetOtherKeySelector();
+            static TCombiner                        GetCombiner();
 
-            typedef decltype(get_key_selector()(get_source())) raw_key_type;
-            typedef typename cleanup_type<raw_key_type>::type  key_type;
+            typedef decltype(GetKeySelector()(GetSource()))  raw_key_type;
+            typedef typename CleanupType<raw_key_type>::type key_type;
 
-            typedef decltype(get_other_key_selector()(get_other_source())) raw_other_key_type;
-            typedef typename cleanup_type<raw_other_key_type>::type        other_key_type;
+            typedef decltype(GetOtherKeySelector()(GetOtherSource())) raw_other_key_type;
+            typedef typename CleanupType<raw_other_key_type>::type    other_key_type;
 
-            typedef decltype(get_combiner()(get_source(), get_other_source())) raw_value_type;
-            typedef typename cleanup_type<raw_value_type>::type                value_type;
-            typedef value_type                                                 return_type;
+            typedef decltype(GetCombiner()(GetSource(), GetOtherSource())) raw_value_type;
+            typedef typename CleanupType<raw_value_type>::type             value_type;
+            typedef value_type                                             return_type;
             enum
             {
                 returns_reference = 0,
             };
 
-            typedef join_range<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> this_type;
-            typedef TRange                                                                      range_type;
-            typedef TOtherRange                                                                 other_range_type;
-            typedef TKeySelector                                                                key_selector_type;
-            typedef TOtherKeySelector                                                           other_key_selector_type;
-            typedef TCombiner                                                                   combiner_type;
-            typedef std::multimap<other_key_type, typename TOtherRange::value_type>             map_type;
-            typedef typename map_type::const_iterator                                           map_iterator_type;
+            typedef JoinRange<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> this_type;
+            typedef TRange                                                                     range_type;
+            typedef TOtherRange                                                                other_range_type;
+            typedef TKeySelector                                                               key_selector_type;
+            typedef TOtherKeySelector                                                          other_key_selector_type;
+            typedef TCombiner                                                                  combiner_type;
+            typedef std::multimap<other_key_type, typename TOtherRange::value_type>            map_type;
+            typedef typename map_type::const_iterator                                          map_iterator_type;
 
             range_type              range;
             other_range_type        other_range;
@@ -1547,11 +1570,11 @@ namespace linq
             map_type          map;
             map_iterator_type current;
 
-            KOKKOS_INLINE_FUNCTION join_range(range_type              range,
-                                              other_range_type        other_range,
-                                              key_selector_type       key_selector,
-                                              other_key_selector_type other_key_selector,
-                                              combiner_type           combiner) noexcept :
+            __forceinline JoinRange(range_type              range,
+                                             other_range_type        other_range,
+                                             key_selector_type       key_selector,
+                                             other_key_selector_type other_key_selector,
+                                             combiner_type           combiner) noexcept :
                 range(std::move(range)),
                 other_range(std::move(other_range)),
                 key_selector(std::move(key_selector)),
@@ -1561,12 +1584,19 @@ namespace linq
             {
             }
 
-            KOKKOS_INLINE_FUNCTION join_range(join_range const& v) :
-                range(v.range), other_range(v.other_range), key_selector(v.key_selector), other_key_selector(v.other_key_selector), combiner(v.combiner), start(v.start), map(v.map), current(v.current)
+            __forceinline JoinRange(JoinRange const& v) :
+                range(v.range),
+                other_range(v.other_range),
+                key_selector(v.key_selector),
+                other_key_selector(v.other_key_selector),
+                combiner(v.combiner),
+                start(v.start),
+                map(v.map),
+                current(v.current)
             {
             }
 
-            KOKKOS_INLINE_FUNCTION join_range(join_range&& v) noexcept :
+            __forceinline JoinRange(JoinRange&& v) noexcept :
                 range(std::move(v.range)),
                 other_range(std::move(v.other_range)),
                 key_selector(std::move(v.key_selector)),
@@ -1579,25 +1609,25 @@ namespace linq
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(current != map.end());
-                return combiner(range.front(), current->second);
+                return combiner(range.Front(), current->second);
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(start)
                 {
                     start = false;
-                    while(other_range.next())
+                    while(other_range.Next())
                     {
-                        auto other_value = other_range.front();
+                        auto other_value = other_range.Front();
                         auto other_key   = other_key_selector(other_value);
                         map.insert(typename map_type::value_type(std::move(other_key), std::move(other_value)));
                     }
@@ -1619,9 +1649,9 @@ namespace linq
                     }
                 }
 
-                while(range.next())
+                while(range.Next())
                 {
-                    auto value = range.front();
+                    auto value = range.Front();
                     auto key   = key_selector(value);
 
                     current = map.find(key);
@@ -1636,9 +1666,9 @@ namespace linq
         };
 
         template<typename TOtherRange, typename TKeySelector, typename TOtherKeySelector, typename TCombiner>
-        struct join_builder : base_builder
+        struct JoinBuilder : BaseBuilder
         {
-            typedef join_builder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> this_type;
+            typedef JoinBuilder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> this_type;
 
             typedef TOtherRange       other_range_type;
             typedef TKeySelector      key_selector_type;
@@ -1650,33 +1680,37 @@ namespace linq
             other_key_selector_type other_key_selector;
             combiner_type           combiner;
 
-            KOKKOS_INLINE_FUNCTION join_builder(other_range_type other_range, key_selector_type key_selector, other_key_selector_type other_key_selector, combiner_type combiner) noexcept :
+            __forceinline JoinBuilder(other_range_type other_range, key_selector_type key_selector, other_key_selector_type other_key_selector, combiner_type combiner) noexcept
+                :
                 other_range(std::move(other_range)), key_selector(std::move(key_selector)), other_key_selector(std::move(other_key_selector)), combiner(std::move(combiner))
             {
             }
 
-            KOKKOS_INLINE_FUNCTION join_builder(join_builder const& v) : other_range(v.other_range), key_selector(v.key_selector), other_key_selector(v.other_key_selector), combiner(v.combiner) {}
+            __forceinline JoinBuilder(JoinBuilder const& v) :
+                other_range(v.other_range), key_selector(v.key_selector), other_key_selector(v.other_key_selector), combiner(v.combiner)
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION join_builder(join_builder&& v) noexcept :
+            __forceinline JoinBuilder(JoinBuilder&& v) noexcept :
                 other_range(std::move(v.other_range)), key_selector(std::move(v.key_selector)), other_key_selector(std::move(v.other_key_selector)), combiner(std::move(v.combiner))
             {
             }
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION join_range<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> build(TRange range) const
+            __forceinline JoinRange<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> Build(TRange range) const
             {
-                return join_range<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(std::move(range), other_range, key_selector, other_key_selector, combiner);
+                return JoinRange<TRange, TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(std::move(range), other_range, key_selector, other_key_selector, combiner);
             }
         };
 
         template<typename TRange>
-        struct distinct_range : base_range
+        struct DistinctRange : BaseRange
         {
-            typedef distinct_range<TRange> this_type;
-            typedef TRange                 range_type;
+            typedef DistinctRange<TRange> this_type;
+            typedef TRange                range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                        return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type value_type;
+            typedef value_type const&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1689,25 +1723,25 @@ namespace linq
             set_type          set;
             set_iterator_type current;
 
-            KOKKOS_INLINE_FUNCTION distinct_range(range_type range) noexcept : range(std::move(range)) {}
+            __forceinline DistinctRange(range_type range) noexcept : range(std::move(range)) {}
 
-            KOKKOS_INLINE_FUNCTION distinct_range(distinct_range const& v) noexcept : range(v.range), set(v.set), current(v.current) {}
+            __forceinline DistinctRange(DistinctRange const& v) noexcept : range(v.range), set(v.set), current(v.current) {}
 
-            KOKKOS_INLINE_FUNCTION distinct_range(distinct_range&& v) noexcept : range(std::move(v.range)), set(std::move(v.set)), current(std::move(v.current)) {}
+            __forceinline DistinctRange(DistinctRange&& v) noexcept : range(std::move(v.range)), set(std::move(v.set)), current(std::move(v.current)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return *current; }
+            __forceinline return_type Front() const { return *current; }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    auto result = set.insert(range.front());
+                    auto result = set.insert(range.Front());
                     if(result.second)
                     {
                         current = result.first;
@@ -1719,32 +1753,32 @@ namespace linq
             }
         };
 
-        struct distinct_builder : base_builder
+        struct DistinctBuilder : BaseBuilder
         {
-            typedef distinct_builder this_type;
+            typedef DistinctBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION distinct_builder() noexcept {}
+            __forceinline DistinctBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION distinct_builder(distinct_builder const& v) noexcept {}
+            __forceinline DistinctBuilder(DistinctBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION distinct_builder(distinct_builder&& v) noexcept {}
+            __forceinline DistinctBuilder(DistinctBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION distinct_range<TRange> build(TRange range) const
+            __forceinline DistinctRange<TRange> Build(TRange range) const
             {
-                return distinct_range<TRange>(std::move(range));
+                return DistinctRange<TRange>(std::move(range));
             }
         };
 
         template<typename TRange, typename TOtherRange>
-        struct union_range : base_range
+        struct UnionRange : BaseRange
         {
-            typedef union_range<TRange, TOtherRange> this_type;
-            typedef TRange                           range_type;
-            typedef TOtherRange                      other_range_type;
+            typedef UnionRange<TRange, TOtherRange> this_type;
+            typedef TRange                          range_type;
+            typedef TOtherRange                     other_range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                        return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type value_type;
+            typedef value_type const&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1758,25 +1792,28 @@ namespace linq
             set_type          set;
             set_iterator_type current;
 
-            KOKKOS_INLINE_FUNCTION union_range(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)) {}
+            __forceinline UnionRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION union_range(union_range const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current) {}
+            __forceinline UnionRange(UnionRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current) {}
 
-            KOKKOS_INLINE_FUNCTION union_range(union_range&& v) noexcept : range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current)) {}
+            __forceinline UnionRange(UnionRange&& v) noexcept :
+                range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current))
+            {
+            }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return *current; }
+            __forceinline return_type Front() const { return *current; }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    auto result = set.insert(range.front());
+                    auto result = set.insert(range.Front());
                     if(result.second)
                     {
                         current = result.first;
@@ -1784,9 +1821,9 @@ namespace linq
                     }
                 }
 
-                while(other_range.next())
+                while(other_range.Next())
                 {
-                    auto result = set.insert(other_range.front());
+                    auto result = set.insert(other_range.Front());
                     if(result.second)
                     {
                         current = result.first;
@@ -1799,35 +1836,35 @@ namespace linq
         };
 
         template<typename TOtherRange>
-        struct union_builder : base_builder
+        struct UnionBuilder : BaseBuilder
         {
-            typedef union_builder<TOtherRange> this_type;
-            typedef TOtherRange                other_range_type;
+            typedef UnionBuilder<TOtherRange> this_type;
+            typedef TOtherRange               other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION union_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline UnionBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION union_builder(union_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline UnionBuilder(UnionBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION union_builder(union_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline UnionBuilder(UnionBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION union_range<TRange, TOtherRange> build(TRange range) const
+            __forceinline UnionRange<TRange, TOtherRange> Build(TRange range) const
             {
-                return union_range<TRange, TOtherRange>(std::move(range), std::move(other_range));
+                return UnionRange<TRange, TOtherRange>(std::move(range), std::move(other_range));
             }
         };
 
         template<typename TRange, typename TOtherRange>
-        struct intersect_range : base_range
+        struct IntersectRange : BaseRange
         {
-            typedef intersect_range<TRange, TOtherRange> this_type;
-            typedef TRange                               range_type;
-            typedef TOtherRange                          other_range_type;
+            typedef IntersectRange<TRange, TOtherRange> this_type;
+            typedef TRange                              range_type;
+            typedef TOtherRange                         other_range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                        return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type value_type;
+            typedef value_type const&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1842,41 +1879,41 @@ namespace linq
             set_iterator_type current;
             bool              start;
 
-            KOKKOS_INLINE_FUNCTION intersect_range(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true) {}
+            __forceinline IntersectRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true) {}
 
-            KOKKOS_INLINE_FUNCTION intersect_range(intersect_range const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
+            __forceinline IntersectRange(IntersectRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
 
-            KOKKOS_INLINE_FUNCTION intersect_range(intersect_range&& v) noexcept :
+            __forceinline IntersectRange(IntersectRange&& v) noexcept :
                 range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current)), start(std::move(v.start))
             {
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(!start);
                 return *current;
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(start)
                 {
                     start = false;
 
-                    while(other_range.next())
+                    while(other_range.Next())
                     {
-                        set.insert(other_range.front());
+                        set.insert(other_range.Front());
                     }
 
-                    while(range.next())
+                    while(range.Next())
                     {
-                        current = set.find(range.front());
+                        current = set.find(range.Front());
                         if(current != set.end())
                         {
                             return true;
@@ -1895,9 +1932,9 @@ namespace linq
 
                 set.erase(current);
 
-                while(range.next())
+                while(range.Next())
                 {
-                    current = set.find(range.front());
+                    current = set.find(range.Front());
                     if(current != set.end())
                     {
                         return true;
@@ -1909,35 +1946,35 @@ namespace linq
         };
 
         template<typename TOtherRange>
-        struct intersect_builder : base_builder
+        struct IntersectBuilder : BaseBuilder
         {
-            typedef intersect_builder<TOtherRange> this_type;
-            typedef TOtherRange                    other_range_type;
+            typedef IntersectBuilder<TOtherRange> this_type;
+            typedef TOtherRange                   other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION intersect_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline IntersectBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION intersect_builder(intersect_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline IntersectBuilder(IntersectBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION intersect_builder(intersect_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline IntersectBuilder(IntersectBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION intersect_range<TRange, TOtherRange> build(TRange range) const
+            __forceinline IntersectRange<TRange, TOtherRange> Build(TRange range) const
             {
-                return intersect_range<TRange, TOtherRange>(std::move(range), std::move(other_range));
+                return IntersectRange<TRange, TOtherRange>(std::move(range), std::move(other_range));
             }
         };
 
         template<typename TRange, typename TOtherRange>
-        struct except_range : base_range
+        struct ExceptRange : BaseRange
         {
-            typedef except_range<TRange, TOtherRange> this_type;
-            typedef TRange                            range_type;
-            typedef TOtherRange                       other_range_type;
+            typedef ExceptRange<TRange, TOtherRange> this_type;
+            typedef TRange                           range_type;
+            typedef TOtherRange                      other_range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                        return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type value_type;
+            typedef value_type const&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1952,37 +1989,37 @@ namespace linq
             set_iterator_type current;
             bool              start;
 
-            KOKKOS_INLINE_FUNCTION except_range(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true) {}
+            __forceinline ExceptRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true) {}
 
-            KOKKOS_INLINE_FUNCTION except_range(except_range const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
+            __forceinline ExceptRange(ExceptRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
 
-            KOKKOS_INLINE_FUNCTION except_range(except_range&& v) noexcept :
+            __forceinline ExceptRange(ExceptRange&& v) noexcept :
                 range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current)), start(std::move(v.start))
             {
             }
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return *current; }
+            __forceinline return_type Front() const { return *current; }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(start)
                 {
                     start = false;
-                    while(other_range.next())
+                    while(other_range.Next())
                     {
-                        set.insert(other_range.front());
+                        set.insert(other_range.Front());
                     }
                 }
 
-                while(range.next())
+                while(range.Next())
                 {
-                    auto result = set.insert(range.front());
+                    auto result = set.insert(range.Front());
                     if(result.second)
                     {
                         current = result.first;
@@ -1995,36 +2032,36 @@ namespace linq
         };
 
         template<typename TOtherRange>
-        struct except_builder : base_builder
+        struct ExceptBuilder : BaseBuilder
         {
-            typedef union_builder<TOtherRange> this_type;
-            typedef TOtherRange                other_range_type;
+            typedef UnionBuilder<TOtherRange> this_type;
+            typedef TOtherRange               other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION except_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline ExceptBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION except_builder(except_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline ExceptBuilder(ExceptBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION except_builder(except_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline ExceptBuilder(ExceptBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION except_range<TRange, TOtherRange> build(TRange range) const
+            __forceinline ExceptRange<TRange, TOtherRange> Build(TRange range) const
             {
-                return except_range<TRange, TOtherRange>(std::move(range), std::move(other_range));
+                return ExceptRange<TRange, TOtherRange>(std::move(range), std::move(other_range));
             }
         };
 
         template<typename TRange, typename TOtherRange>
-        struct concat_range : base_range
+        struct ConcatRange : BaseRange
         {
-            typedef concat_range<TRange, TOtherRange> this_type;
-            typedef TRange                            range_type;
-            typedef TOtherRange                       other_range_type;
+            typedef ConcatRange<TRange, TOtherRange> this_type;
+            typedef TRange                           range_type;
+            typedef TOtherRange                      other_range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type      value_type;
-            typedef typename cleanup_type<typename TOtherRange::value_type>::type other_value_type;
-            typedef value_type                                                    return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type      value_type;
+            typedef typename CleanupType<typename TOtherRange::value_type>::type other_value_type;
+            typedef value_type                                                   return_type;
 
             enum
             {
@@ -2043,42 +2080,45 @@ namespace linq
             other_range_type other_range;
             state            state;
 
-            KOKKOS_INLINE_FUNCTION concat_range(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), state(state_initial) {}
+            __forceinline ConcatRange(range_type range, other_range_type other_range) noexcept :
+                range(std::move(range)), other_range(std::move(other_range)), state(state_initial)
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION concat_range(concat_range const& v) noexcept : range(v.range), other_range(v.other_range), state(v.state) {}
+            __forceinline ConcatRange(ConcatRange const& v) noexcept : range(v.range), other_range(v.other_range), state(v.state) {}
 
-            KOKKOS_INLINE_FUNCTION concat_range(concat_range&& v) noexcept : range(std::move(v.range)), other_range(std::move(v.other_range)), state(std::move(v.state)) {}
+            __forceinline ConcatRange(ConcatRange&& v) noexcept : range(std::move(v.range)), other_range(std::move(v.other_range)), state(std::move(v.state)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 switch(state)
                 {
                     case state_initial:
                     case state_end:
                     default: Assert(false); // Intentionally falls through
-                    case state_iterating_range: return range.front();
-                    case state_iterating_other_range: return other_range.front();
+                    case state_iterating_range: return range.Front();
+                    case state_iterating_other_range: return other_range.Front();
                 };
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 switch(state)
                 {
                     case state_initial:
-                        if(range.next())
+                        if(range.Next())
                         {
                             state = state_iterating_range;
                             return true;
                         }
 
-                        if(other_range.next())
+                        if(other_range.Next())
                         {
                             state = state_iterating_other_range;
                             return true;
@@ -2087,12 +2127,12 @@ namespace linq
                         state = state_end;
                         return false;
                     case state_iterating_range:
-                        if(range.next())
+                        if(range.Next())
                         {
                             return true;
                         }
 
-                        if(other_range.next())
+                        if(other_range.Next())
                         {
                             state = state_iterating_other_range;
                             return true;
@@ -2101,7 +2141,7 @@ namespace linq
                         state = state_end;
                         return false;
                     case state_iterating_other_range:
-                        if(other_range.next())
+                        if(other_range.Next())
                         {
                             return true;
                         }
@@ -2115,23 +2155,23 @@ namespace linq
         };
 
         template<typename TOtherRange>
-        struct concat_builder : base_builder
+        struct ConcatBuilder : BaseBuilder
         {
-            typedef concat_builder<TOtherRange> this_type;
-            typedef TOtherRange                 other_range_type;
+            typedef ConcatBuilder<TOtherRange> this_type;
+            typedef TOtherRange                other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION concat_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline ConcatBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION concat_builder(concat_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline ConcatBuilder(ConcatBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION concat_builder(concat_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline ConcatBuilder(ConcatBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION concat_range<TRange, TOtherRange> build(TRange range) const
+            __forceinline ConcatRange<TRange, TOtherRange> Build(TRange range) const
             {
-                return concat_range<TRange, TOtherRange>(std::move(range), std::move(other_range));
+                return ConcatRange<TRange, TOtherRange>(std::move(range), std::move(other_range));
             }
         };
 
@@ -2140,7 +2180,7 @@ namespace linq
             // TODO: Verify that container range aggregator has the right semantics
 
             template<typename TRange>
-            struct container_iterator
+            struct ContainerIterator
             {
                 typedef std::forward_iterator_tag    iterator_category;
                 typedef typename TRange::value_type  value_type;
@@ -2154,66 +2194,65 @@ namespace linq
                 typedef value_type*    pointer;
                 typedef value_type&    reference;
 
-                typedef container_iterator<TRange> this_type;
-                typedef TRange                     range_type;
+                typedef ContainerIterator<TRange> this_type;
+                typedef TRange                    range_type;
 
                 bool            has_value;
-                opt<range_type> range;
+                Opt<range_type> range;
 
-                KOKKOS_INLINE_FUNCTION container_iterator() noexcept : has_value(false) {}
+                __forceinline ContainerIterator() noexcept : has_value(false) {}
 
-                KOKKOS_INLINE_FUNCTION container_iterator(range_type r) noexcept : range(std::move(r)) { has_value = range && range->next(); }
+                __forceinline ContainerIterator(range_type r) noexcept : range(std::move(r)) { has_value = range && range->Next(); }
 
-                KOKKOS_INLINE_FUNCTION container_iterator(container_iterator const& v) noexcept : has_value(v.has_value), range(v.range) {}
+                __forceinline ContainerIterator(ContainerIterator const& v) noexcept : has_value(v.has_value), range(v.range) {}
 
-                KOKKOS_INLINE_FUNCTION container_iterator(container_iterator&& v) noexcept : has_value(std::move(v.has_value)), range(std::move(v.range)) {}
+                __forceinline ContainerIterator(ContainerIterator&& v) noexcept : has_value(std::move(v.has_value)), range(std::move(v.range)) {}
 
-                KOKKOS_INLINE_FUNCTION return_type operator*() const
+                __forceinline return_type operator*() const
                 {
                     Assert(has_value);
                     Assert(range);
-                    return range->front();
+                    return range->Front();
                 }
 
-                KOKKOS_INLINE_FUNCTION value_type const* operator->() const
+                __forceinline value_type const* operator->() const
                 {
                     static_assert(returns_reference, "operator-> requires a range that returns a reference, typically select causes ranges to return values not references");
-                    return &range->front();
+                    return &range->Front();
                 }
 
-                KOKKOS_INLINE_FUNCTION this_type& operator++()
+                __forceinline this_type& operator++()
                 {
                     if(has_value && range)
                     {
-                        has_value = range->next();
+                        has_value = range->Next();
                     }
 
                     return *this;
                 }
 
-                KOKKOS_INLINE_FUNCTION bool operator==(this_type const& v) const noexcept
+                __forceinline bool operator==(this_type const& v) const noexcept
                 {
                     if(!has_value && !v.has_value)
                     {
                         return true;
                     }
-                    else if(has_value && has_value && range.get_ptr() == v.range.get_ptr())
+
+                    if(has_value && v.has_value && range.get_ptr() == v.range.get_ptr())
                     {
                         return true;
                     }
-                    else
-                    {
-                        return false;
-                    }
+
+                    return false;
                 }
 
-                KOKKOS_INLINE_FUNCTION bool operator!=(this_type const& v) const noexcept { return !(*this == v); }
+                __forceinline bool operator!=(this_type const& v) const noexcept { return !(*this == v); }
             };
 
             template<typename TRange>
-            struct container
+            struct Container
             {
-                typedef container<TRange>            this_type;
+                typedef Container<TRange>            this_type;
                 typedef TRange                       range_type;
                 typedef typename TRange::value_type  value_type;
                 typedef typename TRange::return_type return_type;
@@ -2224,80 +2263,80 @@ namespace linq
 
                 range_type range;
 
-                KOKKOS_INLINE_FUNCTION explicit container(TRange range) : range(std::move(range)) {}
+                __forceinline explicit Container(TRange range) : range(std::move(range)) {}
 
-                KOKKOS_INLINE_FUNCTION container(container const& v) noexcept : range(v.range) {}
+                __forceinline Container(Container const& v) noexcept : range(v.range) {}
 
-                KOKKOS_INLINE_FUNCTION container(container&& v) noexcept : range(std::move(v.range)) {}
+                __forceinline Container(Container&& v) noexcept : range(std::move(v.range)) {}
 
-                KOKKOS_INLINE_FUNCTION container_iterator<TRange> begin() noexcept { return container_iterator<TRange>(range); }
+                __forceinline ContainerIterator<TRange> begin() noexcept { return ContainerIterator<TRange>(range); }
 
-                KOKKOS_INLINE_FUNCTION container_iterator<TRange> end() noexcept { return container_iterator<TRange>(); }
+                __forceinline ContainerIterator<TRange> end() noexcept { return ContainerIterator<TRange>(); }
             };
 
-            struct container_builder : base_builder
+            struct ContainerBuilder : BaseBuilder
             {
-                typedef container_builder this_type;
+                typedef ContainerBuilder this_type;
 
-                KOKKOS_INLINE_FUNCTION container_builder() noexcept {}
+                __forceinline ContainerBuilder() noexcept {}
 
-                KOKKOS_INLINE_FUNCTION container_builder(container_builder const& v) noexcept {}
+                __forceinline ContainerBuilder(ContainerBuilder const& v) noexcept {}
 
-                KOKKOS_INLINE_FUNCTION container_builder(container_builder&& v) noexcept {}
+                __forceinline ContainerBuilder(ContainerBuilder&& v) noexcept {}
 
                 template<typename TRange>
-                KOKKOS_FUNCTION container<TRange> build(TRange range) const
+                KOKKOS_FUNCTION Container<TRange> Build(TRange range) const
                 {
-                    return container<TRange>(std::move(range));
+                    return Container<TRange>(std::move(range));
                 }
             };
         }
 
-        struct to_vector_builder : base_builder
+        struct ToVectorBuilder : BaseBuilder
         {
-            typedef to_vector_builder this_type;
+            typedef ToVectorBuilder this_type;
 
             size_type capacity;
 
-            KOKKOS_INLINE_FUNCTION explicit to_vector_builder(size_type capacity = 16U) noexcept : capacity(capacity) {}
+            __forceinline explicit ToVectorBuilder(const size_type capacity = 16U) noexcept : capacity(capacity) {}
 
-            KOKKOS_INLINE_FUNCTION to_vector_builder(to_vector_builder const& v) noexcept : capacity(v.capacity) {}
+            __forceinline ToVectorBuilder(ToVectorBuilder const& v) noexcept : capacity(v.capacity) {}
 
-            KOKKOS_INLINE_FUNCTION to_vector_builder(to_vector_builder&& v) noexcept : capacity(std::move(v.capacity)) {}
+            __forceinline ToVectorBuilder(ToVectorBuilder&& v) noexcept : capacity(std::move(v.capacity)) {}
 
             template<typename TRange>
-            KOKKOS_FUNCTION std::vector<typename TRange::value_type> build(TRange range) const
+            KOKKOS_FUNCTION std::vector<typename TRange::value_type> Build(TRange range) const
             {
                 std::vector<typename TRange::value_type> result;
                 result.reserve(capacity);
 
-                while(range.next())
+                while(range.Next())
                 {
-                    result.push_back(range.front());
+                    result.push_back(range.Front());
                 }
 
                 return result;
             }
         };
 
-        struct to_list_builder : base_builder
+        struct ToListBuilder : BaseBuilder
         {
-            typedef to_list_builder this_type;
+            typedef ToListBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION explicit to_list_builder() noexcept {}
+            __forceinline explicit ToListBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION to_list_builder(to_list_builder const& v) noexcept {}
+            __forceinline ToListBuilder(ToListBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION to_list_builder(to_list_builder&& v) noexcept {}
+            __forceinline ToListBuilder(ToListBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_FUNCTION std::list<typename TRange::value_type> build(TRange range) const
+            KOKKOS_FUNCTION std::list<typename TRange::value_type> Build(TRange range) const
             {
                 std::list<typename TRange::value_type> result;
 
-                while(range.next())
+                while(range.Next())
                 {
-                    result.push_back(range.front());
+                    result.push_back(range.Front());
                 }
 
                 return result;
@@ -2305,31 +2344,31 @@ namespace linq
         };
 
         template<typename TKeyPredicate>
-        struct to_map_builder : base_builder
+        struct ToMapBuilder : BaseBuilder
         {
-            static TKeyPredicate get_key_predicate();
+            static TKeyPredicate GetKeyPredicate();
 
-            typedef to_map_builder<TKeyPredicate> this_type;
-            typedef TKeyPredicate                 key_predicate_type;
+            typedef ToMapBuilder<TKeyPredicate> this_type;
+            typedef TKeyPredicate               key_predicate_type;
 
             key_predicate_type key_predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit to_map_builder(key_predicate_type key_predicate) noexcept : key_predicate(std::move(key_predicate)) {}
+            __forceinline explicit ToMapBuilder(key_predicate_type key_predicate) noexcept : key_predicate(std::move(key_predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION to_map_builder(to_map_builder const& v) : key_predicate(v.key_predicate) {}
+            __forceinline ToMapBuilder(ToMapBuilder const& v) : key_predicate(v.key_predicate) {}
 
-            KOKKOS_INLINE_FUNCTION to_map_builder(to_map_builder&& v) noexcept : key_predicate(std::move(v.key_predicate)) {}
+            __forceinline ToMapBuilder(ToMapBuilder&& v) noexcept : key_predicate(std::move(v.key_predicate)) {}
 
             template<typename TRange>
-            KOKKOS_FUNCTION std::map<typename get_transformed_type<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> build(TRange range) const
+            KOKKOS_FUNCTION std::map<typename GetTransformedType<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> Build(TRange range) const
             {
-                typedef std::map<typename get_transformed_type<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> result_type;
+                typedef std::map<typename GetTransformedType<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> result_type;
 
                 result_type result;
 
-                while(range.next())
+                while(range.Next())
                 {
-                    auto v = range.front();
+                    auto v = range.Front();
                     auto k = key_predicate(v);
 
                     result.insert(typename result_type::value_type(std::move(k), std::move(v)));
@@ -2340,7 +2379,7 @@ namespace linq
         };
 
         template<typename TKey, typename TValue>
-        struct lookup
+        struct Lookup
         {
             typedef TKey   key_type;
             typedef TValue value_type;
@@ -2351,7 +2390,7 @@ namespace linq
             typedef typename values_type::const_iterator values_iterator_type;
 
             template<typename TRange, typename TSelector>
-            KOKKOS_FUNCTION lookup(size_type capacity, TRange range, TSelector selector)
+            KOKKOS_FUNCTION Lookup(size_type capacity, TRange range, TSelector selector)
             {
                 keys_type   k;
                 values_type v;
@@ -2359,9 +2398,9 @@ namespace linq
                 v.reserve(capacity);
 
                 auto index = 0U;
-                while(range.next())
+                while(range.Next())
                 {
-                    auto value = range.front();
+                    auto value = range.Front();
                     auto key   = selector(value);
                     v.push_back(std::move(value));
                     k.push_back(typename keys_type::value_type(std::move(key), index));
@@ -2408,31 +2447,31 @@ namespace linq
                 }
             }
 
-            KOKKOS_INLINE_FUNCTION lookup(lookup const& v) : values(v.values), keys(v.keys) {}
+            __forceinline Lookup(Lookup const& v) : values(v.values), keys(v.keys) {}
 
-            KOKKOS_INLINE_FUNCTION lookup(lookup&& v) noexcept : values(std::move(v.values)), keys(std::move(v.keys)) {}
+            __forceinline Lookup(Lookup&& v) noexcept : values(std::move(v.values)), keys(std::move(v.keys)) {}
 
-            KOKKOS_INLINE_FUNCTION void swap(lookup& v) noexcept
+            __forceinline void swap(Lookup& v) noexcept
             {
                 values.swap(v.values);
                 keys.swap(v.keys);
             }
 
-            KOKKOS_INLINE_FUNCTION lookup& operator=(lookup const& v)
+            __forceinline Lookup& operator=(Lookup const& v)
             {
                 if(this == std::addressof(v))
                 {
                     return *this;
                 }
 
-                lookup tmp(v);
+                Lookup tmp(v);
 
                 swap(tmp);
 
                 return *this;
             }
 
-            KOKKOS_INLINE_FUNCTION lookup& operator=(lookup&& v) noexcept
+            __forceinline Lookup& operator=(Lookup&& v) noexcept
             {
                 if(this == std::addressof(v))
                 {
@@ -2444,9 +2483,9 @@ namespace linq
                 return *this;
             }
 
-            struct lookup_range : base_range
+            struct LookupRange : BaseRange
             {
-                typedef lookup_range this_type;
+                typedef LookupRange this_type;
 
                 enum
                 {
@@ -2468,19 +2507,23 @@ namespace linq
                 size_type          end;
                 state              state;
 
-                KOKKOS_INLINE_FUNCTION lookup_range(values_type const* values, size_type iter, size_type end) noexcept : values(values), iter(iter), end(end), state(state_initial) { Assert(values); }
+                __forceinline LookupRange(values_type const* values, const size_type iter, const size_type end) noexcept :
+                    values(values), iter(iter), end(end), state(state_initial)
+                {
+                    Assert(values);
+                }
 
-                KOKKOS_INLINE_FUNCTION lookup_range(lookup_range const& v) noexcept : values(v.values), iter(v.iter), end(v.end), state(v.state) {}
+                __forceinline LookupRange(LookupRange const& v) noexcept : values(v.values), iter(v.iter), end(v.end), state(v.state) {}
 
-                KOKKOS_INLINE_FUNCTION lookup_range(lookup_range&& v) noexcept : values(std::move(v.values)), iter(std::move(v.iter)), end(std::move(v.end)), state(std::move(v.state)) {}
+                __forceinline LookupRange(LookupRange&& v) noexcept : values(std::move(v.values)), iter(std::move(v.iter)), end(std::move(v.end)), state(std::move(v.state)) {}
 
                 template<typename TRangeBuilder>
-                KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+                __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
                 {
                     return range_builder.build(*this);
                 }
 
-                KOKKOS_INLINE_FUNCTION return_type front() const noexcept
+                __forceinline return_type Front() const noexcept
                 {
                     Assert(state == state_iterating);
                     Assert(iter < end);
@@ -2488,7 +2531,7 @@ namespace linq
                     return (*values)[iter];
                 }
 
-                KOKKOS_INLINE_FUNCTION bool next() noexcept
+                __forceinline bool Next() noexcept
                 {
                     switch(state)
                     {
@@ -2498,7 +2541,6 @@ namespace linq
                             state             = has_elements ? state_iterating : state_end;
                             return has_elements;
                         }
-                        break;
                         case state_iterating:
                         {
                             ++iter;
@@ -2507,43 +2549,43 @@ namespace linq
                             state             = has_elements ? state_iterating : state_end;
                             return has_elements;
                         }
-                        break;
                         case state_end:
                         default: return false;
                     }
                 }
             };
 
-            KOKKOS_FUNCTION lookup_range operator[](key_type const& key) const noexcept
+            KOKKOS_FUNCTION LookupRange operator[](key_type const& key) const noexcept
             {
                 if(values.empty())
                 {
-                    return lookup_range(std::addressof(values), 0U, 0U);
+                    return LookupRange(std::addressof(values), 0U, 0U);
                 }
 
-                auto find = std::lower_bound(keys.begin(), keys.end(), typename keys_type::value_type(key, 0U), [](typename keys_type::value_type const& l, typename keys_type::value_type const& r) {
-                    return l.first < r.first;
-                });
+                auto find = std::lower_bound(keys.begin(),
+                                             keys.end(),
+                                             typename keys_type::value_type(key, 0U),
+                                             [](typename keys_type::value_type const& l, typename keys_type::value_type const& r) { return l.first < r.first; });
 
                 if(find == keys.end())
                 {
-                    return lookup_range(std::addressof(values), 0U, 0U);
+                    return LookupRange(std::addressof(values), 0U, 0U);
                 }
 
                 auto next = find + 1;
                 if(next == keys.end())
                 {
-                    return lookup_range(std::addressof(values), find->second, values.size());
+                    return LookupRange(std::addressof(values), find->second, values.size());
                 }
 
-                return lookup_range(std::addressof(values), find->second, next->second);
+                return LookupRange(std::addressof(values), find->second, next->second);
             }
 
-            KOKKOS_INLINE_FUNCTION size_type size_of_keys() const noexcept { return keys.size(); }
+            __forceinline size_type size_of_keys() const noexcept { return keys.size(); }
 
-            KOKKOS_INLINE_FUNCTION size_type size_of_values() const noexcept { return values.size(); }
+            __forceinline size_type size_of_values() const noexcept { return values.size(); }
 
-            KOKKOS_INLINE_FUNCTION from_range<values_iterator_type> range_of_values() const noexcept { return from_range<values_iterator_type>(values.begin(), values.end()); }
+            __forceinline FromRange<values_iterator_type> range_of_values() const noexcept { return FromRange<values_iterator_type>(values.begin(), values.end()); }
 
         private:
             values_type values;
@@ -2551,25 +2593,25 @@ namespace linq
         };
 
         template<typename TKeyPredicate>
-        struct to_lookup_builder : base_builder
+        struct ToLookupBuilder : BaseBuilder
         {
-            static TKeyPredicate get_key_predicate();
+            static TKeyPredicate GetKeyPredicate();
 
-            typedef to_lookup_builder<TKeyPredicate> this_type;
-            typedef TKeyPredicate                    key_predicate_type;
+            typedef ToLookupBuilder<TKeyPredicate> this_type;
+            typedef TKeyPredicate                  key_predicate_type;
 
             key_predicate_type key_predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit to_lookup_builder(key_predicate_type key_predicate) noexcept : key_predicate(std::move(key_predicate)) {}
+            __forceinline explicit ToLookupBuilder(key_predicate_type key_predicate) noexcept : key_predicate(std::move(key_predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION to_lookup_builder(to_lookup_builder const& v) : key_predicate(v.key_predicate) {}
+            __forceinline ToLookupBuilder(ToLookupBuilder const& v) : key_predicate(v.key_predicate) {}
 
-            KOKKOS_INLINE_FUNCTION to_lookup_builder(to_lookup_builder&& v) noexcept : key_predicate(std::move(v.key_predicate)) {}
+            __forceinline ToLookupBuilder(ToLookupBuilder&& v) noexcept : key_predicate(std::move(v.key_predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION lookup<typename get_transformed_type<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> build(TRange range) const
+            __forceinline Lookup<typename GetTransformedType<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> Build(TRange range) const
             {
-                typedef lookup<typename get_transformed_type<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> result_type;
+                typedef Lookup<typename GetTransformedType<key_predicate_type, typename TRange::value_type>::type, typename TRange::value_type> result_type;
 
                 result_type result(16U, range, key_predicate);
 
@@ -2578,102 +2620,102 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct for_each_builder : base_builder
+        struct ForEachBuilder : BaseBuilder
         {
-            typedef for_each_builder<TPredicate> this_type;
-            typedef TPredicate                   predicate_type;
+            typedef ForEachBuilder<TPredicate> this_type;
+            typedef TPredicate                 predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION explicit for_each_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline explicit ForEachBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION for_each_builder(for_each_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline ForEachBuilder(ForEachBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION for_each_builder(for_each_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline ForEachBuilder(ForEachBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION void build(TRange range) const
+            __forceinline void build(TRange range) const
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    predicate(range.front());
+                    predicate(range.Front());
                 }
             }
         };
 
         template<typename TPredicate>
-        struct first_predicate_builder : base_builder
+        struct FirstPredicateBuilder : BaseBuilder
         {
-            typedef first_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                          predicate_type;
+            typedef FirstPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                        predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION first_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline FirstPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION first_predicate_builder(first_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline FirstPredicateBuilder(FirstPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION first_predicate_builder(first_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline FirstPredicateBuilder(FirstPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range)
+            __forceinline typename TRange::value_type build(TRange range)
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front()))
+                    if(predicate(range.Front()))
                     {
-                        return range.front();
+                        return range.Front();
                     }
                 }
 
-                throw sequence_empty_exception();
+                throw SequenceEmptyException();
             }
         };
 
-        struct first_builder : base_builder
+        struct FirstBuilder : BaseBuilder
         {
-            typedef first_builder this_type;
+            typedef FirstBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION first_builder() noexcept {}
+            __forceinline FirstBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION first_builder(first_builder const& v) noexcept {}
+            __forceinline FirstBuilder(FirstBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION first_builder(first_builder&& v) noexcept {}
+            __forceinline FirstBuilder(FirstBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range)
+            __forceinline typename TRange::value_type build(TRange range)
             {
-                if(range.next())
+                if(range.Next())
                 {
-                    return range.front();
+                    return range.Front();
                 }
 
-                throw sequence_empty_exception();
+                throw SequenceEmptyException();
             }
         };
 
         template<typename TPredicate>
-        struct first_or_default_predicate_builder : base_builder
+        struct FirstOrDefaultPredicateBuilder : BaseBuilder
         {
-            typedef first_or_default_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                                     predicate_type;
+            typedef FirstOrDefaultPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                                 predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION first_or_default_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline FirstOrDefaultPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION first_or_default_predicate_builder(first_or_default_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline FirstOrDefaultPredicateBuilder(FirstOrDefaultPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION first_or_default_predicate_builder(first_or_default_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline FirstOrDefaultPredicateBuilder(FirstOrDefaultPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front()))
+                    if(predicate(range.Front()))
                     {
-                        return range.front();
+                        return range.Front();
                     }
                 }
 
@@ -2681,22 +2723,22 @@ namespace linq
             }
         };
 
-        struct first_or_default_builder : base_builder
+        struct FirstOrDefaultBuilder : BaseBuilder
         {
-            typedef first_or_default_builder this_type;
+            typedef FirstOrDefaultBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION first_or_default_builder() noexcept {}
+            __forceinline FirstOrDefaultBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION first_or_default_builder(first_or_default_builder const& v) noexcept {}
+            __forceinline FirstOrDefaultBuilder(FirstOrDefaultBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION first_or_default_builder(first_or_default_builder&& v) noexcept {}
+            __forceinline FirstOrDefaultBuilder(FirstOrDefaultBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
-                if(range.next())
+                if(range.Next())
                 {
-                    return range.front();
+                    return range.Front();
                 }
 
                 return typename TRange::value_type();
@@ -2704,29 +2746,29 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct last_or_default_predicate_builder : base_builder
+        struct LastOrDefaultPredicateBuilder : BaseBuilder
         {
-            typedef last_or_default_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                                    predicate_type;
+            typedef LastOrDefaultPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                                predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION last_or_default_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline LastOrDefaultPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION last_or_default_predicate_builder(last_or_default_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline LastOrDefaultPredicateBuilder(LastOrDefaultPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION last_or_default_predicate_builder(last_or_default_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline LastOrDefaultPredicateBuilder(LastOrDefaultPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = typename TRange::value_type();
 
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front()))
+                    if(predicate(range.Front()))
                     {
-                        current = std::move(range.front());
+                        current = std::move(range.Front());
                     }
                 }
 
@@ -2734,24 +2776,24 @@ namespace linq
             }
         };
 
-        struct last_or_default_builder : base_builder
+        struct LastOrDefaultBuilder : BaseBuilder
         {
-            typedef last_or_default_builder this_type;
+            typedef LastOrDefaultBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION last_or_default_builder() noexcept {}
+            __forceinline LastOrDefaultBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION last_or_default_builder(last_or_default_builder const& v) noexcept {}
+            __forceinline LastOrDefaultBuilder(LastOrDefaultBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION last_or_default_builder(last_or_default_builder&& v) noexcept {}
+            __forceinline LastOrDefaultBuilder(LastOrDefaultBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = typename TRange::value_type();
 
-                while(range.next())
+                while(range.Next())
                 {
-                    current = std::move(range.front());
+                    current = std::move(range.Front());
                 }
 
                 return current;
@@ -2759,26 +2801,26 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct count_predicate_builder : base_builder
+        struct CountPredicateBuilder : BaseBuilder
         {
-            typedef count_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                          predicate_type;
+            typedef CountPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                        predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION count_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline CountPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION count_predicate_builder(count_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline CountPredicateBuilder(CountPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION count_predicate_builder(count_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline CountPredicateBuilder(CountPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION size_type build(TRange range) const
+            __forceinline size_type build(TRange range) const
             {
                 size_type count = 0U;
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front()))
+                    if(predicate(range.Front()))
                     {
                         ++count;
                     }
@@ -2787,21 +2829,21 @@ namespace linq
             }
         };
 
-        struct count_builder : base_builder
+        struct CountBuilder : BaseBuilder
         {
-            typedef count_builder this_type;
+            typedef CountBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION count_builder() noexcept {}
+            __forceinline CountBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION count_builder(count_builder const& v) noexcept {}
+            __forceinline CountBuilder(CountBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION count_builder(count_builder&& v) noexcept {}
+            __forceinline CountBuilder(CountBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION size_type build(TRange range) const
+            __forceinline size_type build(TRange range) const
             {
                 size_type count = 0U;
-                while(range.next())
+                while(range.Next())
                 {
                     ++count;
                 }
@@ -2810,78 +2852,78 @@ namespace linq
         };
 
         template<typename TSelector>
-        struct sum_selector_builder : base_builder
+        struct SumSelectorBuilder : BaseBuilder
         {
-            typedef sum_selector_builder<TSelector> this_type;
-            typedef TSelector                       selector_type;
+            typedef SumSelectorBuilder<TSelector> this_type;
+            typedef TSelector                     selector_type;
 
             selector_type selector;
 
-            KOKKOS_INLINE_FUNCTION sum_selector_builder(selector_type selector) noexcept : selector(std::move(selector)) {}
+            __forceinline SumSelectorBuilder(selector_type selector) noexcept : selector(std::move(selector)) {}
 
-            KOKKOS_INLINE_FUNCTION sum_selector_builder(sum_selector_builder const& v) noexcept : selector(v.selector) {}
+            __forceinline SumSelectorBuilder(SumSelectorBuilder const& v) noexcept : selector(v.selector) {}
 
-            KOKKOS_INLINE_FUNCTION sum_selector_builder(sum_selector_builder&& v) noexcept : selector(std::move(v.selector)) {}
+            __forceinline SumSelectorBuilder(SumSelectorBuilder&& v) noexcept : selector(std::move(v.selector)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename get_transformed_type<selector_type, typename TRange::value_type>::type build(TRange range) const
+            __forceinline typename GetTransformedType<selector_type, typename TRange::value_type>::type build(TRange range) const
             {
-                typedef typename get_transformed_type<selector_type, typename TRange::value_type>::type value_type;
+                typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto sum = value_type();
-                while(range.next())
+                while(range.Next())
                 {
-                    sum += selector(range.front());
+                    sum += selector(range.Front());
                 }
                 return sum;
             }
         };
 
-        struct sum_builder : base_builder
+        struct SumBuilder : BaseBuilder
         {
-            typedef sum_builder this_type;
+            typedef SumBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION sum_builder() noexcept {}
+            __forceinline SumBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION sum_builder(sum_builder const& v) noexcept {}
+            __forceinline SumBuilder(SumBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION sum_builder(sum_builder&& v) noexcept {}
+            __forceinline SumBuilder(SumBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto sum = typename TRange::value_type();
-                while(range.next())
+                while(range.Next())
                 {
-                    sum += range.front();
+                    sum += range.Front();
                 }
                 return sum;
             }
         };
 
         template<typename TSelector>
-        struct max_selector_builder : base_builder
+        struct MaxSelectorBuilder : BaseBuilder
         {
-            typedef max_selector_builder<TSelector> this_type;
-            typedef TSelector                       selector_type;
+            typedef MaxSelectorBuilder<TSelector> this_type;
+            typedef TSelector                     selector_type;
 
             selector_type selector;
 
-            KOKKOS_INLINE_FUNCTION max_selector_builder(selector_type selector) noexcept : selector(std::move(selector)) {}
+            __forceinline MaxSelectorBuilder(selector_type selector) noexcept : selector(std::move(selector)) {}
 
-            KOKKOS_INLINE_FUNCTION max_selector_builder(max_selector_builder const& v) noexcept : selector(v.selector) {}
+            __forceinline MaxSelectorBuilder(MaxSelectorBuilder const& v) noexcept : selector(v.selector) {}
 
-            KOKKOS_INLINE_FUNCTION max_selector_builder(max_selector_builder&& v) noexcept : selector(std::move(v.selector)) {}
+            __forceinline MaxSelectorBuilder(MaxSelectorBuilder&& v) noexcept : selector(std::move(v.selector)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename get_transformed_type<selector_type, typename TRange::value_type>::type build(TRange range) const
+            __forceinline typename GetTransformedType<selector_type, typename TRange::value_type>::type build(TRange range) const
             {
-                typedef typename get_transformed_type<selector_type, typename TRange::value_type>::type value_type;
+                typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto current = std::numeric_limits<value_type>::lowest();
-                while(range.next())
+                while(range.Next())
                 {
-                    auto v = selector(range.front());
+                    auto v = selector(range.Front());
                     if(current < v)
                     {
                         current = std::move(v);
@@ -2892,23 +2934,23 @@ namespace linq
             }
         };
 
-        struct max_builder : base_builder
+        struct MaxBuilder : BaseBuilder
         {
-            typedef max_builder this_type;
+            typedef MaxBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION max_builder() noexcept {}
+            __forceinline MaxBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION max_builder(max_builder const& v) noexcept {}
+            __forceinline MaxBuilder(MaxBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION max_builder(max_builder&& v) noexcept {}
+            __forceinline MaxBuilder(MaxBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = std::numeric_limits<typename TRange::value_type>::lowest();
-                while(range.next())
+                while(range.Next())
                 {
-                    auto v = range.front();
+                    auto v = range.Front();
                     if(current < v)
                     {
                         current = std::move(v);
@@ -2920,28 +2962,28 @@ namespace linq
         };
 
         template<typename TSelector>
-        struct min_selector_builder : base_builder
+        struct MinSelectorBuilder : BaseBuilder
         {
-            typedef min_selector_builder<TSelector> this_type;
-            typedef TSelector                       selector_type;
+            typedef MinSelectorBuilder<TSelector> this_type;
+            typedef TSelector                     selector_type;
 
             selector_type selector;
 
-            KOKKOS_INLINE_FUNCTION min_selector_builder(selector_type selector) noexcept : selector(std::move(selector)) {}
+            __forceinline MinSelectorBuilder(selector_type selector) noexcept : selector(std::move(selector)) {}
 
-            KOKKOS_INLINE_FUNCTION min_selector_builder(min_selector_builder const& v) noexcept : selector(v.selector) {}
+            __forceinline MinSelectorBuilder(MinSelectorBuilder const& v) noexcept : selector(v.selector) {}
 
-            KOKKOS_INLINE_FUNCTION min_selector_builder(min_selector_builder&& v) noexcept : selector(std::move(v.selector)) {}
+            __forceinline MinSelectorBuilder(MinSelectorBuilder&& v) noexcept : selector(std::move(v.selector)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename get_transformed_type<selector_type, typename TRange::value_type>::type build(TRange range) const
+            __forceinline typename GetTransformedType<selector_type, typename TRange::value_type>::type build(TRange range) const
             {
-                typedef typename get_transformed_type<selector_type, typename TRange::value_type>::type value_type;
+                typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto current = std::numeric_limits<value_type>::max();
-                while(range.next())
+                while(range.Next())
                 {
-                    auto v = selector(range.front());
+                    auto v = selector(range.Front());
                     if(v < current)
                     {
                         current = std::move(v);
@@ -2952,23 +2994,23 @@ namespace linq
             }
         };
 
-        struct min_builder : base_builder
+        struct MinBuilder : BaseBuilder
         {
-            typedef min_builder this_type;
+            typedef MinBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION min_builder() noexcept {}
+            __forceinline MinBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION min_builder(min_builder const& v) noexcept {}
+            __forceinline MinBuilder(MinBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION min_builder(min_builder&& v) noexcept {}
+            __forceinline MinBuilder(MinBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = std::numeric_limits<typename TRange::value_type>::max();
-                while(range.next())
+                while(range.Next())
                 {
-                    auto v = range.front();
+                    auto v = range.Front();
                     if(v < current)
                     {
                         current = std::move(v);
@@ -2980,29 +3022,29 @@ namespace linq
         };
 
         template<typename TSelector>
-        struct avg_selector_builder : base_builder
+        struct AvgSelectorBuilder : BaseBuilder
         {
-            typedef avg_selector_builder<TSelector> this_type;
-            typedef TSelector                       selector_type;
+            typedef AvgSelectorBuilder<TSelector> this_type;
+            typedef TSelector                     selector_type;
 
             selector_type selector;
 
-            KOKKOS_INLINE_FUNCTION avg_selector_builder(selector_type selector) noexcept : selector(std::move(selector)) {}
+            __forceinline AvgSelectorBuilder(selector_type selector) noexcept : selector(std::move(selector)) {}
 
-            KOKKOS_INLINE_FUNCTION avg_selector_builder(avg_selector_builder const& v) noexcept : selector(v.selector) {}
+            __forceinline AvgSelectorBuilder(AvgSelectorBuilder const& v) noexcept : selector(v.selector) {}
 
-            KOKKOS_INLINE_FUNCTION avg_selector_builder(avg_selector_builder&& v) noexcept : selector(std::move(v.selector)) {}
+            __forceinline AvgSelectorBuilder(AvgSelectorBuilder&& v) noexcept : selector(std::move(v.selector)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename get_transformed_type<selector_type, typename TRange::value_type>::type build(TRange range) const
+            __forceinline typename GetTransformedType<selector_type, typename TRange::value_type>::type build(TRange range) const
             {
-                typedef typename get_transformed_type<selector_type, typename TRange::value_type>::type value_type;
+                typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto sum   = value_type();
                 int  count = 0;
-                while(range.next())
+                while(range.Next())
                 {
-                    sum += selector(range.front());
+                    sum += selector(range.Front());
                     ++count;
                 }
 
@@ -3015,24 +3057,24 @@ namespace linq
             }
         };
 
-        struct avg_builder : base_builder
+        struct AvgBuilder : BaseBuilder
         {
-            typedef avg_builder this_type;
+            typedef AvgBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION avg_builder() noexcept {}
+            __forceinline AvgBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION avg_builder(avg_builder const& v) noexcept {}
+            __forceinline AvgBuilder(AvgBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION avg_builder(avg_builder&& v) noexcept {}
+            __forceinline AvgBuilder(AvgBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto sum   = typename TRange::value_type();
                 int  count = 0;
-                while(range.next())
+                while(range.Next())
                 {
-                    sum += range.front();
+                    sum += range.Front();
                     ++count;
                 }
 
@@ -3046,66 +3088,67 @@ namespace linq
         };
 
         template<typename TAccumulate, typename TAccumulator>
-        struct aggregate_builder : base_builder
+        struct AggregateBuilder : BaseBuilder
         {
-            typedef aggregate_builder<TAccumulate, TAccumulator> this_type;
-            typedef TAccumulator                                 accumulator_type;
-            typedef TAccumulate                                  seed_type;
+            typedef AggregateBuilder<TAccumulate, TAccumulator> this_type;
+            typedef TAccumulator                                accumulator_type;
+            typedef TAccumulate                                 seed_type;
 
             seed_type        seed;
             accumulator_type accumulator;
 
-            KOKKOS_INLINE_FUNCTION aggregate_builder(seed_type seed, accumulator_type accumulator) noexcept : seed(std::move(seed)), accumulator(std::move(accumulator)) {}
+            __forceinline AggregateBuilder(seed_type seed, accumulator_type accumulator) noexcept : seed(std::move(seed)), accumulator(std::move(accumulator)) {}
 
-            KOKKOS_INLINE_FUNCTION aggregate_builder(aggregate_builder const& v) noexcept : seed(v.seed), accumulator(v.accumulator) {}
+            __forceinline AggregateBuilder(AggregateBuilder const& v) noexcept : seed(v.seed), accumulator(v.accumulator) {}
 
-            KOKKOS_INLINE_FUNCTION aggregate_builder(aggregate_builder&& v) noexcept : seed(std::move(v.seed)), accumulator(std::move(v.accumulator)) {}
+            __forceinline AggregateBuilder(AggregateBuilder&& v) noexcept : seed(std::move(v.seed)), accumulator(std::move(v.accumulator)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION seed_type build(TRange range) const
+            __forceinline seed_type build(TRange range) const
             {
                 auto sum = seed;
-                while(range.next())
+                while(range.Next())
                 {
-                    sum = accumulator(sum, range.front());
+                    sum = accumulator(sum, range.Front());
                 }
                 return sum;
             }
         };
 
         template<typename TAccumulate, typename TAccumulator, typename TSelector>
-        struct aggregate_result_selector_builder : base_builder
+        struct AggregateResultSelectorBuilder : BaseBuilder
         {
-            typedef aggregate_result_selector_builder<TAccumulate, TAccumulator, TSelector> this_type;
-            typedef TAccumulator                                                            accumulator_type;
-            typedef TAccumulate                                                             seed_type;
-            typedef TSelector                                                               result_selector_type;
+            typedef AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector> this_type;
+            typedef TAccumulator                                                         accumulator_type;
+            typedef TAccumulate                                                          seed_type;
+            typedef TSelector                                                            result_selector_type;
 
             seed_type            seed;
             accumulator_type     accumulator;
             result_selector_type result_selector;
 
-            KOKKOS_INLINE_FUNCTION aggregate_result_selector_builder(seed_type seed, accumulator_type accumulator, result_selector_type result_selector) noexcept :
+            __forceinline AggregateResultSelectorBuilder(seed_type seed, accumulator_type accumulator, result_selector_type result_selector) noexcept :
                 seed(std::move(seed)), accumulator(std::move(accumulator)), result_selector(std::move(result_selector))
             {
             }
 
-            KOKKOS_INLINE_FUNCTION aggregate_result_selector_builder(aggregate_result_selector_builder const& v) noexcept : seed(v.seed), accumulator(v.accumulator), result_selector(v.result_selector)
+            __forceinline AggregateResultSelectorBuilder(AggregateResultSelectorBuilder const& v) noexcept :
+                seed(v.seed), accumulator(v.accumulator), result_selector(v.result_selector)
             {
             }
 
-            KOKKOS_INLINE_FUNCTION aggregate_result_selector_builder(aggregate_result_selector_builder&& v) noexcept :
+            __forceinline AggregateResultSelectorBuilder(AggregateResultSelectorBuilder&& v) noexcept :
                 seed(std::move(v.seed)), accumulator(std::move(v.accumulator)), result_selector(std::move(v.result_selector))
             {
             }
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION auto build(TRange range) const -> decltype(result_selector(seed))
+            __forceinline auto build(TRange range) const -> decltype(result_selector(seed))
             {
                 auto sum = seed;
-                while(range.next())
+                while(range.Next())
                 {
-                    sum = accumulator(sum, range.front());
+                    sum = accumulator(sum, range.Front());
                 }
 
                 return result_selector(sum);
@@ -3113,29 +3156,32 @@ namespace linq
         };
 
         template<typename TOtherRange, typename TComparer>
-        struct sequence_equal_predicate_builder : base_builder
+        struct SequenceEqualPredicateBuilder : BaseBuilder
         {
-            typedef sequence_equal_predicate_builder<TOtherRange, TComparer> this_type;
-            typedef TOtherRange                                              other_range_type;
-            typedef TComparer                                                comparer_type;
+            typedef SequenceEqualPredicateBuilder<TOtherRange, TComparer> this_type;
+            typedef TOtherRange                                           other_range_type;
+            typedef TComparer                                             comparer_type;
 
             other_range_type other_range;
             comparer_type    comparer;
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_predicate_builder(TOtherRange other_range, comparer_type comparer) noexcept : other_range(std::move(other_range)), comparer(std::move(comparer)) {}
+            __forceinline SequenceEqualPredicateBuilder(TOtherRange other_range, comparer_type comparer) noexcept :
+                other_range(std::move(other_range)), comparer(std::move(comparer))
+            {
+            }
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_predicate_builder(sequence_equal_predicate_builder const& v) noexcept : other_range(v.other_range), comparer(v.comparer) {}
+            __forceinline SequenceEqualPredicateBuilder(SequenceEqualPredicateBuilder const& v) noexcept : other_range(v.other_range), comparer(v.comparer) {}
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_predicate_builder(sequence_equal_predicate_builder&& v) noexcept : other_range(std::move(v.other_range)), comparer(std::move(v.comparer)) {}
+            __forceinline SequenceEqualPredicateBuilder(SequenceEqualPredicateBuilder&& v) noexcept : other_range(std::move(v.other_range)), comparer(std::move(v.comparer)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool Build(TRange range) const
             {
                 auto copy = other_range;
                 for(;;)
                 {
-                    bool next1 = range.next();
-                    bool next2 = copy.next();
+                    const bool next1 = range.Next();
+                    const bool next2 = copy.Next();
 
                     // sequences are not of same length
                     if(next1 != next2)
@@ -3149,7 +3195,7 @@ namespace linq
                         return true;
                     }
 
-                    if(!comparer(range.front(), copy.front()))
+                    if(!comparer(range.Front(), copy.Front()))
                     {
                         return false;
                     }
@@ -3158,27 +3204,27 @@ namespace linq
         };
 
         template<typename TOtherRange>
-        struct sequence_equal_builder : base_builder
+        struct SequenceEqualBuilder : BaseBuilder
         {
-            typedef sequence_equal_builder<TOtherRange> this_type;
-            typedef TOtherRange                         other_range_type;
+            typedef SequenceEqualBuilder<TOtherRange> this_type;
+            typedef TOtherRange                       other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline SequenceEqualBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_builder(sequence_equal_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline SequenceEqualBuilder(SequenceEqualBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION sequence_equal_builder(sequence_equal_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline SequenceEqualBuilder(SequenceEqualBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool Build(TRange range) const
             {
                 auto copy = other_range;
                 for(;;)
                 {
-                    bool next1 = range.next();
-                    bool next2 = copy.next();
+                    const bool next1 = range.Next();
+                    const bool next2 = copy.Next();
 
                     // sequences are not of same length
                     if(next1 != next2)
@@ -3192,7 +3238,7 @@ namespace linq
                         return true;
                     }
 
-                    if(range.front() != copy.front())
+                    if(range.Front() != copy.Front())
                     {
                         return false;
                     }
@@ -3201,28 +3247,28 @@ namespace linq
         };
 
         template<typename TCharType>
-        struct concatenate_builder : base_builder
+        struct ConcatenateBuilder : BaseBuilder
         {
-            typedef concatenate_builder<TCharType> this_type;
+            typedef ConcatenateBuilder<TCharType> this_type;
 
             std::basic_string<TCharType> separator;
             size_type                    capacity;
 
-            KOKKOS_INLINE_FUNCTION concatenate_builder(std::basic_string<TCharType> separator, size_type capacity) noexcept : separator(std::move(separator)), capacity(capacity) {}
+            __forceinline ConcatenateBuilder(std::basic_string<TCharType> separator, const size_type capacity) noexcept : separator(std::move(separator)), capacity(capacity) {}
 
-            KOKKOS_INLINE_FUNCTION concatenate_builder(concatenate_builder const& v) noexcept : separator(v.separator), capacity(v.capacity) {}
+            __forceinline ConcatenateBuilder(ConcatenateBuilder const& v) noexcept : separator(v.separator), capacity(v.capacity) {}
 
-            KOKKOS_INLINE_FUNCTION concatenate_builder(concatenate_builder&& v) noexcept : separator(std::move(v.separator)), capacity(std::move(v.capacity)) {}
+            __forceinline ConcatenateBuilder(ConcatenateBuilder&& v) noexcept : separator(std::move(v.separator)), capacity(std::move(v.capacity)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename std::basic_string<TCharType> build(TRange range) const
+            __forceinline typename std::basic_string<TCharType> Build(TRange range) const
             {
                 auto                   first = true;
                 std::vector<TCharType> buffer;
 
                 buffer.reserve(capacity);
 
-                while(range.next())
+                while(range.Next())
                 {
                     if(first)
                     {
@@ -3233,7 +3279,7 @@ namespace linq
                         buffer.insert(buffer.end(), separator.begin(), separator.end());
                     }
 
-                    auto v = range.front();
+                    auto v = range.Front();
 
                     buffer.insert(buffer.end(), v.begin(), v.end());
                 }
@@ -3243,68 +3289,68 @@ namespace linq
         };
 
         template<typename TPredicate>
-        struct any_predicate_builder : base_builder
+        struct AnyPredicateBuilder : BaseBuilder
         {
-            typedef any_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                        predicate_type;
+            typedef AnyPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                      predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION any_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline AnyPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION any_predicate_builder(any_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline AnyPredicateBuilder(AnyPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION any_predicate_builder(any_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline AnyPredicateBuilder(AnyPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool build(TRange range) const
             {
                 bool any = false;
-                while(range.next() && !any)
+                while(range.Next() && !any)
                 {
-                    any = predicate(range.front());
+                    any = predicate(range.Front());
                 }
                 return any;
             }
         };
 
-        struct any_builder : base_builder
+        struct AnyBuilder : BaseBuilder
         {
-            typedef any_builder this_type;
+            typedef AnyBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION any_builder() noexcept {}
+            __forceinline AnyBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION any_builder(any_builder const& v) noexcept {}
+            __forceinline AnyBuilder(AnyBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION any_builder(any_builder&& v) noexcept {}
+            __forceinline AnyBuilder(AnyBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool build(TRange range) const
             {
-                return range.next();
+                return range.Next();
             }
         };
 
         template<typename TPredicate>
-        struct all_predicate_builder : base_builder
+        struct AllPredicateBuilder : BaseBuilder
         {
-            typedef all_predicate_builder<TPredicate> this_type;
-            typedef TPredicate                        predicate_type;
+            typedef AllPredicateBuilder<TPredicate> this_type;
+            typedef TPredicate                      predicate_type;
 
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION all_predicate_builder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline AllPredicateBuilder(predicate_type predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION all_predicate_builder(all_predicate_builder const& v) noexcept : predicate(v.predicate) {}
+            __forceinline AllPredicateBuilder(AllPredicateBuilder const& v) noexcept : predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION all_predicate_builder(all_predicate_builder&& v) noexcept : predicate(std::move(v.predicate)) {}
+            __forceinline AllPredicateBuilder(AllPredicateBuilder&& v) noexcept : predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool build(TRange range) const
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(!predicate(range.front()))
+                    if(!predicate(range.Front()))
                     {
                         return false;
                     }
@@ -3315,25 +3361,25 @@ namespace linq
         };
 
         template<typename TValue>
-        struct contains_builder : base_builder
+        struct ContainsBuilder : BaseBuilder
         {
-            typedef contains_builder<TValue> this_type;
-            typedef TValue                   value_type;
+            typedef ContainsBuilder<TValue> this_type;
+            typedef TValue                  value_type;
 
             value_type value;
 
-            KOKKOS_INLINE_FUNCTION contains_builder(value_type value) noexcept : value(std::move(value)) {}
+            __forceinline ContainsBuilder(value_type value) noexcept : value(std::move(value)) {}
 
-            KOKKOS_INLINE_FUNCTION contains_builder(contains_builder const& v) noexcept : value(v.value) {}
+            __forceinline ContainsBuilder(ContainsBuilder const& v) noexcept : value(v.value) {}
 
-            KOKKOS_INLINE_FUNCTION contains_builder(contains_builder&& v) noexcept : value(std::move(v.value)) {}
+            __forceinline ContainsBuilder(ContainsBuilder&& v) noexcept : value(std::move(v.value)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool build(TRange range) const
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(range.front() == value)
+                    if(range.Front() == value)
                     {
                         return true;
                     }
@@ -3344,27 +3390,27 @@ namespace linq
         };
 
         template<typename TValue, typename TPredicate>
-        struct contains_predicate_builder : base_builder
+        struct ContainsPredicateBuilder : BaseBuilder
         {
-            typedef contains_predicate_builder<TValue, TPredicate> this_type;
-            typedef TValue                                         value_type;
-            typedef TPredicate                                     predicate_type;
+            typedef ContainsPredicateBuilder<TValue, TPredicate> this_type;
+            typedef TValue                                       value_type;
+            typedef TPredicate                                   predicate_type;
 
             value_type     value;
             predicate_type predicate;
 
-            KOKKOS_INLINE_FUNCTION contains_predicate_builder(value_type value, predicate_type predicate) noexcept : value(std::move(value)), predicate(std::move(predicate)) {}
+            __forceinline ContainsPredicateBuilder(value_type value, predicate_type predicate) noexcept : value(std::move(value)), predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION contains_predicate_builder(contains_predicate_builder const& v) noexcept : value(v.value), predicate(v.predicate) {}
+            __forceinline ContainsPredicateBuilder(ContainsPredicateBuilder const& v) noexcept : value(v.value), predicate(v.predicate) {}
 
-            KOKKOS_INLINE_FUNCTION contains_predicate_builder(contains_predicate_builder&& v) noexcept : value(std::move(v.value)), predicate(std::move(v.predicate)) {}
+            __forceinline ContainsPredicateBuilder(ContainsPredicateBuilder&& v) noexcept : value(std::move(v.value)), predicate(std::move(v.predicate)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION bool build(TRange range) const
+            __forceinline bool build(TRange range) const
             {
-                while(range.next())
+                while(range.Next())
                 {
-                    if(predicate(range.front(), value))
+                    if(predicate(range.Front(), value))
                     {
                         return true;
                     }
@@ -3374,24 +3420,24 @@ namespace linq
             }
         };
 
-        struct element_at_or_default_builder : base_builder
+        struct ElementAtOrDefaultBuilder : BaseBuilder
         {
-            typedef element_at_or_default_builder this_type;
+            typedef ElementAtOrDefaultBuilder this_type;
 
             size_type index;
 
-            KOKKOS_INLINE_FUNCTION element_at_or_default_builder(size_type index) noexcept : index(std::move(index)) {}
+            __forceinline ElementAtOrDefaultBuilder(size_type index) noexcept : index(std::move(index)) {}
 
-            KOKKOS_INLINE_FUNCTION element_at_or_default_builder(element_at_or_default_builder const& v) noexcept : index(v.index) {}
+            __forceinline ElementAtOrDefaultBuilder(ElementAtOrDefaultBuilder const& v) noexcept : index(v.index) {}
 
-            KOKKOS_INLINE_FUNCTION element_at_or_default_builder(element_at_or_default_builder&& v) noexcept : index(std::move(v.index)) {}
+            __forceinline ElementAtOrDefaultBuilder(ElementAtOrDefaultBuilder&& v) noexcept : index(std::move(v.index)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION typename TRange::value_type build(TRange range) const
+            __forceinline typename TRange::value_type build(TRange range) const
             {
                 size_type current = 0U;
 
-                while(range.next())
+                while(range.Next())
                 {
                     if(current < index)
                     {
@@ -3399,7 +3445,7 @@ namespace linq
                     }
                     else
                     {
-                        return range.front();
+                        return range.Front();
                     }
                 }
 
@@ -3408,10 +3454,10 @@ namespace linq
         };
 
         template<typename TRange>
-        struct pairwise_range : base_range
+        struct PairwiseRange : BaseRange
         {
-            typedef pairwise_range<TRange> this_type;
-            typedef TRange                 range_type;
+            typedef PairwiseRange<TRange> this_type;
+            typedef TRange                range_type;
 
             typedef typename TRange::value_type           element_type;
             typedef std::pair<element_type, element_type> value_type;
@@ -3423,35 +3469,35 @@ namespace linq
             };
 
             range_type        range;
-            opt<element_type> previous;
-            opt<element_type> current;
+            Opt<element_type> previous;
+            Opt<element_type> current;
 
-            KOKKOS_INLINE_FUNCTION pairwise_range(range_type range) noexcept : range(std::move(range)) {}
+            __forceinline PairwiseRange(range_type range) noexcept : range(std::move(range)) {}
 
-            KOKKOS_INLINE_FUNCTION pairwise_range(pairwise_range const& v) noexcept : range(v.range), previous(v.previous), current(v.current) {}
+            __forceinline PairwiseRange(PairwiseRange const& v) noexcept : range(v.range), previous(v.previous), current(v.current) {}
 
-            KOKKOS_INLINE_FUNCTION pairwise_range(pairwise_range&& v) noexcept : range(std::move(v.range)), previous(std::move(v.previous)), current(std::move(v.current)) {}
+            __forceinline PairwiseRange(PairwiseRange&& v) noexcept : range(std::move(v.range)), previous(std::move(v.previous)), current(std::move(v.current)) {}
 
             template<typename TPairwiseBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TPairwiseBuilder, this_type>::type operator>>(TPairwiseBuilder pairwise_builder) const
+            __forceinline typename GetBuiltupType<TPairwiseBuilder, this_type>::type operator>>(TPairwiseBuilder pairwise_builder) const
             {
                 return pairwise_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(previous.has_value());
                 Assert(current.has_value());
                 return std::make_pair(previous.get(), current.get());
             }
 
-            KOKKOS_INLINE_FUNCTION bool next()
+            __forceinline bool Next()
             {
                 if(!previous.has_value())
                 {
-                    if(range.next())
+                    if(range.Next())
                     {
-                        current = range.front();
+                        current = range.Front();
                     }
                     else
                     {
@@ -3461,9 +3507,9 @@ namespace linq
 
                 previous.swap(current);
 
-                if(range.next())
+                if(range.Next())
                 {
-                    current = range.front();
+                    current = range.Front();
                     return true;
                 }
 
@@ -3474,34 +3520,34 @@ namespace linq
             }
         };
 
-        struct pairwise_builder : base_builder
+        struct PairwiseBuilder : BaseBuilder
         {
-            typedef pairwise_builder this_type;
+            typedef PairwiseBuilder this_type;
 
-            KOKKOS_INLINE_FUNCTION pairwise_builder() noexcept {}
+            __forceinline PairwiseBuilder() noexcept {}
 
-            KOKKOS_INLINE_FUNCTION pairwise_builder(pairwise_builder const& v) noexcept {}
+            __forceinline PairwiseBuilder(PairwiseBuilder const& v) noexcept {}
 
-            KOKKOS_INLINE_FUNCTION pairwise_builder(pairwise_builder&& v) noexcept {}
+            __forceinline PairwiseBuilder(PairwiseBuilder&& v) noexcept {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION pairwise_range<TRange> build(TRange range) const
+            __forceinline PairwiseRange<TRange> Build(TRange range) const
             {
-                return pairwise_range<TRange>(std::move(range));
+                return PairwiseRange<TRange>(std::move(range));
             }
         };
 
         template<typename TRange, typename TOtherRange>
-        struct zip_with_range : base_range
+        struct ZipWithRange : BaseRange
         {
-            typedef zip_with_range<TRange, TOtherRange> this_type;
-            typedef TRange                              range_type;
-            typedef TOtherRange                         other_range_type;
+            typedef ZipWithRange<TRange, TOtherRange> this_type;
+            typedef TRange                            range_type;
+            typedef TOtherRange                       other_range_type;
 
-            typedef typename cleanup_type<typename TRange::value_type>::type      left_element_type;
-            typedef typename cleanup_type<typename TOtherRange::value_type>::type right_element_type;
-            typedef std::pair<left_element_type, right_element_type>              value_type;
-            typedef value_type                                                    return_type;
+            typedef typename CleanupType<typename TRange::value_type>::type      left_element_type;
+            typedef typename CleanupType<typename TOtherRange::value_type>::type right_element_type;
+            typedef std::pair<left_element_type, right_element_type>             value_type;
+            typedef value_type                                                   return_type;
             enum
             {
                 returns_reference = 0,
@@ -3510,58 +3556,58 @@ namespace linq
             range_type       range;
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION zip_with_range(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)) {}
+            __forceinline ZipWithRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION zip_with_range(zip_with_range const& v) noexcept : range(v.range), other_range(v.other_range) {}
+            __forceinline ZipWithRange(ZipWithRange const& v) noexcept : range(v.range), other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION zip_with_range(zip_with_range&& v) noexcept : range(std::move(v.range)), other_range(std::move(v.other_range)) {}
+            __forceinline ZipWithRange(ZipWithRange&& v) noexcept : range(std::move(v.range)), other_range(std::move(v.other_range)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const { return std::make_pair(range.front(), other_range.front()); }
+            __forceinline return_type Front() const { return std::make_pair(range.Front(), other_range.Front()); }
 
-            KOKKOS_INLINE_FUNCTION bool next() { return range.next() && other_range.next(); }
+            __forceinline bool Next() { return range.Next() && other_range.Next(); }
         };
 
         template<typename TOtherRange>
-        struct zip_with_builder : base_builder
+        struct ZipWithBuilder : BaseBuilder
         {
-            typedef zip_with_builder<TOtherRange> this_type;
-            typedef TOtherRange                   other_range_type;
+            typedef ZipWithBuilder<TOtherRange> this_type;
+            typedef TOtherRange                 other_range_type;
 
             other_range_type other_range;
 
-            KOKKOS_INLINE_FUNCTION zip_with_builder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
+            __forceinline ZipWithBuilder(TOtherRange other_range) noexcept : other_range(std::move(other_range)) {}
 
-            KOKKOS_INLINE_FUNCTION zip_with_builder(zip_with_builder const& v) noexcept : other_range(v.other_range) {}
+            __forceinline ZipWithBuilder(ZipWithBuilder const& v) noexcept : other_range(v.other_range) {}
 
-            KOKKOS_INLINE_FUNCTION zip_with_builder(zip_with_builder&& v) noexcept : other_range(std::move(v.other_range)) {}
+            __forceinline ZipWithBuilder(ZipWithBuilder&& v) noexcept : other_range(std::move(v.other_range)) {}
 
             template<typename TRange>
-            KOKKOS_INLINE_FUNCTION zip_with_range<TRange, TOtherRange> build(TRange range) const
+            __forceinline ZipWithRange<TRange, TOtherRange> Build(TRange range) const
             {
-                return zip_with_range<TRange, TOtherRange>(std::move(range), std::move(other_range));
+                return ZipWithRange<TRange, TOtherRange>(std::move(range), std::move(other_range));
             }
         };
 
         template<typename TPredicate>
-        struct generate_range : base_range
+        struct GenerateRange : BaseRange
         {
-            static TPredicate get_predicate();
+            static TPredicate GetPredicate();
 
-            typedef decltype(get_predicate()())                     raw_opt_value_type;
-            typedef typename cleanup_type<raw_opt_value_type>::type opt_value_type;
+            typedef decltype(GetPredicate()())                     raw_opt_value_type;
+            typedef typename CleanupType<raw_opt_value_type>::type opt_value_type;
 
-            typedef decltype(*(get_predicate()()))              raw_value_type;
-            typedef typename cleanup_type<raw_value_type>::type value_type;
+            typedef decltype(*(GetPredicate()()))              raw_value_type;
+            typedef typename CleanupType<raw_value_type>::type value_type;
 
-            typedef generate_range<TPredicate> this_type;
-            typedef TPredicate                 predicate_type;
-            typedef value_type const&          return_type;
+            typedef GenerateRange<TPredicate> this_type;
+            typedef TPredicate                predicate_type;
+            typedef value_type const&         return_type;
 
             enum
             {
@@ -3571,25 +3617,25 @@ namespace linq
             TPredicate     predicate;
             opt_value_type current_value;
 
-            KOKKOS_INLINE_FUNCTION generate_range(TPredicate predicate) noexcept : predicate(std::move(predicate)) {}
+            __forceinline GenerateRange(TPredicate predicate) noexcept : predicate(std::move(predicate)) {}
 
-            KOKKOS_INLINE_FUNCTION generate_range(generate_range const& v) noexcept : predicate(v.predicate), current_value(v.current_value) {}
+            __forceinline GenerateRange(GenerateRange const& v) noexcept : predicate(v.predicate), current_value(v.current_value) {}
 
-            KOKKOS_INLINE_FUNCTION generate_range(generate_range&& v) noexcept : predicate(std::move(v.predicate)), current_value(std::move(v.current_value)) {}
+            __forceinline GenerateRange(GenerateRange&& v) noexcept : predicate(std::move(v.predicate)), current_value(std::move(v.current_value)) {}
 
             template<typename TRangeBuilder>
-            KOKKOS_INLINE_FUNCTION typename get_builtup_type<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
+            __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
             {
                 return range_builder.build(*this);
             }
 
-            KOKKOS_INLINE_FUNCTION return_type front() const
+            __forceinline return_type Front() const
             {
                 Assert(current_value);
                 return *current_value;
             }
 
-            KOKKOS_INLINE_FUNCTION bool next() noexcept
+            __forceinline bool Next() noexcept
             {
                 current_value = predicate();
                 return current_value;
@@ -3603,373 +3649,380 @@ namespace linq
     // Range sources
 
     template<typename TValueIterator>
-    KOKKOS_INLINE_FUNCTION detail::from_range<TValueIterator> from_iterators(TValueIterator begin, TValueIterator end) noexcept
+    __forceinline detail::FromRange<TValueIterator> FromIterators(TValueIterator begin, TValueIterator end) noexcept
     {
-        return detail::from_range<TValueIterator>(std::move(begin), std::move(end));
+        return detail::FromRange<TValueIterator>(std::move(begin), std::move(end));
     }
 
     template<typename TContainer>
-    KOKKOS_INLINE_FUNCTION detail::from_range<typename TContainer::const_iterator> from(TContainer const& container)
+    __forceinline detail::FromRange<typename TContainer::const_iterator> From(TContainer const& container)
     {
-        return detail::from_range<typename TContainer::const_iterator>(container.begin(), container.end());
+        return detail::FromRange<typename TContainer::const_iterator>(container.begin(), container.end());
     }
 
+    /**
+     * \brief
+     * \tparam TValueArray
+     * \param a
+     * \return
+     */
     template<typename TValueArray>
-    KOKKOS_INLINE_FUNCTION detail::from_range<typename detail::get_array_properties<TValueArray>::iterator_type> from_array(TValueArray& a) noexcept
+    __forceinline detail::FromRange<typename detail::GetArrayProperties<TValueArray>::iterator_type> from_array(TValueArray& a) noexcept
     {
-        typedef detail::get_array_properties<TValueArray> array_properties;
-        typedef typename array_properties::iterator_type  iterator_type;
+        typedef detail::GetArrayProperties<TValueArray>  array_properties;
+        typedef typename array_properties::iterator_type iterator_type;
 
         iterator_type begin = a;
         iterator_type end   = begin + array_properties::size;
 
-        return detail::from_range<typename array_properties::iterator_type>(std::move(begin), std::move(end));
+        return detail::FromRange<typename array_properties::iterator_type>(std::move(begin), std::move(end));
     }
 
     template<typename TContainer>
-    KOKKOS_INLINE_FUNCTION detail::from_copy_range<typename detail::cleanup_type<TContainer>::type> from_copy(TContainer&& container)
+    __forceinline detail::FromCopyRange<typename detail::CleanupType<TContainer>::type> FromCopy(TContainer&& container)
     {
-        typedef typename detail::cleanup_type<TContainer>::type container_type;
+        typedef typename detail::CleanupType<TContainer>::type container_type;
 
-        return detail::from_copy_range<container_type>(std::forward<TContainer>(container));
+        return detail::FromCopyRange<container_type>(std::forward<TContainer>(container));
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::generate_range<TPredicate> generate(TPredicate predicate) noexcept
+    __forceinline detail::GenerateRange<TPredicate> Generate(TPredicate predicate) noexcept
     {
-        return detail::generate_range<TPredicate>(std::move(predicate));
+        return detail::GenerateRange<TPredicate>(std::move(predicate));
     }
 
     // Restriction operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::where_builder<TPredicate> where(TPredicate predicate) noexcept
+    __forceinline detail::WhereBuilder<TPredicate> Where(TPredicate predicate) noexcept
     {
-        return detail::where_builder<TPredicate>(std::move(predicate));
+        return detail::WhereBuilder<TPredicate>(std::move(predicate));
     }
 
     // Projection operators
 
-    KOKKOS_INLINE_FUNCTION detail::ref_builder ref() noexcept { return detail::ref_builder(); }
+    __forceinline detail::RefBuilder Ref() noexcept { return detail::RefBuilder(); }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::select_builder<TPredicate> select(TPredicate predicate) noexcept
+    __forceinline detail::SelectBuilder<TPredicate> Select(TPredicate predicate) noexcept
     {
-        return detail::select_builder<TPredicate>(std::move(predicate));
+        return detail::SelectBuilder<TPredicate>(std::move(predicate));
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::select_many_builder<TPredicate> select_many(TPredicate predicate) noexcept
+    __forceinline detail::SelectManyBuilder<TPredicate> SelectMany(TPredicate predicate) noexcept
     {
-        return detail::select_many_builder<TPredicate>(std::move(predicate));
+        return detail::SelectManyBuilder<TPredicate>(std::move(predicate));
     }
 
     template<typename TOtherRange, typename TKeySelector, typename TOtherKeySelector, typename TCombiner>
-    KOKKOS_INLINE_FUNCTION detail::join_builder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> join(TOtherRange       other_range,
-                                                                                                              TKeySelector      key_selector,
-                                                                                                              TOtherKeySelector other_key_selector,
-                                                                                                              TCombiner         combiner) noexcept
+    __forceinline detail::JoinBuilder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner> Join(TOtherRange       other_range,
+                                                                                                    TKeySelector      key_selector,
+                                                                                                    TOtherKeySelector other_key_selector,
+                                                                                                    TCombiner         combiner) noexcept
     {
-        return detail::join_builder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(std::move(other_range), std::move(key_selector), std::move(other_key_selector), std::move(combiner));
+        return detail::JoinBuilder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(
+            std::move(other_range), std::move(key_selector), std::move(other_key_selector), std::move(combiner));
     }
 
     // Concatenation operators
 
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::concat_builder<TOtherRange> concat(TOtherRange other_range) noexcept
+    __forceinline detail::ConcatBuilder<TOtherRange> Concat(TOtherRange other_range) noexcept
     {
-        return detail::concat_builder<TOtherRange>(std::move(other_range));
+        return detail::ConcatBuilder<TOtherRange>(std::move(other_range));
     }
 
     // Partitioning operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::take_while_builder<TPredicate> take_while(TPredicate predicate) noexcept
+    __forceinline detail::TakeWhileBuilder<TPredicate> TakeWhile(TPredicate predicate) noexcept
     {
-        return detail::take_while_builder<TPredicate>(std::move(predicate));
+        return detail::TakeWhileBuilder<TPredicate>(std::move(predicate));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::take_builder take(size_type count) noexcept { return detail::take_builder(count); }
+    __forceinline detail::TakeBuilder Take(const size_type count) noexcept { return detail::TakeBuilder(count); }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::skip_while_builder<TPredicate> skip_while(TPredicate predicate) noexcept
+    __forceinline detail::SkipWhileBuilder<TPredicate> SkipWhile(TPredicate predicate) noexcept
     {
-        return detail::skip_while_builder<TPredicate>(predicate);
+        return detail::SkipWhileBuilder<TPredicate>(predicate);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::skip_builder skip(size_type count) noexcept { return detail::skip_builder(count); }
+    __forceinline detail::SkipBuilder Skip(const size_type count) noexcept { return detail::SkipBuilder(count); }
 
     // Ordering operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::orderby_builder<TPredicate> orderby(TPredicate predicate, bool sort_ascending = true) noexcept
+    __forceinline detail::OrderbyBuilder<TPredicate> Orderby(TPredicate predicate, bool sort_ascending = true) noexcept
     {
-        return detail::orderby_builder<TPredicate>(std::move(predicate), sort_ascending);
+        return detail::OrderbyBuilder<TPredicate>(std::move(predicate), sort_ascending);
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::orderby_builder<TPredicate> orderby_ascending(TPredicate predicate) noexcept
+    __forceinline detail::OrderbyBuilder<TPredicate> OrderbyAscending(TPredicate predicate) noexcept
     {
-        return detail::orderby_builder<TPredicate>(std::move(predicate), true);
+        return detail::OrderbyBuilder<TPredicate>(std::move(predicate), true);
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::orderby_builder<TPredicate> orderby_descending(TPredicate predicate) noexcept
+    __forceinline detail::OrderbyBuilder<TPredicate> OrderbyDescending(TPredicate predicate) noexcept
     {
-        return detail::orderby_builder<TPredicate>(std::move(predicate), false);
+        return detail::OrderbyBuilder<TPredicate>(std::move(predicate), false);
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::thenby_builder<TPredicate> thenby(TPredicate predicate, bool sort_ascending = true) noexcept
+    __forceinline detail::ThenbyBuilder<TPredicate> Thenby(TPredicate predicate, bool sort_ascending = true) noexcept
     {
-        return detail::thenby_builder<TPredicate>(std::move(predicate), sort_ascending);
+        return detail::ThenbyBuilder<TPredicate>(std::move(predicate), sort_ascending);
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::thenby_builder<TPredicate> thenby_ascending(TPredicate predicate) noexcept
+    __forceinline detail::ThenbyBuilder<TPredicate> ThenbyAscending(TPredicate predicate) noexcept
     {
-        return detail::thenby_builder<TPredicate>(std::move(predicate), true);
+        return detail::ThenbyBuilder<TPredicate>(std::move(predicate), true);
     }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::thenby_builder<TPredicate> thenby_descending(TPredicate predicate) noexcept
+    __forceinline detail::ThenbyBuilder<TPredicate> ThenbyDescending(TPredicate predicate) noexcept
     {
-        return detail::thenby_builder<TPredicate>(std::move(predicate), false);
+        return detail::ThenbyBuilder<TPredicate>(std::move(predicate), false);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::reverse_builder reverse(size_type capacity = 16U) noexcept { return detail::reverse_builder(capacity); }
+    __forceinline detail::ReverseBuilder Reverse(const size_type capacity = 16U) noexcept { return detail::ReverseBuilder(capacity); }
 
     // Conversion operators
 
     namespace experimental
     {
-        KOKKOS_INLINE_FUNCTION detail::experimental::container_builder container() noexcept { return detail::experimental::container_builder(); }
+        __forceinline detail::experimental::ContainerBuilder Container() noexcept { return detail::experimental::ContainerBuilder(); }
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::opt<typename detail::cleanup_type<TValue>::type> to_opt(TValue&& v)
+    __forceinline detail::Opt<typename detail::CleanupType<TValue>::type> ToOpt(TValue&& v)
     {
-        return detail::opt<typename detail::cleanup_type<TValue>::type>(std::forward<TValue>(v));
+        return detail::Opt<typename detail::CleanupType<TValue>::type>(std::forward<TValue>(v));
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::opt<TValue> to_opt()
+    __forceinline detail::Opt<TValue> ToOpt()
     {
-        return detail::opt<TValue>();
+        return detail::Opt<TValue>();
     }
 
-    KOKKOS_INLINE_FUNCTION detail::to_vector_builder to_vector(size_type capacity = 16U) noexcept { return detail::to_vector_builder(capacity); }
+    __forceinline detail::ToVectorBuilder ToVector(const size_type capacity = 16U) noexcept { return detail::ToVectorBuilder(capacity); }
 
-    KOKKOS_INLINE_FUNCTION detail::to_list_builder to_list() noexcept { return detail::to_list_builder(); }
+    __forceinline detail::ToListBuilder ToList() noexcept { return detail::ToListBuilder(); }
 
     template<typename TKeyPredicate>
-    KOKKOS_INLINE_FUNCTION detail::to_map_builder<TKeyPredicate> to_map(TKeyPredicate key_predicate) noexcept
+    __forceinline detail::ToMapBuilder<TKeyPredicate> ToMap(TKeyPredicate key_predicate) noexcept
     {
-        return detail::to_map_builder<TKeyPredicate>(std::move(key_predicate));
+        return detail::ToMapBuilder<TKeyPredicate>(std::move(key_predicate));
     }
 
     template<typename TKeyPredicate>
-    KOKKOS_INLINE_FUNCTION detail::to_lookup_builder<TKeyPredicate> to_lookup(TKeyPredicate key_predicate) noexcept
+    __forceinline detail::ToLookupBuilder<TKeyPredicate> ToLookup(TKeyPredicate key_predicate) noexcept
     {
-        return detail::to_lookup_builder<TKeyPredicate>(std::move(key_predicate));
+        return detail::ToLookupBuilder<TKeyPredicate>(std::move(key_predicate));
     }
 
     // Equality operators
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::sequence_equal_builder<TOtherRange> sequence_equal(TOtherRange other_range) noexcept
+    __forceinline detail::SequenceEqualBuilder<TOtherRange> SequenceEqual(TOtherRange other_range) noexcept
     {
-        return detail::sequence_equal_builder<TOtherRange>(std::move(other_range));
+        return detail::SequenceEqualBuilder<TOtherRange>(std::move(other_range));
     }
 
     template<typename TOtherRange, typename TComparer>
-    KOKKOS_INLINE_FUNCTION detail::sequence_equal_predicate_builder<TOtherRange, TComparer> sequence_equal(TOtherRange other_range, TComparer comparer) noexcept
+    __forceinline detail::SequenceEqualPredicateBuilder<TOtherRange, TComparer> SequenceEqual(TOtherRange other_range, TComparer comparer) noexcept
     {
-        return detail::sequence_equal_predicate_builder<TOtherRange, TComparer>(std::move(other_range), std::move(comparer));
+        return detail::SequenceEqualPredicateBuilder<TOtherRange, TComparer>(std::move(other_range), std::move(comparer));
     }
 
     // Element operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::first_predicate_builder<TPredicate> first(TPredicate predicate)
+    __forceinline detail::FirstPredicateBuilder<TPredicate> First(TPredicate predicate)
     {
-        return detail::first_predicate_builder<TPredicate>(std::move(predicate));
+        return detail::FirstPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::first_builder first() { return detail::first_builder(); }
+    __forceinline detail::FirstBuilder First() { return detail::FirstBuilder(); }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::first_or_default_predicate_builder<TPredicate> first_or_default(TPredicate predicate) noexcept
+    __forceinline detail::FirstOrDefaultPredicateBuilder<TPredicate> FirstOrDefault(TPredicate predicate) noexcept
     {
-        return detail::first_or_default_predicate_builder<TPredicate>(predicate);
+        return detail::FirstOrDefaultPredicateBuilder<TPredicate>(predicate);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::first_or_default_builder first_or_default() noexcept { return detail::first_or_default_builder(); }
+    __forceinline detail::FirstOrDefaultBuilder FirstOrDefault() noexcept { return detail::FirstOrDefaultBuilder(); }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::last_or_default_predicate_builder<TPredicate> last_or_default(TPredicate predicate) noexcept
+    __forceinline detail::LastOrDefaultPredicateBuilder<TPredicate> LastOrDefault(TPredicate predicate) noexcept
     {
-        return detail::last_or_default_predicate_builder<TPredicate>(predicate);
+        return detail::LastOrDefaultPredicateBuilder<TPredicate>(predicate);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::last_or_default_builder last_or_default() noexcept { return detail::last_or_default_builder(); }
+    __forceinline detail::LastOrDefaultBuilder LastOrDefault() noexcept { return detail::LastOrDefaultBuilder(); }
 
-    KOKKOS_INLINE_FUNCTION detail::element_at_or_default_builder element_at_or_default(size_type index) noexcept { return detail::element_at_or_default_builder(index); }
+    __forceinline detail::ElementAtOrDefaultBuilder ElementAtOrDefault(const size_type index) noexcept { return detail::ElementAtOrDefaultBuilder(index); }
 
     // Generation operators
 
-    KOKKOS_INLINE_FUNCTION detail::int_range range(int start, int count) noexcept
+    __forceinline detail::IntRange Range(const int start, const int count) noexcept
     {
-        auto c   = count > 0 ? count : 0;
-        auto end = (INT_MAX - c) > start ? (start + c) : INT_MAX;
-        return detail::int_range(start, end);
+        const auto c   = count > 0 ? count : 0;
+        const auto end = (INT_MAX - c) > start ? (start + c) : INT_MAX;
+        return detail::IntRange(start, end);
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::repeat_range<TValue> repeat(TValue element, int count) noexcept
+    __forceinline detail::RepeatRange<TValue> Repeat(TValue element, const int count) noexcept
     {
         auto c = count > 0 ? count : 0;
-        return detail::repeat_range<TValue>(element, c);
+        return detail::RepeatRange<TValue>(element, c);
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::empty_range<TValue> empty() noexcept
+    __forceinline detail::EmptyRange<TValue> Empty() noexcept
     {
-        return detail::empty_range<TValue>();
+        return detail::EmptyRange<TValue>();
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::singleton_range<typename detail::cleanup_type<TValue>::type> singleton(TValue&& value) noexcept
+    __forceinline detail::SingletonRange<typename detail::CleanupType<TValue>::type> Singleton(TValue&& value) noexcept
     {
-        return detail::singleton_range<typename detail::cleanup_type<TValue>::type>(std::forward<TValue>(value));
+        return detail::SingletonRange<typename detail::CleanupType<TValue>::type>(std::forward<TValue>(value));
     }
 
     // Quantifiers
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::any_predicate_builder<TPredicate> any(TPredicate predicate) noexcept
+    __forceinline detail::AnyPredicateBuilder<TPredicate> Any(TPredicate predicate) noexcept
     {
-        return detail::any_predicate_builder<TPredicate>(std::move(predicate));
+        return detail::AnyPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::any_builder any() noexcept { return detail::any_builder(); }
+    __forceinline detail::AnyBuilder Any() noexcept { return detail::AnyBuilder(); }
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::all_predicate_builder<TPredicate> all(TPredicate predicate) noexcept
+    __forceinline detail::AllPredicateBuilder<TPredicate> All(TPredicate predicate) noexcept
     {
-        return detail::all_predicate_builder<TPredicate>(std::move(predicate));
+        return detail::AllPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
     template<typename TValue>
-    KOKKOS_INLINE_FUNCTION detail::contains_builder<TValue> contains(TValue value) noexcept
+    __forceinline detail::ContainsBuilder<TValue> Contains(TValue value) noexcept
     {
-        return detail::contains_builder<TValue>(value);
+        return detail::ContainsBuilder<TValue>(value);
     }
 
     template<typename TValue, typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::contains_predicate_builder<TValue, TPredicate> contains(TValue value, TPredicate predicate) noexcept
+    __forceinline detail::ContainsPredicateBuilder<TValue, TPredicate> Contains(TValue value, TPredicate predicate) noexcept
     {
-        return detail::contains_predicate_builder<TValue, TPredicate>(value, predicate);
+        return detail::ContainsPredicateBuilder<TValue, TPredicate>(value, predicate);
     }
 
     // Aggregate operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::count_predicate_builder<TPredicate> count(TPredicate predicate) noexcept
+    __forceinline detail::CountPredicateBuilder<TPredicate> Count(TPredicate predicate) noexcept
     {
-        return detail::count_predicate_builder<TPredicate>(std::move(predicate));
+        return detail::CountPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::count_builder count() noexcept { return detail::count_builder(); }
+    __forceinline detail::CountBuilder Count() noexcept { return detail::CountBuilder(); }
 
     template<typename TSelector>
-    KOKKOS_INLINE_FUNCTION detail::sum_selector_builder<TSelector> sum(TSelector selector) noexcept
+    __forceinline detail::SumSelectorBuilder<TSelector> Sum(TSelector selector) noexcept
     {
-        return detail::sum_selector_builder<TSelector>(std::move(selector));
+        return detail::SumSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::sum_builder sum() noexcept { return detail::sum_builder(); }
+    __forceinline detail::SumBuilder Sum() noexcept { return detail::SumBuilder(); }
 
     template<typename TSelector>
-    KOKKOS_INLINE_FUNCTION detail::max_selector_builder<TSelector> max(TSelector selector) noexcept
+    __forceinline detail::MaxSelectorBuilder<TSelector> Max(TSelector selector) noexcept
     {
-        return detail::max_selector_builder<TSelector>(std::move(selector));
+        return detail::MaxSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::max_builder max() noexcept { return detail::max_builder(); }
+    __forceinline detail::MaxBuilder Max() noexcept { return detail::MaxBuilder(); }
 
     template<typename TSelector>
-    KOKKOS_INLINE_FUNCTION detail::min_selector_builder<TSelector> min(TSelector selector) noexcept
+    __forceinline detail::MinSelectorBuilder<TSelector> Min(TSelector selector) noexcept
     {
-        return detail::min_selector_builder<TSelector>(std::move(selector));
+        return detail::MinSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::min_builder min() noexcept { return detail::min_builder(); }
+    __forceinline detail::MinBuilder Min() noexcept { return detail::MinBuilder(); }
 
     template<typename TSelector>
-    KOKKOS_INLINE_FUNCTION detail::avg_selector_builder<TSelector> avg(TSelector selector) noexcept
+    __forceinline detail::AvgSelectorBuilder<TSelector> Average(TSelector selector) noexcept
     {
-        return detail::avg_selector_builder<TSelector>(std::move(selector));
+        return detail::AvgSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::avg_builder avg() noexcept { return detail::avg_builder(); }
+    __forceinline detail::AvgBuilder Average() noexcept { return detail::AvgBuilder(); }
 
     template<typename TAccumulate, typename TAccumulator>
-    KOKKOS_INLINE_FUNCTION detail::aggregate_builder<TAccumulate, TAccumulator> aggregate(TAccumulate seed, TAccumulator accumulator) noexcept
+    __forceinline detail::AggregateBuilder<TAccumulate, TAccumulator> Aggregate(TAccumulate seed, TAccumulator accumulator) noexcept
     {
-        return detail::aggregate_builder<TAccumulate, TAccumulator>(seed, accumulator);
+        return detail::AggregateBuilder<TAccumulate, TAccumulator>(seed, accumulator);
     }
 
     template<typename TAccumulate, typename TAccumulator, typename TSelector>
-    KOKKOS_INLINE_FUNCTION detail::aggregate_result_selector_builder<TAccumulate, TAccumulator, TSelector> aggregate(TAccumulate seed, TAccumulator accumulator, TSelector result_selector) noexcept
+    __forceinline detail::AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector> Aggregate(TAccumulate seed, TAccumulator accumulator, TSelector result_selector) noexcept
     {
-        return detail::aggregate_result_selector_builder<TAccumulate, TAccumulator, TSelector>(seed, accumulator, result_selector);
+        return detail::AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector>(seed, accumulator, result_selector);
     }
 
     // set operators
-    KOKKOS_INLINE_FUNCTION detail::distinct_builder distinct() noexcept { return detail::distinct_builder(); }
+    __forceinline detail::DistinctBuilder Distinct() noexcept { return detail::DistinctBuilder(); }
 
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::union_builder<TOtherRange> union_with(TOtherRange other_range) noexcept
+    __forceinline detail::UnionBuilder<TOtherRange> UnionWith(TOtherRange other_range) noexcept
     {
-        return detail::union_builder<TOtherRange>(std::move(other_range));
+        return detail::UnionBuilder<TOtherRange>(std::move(other_range));
     }
 
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::intersect_builder<TOtherRange> intersect_with(TOtherRange other_range) noexcept
+    __forceinline detail::IntersectBuilder<TOtherRange> IntersectWith(TOtherRange other_range) noexcept
     {
-        return detail::intersect_builder<TOtherRange>(std::move(other_range));
+        return detail::IntersectBuilder<TOtherRange>(std::move(other_range));
     }
 
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::except_builder<TOtherRange> except(TOtherRange other_range) noexcept
+    __forceinline detail::ExceptBuilder<TOtherRange> Except(TOtherRange other_range) noexcept
     {
-        return detail::except_builder<TOtherRange>(std::move(other_range));
+        return detail::ExceptBuilder<TOtherRange>(std::move(other_range));
     }
 
     // other operators
 
     template<typename TPredicate>
-    KOKKOS_INLINE_FUNCTION detail::for_each_builder<TPredicate> for_each(TPredicate predicate) noexcept
+    __forceinline detail::ForEachBuilder<TPredicate> ForEach(TPredicate predicate) noexcept
     {
-        return detail::for_each_builder<TPredicate>(std::move(predicate));
+        return detail::ForEachBuilder<TPredicate>(std::move(predicate));
     }
 
-    KOKKOS_INLINE_FUNCTION detail::concatenate_builder<char> concatenate(std::string separator, size_type capacity = 16U) noexcept
+    __forceinline detail::ConcatenateBuilder<char> Concatenate(std::string separator, const size_type capacity = 16U) noexcept
     {
-        return detail::concatenate_builder<char>(std::move(separator), capacity);
+        return detail::ConcatenateBuilder<char>(std::move(separator), capacity);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::concatenate_builder<wchar_t> concatenate(std::wstring separator, size_type capacity = 16U) noexcept
+    __forceinline detail::ConcatenateBuilder<wchar_t> Concatenate(std::wstring separator, const size_type capacity = 16U) noexcept
     {
-        return detail::concatenate_builder<wchar_t>(std::move(separator), capacity);
+        return detail::ConcatenateBuilder<wchar_t>(std::move(separator), capacity);
     }
 
-    KOKKOS_INLINE_FUNCTION detail::pairwise_builder pairwise() noexcept { return detail::pairwise_builder(); }
+    __forceinline detail::PairwiseBuilder Pairwise() noexcept { return detail::PairwiseBuilder(); }
 
     template<typename TOtherRange>
-    KOKKOS_INLINE_FUNCTION detail::zip_with_builder<TOtherRange> zip_with(TOtherRange other_range) noexcept
+    __forceinline detail::ZipWithBuilder<TOtherRange> ZipWith(TOtherRange other_range) noexcept
     {
-        return detail::zip_with_builder<TOtherRange>(std::move(other_range));
+        return detail::ZipWithBuilder<TOtherRange>(std::move(other_range));
     }
 
 }

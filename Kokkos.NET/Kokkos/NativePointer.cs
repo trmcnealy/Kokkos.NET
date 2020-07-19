@@ -26,7 +26,11 @@ namespace Kokkos
 
         private ExecutionSpaceKind _executionSpace;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(IntPtr             data,
                              int                size,
                              bool               mustDeallocate = false,
@@ -38,7 +42,11 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(IntPtr             data,
                              uint               size,
                              bool               mustDeallocate = false,
@@ -50,7 +58,11 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(IntPtr             data,
                              long               size,
                              bool               mustDeallocate = false,
@@ -62,7 +74,11 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(IntPtr             data,
                              ulong              size,
                              bool               mustDeallocate = false,
@@ -74,7 +90,11 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(int                size,
                              ExecutionSpaceKind executionSpace)
             : this(KokkosLibrary.Allocate(executionSpace,
@@ -85,7 +105,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NativePointer(ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
             : this(Unsafe.SizeOf<IntPtr>(),
                    executionSpace)
@@ -99,29 +123,49 @@ namespace Kokkos
 
         public ref IntPtr Data
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return ref _data; }
         }
 
         public int Size
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return _size; }
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static implicit operator IntPtr(NativePointer pointer)
         {
             return pointer.Data;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static unsafe implicit operator void*(NativePointer pointer)
         {
             return pointer.Data.ToPointer();
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NativePointer Allocate(int                size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
@@ -144,7 +188,11 @@ namespace Kokkos
                                      executionSpace);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NativePointer Allocate(uint               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
@@ -167,7 +215,11 @@ namespace Kokkos
                                      executionSpace);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NativePointer Allocate(long               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
@@ -190,7 +242,11 @@ namespace Kokkos
                                      executionSpace);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NativePointer Allocate(ulong              size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
@@ -213,14 +269,22 @@ namespace Kokkos
                                      executionSpace);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public void Dispose()
         {
             DisposeUnmanaged();
             GC.SuppressFinalize(this);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private void DisposeUnmanaged()
         {
             if(_mustDeallocate && _data != IntPtr.Zero)

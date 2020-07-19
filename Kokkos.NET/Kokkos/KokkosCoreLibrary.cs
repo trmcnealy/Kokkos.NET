@@ -10,12 +10,15 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Threading;
 
+using PlatformApi;
+using PlatformApi.Win32;
+
 using ThreadState = System.Diagnostics.ThreadState;
 
 namespace Kokkos
 {
     [NonVersionable]
-    internal static class KokkosCoreLibrary
+    public static class KokkosCoreLibrary
     {
         public const string KokkosCoreLibraryName = "libkokkoscore";
 
@@ -43,9 +46,13 @@ namespace Kokkos
 
         public static volatile bool Initialized;
 
-        private static readonly string nativeLibraryPath;
+        //private static readonly string nativeLibraryPath;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static string GetNativePackagePath(string nativePackagePath)
         {
             Version lastestVersion = new Version(0, 0, 0, 0);
@@ -65,7 +72,11 @@ namespace Kokkos
             return Path.Combine(nativePackagePath, lastestVersion.ToString());
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static string GetLibraryPath()
         {
             string fullPath = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -101,16 +112,15 @@ namespace Kokkos
             return null;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         static KokkosCoreLibrary()
         {
-            if(Thread.CurrentThread.TrySetApartmentState(ApartmentState.STA))
-            {
-                Console.WriteLine("TrySetApartmentState Failed.");
-            }
-
-            string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
-            string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
+            //string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
+            //string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
 
             //string libraryPath = GetLibraryPath() ?? throw new NullReferenceException("typeof(KokkosCoreLibrary).Assembly.Location is empty.");
 
@@ -119,7 +129,7 @@ namespace Kokkos
 // #endif
 
             //Path.Combine(libraryPath,
-            nativeLibraryPath = $"runtimes\\{operatingSystem}-{platformArchitecture}\\native";
+            //nativeLibraryPath = $"runtimes\\{operatingSystem}-{platformArchitecture}\\native";
 
             //nativeLibraryPath = Kernel32.GetShortPath(nativeLibraryPath);
 
@@ -127,24 +137,28 @@ namespace Kokkos
 #if DEBUG
             Console.WriteLine("nativeLibraryPath: " + nativeLibraryPath);
 #endif
-            OpenMpHandle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, OpenMpLibraryName + ".dll"), Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH, out ErrorCode _);
+            OpenMpHandle = PlatformApi.NativeLibrary.Load(OpenMpLibraryName, out ulong _);
 #if DEBUG
             Console.WriteLine($"OpenMpHandle: 0x{OpenMpHandle.ToString("X")}");
 #endif
 
-            MpiHandle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, MpiLibraryName + ".dll"), Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH, out ErrorCode _);
+            MpiHandle = PlatformApi.NativeLibrary.Load(MpiLibraryName, out ulong _);
 #if DEBUG
             Console.WriteLine($"MpiHandle: 0x{MpiHandle.ToString("X")}");
 #endif
 
-            CudartHandle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, CudartLibraryName + ".dll"), Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH, out ErrorCode _);
+            CudartHandle = PlatformApi.NativeLibrary.Load(CudartLibraryName, out ulong _);
 #if DEBUG
             Console.WriteLine($"CudartHandle: 0x{CudartHandle.ToString("X")}");
 #endif
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Load()
+#endif
+        public static void Load()
         {
             if(OpenMpHandle == IntPtr.Zero)
             {
@@ -161,13 +175,12 @@ namespace Kokkos
                 KokkosLibraryException.Throw(CudartLibraryName + "failed to load.");
             }
 
-            KokkosCoreHandle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, KokkosCoreLibraryName + ".dll"),
-                                                      Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH,
-                                                      out ErrorCode _);
+            KokkosCoreHandle = PlatformApi.NativeLibrary.Load(KokkosCoreLibraryName,
+                                                  out ulong _);
 
-            Kernel32.DisableThreadLibraryCalls(KokkosCoreHandle);
+            Kernel32.Native.DisableThreadLibraryCalls(KokkosCoreHandle);
 
-            KokkosCoreModuleHandle = Kernel32.GetModuleHandleA(KokkosCoreLibraryName);
+            KokkosCoreModuleHandle = Kernel32.Native.GetModuleHandle(KokkosCoreLibraryName);
 
 #if DEBUG
             Console.WriteLine($"KokkosCoreHandle: 0x{KokkosCoreHandle.ToString("X")}");
@@ -178,13 +191,12 @@ namespace Kokkos
                 KokkosLibraryException.Throw(KokkosCoreLibraryName + "failed to load.");
             }
 
-            KokkosContainersHandle = Kernel32.LoadLibraryEx(Path.Combine(nativeLibraryPath, KokkosContainersLibraryName + ".dll"),
-                                                            Kernel32.LoadLibraryFlags.LOAD_WITH_ALTERED_SEARCH_PATH,
-                                                            out ErrorCode _);
+            KokkosContainersHandle = PlatformApi.NativeLibrary.Load(KokkosContainersLibraryName,
+                                                        out ulong _);
 
-            Kernel32.DisableThreadLibraryCalls(KokkosContainersHandle);
+            Kernel32.Native.DisableThreadLibraryCalls(KokkosContainersHandle);
 
-            KokkosContainersModuleHandle = Kernel32.GetModuleHandleA(KokkosContainersLibraryName);
+            KokkosContainersModuleHandle = Kernel32.Native.GetModuleHandle(KokkosContainersLibraryName);
 
 #if DEBUG
             Console.WriteLine($"KokkosContainersHandle: 0x{KokkosContainersHandle.ToString("X")}");
@@ -197,8 +209,12 @@ namespace Kokkos
             Initialized = true;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void TerminateThreads()
+#endif
+        public static void TerminateThreads()
         {
             Process process = Process.GetCurrentProcess();
 
@@ -206,19 +222,19 @@ namespace Kokkos
 
             THREADENTRY32 te32 = new THREADENTRY32();
 
-            IntPtr hThreadSnap = Kernel32.CreateToolhelp32Snapshot((uint)SnapshotFlags.Thread, 0);
+            IntPtr hThreadSnap = Kernel32.Native.CreateToolhelp32Snapshot((uint)SnapshotFlags.Thread, 0);
 
             te32.dwSize = (uint)Unsafe.SizeOf<THREADENTRY32>();
 
-            long nvcudaAddress = Kernel32.GetModuleHandleA("nvcuda.dll").ToInt64();
+            long nvcudaAddress = Kernel32.Native.GetModuleHandle("nvcuda.dll").ToInt64();
 
-            if(Kernel32.Thread32First(hThreadSnap, ref te32))
+            if(Kernel32.Native.Thread32First(hThreadSnap, ref te32))
             {
                 do
                 {
                     if(te32.th32OwnerProcessID == dwOwnerPID)
                     {
-                        IntPtr ptrThread = Kernel32.OpenThread(0x0001, false, te32.th32ThreadID);
+                        IntPtr ptrThread = Kernel32.Native.OpenThread(0x0001, false, te32.th32ThreadID);
 
                         long startAddress = Kernel32.GetThreadStartAddress(process.Handle, te32.th32ThreadID).ToInt64();
 
@@ -226,24 +242,28 @@ namespace Kokkos
                         
                         if((startAddress > OpenMpHandle.ToInt64()) && (startAddress < OpenMpHandle.ToInt64() + 0x95344))
                         {
-                            Kernel32.TerminateThread(ptrThread, 1);
+                            Kernel32.Native.TerminateThread(ptrThread, 1);
                         }
 
                         if((startAddress > nvcudaAddress) && (startAddress < nvcudaAddress + 0x10C3000))
                         {
-                            Kernel32.TerminateThread(ptrThread, 1);
+                            Kernel32.Native.TerminateThread(ptrThread, 1);
                         }
                     }
-                } while(Kernel32.Thread32Next(hThreadSnap, ref te32));
+                } while(Kernel32.Native.Thread32Next(hThreadSnap, ref te32));
             }
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static void Unload()
+#endif
+        public static void Unload()
         {
             TerminateThreads();
 
-            if(!Kernel32.FreeLibrary(Kernel32.GetModuleHandleA(KokkosContainersLibraryName)))
+            if(!PlatformApi.NativeLibrary.Free(Kernel32.Native.GetModuleHandle(KokkosContainersLibraryName), out ulong _))
             {
                 KokkosLibraryException.Throw(KokkosContainersLibraryName + "failed to unload.");
             }
@@ -253,7 +273,7 @@ namespace Kokkos
                 KokkosContainersModuleHandle = IntPtr.Zero;
             }
 
-            if(!Kernel32.FreeLibrary(Kernel32.GetModuleHandleA(KokkosCoreLibraryName)))
+            if(!PlatformApi.NativeLibrary.Free(Kernel32.Native.GetModuleHandle(KokkosCoreLibraryName), out ulong _))
             {
                 KokkosLibraryException.Throw(KokkosCoreLibraryName + "failed to unload.");
             }

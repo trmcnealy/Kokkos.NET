@@ -35,7 +35,11 @@ namespace Kokkos
         [FieldOffset(sizeof(ushort) * 4 + sizeof(ulong) * 8 * 2 + sizeof(ulong))]
         public IntPtr Label;
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public NdArray(DataTypeKind       dataType,
                        ushort             rank,
                        LayoutKind         layout,
@@ -67,13 +71,21 @@ namespace Kokkos
             Dims[7] = n7 == ulong.MaxValue ? 0 : n7;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public ulong Extent(uint rank)
         {
             return Dims[rank];
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public ulong Stride(uint rank)
         {
             return Strides[rank];
@@ -85,19 +97,31 @@ namespace Kokkos
     {
         public NativePointer Pointer
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get;
         }
 
         public NdArray NdArray
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get;
         }
 
         public uint Rank
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get { return NdArray.Rank; }
         }
 
@@ -110,7 +134,11 @@ namespace Kokkos
         //    }
         //}
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         protected View(NativePointer pointer,
                        NdArray       ndArray)
         {
@@ -118,7 +146,11 @@ namespace Kokkos
             NdArray = ndArray;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         protected View(DataTypeKind       dataType,
                        ushort             rank,
                        LayoutKind         layout,
@@ -139,7 +171,11 @@ namespace Kokkos
             NdArray = ndArray;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         protected View(DataTypeKind       dataType,
                        ushort             rank,
                        LayoutKind         layout,
@@ -197,7 +233,11 @@ namespace Kokkos
 
         #region GetRank
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static ushort GetRank(int n0,
                                       int n1,
                                       int n2,
@@ -250,7 +290,11 @@ namespace Kokkos
             return 8;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static ushort GetRank(uint n0,
                                       uint n1,
                                       uint n2,
@@ -303,7 +347,11 @@ namespace Kokkos
             return 8;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static ushort GetRank(long n0,
                                       long n1,
                                       long n2,
@@ -356,7 +404,11 @@ namespace Kokkos
             return 8;
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         private static ushort GetRank(ulong n0,
                                       ulong n1,
                                       ulong n2,
@@ -415,7 +467,11 @@ namespace Kokkos
 
         public TDataType this[int i0]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -424,7 +480,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>();
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //GCHandle handle = GCHandle.ToIntPtr(value);
@@ -449,7 +509,11 @@ namespace Kokkos
         public TDataType this[int i0,
                               int i1]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -459,7 +523,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -476,7 +544,11 @@ namespace Kokkos
                               int i1,
                               int i2]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -487,7 +559,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -506,7 +582,11 @@ namespace Kokkos
                               int i2,
                               int i3]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -518,7 +598,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -539,7 +623,11 @@ namespace Kokkos
                               int i3,
                               int i4]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -552,7 +640,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -575,7 +667,11 @@ namespace Kokkos
                               int i4,
                               int i5]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -589,7 +685,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -614,7 +714,11 @@ namespace Kokkos
                               int i5,
                               int i6]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -629,7 +733,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -656,7 +764,11 @@ namespace Kokkos
                               int i6,
                               int i7]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -672,7 +784,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -697,7 +813,11 @@ namespace Kokkos
 
         public TDataType this[uint i0]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -706,7 +826,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>();
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //GCHandle handle = GCHandle.ToIntPtr(value);
@@ -731,7 +855,11 @@ namespace Kokkos
         public TDataType this[uint i0,
                               uint i1]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -741,7 +869,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -758,7 +890,11 @@ namespace Kokkos
                               uint i1,
                               uint i2]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -769,7 +905,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -788,7 +928,11 @@ namespace Kokkos
                               uint i2,
                               uint i3]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -800,7 +944,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -821,7 +969,11 @@ namespace Kokkos
                               uint i3,
                               uint i4]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -834,7 +986,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -857,7 +1013,11 @@ namespace Kokkos
                               uint i4,
                               uint i5]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -871,7 +1031,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -896,7 +1060,11 @@ namespace Kokkos
                               uint i5,
                               uint i6]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -911,7 +1079,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -935,7 +1107,11 @@ namespace Kokkos
                               uint i6,
                               uint i7]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -951,7 +1127,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -976,7 +1156,11 @@ namespace Kokkos
 
         public TDataType this[long i0]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -985,7 +1169,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>();
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //GCHandle handle = GCHandle.ToIntPtr(value);
@@ -1010,7 +1198,11 @@ namespace Kokkos
         public TDataType this[long i0,
                               long i1]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1020,7 +1212,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1037,7 +1233,11 @@ namespace Kokkos
                               long i1,
                               long i2]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1048,7 +1248,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1067,7 +1271,11 @@ namespace Kokkos
                               long i2,
                               long i3]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1079,7 +1287,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1100,7 +1312,11 @@ namespace Kokkos
                               long i3,
                               long i4]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1113,7 +1329,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1136,7 +1356,11 @@ namespace Kokkos
                               long i4,
                               long i5]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1150,7 +1374,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1175,7 +1403,11 @@ namespace Kokkos
                               long i5,
                               long i6]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1190,7 +1422,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1217,7 +1453,11 @@ namespace Kokkos
                               long i6,
                               long i7]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1233,7 +1473,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1258,7 +1502,11 @@ namespace Kokkos
 
         public TDataType this[ulong i0]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1267,7 +1515,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>();
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //GCHandle handle = GCHandle.ToIntPtr(value);
@@ -1292,7 +1544,11 @@ namespace Kokkos
         public TDataType this[ulong i0,
                               ulong i1]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1302,7 +1558,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1319,7 +1579,11 @@ namespace Kokkos
                               ulong i1,
                               ulong i2]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1330,7 +1594,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1349,7 +1617,11 @@ namespace Kokkos
                               ulong i2,
                               ulong i3]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1361,7 +1633,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1382,7 +1658,11 @@ namespace Kokkos
                               ulong i3,
                               ulong i4]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1395,7 +1675,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1418,7 +1702,11 @@ namespace Kokkos
                               ulong i4,
                               ulong i5]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1432,7 +1720,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1457,7 +1749,11 @@ namespace Kokkos
                               ulong i5,
                               ulong i6]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1472,7 +1768,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1496,7 +1796,11 @@ namespace Kokkos
                               ulong i6,
                               ulong i7]
         {
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             get
             {
                 ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1512,7 +1816,11 @@ namespace Kokkos
 
                 return valuePtr.As<TDataType>(); //return Unsafe.AsRef<TDataType>(valuePtr.ToPointer());
             }
-            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    #if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
             set
             {
                 //IntPtr valuePtr = (IntPtr)Unsafe.AsPointer(ref value);
@@ -1533,7 +1841,11 @@ namespace Kokkos
 
         #endregion
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         static View()
         {
             dataType           = DataType<TDataType>.GetKind();
@@ -1541,7 +1853,11 @@ namespace Kokkos
             executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(NativePointer pointer,
                     NdArray       ndArray)
             : base(pointer,
@@ -1549,7 +1865,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(string label)
             : base(dataType,
                    0,
@@ -1559,7 +1879,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(string label,
                     int    n0,
                     int    n1 = int.MaxValue,
@@ -1592,7 +1916,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(string label,
                     uint   n0,
                     uint   n1 = uint.MaxValue,
@@ -1625,7 +1953,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(string label,
                     long   n0,
                     long   n1 = long.MaxValue,
@@ -1658,7 +1990,11 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public View(string label,
                     ulong  n0,
                     ulong  n1 = ulong.MaxValue,
@@ -1691,21 +2027,33 @@ namespace Kokkos
         {
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public string Label()
         {
             return KokkosLibrary.GetLabel(Pointer,
                                           NdArray).ToString();
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public ulong Size()
         {
             return KokkosLibrary.GetSize(Pointer,
                                          NdArray);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public ulong Stride(uint dim)
         {
             return KokkosLibrary.GetStride(Pointer,
@@ -1713,7 +2061,11 @@ namespace Kokkos
                                            dim);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public ulong Extent(uint dim)
         {
             return KokkosLibrary.GetExtent(Pointer,
@@ -1721,7 +2073,11 @@ namespace Kokkos
                                            dim);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public void CopyTo(TDataType[] values)
         {
             //GCHandle handle = GCHandle.Alloc(values[0],
@@ -1737,7 +2093,11 @@ namespace Kokkos
             //handle.AddrOfPinnedObject()handle.Free();
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NdArray RcpConvert(IntPtr rcp_view_ptr,
                                          ushort rank)
         {
@@ -1748,7 +2108,11 @@ namespace Kokkos
                                                   rank);
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static NdArray Convert(IntPtr view_ptr,
                                       ushort rank)
         {
@@ -1775,7 +2139,11 @@ namespace Kokkos
 
     //    public TDataType this[ulong i0]
     //    {
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //#if NETSTANDARD
+//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#else
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+//#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1789,7 +2157,11 @@ namespace Kokkos
     //    public TDataType this[ulong i0,
     //                          ulong i1]
     //    {
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //#if NETSTANDARD
+//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#else
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+//#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1805,7 +2177,11 @@ namespace Kokkos
     //                          ulong i1,
     //                          ulong i2]
     //    {
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+    //#if NETSTANDARD
+//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+//#else
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+//#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,

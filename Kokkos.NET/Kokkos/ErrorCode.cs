@@ -7,7 +7,11 @@ namespace Kokkos
 
     public static class ErrorCodeExtension
     {
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static string GetErrorMessage(this ErrorCode errorCode)
         {
             switch(errorCode)
@@ -651,7 +655,11 @@ namespace Kokkos
             }
         }
 
+#if NETSTANDARD
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+#endif
         public static ErrorCode IfErrorThrow(this               ErrorCode errorCode,
                                              [CallerMemberName] string    caller   = null,
                                              [CallerFilePath]   string    __FILE__ = "",

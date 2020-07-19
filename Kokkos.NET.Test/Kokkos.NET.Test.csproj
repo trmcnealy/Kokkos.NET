@@ -18,7 +18,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.6.3" />
+    <PackageReference Include="Kokkos.NET" Version="0.7.0" />
     <PackageReference Include="RuntimeGeneration" Version="1.1.0" />
   </ItemGroup>
 
