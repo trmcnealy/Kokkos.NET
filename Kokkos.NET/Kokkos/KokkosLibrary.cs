@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Security;
 using System.Threading;
 
 using PlatformApi.Win32;
@@ -14,6 +15,7 @@ namespace Kokkos
 {
     [ComVisible(true)]
     [Serializable]
+    [SuppressUnmanagedCodeSecurity]
     public delegate void KokkosLibraryEventHandler(object                 sender,
                                                    KokkosLibraryEventArgs e);
 
@@ -199,78 +201,102 @@ namespace Kokkos
         }
 
         #region Delegates
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate ref KokkosApi GetApiDelegate(in uint version);
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
                                                 in ulong              arg_alloc_size);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr ReallocateDelegate(in ExecutionSpaceKind execution_space,
                                                   IntPtr                instance,
                                                   in ulong              arg_alloc_size);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void FreeDelegate(in ExecutionSpaceKind execution_space,
                                           IntPtr                instance);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeDelegate(int                                                                             narg,
                                                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] arg);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeThreadsDelegate(int num_cpu_threads,
                                                        int gpu_device_id);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeArgumentsDelegate(in InitArguments arguments);
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeDelegate();
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeAllDelegate();
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate bool IsInitializedDelegate();
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate void PrintConfigurationDelegate(bool detail);
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetDeviceCountDelegate();
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
-
+        
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewRank0Delegate(IntPtr      instance,
                                                      ref NdArray nArray);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewRank1Delegate(IntPtr      instance,
                                                      ref NdArray nArray,
                                                      in  ulong   n0);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewRank2Delegate(IntPtr      instance,
                                                      ref NdArray nArray,
                                                      in  ulong   n0,
                                                      in  ulong   n1);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewRank3Delegate(IntPtr      instance,
                                                      ref NdArray nArray,
                                                      in  ulong   n0,
                                                      in  ulong   n1,
                                                      in  ulong   n2);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewDelegate(IntPtr      instance,
                                                 ref NdArray nArray);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate NativeString GetLabelDelegate(IntPtr     instance,
                                                       in NdArray nArray);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate ulong GetSizeDelegate(IntPtr     instance,
                                               in NdArray nArray);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate ulong GetStrideDelegate(IntPtr     instance,
                                                 in NdArray nArray,
                                                 in uint    dim);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate ulong GetExtentDelegate(IntPtr     instance,
                                                 in NdArray nArray,
                                                 in uint    dim);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate void CopyToDelegate(IntPtr      instance,
                                             in NdArray  nArray,
                                             ValueType[] values);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate ValueType GetValueDelegate(IntPtr     instance,
                                                    in NdArray nArray,
                                                    in ulong   i0 = ulong.MaxValue,
@@ -281,7 +307,8 @@ namespace Kokkos
                                                    in ulong   i6 = ulong.MaxValue,
                                                    in ulong   i7 = ulong.MaxValue,
                                                    in ulong   i8 = ulong.MaxValue);
-
+                                                   
+        [SuppressUnmanagedCodeSecurity]
         public delegate void SetValueDelegate(IntPtr       instance,
                                               in NdArray   nArray,
                                               in ValueType value,
@@ -294,24 +321,28 @@ namespace Kokkos
                                               in ulong     i7 = ulong.MaxValue,
                                               in ulong     i8 = ulong.MaxValue);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
                                                          in ExecutionSpaceKind execution_space,
                                                          in LayoutKind         layout,
                                                          in DataTypeKind       data_type,
                                                          in ushort             rank);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
                                                       in ExecutionSpaceKind execution_space,
                                                       in LayoutKind         layout,
                                                       in DataTypeKind       data_type,
                                                       in ushort             rank);
-
+                                                      
+        [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr Shepard2dSingleDelegate(IntPtr                xd_rcp_view_ptr,
                                                        IntPtr                zd_rcp_view_ptr,
                                                        in float              p,
                                                        IntPtr                xi_rcp_view_ptr,
                                                        in ExecutionSpaceKind execution_space);
 
+        [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr Shepard2dDoubleDelegate(IntPtr                xd_rcp_view_ptr,
                                                        IntPtr                zd_rcp_view_ptr,
                                                        in double              p,
