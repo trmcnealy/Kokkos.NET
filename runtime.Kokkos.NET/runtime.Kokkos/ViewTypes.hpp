@@ -148,10 +148,11 @@ TEMPLATE(DEF_TEMPLATE, Serial, Left)
 TEMPLATE(DEF_TEMPLATE, OpenMP, Left)
 TEMPLATE(DEF_TEMPLATE, Cuda, Right)
 
-struct NdArray
+#pragma pack(8)
+struct __declspec(align(64)) NdArray
 {
     DataTypeKind       data_type;
-    uint16             rank;
+    uint16              rank;
     LayoutKind         layout;
     ExecutionSpaceKind execution_space;
     uint64             dims[NDARRAY_MAX_RANK];
@@ -159,6 +160,7 @@ struct NdArray
     void*              data;
     const char*        label;
 };
+#pragma pack(8)
 
 namespace Compatible
 {

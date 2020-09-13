@@ -23,6 +23,81 @@
 
 namespace Kokkos
 {
+    namespace Impl
+    {
+        template<class Scalar1, class Scalar2>
+        struct LessThanOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 < val2); }
+        };
+
+        template<class Scalar1, class Scalar2>
+        struct LessThanEqualToOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 <= val2); }
+        };
+
+        template<class Scalar1, class Scalar2>
+        struct GreaterThanOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 > val2); }
+        };
+
+        template<class Scalar1, class Scalar2>
+        struct GreaterThanEqualToOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 >= val2); }
+        };
+
+        template<class Scalar1, class Scalar2>
+        struct EqualToOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 == val2); }
+        };
+
+        template<class Scalar1, class Scalar2>
+        struct NotEqualToOper
+        {
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2) { return (val1 != val2); }
+        };
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_less_than_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::LessThanOper<T, const T>(), dest, val);
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_less_than_equal_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::LessThanEqualToOper<T, const T>(), dest, val);
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::GreaterThanOper<T, const T>(), dest, val);
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_equal_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::GreaterThanEqualToOper<T, const T>(), dest, val);
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_equal_to_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::EqualToOper<T, const T>(), dest, val);
+    }
+
+    template<typename T>
+    KOKKOS_INLINE_FUNCTION bool atomic_not_equal_to_fetch(volatile T* const dest, const T val)
+    {
+        return Impl::atomic_oper_fetch(Impl::NotEqualToOper<T, const T>(), dest, val);
+    }
+
     namespace Extension
     {
         template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
@@ -61,7 +136,7 @@ namespace Kokkos
             template<typename DataType, class ExecutionSpace>
             struct IndexOfMinimum<DataType, ExecutionSpace, 1>
             {
-                using ViewType  = View<DataType, typename ExecutionSpace::array_layout, ExecutionSpace>;
+                using ViewType  = View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace>;
                 using ValueType = typename ViewType::traits::non_const_value_type;
 
                 static size_type Find(const ViewType& view)
@@ -85,7 +160,7 @@ namespace Kokkos
             template<typename DataType, class ExecutionSpace>
             struct IndexOfMinimum<DataType, ExecutionSpace, 2>
             {
-                using ViewType  = View<DataType, typename ExecutionSpace::array_layout, ExecutionSpace>;
+                using ViewType  = View<DataType**, typename ExecutionSpace::array_layout, ExecutionSpace>;
                 using ValueType = typename ViewType::traits::non_const_value_type;
 
                 static size_type Find(const ViewType& view)
@@ -162,7 +237,8 @@ namespace Kokkos
         };
 
         template<typename VectorType>
-        KOKKOS_INLINE_FUNCTION static auto min(const VectorType& values) -> typename std::enable_if<VectorType::Rank == 1, typename VectorType::traits::non_const_value_type>::type
+        KOKKOS_INLINE_FUNCTION static auto min(const VectorType& values) ->
+            typename std::enable_if<VectorType::Rank == 1, typename VectorType::traits::non_const_value_type>::type
         {
             typedef typename VectorType::traits::execution_space      ExecutionSpace;
             typedef typename VectorType::traits::data_type            DataType;
@@ -194,7 +270,8 @@ namespace Kokkos
         };
 
         template<typename VectorType>
-        KOKKOS_INLINE_FUNCTION static auto max(const VectorType& values) -> typename std::enable_if<VectorType::Rank == 1, typename VectorType::traits::non_const_value_type>::type
+        KOKKOS_INLINE_FUNCTION static auto max(const VectorType& values) ->
+            typename std::enable_if<VectorType::Rank == 1, typename VectorType::traits::non_const_value_type>::type
         {
             typedef typename VectorType::traits::execution_space      ExecutionSpace;
             typedef typename VectorType::traits::data_type            DataType;
@@ -568,14 +645,16 @@ namespace Kokkos
 
         template<typename DataType, class ExecutionSpace>
         __inline static auto row(const Matrix<DataType, ExecutionSpace>& A, const size_type& r) ->
-            typename std::enable_if<std::is_same_v<typename Matrix<DataType, ExecutionSpace>::traits::array_layout, Kokkos::LayoutLeft>, Vector<DataType, ExecutionSpace>>::type
+            typename std::enable_if<std::is_same_v<typename Matrix<DataType, ExecutionSpace>::traits::array_layout, Kokkos::LayoutLeft>,
+                                    Vector<DataType, ExecutionSpace>>::type
         {
             return Kokkos::subview(A, Kokkos::ALL, r);
         }
 
         template<typename DataType, class ExecutionSpace>
         __inline static auto row(const Matrix<DataType, ExecutionSpace>& A, const size_type& r) ->
-            typename std::enable_if<std::is_same_v<typename Matrix<DataType, ExecutionSpace>::traits::array_layout, Kokkos::LayoutRight>, Vector<DataType, ExecutionSpace>>::type
+            typename std::enable_if<std::is_same_v<typename Matrix<DataType, ExecutionSpace>::traits::array_layout, Kokkos::LayoutRight>,
+                                    Vector<DataType, ExecutionSpace>>::type
         {
             return Kokkos::subview(A, r, Kokkos::ALL);
         }
@@ -620,10 +699,10 @@ namespace Kokkos
             DataType sum;
 
 #if defined(__CUDA_ARCH__)
-            for (size_type i = 0; i < n; i++)
+            for(size_type i = 0; i < n; i++)
             {
                 sum += lhs(i) * rhs(i);
-            }            
+            }
 #else
             Internal::VectorInnerProductFunctor<Vector<DataType, ExecutionSpace>, Vector<DataType, ExecutionSpace>> f(lhs, rhs);
 
@@ -1224,7 +1303,8 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> upper_triangular_solve(const Matrix<DataType, ExecutionSpace>& A, const Vector<DataType, ExecutionSpace>& b)
+        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> upper_triangular_solve(const Matrix<DataType, ExecutionSpace>& A,
+                                                                                              const Vector<DataType, ExecutionSpace>& b)
         {
             const int n = A.extent(0) < A.extent(1) ? A.extent(0) : A.extent(1);
 
@@ -1244,7 +1324,8 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> lower_triangular_solve(const Matrix<DataType, ExecutionSpace>& A, const Vector<DataType, ExecutionSpace>& b)
+        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> lower_triangular_solve(const Matrix<DataType, ExecutionSpace>& A,
+                                                                                              const Vector<DataType, ExecutionSpace>& b)
         {
             const int n = A.extent(0) < A.extent(1) ? A.extent(0) : A.extent(1);
 
@@ -1306,7 +1387,10 @@ namespace Kokkos
                 Vector          _x;
                 mutable int     isspd;
 
-                CholeskyVectorFunctor(const Matrix& A, const Vector& b, const Vector& x) : _n(A.extent(0)), _L("L", _n, _n), _A(A), _b(b), _x(x), isspd(0) { Kokkos::deep_copy(_x, _b); }
+                CholeskyVectorFunctor(const Matrix& A, const Vector& b, const Vector& x) : _n(A.extent(0)), _L("L", _n, _n), _A(A), _b(b), _x(x), isspd(0)
+                {
+                    Kokkos::deep_copy(_x, _b);
+                }
 
                 KOKKOS_INLINE_FUNCTION void operator()(const InitializeCholesky&, const size_type) const
                 {
@@ -1385,7 +1469,10 @@ namespace Kokkos
                 Matrix          _X;
                 int             isspd;
 
-                CholeskyMatrixFunctor(const Matrix& A, const Matrix& B, const Matrix& X) : _n(A.extent(0)), _L("L", _n, _n), _A(A), _B(B), _X(X), isspd(0) { Kokkos::deep_copy(_X, _B); }
+                CholeskyMatrixFunctor(const Matrix& A, const Matrix& B, const Matrix& X) : _n(A.extent(0)), _L("L", _n, _n), _A(A), _B(B), _X(X), isspd(0)
+                {
+                    Kokkos::deep_copy(_X, _B);
+                }
 
                 KOKKOS_INLINE_FUNCTION void operator()(const InitializeCholesky&, const size_type) const
                 {
@@ -1456,7 +1543,8 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        __inline static Extension::Vector<DataType, ExecutionSpace> Cholesky(const Extension::Matrix<DataType, ExecutionSpace>& A, const Extension::Vector<DataType, ExecutionSpace>& b)
+        __inline static Extension::Vector<DataType, ExecutionSpace> Cholesky(const Extension::Matrix<DataType, ExecutionSpace>& A,
+                                                                             const Extension::Vector<DataType, ExecutionSpace>& b)
         {
             if(A.extent(0) != b.extent(0))
             {
@@ -1479,7 +1567,8 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        __inline static Extension::Matrix<DataType, ExecutionSpace> Cholesky(const Extension::Matrix<DataType, ExecutionSpace>& A, const Extension::Matrix<DataType, ExecutionSpace>& B)
+        __inline static Extension::Matrix<DataType, ExecutionSpace> Cholesky(const Extension::Matrix<DataType, ExecutionSpace>& A,
+                                                                             const Extension::Matrix<DataType, ExecutionSpace>& B)
         {
             if(A.extent(0) != B.extent(0))
             {
@@ -3813,7 +3902,8 @@ namespace Kokkos
 //    namespace LinearAlgebra
 //    {
 //        template<typename DataType, class ExecutionSpace>
-//        __inline static Extension::Matrix<DataType, ExecutionSpace> Solve(const Extension::Matrix<DataType, ExecutionSpace>& A, const Extension::Matrix<DataType, ExecutionSpace>& B)
+//        __inline static Extension::Matrix<DataType, ExecutionSpace> Solve(const Extension::Matrix<DataType, ExecutionSpace>& A, const Extension::Matrix<DataType,
+//        ExecutionSpace>& B)
 //        {
 //            return (m == n ? (new LUDecomposition(this)).solve(B) : (new QRDecomposition(this)).solve(B));
 //        }
@@ -3903,7 +3993,8 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        __inline static Extension::Vector<DataType, ExecutionSpace> QMinRes(const Extension::Matrix<DataType, ExecutionSpace>& A, const Extension::Vector<DataType, ExecutionSpace>& b)
+        __inline static Extension::Vector<DataType, ExecutionSpace> QMinRes(const Extension::Matrix<DataType, ExecutionSpace>& A,
+                                                                            const Extension::Vector<DataType, ExecutionSpace>& b)
         {
             if(A.extent(0) != b.extent(0))
             {

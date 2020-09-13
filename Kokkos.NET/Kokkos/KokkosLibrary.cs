@@ -15,7 +15,7 @@ namespace Kokkos
 {
     [ComVisible(true)]
     [Serializable]
-    [SuppressUnmanagedCodeSecurity]
+    
     public delegate void KokkosLibraryEventHandler(object                 sender,
                                                    KokkosLibraryEventArgs e);
 
@@ -162,10 +162,16 @@ namespace Kokkos
                 RcpViewToNdArray = Marshal.GetDelegateForFunctionPointer<RcpViewToNdArrayDelegate>(Api.RcpViewToNdArrayPtr);
 
                 ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
-                
+
                 Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dSingle", out ulong _));
 
                 Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dDouble", out ulong _));
+
+                NearestNeighborSingle =
+                    Marshal.GetDelegateForFunctionPointer<NearestNeighborSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborSingle", out ulong _));
+
+                NearestNeighborDouble =
+                    Marshal.GetDelegateForFunctionPointer<NearestNeighborDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborDouble", out ulong _));
             }
             else
             {
@@ -201,10 +207,10 @@ namespace Kokkos
         }
 
         #region Delegates
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate ref KokkosApi GetApiDelegate(in uint version);
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
                                                 in ulong              arg_alloc_size);
@@ -228,25 +234,25 @@ namespace Kokkos
 
         [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeArgumentsDelegate(in InitArguments arguments);
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeDelegate();
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeAllDelegate();
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate bool IsInitializedDelegate();
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate void PrintConfigurationDelegate(bool detail);
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetDeviceCountDelegate();
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
-        
+
         [SuppressUnmanagedCodeSecurity]
         public delegate void CreateViewRank0Delegate(IntPtr      instance,
                                                      ref NdArray nArray);
@@ -307,7 +313,7 @@ namespace Kokkos
                                                    in ulong   i6 = ulong.MaxValue,
                                                    in ulong   i7 = ulong.MaxValue,
                                                    in ulong   i8 = ulong.MaxValue);
-                                                   
+
         [SuppressUnmanagedCodeSecurity]
         public delegate void SetValueDelegate(IntPtr       instance,
                                               in NdArray   nArray,
@@ -334,7 +340,7 @@ namespace Kokkos
                                                       in LayoutKind         layout,
                                                       in DataTypeKind       data_type,
                                                       in ushort             rank);
-                                                      
+
         [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr Shepard2dSingleDelegate(IntPtr                xd_rcp_view_ptr,
                                                        IntPtr                zd_rcp_view_ptr,
@@ -345,9 +351,17 @@ namespace Kokkos
         [SuppressUnmanagedCodeSecurity]
         public delegate IntPtr Shepard2dDoubleDelegate(IntPtr                xd_rcp_view_ptr,
                                                        IntPtr                zd_rcp_view_ptr,
-                                                       in double              p,
+                                                       in double             p,
                                                        IntPtr                xi_rcp_view_ptr,
                                                        in ExecutionSpaceKind execution_space);
+
+        [SuppressUnmanagedCodeSecurity]
+        public delegate IntPtr NearestNeighborSingleDelegate(IntPtr                latlongdegrees_rcp_view_ptr,
+                                                             in ExecutionSpaceKind execution_space);
+
+        [SuppressUnmanagedCodeSecurity]
+        public delegate IntPtr NearestNeighborDoubleDelegate(IntPtr                latlongdegrees_rcp_view_ptr,
+                                                             in ExecutionSpaceKind execution_space);
 
         #endregion
 
@@ -637,6 +651,10 @@ namespace Kokkos
         public static Shepard2dSingleDelegate Shepard2dSingle;
 
         public static Shepard2dDoubleDelegate Shepard2dDouble;
+
+        public static NearestNeighborSingleDelegate NearestNeighborSingle;
+
+        public static NearestNeighborDoubleDelegate NearestNeighborDouble;
 
         #endregion
 

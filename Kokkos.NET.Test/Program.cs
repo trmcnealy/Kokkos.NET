@@ -5,86 +5,26 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Text.Json.Serialization;
 
+using Kokkos.Tests;
+
 using RuntimeGeneration;
 
 namespace Kokkos
 {
-    //[ILGeneration(typeof(int),
-    //              typeof(uint))]
-    //internal static class Interop<T>
-    //{
-    //    internal delegate uint CudaGetDeviceCountDelegate();
-
-    //    internal delegate T CudaGetComputeCapabilityDelegate(T device_id);
-
-    //    internal delegate void PrintConfigurationDelegate(in bool detail);
-
-    //    [NativeCall("runtime.Kokkos.NET.dll",
-    //                0x20A0)]
-    //    internal static CudaGetDeviceCountDelegate CudaGetDeviceCount;
-
-    //    [NativeCall("runtime.Kokkos.NET.dll",
-    //                0x20E0)]
-    //    internal static CudaGetComputeCapabilityDelegate CudaGetComputeCapability;
-
-    //    [NativeCall("runtime.Kokkos.NET.dll",
-    //                "_Z18PrintConfigurationRKb")]
-    //    internal static PrintConfigurationDelegate PrintConfiguration;
-    //}
-
-    //[StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    //public sealed unsafe class FractureProperties<T>
-    //    where T : unmanaged
-    //{
-    //    private static readonly Type t = typeof(T);
-
-    //    private static readonly int widthOffset;
-
-    //    private static readonly int heightOffset;
-
-    //    static FractureProperties()
-    //    {
-    //        widthOffset  = Marshal.OffsetOf<FractureProperties<T>>("_width").ToInt32();
-    //        heightOffset = Marshal.OffsetOf<FractureProperties<T>>("_height").ToInt32();
-    //    }
-
-    //    private NativePointer pointer;
-
-    //    private T _width;
-
-    //    public T Width
-    //    {
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //        get { return *(T*)(pointer.Data + widthOffset); }
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //        set { *(T*)(pointer.Data + widthOffset) = value; }
-    //    }
-
-    //    private T _height;
-
-    //    public T Height
-    //    {
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //        get { return *(T*)(pointer.Data + heightOffset); }
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //        set { *(T*)(pointer.Data + heightOffset) = value; }
-    //    }
-
-    //    public FractureProperties()
-    //    {
-    //        pointer = NativePointer.Allocate(Unsafe.SizeOf<FractureProperties<T>>(), ExecutionSpaceKind.Cuda);
-    //    }
-    //}
-
     internal class Program
     {
-        //static Program()
-        //{
-        //    RuntimeCil.Generate(typeof(Program).Assembly);
-        //}
 
-        //[STAThread]
+        [STAThread]
         private static void Main(string[] args)
+        {
+            MemoryMappedTest.Test();
+
+#if DEBUG
+            Console.WriteLine("press any key to exit.");
+            Console.ReadKey();
+#endif
+        }
+        static void Test1()
         {
             int  num_threads      = 4;
             int  num_numa         = 1;
@@ -100,7 +40,7 @@ namespace Kokkos
                                                         skip_device,
                                                         disable_warnings);
 
-            using(ScopeGuard sg = new ScopeGuard(arguments))
+            using(ScopeGuard.Get(arguments))
                 //ParallelProcessor.Initialize();
             {
                 //PrintConfiguration(false);
@@ -119,7 +59,7 @@ namespace Kokkos
                 p.Run();
             }
 
-            using(ScopeGuard sg = new ScopeGuard(arguments))
+            using(ScopeGuard.Get(arguments))
                 //ParallelProcessor.Initialize();
             {
                 //PrintConfiguration(false);
@@ -138,11 +78,6 @@ namespace Kokkos
                 p.Run();
             }
             //ParallelProcessor.Shutdown();
-
-#if DEBUG
-            Console.WriteLine("press any key to exit.");
-            Console.ReadKey();
-#endif
         }
     }
 }

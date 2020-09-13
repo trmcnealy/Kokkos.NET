@@ -3,7 +3,7 @@
 #include <Types.hpp>
 #include <Kokkos_Core.hpp>
 
-#include <algorithm>nnn
+#include <algorithm>
 #include <climits>
 #include <exception>
 #include <functional>
@@ -861,7 +861,8 @@ namespace Linq
         };
 
         template<typename TPredicate>
-        ThenbyBuilder<TPredicate>::ThenbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept : predicate(std::move(predicate)), sort_ascending(sort_ascending)
+        ThenbyBuilder<TPredicate>::ThenbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept :
+            predicate(std::move(predicate)), sort_ascending(sort_ascending)
         {
         }
 
@@ -1474,7 +1475,9 @@ namespace Linq
 
             __forceinline SelectManyRange(SelectManyRange const& v) : range(v.range), predicate(v.predicate), inner_range(v.inner_range) {}
 
-            __forceinline SelectManyRange(SelectManyRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), inner_range(std::move(v.inner_range)) {}
+            __forceinline SelectManyRange(SelectManyRange&& v) noexcept : range(std::move(v.range)), predicate(std::move(v.predicate)), inner_range(std::move(v.inner_range))
+            {
+            }
 
             template<typename TRangeBuilder>
             __forceinline typename GetBuiltupType<TRangeBuilder, this_type>::type operator>>(TRangeBuilder range_builder) const
@@ -1571,10 +1574,10 @@ namespace Linq
             map_iterator_type current;
 
             __forceinline JoinRange(range_type              range,
-                                             other_range_type        other_range,
-                                             key_selector_type       key_selector,
-                                             other_key_selector_type other_key_selector,
-                                             combiner_type           combiner) noexcept :
+                                    other_range_type        other_range,
+                                    key_selector_type       key_selector,
+                                    other_key_selector_type other_key_selector,
+                                    combiner_type           combiner) noexcept :
                 range(std::move(range)),
                 other_range(std::move(other_range)),
                 key_selector(std::move(key_selector)),
@@ -1680,8 +1683,10 @@ namespace Linq
             other_key_selector_type other_key_selector;
             combiner_type           combiner;
 
-            __forceinline JoinBuilder(other_range_type other_range, key_selector_type key_selector, other_key_selector_type other_key_selector, combiner_type combiner) noexcept
-                :
+            __forceinline JoinBuilder(other_range_type        other_range,
+                                      key_selector_type       key_selector,
+                                      other_key_selector_type other_key_selector,
+                                      combiner_type           combiner) noexcept :
                 other_range(std::move(other_range)), key_selector(std::move(key_selector)), other_key_selector(std::move(other_key_selector)), combiner(std::move(combiner))
             {
             }
@@ -1692,7 +1697,10 @@ namespace Linq
             }
 
             __forceinline JoinBuilder(JoinBuilder&& v) noexcept :
-                other_range(std::move(v.other_range)), key_selector(std::move(v.key_selector)), other_key_selector(std::move(v.other_key_selector)), combiner(std::move(v.combiner))
+                other_range(std::move(v.other_range)),
+                key_selector(std::move(v.key_selector)),
+                other_key_selector(std::move(v.other_key_selector)),
+                combiner(std::move(v.combiner))
             {
             }
 
@@ -1879,7 +1887,9 @@ namespace Linq
             set_iterator_type current;
             bool              start;
 
-            __forceinline IntersectRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true) {}
+            __forceinline IntersectRange(range_type range, other_range_type other_range) noexcept : range(std::move(range)), other_range(std::move(other_range)), start(true)
+            {
+            }
 
             __forceinline IntersectRange(IntersectRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
 
@@ -3254,7 +3264,9 @@ namespace Linq
             std::basic_string<TCharType> separator;
             size_type                    capacity;
 
-            __forceinline ConcatenateBuilder(std::basic_string<TCharType> separator, const size_type capacity) noexcept : separator(std::move(separator)), capacity(capacity) {}
+            __forceinline ConcatenateBuilder(std::basic_string<TCharType> separator, const size_type capacity) noexcept : separator(std::move(separator)), capacity(capacity)
+            {
+            }
 
             __forceinline ConcatenateBuilder(ConcatenateBuilder const& v) noexcept : separator(v.separator), capacity(v.capacity) {}
 
@@ -3973,7 +3985,9 @@ namespace Linq
     }
 
     template<typename TAccumulate, typename TAccumulator, typename TSelector>
-    __forceinline detail::AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector> Aggregate(TAccumulate seed, TAccumulator accumulator, TSelector result_selector) noexcept
+    __forceinline detail::AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector> Aggregate(TAccumulate  seed,
+                                                                                                         TAccumulator accumulator,
+                                                                                                         TSelector    result_selector) noexcept
     {
         return detail::AggregateResultSelectorBuilder<TAccumulate, TAccumulator, TSelector>(seed, accumulator, result_selector);
     }

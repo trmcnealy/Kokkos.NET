@@ -64,13 +64,13 @@ namespace Kokkos
             Marshal.PrelinkAll(typeof(Psapi));
         }
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("ntdll", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("ntdll", ExactSpelling = true, SetLastError = true)]
         public static extern int NtQueryInformationThread(IntPtr                       ThreadHandle,
                                                           ThreadInfoClass              ThreadInformationClass,
                                                           IntPtr ThreadInformation,
@@ -86,13 +86,13 @@ namespace Kokkos
             Marshal.PrelinkAll(typeof(Psapi));
         }
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("psapi", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("psapi", ExactSpelling = true, SetLastError = true)]
         public static extern bool GetModuleInformation(IntPtr         hProcess,
                                                        IntPtr         hModule,
                                                        ref MODULEINFO lpmodinfo,
@@ -107,13 +107,13 @@ namespace Kokkos
             Marshal.PrelinkAll(typeof(Ole32));
         }
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("ole32", EntryPoint = "CoFreeUnusedLibraries", CharSet = CharSet.Ansi, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("ole32", EntryPoint = "CoFreeUnusedLibraries", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern void CoFreeUnusedLibraries();
     }
 
@@ -152,13 +152,13 @@ namespace Kokkos
 
         public const int MaxPath = 255;
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "GetLastError")]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "GetLastError")]
         public static extern ErrorCode GetLastError();
 
 #if NETSTANDARD
@@ -166,35 +166,35 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr GetCurrentProcess();
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "LoadLibraryA", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern IntPtr LoadLibrary([In] [MarshalAs(UnmanagedType.LPStr)] string libName);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "LoadLibraryW", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr LoadLibraryW([In] [MarshalAs(UnmanagedType.LPWStr)] string libName);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "LoadLibraryExA", CharSet = CharSet.Ansi, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "LoadLibraryExA", CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern IntPtr LoadLibraryEx([In] [MarshalAs(UnmanagedType.LPStr)] string lpFileName,
                                                   IntPtr                                       hReservedNull,
                                                   uint                                         dwFlags);
@@ -204,8 +204,8 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
+        
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr LoadLibraryExW([In] [MarshalAs(UnmanagedType.LPWStr)] string lpwLibFileName,
                                                    [In]                                   IntPtr hFile,
                                                    [In]                                   uint   dwFlags);
@@ -215,8 +215,8 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool FreeLibrary(IntPtr hModule);
 
 #if NETSTANDARD
@@ -224,18 +224,18 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern void FreeLibraryAndExitThread(IntPtr hLibModule,
                                                            uint   dwExitCode);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "GetShortPathNameW", CharSet = CharSet.Unicode, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "GetShortPathNameW", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int GetShortPathName([MarshalAs(UnmanagedType.LPWStr)] string        path,
                                                   [MarshalAs(UnmanagedType.LPWStr)] StringBuilder shortPath,
                                                   uint                                            shortPathLength);
@@ -249,8 +249,8 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #endif
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("kernel32", EntryPoint = "AddDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
+        
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "AddDllDirectory", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr AddDllDirectory([In] [MarshalAs(UnmanagedType.LPWStr)] string newDirectory);
 
 #if NETSTANDARD
@@ -355,152 +355,152 @@ namespace Kokkos
             return true;
         }
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern IntPtr GetModuleHandleA(string lpModuleName);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Ansi, SetLastError = true)]
         public static extern bool GetModuleHandleExA(uint       dwFlags,
                                                      string     lpModuleName,
                                                      out IntPtr phModule);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern IntPtr GetModuleHandleW(string lpModuleName);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern bool GetModuleHandleExW(uint       dwFlags,
                                                      string     lpModuleName,
                                                      out IntPtr phModule);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", EntryPoint = "GetProcAddress", SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", EntryPoint = "GetProcAddress", SetLastError = true)]
         public static extern IntPtr GetProcAddress(IntPtr hModule,
                                                    string lpProcName);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool DisableThreadLibraryCalls(IntPtr hLibModule);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr OpenThread(uint dwDesiredAccess,
                                                bool bInheritHandle,
                                                uint dwThreadId);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool TerminateThread(IntPtr hThread,
                                                   uint   dwExitCode);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern IntPtr CreateToolhelp32Snapshot(uint flags,
                                                              uint toolhelp32ProcessID);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool Process32First(IntPtr             snapshotHandle,
                                                  ref PROCESSENTRY32 processEntryPointer);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool Process32Next(IntPtr             snapshotHandle,
                                                 ref PROCESSENTRY32 processEntryPointer);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool Thread32First(IntPtr            hSnapshot,
                                                 ref THREADENTRY32 lpte);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool Thread32Next(IntPtr            hSnapshot,
                                                ref THREADENTRY32 lpte);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern uint GetThreadId(IntPtr Thread);
 
-        [SuppressUnmanagedCodeSecurity]
+        
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern HRESULT GetThreadDescription(IntPtr     hThread,
                                                           ref string ppszThreadDescription);
 
@@ -509,7 +509,7 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
 
 #if NETSTANDARD
@@ -517,7 +517,7 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool ReadProcessMemory(IntPtr lpProcess,
                                                     IntPtr lpBaseAddress,
                                                     IntPtr lpBuffer,
@@ -529,7 +529,7 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        [DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("kernel32", ExactSpelling = true, SetLastError = true)]
         public static extern bool UnmapViewOfFile(IntPtr lpBaseAddress);
 
         public static IntPtr GetThreadStartAddress(IntPtr hProcess,

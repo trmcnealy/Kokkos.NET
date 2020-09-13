@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>Kokkos.NET</id>
-    <version>$Version$</version>
+    <version>$KOKKOS$</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -16,18 +16,18 @@
     <dependencies>
       <group targetFramework="netcoreapp3.1">
         <dependency id="native.Kokkos.NET"
-                    version="$RuntimeVersion$"/>
+                    version="$RUNTIME_KOKKOS$"/>
         <dependency id="PlatformApi"
-                    version="1.0.0"/>
+                    version="$PLATFORMAPI$"/>
         <dependency id="RuntimeGeneration"
-                    version="1.3.0"/>
+                    version="$RUNTIMEGENERATION$"/>
         <dependency id="NvAPIWrapper.Net"
                     version="0.8.0.98"/>
       </group>
     </dependencies>
   </metadata>
   <files>
-    <file src="..\..\trmcnealy.github.io\assets\nindra.png"
+    <file src="..\..\trmcnealy.github.io\Assets\nindra.png"
           target=""/>
 
     <file src="..\bin\$Configuration$\netcoreapp3.1\Kokkos.NET.dll"

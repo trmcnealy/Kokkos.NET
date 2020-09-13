@@ -7,7 +7,7 @@ namespace Kokkos
 {
     [NonVersionable]
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit,
-                  Pack = sizeof(ulong))]
+                  Pack = 0, Size = (sizeof(ushort) * 4 + sizeof(ulong) * 8 * 2 + sizeof(ulong) * 2))]
     public unsafe struct NdArray
     {
         [FieldOffset(0)]

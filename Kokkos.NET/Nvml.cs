@@ -2167,7 +2167,7 @@ namespace Kokkos
             public unsupported_type /* char */[] uuid;
         }
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlInit_v2();
         
         /// <summary>
@@ -2180,7 +2180,7 @@ namespace Kokkos
         /// <remarks>
         ///  nvmlInit.For all products. NVML_SUCCESS                   if NVML has been properly initialized- NVML_ERROR_DRIVER_NOT_LOADED   if NVIDIA driver is not running- NVML_ERROR_NO_PERMISSION       if NVML does not have permission to talk to the driver- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlInitWithFlags(uint flags);
         
         /// <summary>
@@ -2192,7 +2192,7 @@ namespace Kokkos
         /// when the reference count reaches zero.  For backwards compatibility, no error is reported if
         /// nvmlShutdown() is called more times than nvmlInit(). NVML_SUCCESS                 if NVML has been properly shut down- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlShutdown();
         
         /// <summary>
@@ -2203,7 +2203,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr nvmlErrorString(nvmlReturn_enum result);
         
         /// <summary>
@@ -2216,7 +2216,7 @@ namespace Kokkos
         /// For all products.The version identifier is an alphanumeric string.  It will not exceed 80 characters in length
         /// (including the NULL terminator).  See nvmlConstants::NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetDriverVersion(IntPtr version, uint length);
         
         /// <summary>
@@ -2229,7 +2229,7 @@ namespace Kokkos
         /// For all products.The version identifier is an alphanumeric string.  It will not exceed 80 characters in length
         /// (including the NULL terminator).  See nvmlConstants::NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetNVMLVersion(IntPtr version, uint length);
         
         /// <summary>
@@ -2241,7 +2241,7 @@ namespace Kokkos
         /// For all products.The CUDA driver version returned will be retreived from the currently installed version of CUDA.
         /// If the cuda library is not found, this function will return a known supported version number. NVML_SUCCESS                 if \a cudaDriverVersion has been set- NVML_ERROR_INVALID_ARGUMENT  if \a cudaDriverVersion is NULL
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetCudaDriverVersion(ref int cudaDriverVersion);
         
         /// <summary>
@@ -2252,7 +2252,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.The returned CUDA driver version by calling cuDriverGetVersion() NVML_SUCCESS                  if \a cudaDriverVersion has been set- NVML_ERROR_INVALID_ARGUMENT   if \a cudaDriverVersion is NULL- NVML_ERROR_LIBRARY_NOT_FOUND  if \a libcuda.so.1 or libcuda.dll is not found- NVML_ERROR_FUNCTION_NOT_FOUND if \a cuDriverGetVersion() is not found in the shared library
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetCudaDriverVersion_v2(ref int cudaDriverVersion);
         
         /// <summary>
@@ -2266,7 +2266,7 @@ namespace Kokkos
         /// For all products.Returned process name is cropped to provided length.
         /// name string is encoded in ANSI. NVML_SUCCESS                 if \a name has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a name is NULL or \a length is 0.- NVML_ERROR_NOT_FOUND         if process doesn't exists- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetProcessName(uint pid, IntPtr name, uint length);
         
         /// <summary>
@@ -2277,7 +2277,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products. NVML_SUCCESS                 if \a unitCount has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unitCount is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetCount(ref uint unitCount);
         
         /// <summary>
@@ -2291,7 +2291,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.Valid indices are derived from the @a unitCount returned by nvmlUnitGetCount().For example, if @a unitCount is 2 the valid indices are 0 and 1, corresponding to UNIT 0 and UNIT 1.The order in which NVML enumerates units has no guarantees of consistency between reboots. NVML_SUCCESS                 if \a unit has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a index is invalid or \a unit is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetHandleByIndex(uint index, ref nvmlUnit_st unit);
         
         /// <summary>
@@ -2303,7 +2303,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.See nvmlUnitInfo_t for details on available unit info. NVML_SUCCESS                 if \a info has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit is invalid or \a info is NULL
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetUnitInfo(nvmlUnit_st unit, ref nvmlUnitInfo_st info);
         
         /// <summary>
@@ -2317,7 +2317,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.See nvmlLedState_t for details on allowed states. NVML_SUCCESS                 if \a state has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit is invalid or \a state is NULL- NVML_ERROR_NOT_SUPPORTED     if this is not an S-class product- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetLedState(nvmlUnit_st unit, ref nvmlLedState_st state);
         
         /// <summary>
@@ -2329,7 +2329,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.See nvmlPSUInfo_t for details on available PSU info. NVML_SUCCESS                 if \a psu has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit is invalid or \a psu is NULL- NVML_ERROR_NOT_SUPPORTED     if this is not an S-class product- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetPsuInfo(nvmlUnit_st unit, ref nvmlPSUInfo_st psu);
         
         /// <summary>
@@ -2343,7 +2343,7 @@ namespace Kokkos
         /// For S-class products.Depending on the product, readings may be available for intake (type=0), 
         /// exhaust (type=1) and board (type=2). NVML_SUCCESS                 if \a temp has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit or \a type is invalid or \a temp is NULL- NVML_ERROR_NOT_SUPPORTED     if this is not an S-class product- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetTemperature(nvmlUnit_st unit, uint type, ref uint temp);
         
         /// <summary>
@@ -2355,7 +2355,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.See nvmlUnitFanSpeeds_t for details on available fan speed info. NVML_SUCCESS                 if \a fanSpeeds has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit is invalid or \a fanSpeeds is NULL- NVML_ERROR_NOT_SUPPORTED     if this is not an S-class product- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetFanSpeedInfo(nvmlUnit_st unit, ref nvmlUnitFanSpeeds_st fanSpeeds);
         
         /// <summary>
@@ -2369,7 +2369,7 @@ namespace Kokkos
         /// <remarks>
         /// For S-class products.The @a deviceCount argument is expected to be set to the size of the input @a devices array. NVML_SUCCESS                 if \a deviceCount and \a devices have been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INSUFFICIENT_SIZE if \a deviceCount indicates that the \a devices array is too small- NVML_ERROR_INVALID_ARGUMENT  if \a unit is invalid, either of \a deviceCount or \a devices is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitGetDevices(nvmlUnit_st unit, ref uint deviceCount, ref nvmlDevice_st devices);
         
         /// <summary>
@@ -2382,13 +2382,13 @@ namespace Kokkos
         /// For S-class products.The @a hwbcCount argument is expected to be set to the size of the input @a hwbcEntries array.
         /// The HIC must be connected to an S-class system for it to be reported by this function. NVML_SUCCESS                 if \a hwbcCount and \a hwbcEntries have been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if either \a hwbcCount or \a hwbcEntries is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a hwbcCount indicates that the \a hwbcEntries array is too small
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetHicVersion(ref uint hwbcCount, ref nvmlHwbcEntry_st hwbcEntries);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCount_v2(ref uint deviceCount);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetHandleByIndex_v2(uint index, ref nvmlDevice_st device);
         
         /// <summary>
@@ -2409,7 +2409,7 @@ namespace Kokkos
         /// NVML may initialize additional GPUs as it searches for the target GPU NVML_SUCCESS                  if \a device has been set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a serial is invalid, \a device is NULL or more than onedevice has the same serial (dual GPU boards)
         /// - NVML_ERROR_NOT_FOUND          if \a serial does not match a valid device on the system- NVML_ERROR_INSUFFICIENT_POWER if any attached devices have improperly attached external power cables- NVML_ERROR_IRQ_ISSUE          if NVIDIA kernel detected an interrupt issue with the attached GPUs- NVML_ERROR_GPU_IS_LOST        if any GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetHandleBySerial(IntPtr serial, ref nvmlDevice_st device);
         
         /// <summary>
@@ -2424,10 +2424,10 @@ namespace Kokkos
         /// For all products.Starting from NVML 5, this API causes NVML to initialize the target GPU
         /// NVML may initialize additional GPUs as it searches for the target GPU NVML_SUCCESS                  if \a device has been set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a uuid is invalid or \a device is null- NVML_ERROR_NOT_FOUND          if \a uuid does not match a valid device on the system- NVML_ERROR_INSUFFICIENT_POWER if any attached devices have improperly attached external power cables- NVML_ERROR_IRQ_ISSUE          if NVIDIA kernel detected an interrupt issue with the attached GPUs- NVML_ERROR_GPU_IS_LOST        if any GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetHandleByUUID(IntPtr uuid, ref nvmlDevice_st device);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetHandleByPciBusId_v2(IntPtr pciBusId, ref nvmlDevice_st device);
         
         /// <summary>
@@ -6717,7 +6717,7 @@ namespace Kokkos
         /// 
         /// #endifnvmlConstants::NVML_DEVICE_NAME_BUFFER_SIZE. NVML_SUCCESS                 if \a name has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a name is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetName(nvmlDevice_st device, IntPtr name, uint length);
         
         /// <summary>
@@ -6729,7 +6729,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.The type is a member of nvmlBrandType_t defined above. NVML_SUCCESS                 if \a name has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a type is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetBrand(nvmlDevice_st device, ref nvmlBrandType_enum type);
         
         /// <summary>
@@ -6746,7 +6746,7 @@ namespace Kokkos
         /// For all products.Valid indices are derived from the @a accessibleDevices count returned by nvmlDeviceGetCount(). For example, if \a accessibleDevices is 2 the valid indicesare 0 and 1, corresponding to GPU 0 and GPU 1.The order in which NVML enumerates devices has no guarantees of consistency between reboots. For that reason it
         /// is recommended that devices be looked up by their PCI ids or GPU UUID. See nvmlDeviceGetHandleByPciBusId() and \ref nvmlDeviceGetHandleByUUID().Note: The NVML index may not correlate with other APIs, such as the CUDA device index. NVML_SUCCESS                 if \a index has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a index is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetIndex(nvmlDevice_st device, ref uint index);
         
         /// <summary>
@@ -10962,7 +10962,7 @@ namespace Kokkos
         /// 
         /// #endifnvmlConstants::NVML_DEVICE_SERIAL_BUFFER_SIZE. NVML_SUCCESS                 if \a serial has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a serial is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSerial(nvmlDevice_st device, IntPtr serial, uint length);
         
         /// <summary>
@@ -10981,7 +10981,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Supported on Linux only. NVML_SUCCESS                 if \a cpuAffinity has been filled- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, cpuSetSize == 0, or cpuSet is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCpuAffinity(nvmlDevice_st device, uint cpuSetSize, ref uint cpuSet);
         
         /// <summary>
@@ -10998,7 +10998,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Supported on Linux only. NVML_SUCCESS                 if the calling process has been successfully bound- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetCpuAffinity(nvmlDevice_st device);
         
         /// <summary>
@@ -11013,7 +11013,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Supported on Linux only. NVML_SUCCESS                 if the calling process has been successfully unbound- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceClearCpuAffinity(nvmlDevice_st device);
         
         /// <summary>
@@ -11028,7 +11028,7 @@ namespace Kokkos
         /// <remarks>
         ///  nvmlGpuTopologyLevel_t that gives the path type NVML_SUCCESS                 if \a pathInfo has been set- NVML_ERROR_INVALID_ARGUMENT  if \a device1, or \a device2 is invalid, or \a pathInfo is NULL- NVML_ERROR_NOT_SUPPORTED     if the device or OS does not support this feature- NVML_ERROR_UNKNOWN           an error has occurred in underlying topology discovery
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTopologyCommonAncestor(nvmlDevice_st device1, nvmlDevice_st device2, ref nvmlGpuLevel_enum pathInfo);
         
         /// <summary>
@@ -11044,7 +11044,7 @@ namespace Kokkos
         /// <remarks>
         ///  nvmlGpuTopologyLevel_t level to search for other GPUs NVML_SUCCESS                 if \a deviceArray or \a count (if initially zero) has been set- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a level, or \a count is invalid, or \a deviceArray is NULL with a non-zero \a count- NVML_ERROR_NOT_SUPPORTED     if the device or OS does not support this feature- NVML_ERROR_UNKNOWN           an error has occurred in underlying topology discovery
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTopologyNearestGpus(nvmlDevice_st device, nvmlGpuLevel_enum level, ref uint count, ref nvmlDevice_st deviceArray);
         
         /// <summary>
@@ -11059,7 +11059,7 @@ namespace Kokkos
         /// <remarks>
         ///  NVML_SUCCESS                 if \a deviceArray or \a count (if initially zero) has been set- NVML_ERROR_INVALID_ARGUMENT  if \a cpuNumber, or \a count is invalid, or \a deviceArray is NULL with a non-zero \a count- NVML_ERROR_NOT_SUPPORTED     if the device or OS does not support this feature- NVML_ERROR_UNKNOWN           an error has occurred in underlying topology discovery
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSystemGetTopologyGpuSet(uint cpuNumber, ref uint count, ref nvmlDevice_st deviceArray);
         
         /// <summary>
@@ -11073,7 +11073,7 @@ namespace Kokkos
         /// <remarks>
         ///  NVML_SUCCESS         if \a p2pStatus has been populated- NVML_ERROR_INVALID_ARGUMENT     if \a device1 or \a device2 or \a p2pIndex is invalid or \a p2pStatus is NULL- NVML_ERROR_UNKNOWN              on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetP2PStatus(nvmlDevice_st device1, nvmlDevice_st device2, nvmlGpuP2PCapsIndex_enum p2pIndex, ref nvmlGpuP2PStatus_enum p2pStatus);
         
         /// <summary>
@@ -11089,7 +11089,7 @@ namespace Kokkos
         /// It does NOT correspond to any identifier printed on the board.  It will not exceed 80 characters in length
         /// (including the NULL terminator).  See nvmlConstants::NVML_DEVICE_UUID_BUFFER_SIZE. NVML_SUCCESS                 if \a uuid has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a uuid is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetUUID(nvmlDevice_st device, IntPtr uuid, uint length);
         
         /// <summary>
@@ -11103,7 +11103,7 @@ namespace Kokkos
         /// For all products.
         /// Supported only for Linux NVML_SUCCESS                 if the minor number is successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a minorNumber is NULL- NVML_ERROR_NOT_SUPPORTED     if this query is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMinorNumber(nvmlDevice_st device, ref uint minorNumber);
         
         /// <summary>
@@ -11116,7 +11116,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products. NVML_SUCCESS                  if \a partNumber has been set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_NOT_SUPPORTED      if the needed VBIOS fields have not been filled- NVML_ERROR_INVALID_ARGUMENT   if \a device is invalid or \a serial is NULL- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetBoardPartNumber(nvmlDevice_st device, IntPtr partNumber, uint length);
         
         /// <summary>
@@ -11135,7 +11135,7 @@ namespace Kokkos
         /// exceed 16 characters in length (including the NULL terminator).
         /// See nvmlConstants::NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE.See nvmlInforomObject_t for details on the available infoROM objects. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not have an infoROM- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetInforomVersion(nvmlDevice_st device, nvmlInforomObject_enum @object, IntPtr version, uint length);
         
         /// <summary>
@@ -11153,7 +11153,7 @@ namespace Kokkos
         /// Version string will not exceed 16 characters in length (including the NULL terminator).
         /// See nvmlConstants::NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not have an infoROM- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetInforomImageVersion(nvmlDevice_st device, IntPtr version, uint length);
         
         /// <summary>
@@ -11167,7 +11167,7 @@ namespace Kokkos
         /// Current checksum takes into account configuration stored in PWR and ECC infoROM objects.
         /// Checksum can change between driver releases or when user changes configuration (e.g. disable/enable ECC) NVML_SUCCESS                 if \a checksum has been set- NVML_ERROR_CORRUPTED_INFOROM if the device's checksum couldn't be retrieved due to infoROM corruption- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a checksum is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetInforomConfigurationChecksum(nvmlDevice_st device, ref uint checksum);
         
         /// <summary>
@@ -11178,7 +11178,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products with an inforom. NVML_SUCCESS                 if infoROM is not corrupted- NVML_ERROR_CORRUPTED_INFOROM if the device's infoROM is corrupted- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceValidateInforom(nvmlDevice_st device);
         
         /// <summary>
@@ -11191,7 +11191,7 @@ namespace Kokkos
         /// For all products.This method indicates whether a physical display (e.g. monitor) is currently connected to
         /// any of the device's connectors.See nvmlEnableState_t for details on allowed modes. NVML_SUCCESS                 if \a display has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a display is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDisplayMode(nvmlDevice_st device, ref nvmlEnableState_enum display);
         
         /// <summary>
@@ -11204,7 +11204,7 @@ namespace Kokkos
         /// For all products.This method indicates whether a display is initialized on the device.
         /// For example whether X Server is attached to this device and has allocated memory for the screen.Display can be active even when no monitor is physically attached.See nvmlEnableState_t for details on allowed modes. NVML_SUCCESS                 if \a isActive has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a isActive is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDisplayActive(nvmlDevice_st device, ref nvmlEnableState_enum isActive);
         
         /// <summary>
@@ -11220,10 +11220,10 @@ namespace Kokkos
         /// For Linux only.When driver persistence mode is enabled the driver software state is not torn down when the last 
         /// client disconnects. By default this feature is disabled.See nvmlEnableState_t for details on allowed modes. NVML_SUCCESS                 if \a mode has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPersistenceMode(nvmlDevice_st device, ref nvmlEnableState_enum mode);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPciInfo_v3(nvmlDevice_st device, ref nvmlPciInfo_st pci);
         
         /// <summary>
@@ -11238,7 +11238,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a maxLinkGen has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a maxLinkGen is null- NVML_ERROR_NOT_SUPPORTED     if PCIe link information is not available- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMaxPcieLinkGeneration(nvmlDevice_st device, ref uint maxLinkGen);
         
         /// <summary>
@@ -11253,7 +11253,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a maxLinkWidth has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a maxLinkWidth is null- NVML_ERROR_NOT_SUPPORTED     if PCIe link information is not available- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMaxPcieLinkWidth(nvmlDevice_st device, ref uint maxLinkWidth);
         
         /// <summary>
@@ -11267,7 +11267,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a currLinkGen has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a currLinkGen is null- NVML_ERROR_NOT_SUPPORTED     if PCIe link information is not available- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCurrPcieLinkGeneration(nvmlDevice_st device, ref uint currLinkGen);
         
         /// <summary>
@@ -11281,7 +11281,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a currLinkWidth has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a currLinkWidth is null- NVML_ERROR_NOT_SUPPORTED     if PCIe link information is not available- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCurrPcieLinkWidth(nvmlDevice_st device, ref uint currLinkWidth);
         
         /// <summary>
@@ -11298,7 +11298,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.This method is not supported in virtual machines running virtual GPU (vGPU). nvmlPcieUtilCounter_t NVML_SUCCESS                 if \a value has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device or \a counter is invalid, or \a value is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPcieThroughput(nvmlDevice_st device, nvmlPcieUtilCounter_enum counter, ref uint value);
         
         /// <summary>
@@ -11312,7 +11312,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a value has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a value is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPcieReplayCounter(nvmlDevice_st device, ref uint value);
         
         /// <summary>
@@ -11327,7 +11327,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlClockType_t for details on available clock information. NVML_SUCCESS                 if \a clock has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clock is NULL- NVML_ERROR_NOT_SUPPORTED     if the device cannot report the specified clock- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetClockInfo(nvmlDevice_st device, nvmlClockType_enum type, ref uint clock);
         
         /// <summary>
@@ -11342,7 +11342,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlClockType_t for details on available clock information.@note On GPUs from Fermi family current P0 clocks (reported by nvmlDeviceGetClockInfo) can differ from max clocksby few MHz. NVML_SUCCESS                 if \a clock has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clock is NULL- NVML_ERROR_NOT_SUPPORTED     if the device cannot report the specified clock- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMaxClockInfo(nvmlDevice_st device, nvmlClockType_enum type, ref uint clock);
         
         /// <summary>
@@ -11358,7 +11358,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a clockMHz has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clockMHz is NULL or \a clockType is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetApplicationsClock(nvmlDevice_st device, nvmlClockType_enum clockType, ref uint clockMHz);
         
         /// <summary>
@@ -11376,7 +11376,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a clockMHz has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clockMHz is NULL or \a clockType is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDefaultApplicationsClock(nvmlDevice_st device, nvmlClockType_enum clockType, ref uint clockMHz);
         
         /// <summary>
@@ -11395,7 +11395,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer non-GeForce fully supported devices and Maxwell or newer GeForce devices. NVML_SUCCESS                 if new settings were successfully set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceResetApplicationsClocks(nvmlDevice_st device);
         
         /// <summary>
@@ -11411,7 +11411,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a clockMHz has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clockMHz is NULL or \a clockType is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetClock(nvmlDevice_st device, nvmlClockType_enum clockType, nvmlClockId_enum clockId, ref uint clockMHz);
         
         /// <summary>
@@ -11426,7 +11426,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a clockMHz has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clockMHz is NULL or \a clockType is invalid- NVML_ERROR_NOT_SUPPORTED     if the device or the \a clockType on this device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMaxCustomerBoostClock(nvmlDevice_st device, nvmlClockType_enum clockType, ref uint clockMHz);
         
         /// <summary>
@@ -11447,7 +11447,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 if \a count and \a clocksMHz have been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a count is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_INSUFFICIENT_SIZE if \a count is too small (\a count is set to the number ofrequired elements)
         /// - NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSupportedMemoryClocks(nvmlDevice_st device, ref uint count, ref uint clocksMHz);
         
         /// <summary>
@@ -11468,7 +11468,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a count and \a clocksMHz have been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_NOT_FOUND         if the specified \a memoryClockMHz is not a supported frequency- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clock is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_INSUFFICIENT_SIZE if \a count is too small- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSupportedGraphicsClocks(nvmlDevice_st device, uint memoryClockMHz, ref uint count, ref uint clocksMHz);
         
         /// <summary>
@@ -11486,7 +11486,7 @@ namespace Kokkos
         /// to maximize performance as thermal limits allow.On Pascal and newer hardware, Auto Aoosted clocks are controlled through application clocks.
         /// Use nvmlDeviceSetApplicationsClocks and \ref nvmlDeviceResetApplicationsClocks to control Auto Boostbehavior. NVML_SUCCESS                 If \a isEnabled has been been set with the Auto Boosted clocks state of \a device- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a isEnabled is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support Auto Boosted clocks- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAutoBoostedClocksEnabled(nvmlDevice_st device, ref nvmlEnableState_enum isEnabled, ref nvmlEnableState_enum defaultIsEnabled);
         
         /// <summary>
@@ -11503,7 +11503,7 @@ namespace Kokkos
         /// rates are desired.Non-root users may use this API by default but can be restricted by root from using this API by calling nvmlDeviceSetAPIRestriction with apiType=NVML_RESTRICTED_API_SET_AUTO_BOOSTED_CLOCKS.Note: Persistence Mode is required to modify current Auto Boost settings, therefore, it must be enabled.On Pascal and newer hardware, Auto Boosted clocks are controlled through application clocks.
         /// Use nvmlDeviceSetApplicationsClocks and \ref nvmlDeviceResetApplicationsClocks to control Auto Boostbehavior. NVML_SUCCESS                 If the Auto Boosted clocks were successfully set to the state specified by \a enabled- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support Auto Boosted clocks- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetAutoBoostedClocksEnabled(nvmlDevice_st device, nvmlEnableState_enum enabled);
         
         /// <summary>
@@ -11523,7 +11523,7 @@ namespace Kokkos
         /// rates are desired.On Pascal and newer hardware, Auto Boosted clocks are controlled through application clocks.
         /// Use nvmlDeviceSetApplicationsClocks and \ref nvmlDeviceResetApplicationsClocks to control Auto Boostbehavior. NVML_SUCCESS                 If the Auto Boosted clock's default state was successfully set to the state specified by \a enabled- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_NO_PERMISSION     If the calling user does not have permission to change Auto Boosted clock's default state.- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support Auto Boosted clocks- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetDefaultAutoBoostedClocksEnabled(nvmlDevice_st device, nvmlEnableState_enum enabled, uint flags);
         
         /// <summary>
@@ -11536,7 +11536,7 @@ namespace Kokkos
         /// Note: The reported speed is the intended fan speed.  If the fan is physically blocked and unable to spin, the
         /// output will not match the actual fan speed.For all discrete products with dedicated fans.The fan speed is expressed as a percent of the maximum, i.e. full speed is 100%. NVML_SUCCESS                 if \a speed has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a speed is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not have a fan- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetFanSpeed(nvmlDevice_st device, ref uint speed);
         
         /// <summary>
@@ -11550,7 +11550,7 @@ namespace Kokkos
         /// Note: The reported speed is the intended fan speed. If the fan is physically blocked and unable to spin, the
         /// output will not match the actual fan speed.For all discrete products with dedicated fans.The fan speed is expressed as a percentage of the maximum, i.e. full speed is 100% NVML_SUCCESS                   if \a speed has been set- NVML_ERROR_UNINITIALIZED       if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT    if \a device is invalid, \a fan is not an acceptable index, or \a speed is NULL- NVML_ERROR_NOT_SUPPORTED       if the device does not have a fan or is newer than Maxwell- NVML_ERROR_GPU_IS_LOST         if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetFanSpeed_v2(nvmlDevice_st device, uint fan, ref uint speed);
         
         /// <summary>
@@ -11563,7 +11563,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.See nvmlTemperatureSensors_t for details on available temperature sensors. NVML_SUCCESS                 if \a temp has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a sensorType is invalid or \a temp is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not have the specified sensor- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTemperature(nvmlDevice_st device, nvmlTemperatureSensors_enum sensorType, ref uint temp);
         
         /// <summary>
@@ -11578,7 +11578,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlTemperatureThresholds_t for details on available temperature thresholds. NVML_SUCCESS                 if \a temp has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a thresholdType is invalid or \a temp is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not have a temperature sensor or is unsupported- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTemperatureThreshold(nvmlDevice_st device, nvmlTemperatureThresholds_enum thresholdType, ref uint temp);
         
         /// <summary>
@@ -11592,7 +11592,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlPstates_t for details on allowed performance states. NVML_SUCCESS                 if \a pState has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a pState is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPerformanceState(nvmlDevice_st device, ref nvmlPStates_enum pState);
         
         /// <summary>
@@ -11609,7 +11609,7 @@ namespace Kokkos
         /// <remarks>
         /// For all fully supported products.@note More than one bit can be enabled at the same time. Multiple reasons can be affecting clocks at once. NVML_SUCCESS                 if \a clocksThrottleReasons has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a clocksThrottleReasons is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCurrentClocksThrottleReasons(nvmlDevice_st device, ref ulong clocksThrottleReasons);
         
         /// <summary>
@@ -11626,7 +11626,7 @@ namespace Kokkos
         /// <remarks>
         ///  nvmlDeviceGetCurrentClocksThrottleReasonsFor all fully supported products.This method is not supported in virtual machines running virtual GPU (vGPU). NVML_SUCCESS                 if \a supportedClocksThrottleReasons has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a supportedClocksThrottleReasons is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSupportedClocksThrottleReasons(nvmlDevice_st device, ref ulong supportedClocksThrottleReasons);
         
         /// <summary>
@@ -11640,7 +11640,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlPstates_t for details on allowed performance states. NVML_SUCCESS                 if \a pState has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a pState is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerState(nvmlDevice_st device, ref nvmlPStates_enum pState);
         
         /// <summary>
@@ -11656,7 +11656,7 @@ namespace Kokkos
         /// enabled state does not necessarily mean the device is being actively throttled -- only that 
         /// that the driver will do so if the appropriate conditions are met.See nvmlEnableState_t for details on allowed modes. NVML_SUCCESS                 if \a mode has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerManagementMode(nvmlDevice_st device, ref nvmlEnableState_enum mode);
         
         /// <summary>
@@ -11672,7 +11672,7 @@ namespace Kokkos
         /// the card's total power draw reaches this limit the power management algorithm kicks in.This reading is only available if power management mode is supported. 
         /// See nvmlDeviceGetPowerManagementMode. NVML_SUCCESS                 if \a limit has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a limit is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerManagementLimit(nvmlDevice_st device, ref uint limit);
         
         /// <summary>
@@ -11689,7 +11689,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a minLimit and \a maxLimit have been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a minLimit or \a maxLimit is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerManagementLimitConstraints(nvmlDevice_st device, ref uint minLimit, ref uint maxLimit);
         
         /// <summary>
@@ -11704,7 +11704,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a defaultLimit has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a defaultLimit is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerManagementDefaultLimit(nvmlDevice_st device, ref uint defaultLimit);
         
         /// <summary>
@@ -11718,7 +11718,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.On Fermi and Kepler GPUs the reading is accurate to within +/- 5% of current power draw.It is only available if power management mode is supported. See nvmlDeviceGetPowerManagementMode. NVML_SUCCESS                 if \a power has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a power is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support power readings- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetPowerUsage(nvmlDevice_st device, ref uint power);
         
         /// <summary>
@@ -11732,7 +11732,7 @@ namespace Kokkos
         /// &amp;tm;
         /// fully supported devices. NVML_SUCCESS                 if \a energy has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a energy is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support energy readings- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTotalEnergyConsumption(nvmlDevice_st device, ref ulong energy);
         
         /// <summary>
@@ -11746,7 +11746,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a limit has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a limit is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEnforcedPowerLimit(nvmlDevice_st device, ref uint limit);
         
         /// <summary>
@@ -11770,7 +11770,7 @@ namespace Kokkos
         /// &amp;tm;
         /// C-class products. NVML_SUCCESS                 if \a mode has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a current or \a pending is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetGpuOperationMode(nvmlDevice_st device, ref nvmlGom_enum current, ref nvmlGom_enum pending);
         
         /// <summary>
@@ -11784,7 +11784,7 @@ namespace Kokkos
         /// Under WDDM most device memory is allocated and managed on startup by Windows.Under Linux and Windows TCC, the reported amount of used memory is equal to the sum of memory allocated 
         /// by all active channels on the device.See nvmlMemory_t for details on available memory info. NVML_SUCCESS                 if \a memory has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a memory is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMemoryInfo(nvmlDevice_st device, ref nvmlMemory_st memory);
         
         /// <summary>
@@ -11798,7 +11798,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.See nvmlComputeMode_t for details on allowed compute modes. NVML_SUCCESS                 if \a mode has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetComputeMode(nvmlDevice_st device, ref nvmlComputeMode_enum mode);
         
         /// <summary>
@@ -11815,7 +11815,7 @@ namespace Kokkos
         /// CU_DEVICE_ATTRIBUTE_COMPUTE_CAPABILITY_MAJOR attributes that would be
         /// returned by CUDA's cuDeviceGetAttribute(). NVML_SUCCESS                 if \a major and \a minor have been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a major or \a minor are NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCudaComputeCapability(nvmlDevice_st device, ref int major, ref int minor);
         
         /// <summary>
@@ -11835,7 +11835,7 @@ namespace Kokkos
         /// Requires @a NVML_INFOROM_ECC version 1.0 or higher.Changing ECC modes requires a reboot. The "pending" ECC mode refers to the target mode following
         /// the next reboot.See nvmlEnableState_t for details on allowed modes. NVML_SUCCESS                 if \a current and \a pending have been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or either \a current or \a pending is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEccMode(nvmlDevice_st device, ref nvmlEnableState_enum current, ref nvmlEnableState_enum pending);
         
         /// <summary>
@@ -11853,7 +11853,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a boardId has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a boardId is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetBoardId(nvmlDevice_st device, ref uint boardId);
         
         /// <summary>
@@ -11869,7 +11869,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a multiGpuBool has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a multiGpuBool is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMultiGpuBoard(nvmlDevice_st device, ref uint multiGpuBool);
         
         /// <summary>
@@ -11891,7 +11891,7 @@ namespace Kokkos
         /// Requires ECC Mode to be enabled.The total error count is the sum of errors across each of the separate memory systems, i.e. the total set of 
         /// errors across the entire device.See nvmlMemoryErrorType_t for a description of available error types.\nSee nvmlEccCounterType_t for a description of available counter types. NVML_SUCCESS                 if \a eccCounts has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a errorType or \a counterType is invalid, or \a eccCounts is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetTotalEccErrors(nvmlDevice_st device, nvmlMemoryErrorType_enum errorType, nvmlEccCounterType_enum counterType, ref ulong eccCounts);
         
         /// <summary>
@@ -11915,7 +11915,7 @@ namespace Kokkos
         /// Requires @a NVML_INFOROM_ECC version 1.0 or higher to report all other ECC counts.
         /// Requires ECC Mode to be enabled.Detailed errors provide separate ECC counts for specific parts of the memory system.Reports zero for unsupported ECC error counters when a subset of ECC error counters are supported.See nvmlMemoryErrorType_t for a description of available bit types.\nSee nvmlEccCounterType_t for a description of available counter types.\nSee nvmlEccErrorCounts_t for a description of provided detailed ECC counts. NVML_SUCCESS                 if \a eccCounts has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a errorType or \a counterType is invalid, or \a eccCounts is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDetailedEccErrors(nvmlDevice_st device, nvmlMemoryErrorType_enum errorType, nvmlEccCounterType_enum counterType, ref nvmlEccErrorCounts_st eccCounts);
         
         /// <summary>
@@ -11935,7 +11935,7 @@ namespace Kokkos
         /// Requires @a NVML_INFOROM_ECC version 1.0 or higher to report all other memory error counts.Only applicable to devices with ECC.Requires ECC Mode to be enabled.See nvmlMemoryErrorType_t for a description of available memory error types.\nSee nvmlEccCounterType_t for a description of available counter types.\nSee nvmlMemoryLocation_t for a description of available counter locations.\n NVML_SUCCESS                 if \a count has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a bitTyp,e \a counterType or \a locationType isinvalid, or @a count is NULL
         /// - NVML_ERROR_NOT_SUPPORTED     if the device does not support ECC error reporting in the specified memory- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetMemoryErrorCounter(nvmlDevice_st device, nvmlMemoryErrorType_enum errorType, nvmlEccCounterType_enum counterType, nvmlMemoryLocation_enum locationType, ref ulong count);
         
         /// <summary>
@@ -11950,7 +11950,7 @@ namespace Kokkos
         /// or newer fully supported devices.See nvmlUtilization_t for details on available utilization rates.@note During driver initialization when ECC is enabled one can see high GPU and Memory Utilization readings.
         /// This is caused by ECC Memory Scrubbing mechanism that is performed during driver initialization. NVML_SUCCESS                 if \a utilization has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a utilization is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetUtilizationRates(nvmlDevice_st device, ref nvmlUtilization_st utilization);
         
         /// <summary>
@@ -11965,7 +11965,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a utilization has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a utilization is NULL, or \a samplingPeriodUs is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEncoderUtilization(nvmlDevice_st device, ref uint utilization, ref uint samplingPeriodUs);
         
         /// <summary>
@@ -11981,7 +11981,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                  if \a encoderCapacity is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a encoderCapacity is NULL, or \a device or \a encoderQueryTypeare invalid
         /// - NVML_ERROR_NOT_SUPPORTED      if device does not support the encoder specified in \a encodeQueryType- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEncoderCapacity(nvmlDevice_st device, nvmlEncoderQueryType_enum encoderQueryType, ref uint encoderCapacity);
         
         /// <summary>
@@ -11998,7 +11998,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                  if \a sessionCount, \a averageFps and \a averageLatency is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a sessionCount, or \a device or \a averageFps,or @a averageLatency is NULL
         /// - NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEncoderStats(nvmlDevice_st device, ref uint sessionCount, ref uint averageFps, ref uint averageLatency);
         
         /// <summary>
@@ -12017,7 +12017,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a sessionInfos is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INSUFFICIENT_SIZE  if \a sessionCount is too small, array element count is returned in \a sessionCount- NVML_ERROR_INVALID_ARGUMENT   if \a sessionCount is NULL.- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetEncoderSessions(nvmlDevice_st device, ref uint sessionCount, ref nvmlEncoderSessionInfo_st sessionInfos);
         
         /// <summary>
@@ -12032,7 +12032,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a utilization has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a utilization is NULL, or \a samplingPeriodUs is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDecoderUtilization(nvmlDevice_st device, ref uint utilization, ref uint samplingPeriodUs);
         
         /// <summary>
@@ -12046,7 +12046,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a fbcStats is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a fbcStats is NULL- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetFBCStats(nvmlDevice_st device, ref nvmlFBCStats_st fbcStats);
         
         /// <summary>
@@ -12066,7 +12066,7 @@ namespace Kokkos
         /// or newer fully supported devices.@note hResolution, vResolution, averageFPS and averageLatency data for a FBC session returned in @a sessionInfo may
         /// be zero if there are no new frames captured since the session started. NVML_SUCCESS                  if \a sessionInfo is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INSUFFICIENT_SIZE  if \a sessionCount is too small, array element count is returned in \a sessionCount- NVML_ERROR_INVALID_ARGUMENT   if \a sessionCount is NULL.- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetFBCSessions(nvmlDevice_st device, ref uint sessionCount, ref nvmlFBCSessionInfo_st sessionInfo);
         
         /// <summary>
@@ -12085,7 +12085,7 @@ namespace Kokkos
         /// For windows only.On Windows platforms the device driver can run in either WDDM or WDM (TCC) mode. If a display is attached
         /// to the device it must run in WDDM mode. TCC mode is preferred if a display is not attached.See nvmlDriverModel_t for details on available driver models. NVML_SUCCESS                 if either \a current and/or \a pending have been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or both \a current and \a pending are NULL- NVML_ERROR_NOT_SUPPORTED     if the platform is not windows- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetDriverModel(nvmlDevice_st device, ref nvmlDriverModel_enum current, ref nvmlDriverModel_enum pending);
         
         /// <summary>
@@ -12099,7 +12099,7 @@ namespace Kokkos
         /// For all products.The VBIOS version may change from time to time. It will not exceed 32 characters in length 
         /// (including the NULL terminator).  See nvmlConstants::NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetVbiosVersion(nvmlDevice_st device, IntPtr version, uint length);
         
         /// <summary>
@@ -12112,7 +12112,7 @@ namespace Kokkos
         /// For all fully supported products.
         /// Only applicable to multi-GPU products. NVML_SUCCESS                 if bridge chip exists- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a bridgeInfo is NULL- NVML_ERROR_NOT_SUPPORTED     if bridge chip not supported on the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetBridgeChipInfo(nvmlDevice_st device, ref nvmlBridgeChipHierarchy_st bridgeHierarchy);
         
         /// <summary>
@@ -12136,7 +12136,7 @@ namespace Kokkos
         /// the call to complete
         /// - NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, either of \a infoCount or \a infos is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error nvmlSystemGetProcessName
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetComputeRunningProcesses(nvmlDevice_st device, ref uint infoCount, ref nvmlProcessInfo_st infos);
         
         /// <summary>
@@ -12160,7 +12160,7 @@ namespace Kokkos
         /// the call to complete
         /// - NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, either of \a infoCount or \a infos is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error nvmlSystemGetProcessName
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetGraphicsRunningProcesses(nvmlDevice_st device, ref uint infoCount, ref nvmlProcessInfo_st infos);
         
         /// <summary>
@@ -12174,7 +12174,7 @@ namespace Kokkos
         /// <remarks>
         /// For all fully supported products. NVML_SUCCESS                 if \a onSameBoard has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a dev1 or \a dev2 are invalid or \a onSameBoard is NULL- NVML_ERROR_NOT_SUPPORTED     if this check is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the either GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceOnSameBoard(nvmlDevice_st device1, nvmlDevice_st device2, ref int onSameBoard);
         
         /// <summary>
@@ -12194,7 +12194,7 @@ namespace Kokkos
         /// not supported by the device)
         /// - NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAPIRestriction(nvmlDevice_st device, nvmlRestrictedAPI_enum apiType, ref nvmlEnableState_enum isRestricted);
         
         /// <summary>
@@ -12219,7 +12219,7 @@ namespace Kokkos
         /// reference samplesCount is updated to indicate how many samples were actually retrieved. The advantage of using this 
         /// method for samples in contrast to polling via existing methods is to get get higher frequency data at lower polling cost. NVML_SUCCESS                 if samples are successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a samplesCount is NULL orreference to @a sampleCount is 0 for non null @a samples - NVML_ERROR_NOT_SUPPORTED     if this query is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_NOT_FOUND         if sample entries are not found- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSamples(nvmlDevice_st device, nvmlSamplingType_enum type, ulong lastSeenTimeStamp, ref nvmlValueType_enum sampleValType, ref uint sampleCount, ref nvmlSample_st samples);
         
         /// <summary>
@@ -12235,7 +12235,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if BAR1 memory is successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a bar1Memory is NULL- NVML_ERROR_NOT_SUPPORTED     if this query is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetBAR1MemoryInfo(nvmlDevice_st device, ref nvmlBAR1Memory_st bar1Memory);
         
         /// <summary>
@@ -12252,7 +12252,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if violation time is successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a perfPolicyType is invalid, or \a violTime is NULL- NVML_ERROR_NOT_SUPPORTED     if this query is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetViolationStatus(nvmlDevice_st device, nvmlPerfPolicyType_enum perfPolicyType, ref nvmlViolationTime_st violTime);
         
         /// <summary>
@@ -12266,7 +12266,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.See nvmlDeviceGetAccountingStats for more details.See nvmlDeviceSetAccountingMode NVML_SUCCESS                 if the mode has been successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode are NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAccountingMode(nvmlDevice_st device, ref nvmlEnableState_enum mode);
         
         /// <summary>
@@ -12288,7 +12288,7 @@ namespace Kokkos
         /// processes.See nvmlAccountingStats_t for description of each returned metric.List of processes that can be queried can be retrieved from nvmlDeviceGetAccountingPids.@note Accounting Mode needs to be on. See nvmlDeviceGetAccountingMode.@note Only compute and graphics applications stats can be queried. Monitoring applications stats can't be
         /// queried since they don't contribute to GPU utilization.@note In case of pid collision stats of only the latest process (that terminated last) will be reported@warning On Kepler devices per process statistics are accurate only if there's one process running on a GPU. NVML_SUCCESS                 if stats have been successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a stats are NULL- NVML_ERROR_NOT_FOUND         if process stats were not found- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature or accounting mode is disabled- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAccountingStats(nvmlDevice_st device, uint pid, ref nvmlAccountingStats_st stats);
         
         /// <summary>
@@ -12309,7 +12309,7 @@ namespace Kokkos
         /// pids=NULL. The return code will be NVML_ERROR_INSUFFICIENT_SIZE, or NVML_SUCCESS if list is empty.For more details see nvmlDeviceGetAccountingStats.@note In case of PID collision some processes might not be accessible before the circular buffer is full. NVML_SUCCESS                 if pids were successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a count is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature or accounting mode is disabled- NVML_ERROR_INSUFFICIENT_SIZE if \a count is too small (\a count is set toexpected value)
         /// - NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAccountingPids(nvmlDevice_st device, ref uint count, ref uint pids);
         
         /// <summary>
@@ -12329,7 +12329,7 @@ namespace Kokkos
         /// or newer fully supported devices.This is the maximum number of processes that accounting information will be stored for before information
         /// about oldest processes will get overwritten by information about new processes. NVML_SUCCESS                 if buffer size was successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a bufferSize is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature or accounting mode is disabled- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetAccountingBufferSize(nvmlDevice_st device, ref uint bufferSize);
         
         /// <summary>
@@ -12350,7 +12350,7 @@ namespace Kokkos
         /// - NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a pageCount is NULL, \a cause is invalid, or@a addresses is NULL
         /// - NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetRetiredPages(nvmlDevice_st device, nvmlPageRetirementCause_enum cause, ref uint pageCount, ref ulong addresses);
         
         /// <summary>
@@ -12373,7 +12373,7 @@ namespace Kokkos
         /// - NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a pageCount is NULL, \a cause is invalid, or@a addresses is NULL
         /// - NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetRetiredPages_v2(nvmlDevice_st device, nvmlPageRetirementCause_enum cause, ref uint pageCount, ref ulong addresses, ref ulong timestamps);
         
         /// <summary>
@@ -12387,7 +12387,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a isPending was populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a isPending is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetRetiredPagesPendingStatus(nvmlDevice_st device, ref nvmlEnableState_enum isPending);
         
         /// <summary>
@@ -12403,7 +12403,7 @@ namespace Kokkos
         /// Requires root/admin permissions.This operation takes effect immediately.&lt;b&gt;Current S-Class products don't provide unique LEDs for each unit. As such, both front 
         /// and back LEDs will be toggled in unison regardless of which unit is specified with this command.&lt;/b&gt;See nvmlLedColor_t for available colors. NVML_SUCCESS                 if the LED color has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a unit or \a color is invalid- NVML_ERROR_NOT_SUPPORTED     if this is not an S-class product- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlUnitSetLedState(nvmlUnit_st unit, nvmlLedColor_enum color);
         
         /// <summary>
@@ -12425,7 +12425,7 @@ namespace Kokkos
         /// limitation is currently only applicable to devices that have a coherent NVLink connection to
         /// system memory. NVML_SUCCESS                 if the persistence mode was set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetPersistenceMode(nvmlDevice_st device, nvmlEnableState_enum mode);
         
         /// <summary>
@@ -12442,7 +12442,7 @@ namespace Kokkos
         /// be shared across contexts.This operation takes effect immediately. Under Linux it is not persistent across reboots and
         /// always resets to "Default". Under windows it is persistent.Under windows compute mode may only be set to DEFAULT when running in WDDMSee nvmlComputeMode_t for details on available compute modes. NVML_SUCCESS                 if the compute mode was set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetComputeMode(nvmlDevice_st device, nvmlComputeMode_enum mode);
         
         /// <summary>
@@ -12461,7 +12461,7 @@ namespace Kokkos
         /// Requires @a NVML_INFOROM_ECC version 1.0 or higher.
         /// Requires root/admin permissions.The ECC mode determines whether the GPU enables its ECC support.This operation takes effect after the next reboot.See nvmlEnableState_t for details on available modes. NVML_SUCCESS                 if the ECC mode was set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a ecc is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetEccMode(nvmlDevice_st device, nvmlEnableState_enum ecc);
         
         /// <summary>
@@ -12483,7 +12483,7 @@ namespace Kokkos
         /// Requires root/admin permissions.
         /// Requires ECC Mode to be enabled.Sets all of the specified ECC counters to 0, including both detailed and total counts.This operation takes effect immediately.See nvmlMemoryErrorType_t for details on available counter types. NVML_SUCCESS                 if the error counts were cleared- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a counterType is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceClearEccErrorCounts(nvmlDevice_st device, nvmlEccCounterType_enum counterType);
         
         /// <summary>
@@ -12506,7 +12506,7 @@ namespace Kokkos
         /// before the next reboot.This operation takes effect after the next reboot.Windows driver model may only be set to WDDM when running in DEFAULT compute mode.Change driver model to WDDM is not supported when GPU doesn't support graphics acceleration or 
         /// will not support it after reboot. See nvmlDeviceSetGpuOperationMode.See nvmlDriverModel_t for details on available driver models.See nvmlFlagDefault and \ref nvmlFlagForce NVML_SUCCESS                 if the driver model has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a driverModel is invalid- NVML_ERROR_NOT_SUPPORTED     if the platform is not windows or the device does not support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetDriverModel(nvmlDevice_st device, nvmlDriverModel_enum driverModel, uint flags);
         
         /// <summary>
@@ -12525,7 +12525,7 @@ namespace Kokkos
         /// fully supported devices. NVML_SUCCESS                 if new settings were successfully set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a minGpuClockMHz and \a maxGpuClockMHzis not a valid clock combination
         /// - NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetGpuLockedClocks(nvmlDevice_st device, uint minGpuClockMHz, uint maxGpuClockMHz);
         
         /// <summary>
@@ -12541,7 +12541,7 @@ namespace Kokkos
         /// &amp;tm;
         /// fully supported devices. NVML_SUCCESS                 if new settings were successfully set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceResetGpuLockedClocks(nvmlDevice_st device);
         
         /// <summary>
@@ -12562,7 +12562,7 @@ namespace Kokkos
         /// See nvmlDeviceResetApplicationsClocks. NVML_SUCCESS                 if new settings were successfully set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a memClockMHz and \a graphicsClockMHzis not a valid clock combination
         /// - NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetApplicationsClocks(nvmlDevice_st device, uint memClockMHz, uint graphicsClockMHz);
         
         /// <summary>
@@ -12582,7 +12582,7 @@ namespace Kokkos
         /// Requires root/admin permissions.See nvmlDeviceGetPowerManagementLimitConstraints to check the allowed ranges of values.@note Limit is not persistent across reboots or driver unloads.
         /// Enable persistent mode to prevent driver from unloading when no application is using the device. NVML_SUCCESS                 if \a limit has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a defaultLimit is out of range- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetPowerManagementLimit(nvmlDevice_st device, uint limit);
         
         /// <summary>
@@ -12608,7 +12608,7 @@ namespace Kokkos
         /// The reboot requirement might be removed in the future.Compute only GOMs don't support graphics acceleration. Under windows switching to these GOMs when
         /// pending driver model is WDDM is not supported. See nvmlDeviceSetDriverModel. NVML_SUCCESS                 if \a mode has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a mode incorrect- NVML_ERROR_NOT_SUPPORTED     if the device does not support GOM or specific mode- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetGpuOperationMode(nvmlDevice_st device, nvmlGom_enum mode);
         
         /// <summary>
@@ -12630,7 +12630,7 @@ namespace Kokkos
         /// boosted clocks is not supported by the device)
         /// - NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetAPIRestriction(nvmlDevice_st device, nvmlRestrictedAPI_enum apiType, nvmlEnableState_enum isRestricted);
         
         /// <summary>
@@ -12646,7 +12646,7 @@ namespace Kokkos
         /// Requires root/admin permissions.@note This setting is not persistent and will default to disabled after driver unloads.
         /// Enable persistence mode to be sure the setting doesn't switch off to disabled.@note Enabling accounting mode has no negative impact on the GPU performance.@note Disabling accounting clears all accounting pids information.See nvmlDeviceGetAccountingModeSee nvmlDeviceGetAccountingStatsSee nvmlDeviceClearAccountingPids NVML_SUCCESS                 if the new mode has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device or \a mode are invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetAccountingMode(nvmlDevice_st device, nvmlEnableState_enum mode);
         
         /// <summary>
@@ -12660,7 +12660,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Requires root/admin permissions.See nvmlDeviceGetAccountingModeSee nvmlDeviceGetAccountingStatsSee nvmlDeviceSetAccountingMode NVML_SUCCESS                 if accounting information has been cleared- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device are invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceClearAccountingPids(nvmlDevice_st device);
         
         /// <summary>
@@ -12677,7 +12677,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a isActive has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device or \a link is invalid or \a isActive is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkState(nvmlDevice_st device, uint link, ref nvmlEnableState_enum isActive);
         
         /// <summary>
@@ -12692,7 +12692,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device or \a link is invalid or \a version is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkVersion(nvmlDevice_st device, uint link, ref uint version);
         
         /// <summary>
@@ -12710,10 +12710,10 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a capResult has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a link, or \a capability is invalid or \a capResult is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkCapability(nvmlDevice_st device, uint link, nvmlNvLinkCapability_enum capability, ref uint capResult);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkRemotePciInfo_v2(nvmlDevice_st device, uint link, ref nvmlPciInfo_st pci);
         
         /// <summary>
@@ -12730,7 +12730,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a counter has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a link, or \a counter is invalid or \a counterValue is NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkErrorCounter(nvmlDevice_st device, uint link, nvmlNvLinkErrorCounter_enum counter, ref ulong counterValue);
         
         /// <summary>
@@ -12745,7 +12745,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the reset is successful- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device or \a link is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceResetNvLinkErrorCounters(nvmlDevice_st device, uint link);
         
         /// <summary>
@@ -12764,7 +12764,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the control has been set successfully- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a counter, \a link, or \a control is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetNvLinkUtilizationControl(nvmlDevice_st device, uint link, uint counter, ref nvmlNvLinkUtilizationControl_st control, uint reset);
         
         /// <summary>
@@ -12781,7 +12781,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the control has been set successfully- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a counter, \a link, or \a control is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkUtilizationControl(nvmlDevice_st device, uint link, uint counter, ref nvmlNvLinkUtilizationControl_st control);
         
         /// <summary>
@@ -12799,7 +12799,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a rxcounter and \a txcounter have been successfully set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a counter, or \a link is invalid or \a rxcounter or \a txcounter are NULL- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetNvLinkUtilizationCounter(nvmlDevice_st device, uint link, uint counter, ref ulong rxcounter, ref ulong txcounter);
         
         /// <summary>
@@ -12817,7 +12817,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if counters were successfully frozen or unfrozen- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a link, \a counter, or \a freeze is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceFreezeNvLinkUtilizationCounter(nvmlDevice_st device, uint link, uint counter, nvmlEnableState_enum freeze);
         
         /// <summary>
@@ -12833,7 +12833,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if counters were successfully reset- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device, \a link, or \a counter is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceResetNvLinkUtilizationCounter(nvmlDevice_st device, uint link, uint counter);
         
         /// <summary>
@@ -12849,7 +12849,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the event has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a set is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlEventSetCreate(ref nvmlEventSet_st set);
         
         /// <summary>
@@ -12877,7 +12877,7 @@ namespace Kokkos
         /// If function reports NVML_ERROR_NOT_SUPPORTED, event set can still be used. None of the requested eventTypes
         /// are registered in that case. nvmlEventType to record NVML_SUCCESS                 if the event has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a eventTypes is invalid or \a set is NULL- NVML_ERROR_NOT_SUPPORTED     if the platform does not support this feature or some of requested event types- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceRegisterEvents(nvmlDevice_st device, ulong eventTypes, nvmlEventSet_st set);
         
         /// <summary>
@@ -12895,7 +12895,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices.Events are not supported on Windows. So this function returns an empty mask in @a eventTypes on Windows. NVML_SUCCESS                 if the eventTypes has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a eventType is NULL- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSupportedEventTypes(nvmlDevice_st device, ref ulong eventTypes);
         
         /// <summary>
@@ -12919,7 +12919,7 @@ namespace Kokkos
         /// xid errors generated before nvmlEventSetWait is invoked then the last seen xid error type is returned for all
         /// xid error events. NVML_SUCCESS                 if the data has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a data is NULL- NVML_ERROR_TIMEOUT           if no event arrived in specified timeout or interrupt arrived- NVML_ERROR_GPU_IS_LOST       if a GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlEventSetWait(nvmlEventSet_st set, ref nvmlEventData_st data, uint timeoutms);
         
         /// <summary>
@@ -12934,7 +12934,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the event has been successfully released- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlEventSetFree(nvmlEventSet_st set);
         
         /// <summary>
@@ -12953,7 +12953,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Some Kepler devices supported. nvmlEnableState_t NVML_SUCCESS                 if counters were successfully reset- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a nvmlIndex or \a newState is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_NO_PERMISSION     if the calling process has insufficient permissions to perform operation- NVML_ERROR_IN_USE            if the device has persistence mode turned on- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceModifyDrainState(ref nvmlPciInfo_st pciInfo, nvmlEnableState_enum newState);
         
         /// <summary>
@@ -12970,10 +12970,10 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Some Kepler devices supported. nvmlEnableState_t NVML_SUCCESS                 if counters were successfully reset- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a nvmlIndex or \a currentState is invalid- NVML_ERROR_NOT_SUPPORTED     if the device doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceQueryDrainState(ref nvmlPciInfo_st pciInfo, ref nvmlEnableState_enum currentState);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceRemoveGpu_v2(ref nvmlPciInfo_st pciInfo, nvmlDetachGpuState_enum gpuState, nvmlPcieLinkState_enum linkState);
         
         /// <summary>
@@ -12993,7 +12993,7 @@ namespace Kokkos
         /// or newer fully supported devices.
         /// Some Kepler devices supported. NVML_SUCCESS                 if counters were successfully reset- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a pciInfo is invalid- NVML_ERROR_NOT_SUPPORTED     if the operating system does not support this feature- NVML_ERROR_OPERATING_SYSTEM  if the operating system is denying this feature- NVML_ERROR_NO_PERMISSION     if the calling process has insufficient permissions to perform operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceDiscoverGpus(ref nvmlPciInfo_st pciInfo);
         
         /// <summary>
@@ -13011,7 +13011,7 @@ namespace Kokkos
         /// status
         /// - NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid or \a values is NULL
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetFieldValues(nvmlDevice_st device, int valuesCount, ref nvmlFieldValue_st values);
         
         /// <summary>
@@ -13025,7 +13025,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a pVirtualMode is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a device is invalid or \a pVirtualMode is NULL- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetVirtualizationMode(nvmlDevice_st device, ref nvmlGpuVirtualizationMode pVirtualMode);
         
         /// <summary>
@@ -13039,7 +13039,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a pVirtualMode is set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a device is invalid or \a pVirtualMode is NULL- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_NOT_SUPPORTED      if setting of virtualization mode is not supported.- NVML_ERROR_NO_PERMISSION      if setting of virtualization mode is not allowed for this client.
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceSetVirtualizationMode(nvmlDevice_st device, nvmlGpuVirtualizationMode virtualMode);
         
         /// <summary>
@@ -13055,7 +13055,7 @@ namespace Kokkos
         /// NVML_ERROR_INSUFFICIENT_SIZE, with the element count of nvmlVgpuTypeId_t array required in @a vgpuCount. To query the number of vGPU types supported for the GPU, call this function with *vgpuCount = 0.
         /// The code will return NVML_ERROR_INSUFFICIENT_SIZE, or NVML_SUCCESS if no vGPU types are supported. NVML_SUCCESS                      successful completion- NVML_ERROR_INSUFFICIENT_SIZE      \a vgpuTypeIds buffer is too small, array element count is returned in \a vgpuCount- NVML_ERROR_INVALID_ARGUMENT       if \a vgpuCount is NULL or \a device is invalid- NVML_ERROR_NOT_SUPPORTED          if vGPU is not supported by the device- NVML_ERROR_VGPU_ECC_NOT_SUPPORTED if ECC is enabled on the device- NVML_ERROR_UNKNOWN                on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetSupportedVgpus(nvmlDevice_st device, ref uint vgpuCount, ref uint vgpuTypeIds);
         
         /// <summary>
@@ -13073,7 +13073,7 @@ namespace Kokkos
         /// NVML_ERROR_INSUFFICIENT_SIZE, with the element count of nvmlVgpuTypeId_t array required in @a vgpuCount. To query the number of vGPU types createable for the GPU, call this function with *vgpuCount = 0.
         /// The code will return NVML_ERROR_INSUFFICIENT_SIZE, or NVML_SUCCESS if no vGPU types are creatable. NVML_SUCCESS                      successful completion- NVML_ERROR_INSUFFICIENT_SIZE      \a vgpuTypeIds buffer is too small, array element count is returned in \a vgpuCount- NVML_ERROR_INVALID_ARGUMENT       if \a vgpuCount is NULL- NVML_ERROR_NOT_SUPPORTED          if vGPU is not supported by the device- NVML_ERROR_VGPU_ECC_NOT_SUPPORTED if ECC is enabled on the device- NVML_ERROR_UNKNOWN                on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetCreatableVgpus(nvmlDevice_st device, ref uint vgpuCount, ref uint vgpuTypeIds);
         
         /// <summary>
@@ -13089,7 +13089,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                   successful completion- NVML_ERROR_INVALID_ARGUMENT    if \a vgpuTypeId is invalid, or \a vgpuTypeClass is NULL- NVML_ERROR_INSUFFICIENT_SIZE   if \a size is too small- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetClass(uint vgpuTypeId, IntPtr vgpuTypeClass, ref uint size);
         
         /// <summary>
@@ -14101,7 +14101,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a name is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetName(uint vgpuTypeId, IntPtr vgpuTypeName, ref uint size);
         
         /// <summary>
@@ -14116,7 +14116,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a deviceId or \a subsystemID are NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetDeviceID(uint vgpuTypeId, ref ulong deviceID, ref ulong subsystemID);
         
         /// <summary>
@@ -14130,7 +14130,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a fbSize is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetFramebufferSize(uint vgpuTypeId, ref ulong fbSize);
         
         /// <summary>
@@ -14144,7 +14144,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a numDisplayHeads is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetNumDisplayHeads(uint vgpuTypeId, ref uint numDisplayHeads);
         
         /// <summary>
@@ -14161,7 +14161,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a xdim or \a ydim are NULL, or \a displayIndexis out of range.
         /// - NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetResolution(uint vgpuTypeId, uint displayIndex, ref uint xdim, ref uint ydim);
         
         /// <summary>
@@ -14183,7 +14183,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a vgpuTypeLicenseString is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetLicense(uint vgpuTypeId, IntPtr vgpuTypeLicenseString, uint size);
         
         /// <summary>
@@ -14197,7 +14197,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_NOT_SUPPORTED     if frame rate limiter is turned off for the vGPU type- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a frameRateLimit is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetFrameRateLimit(uint vgpuTypeId, ref uint frameRateLimit);
         
         /// <summary>
@@ -14214,7 +14214,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid or is not supported on target device,or @a vgpuInstanceCount is NULL
         /// - NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetMaxInstances(nvmlDevice_st device, uint vgpuTypeId, ref uint vgpuInstanceCount);
         
         /// <summary>
@@ -14228,7 +14228,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a vgpuInstanceCountPerVm is NULL- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuTypeGetMaxInstancesPerVm(uint vgpuTypeId, ref uint vgpuInstanceCountPerVm);
         
         /// <summary>
@@ -14248,7 +14248,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  successful completion- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a device is invalid, or \a vgpuCount is NULL- NVML_ERROR_INSUFFICIENT_SIZE  if \a size is too small- NVML_ERROR_NOT_SUPPORTED      if vGPU is not supported by the device- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetActiveVgpus(nvmlDevice_st device, ref uint vgpuCount, ref uint vgpuInstances);
         
         /// <summary>
@@ -14265,7 +14265,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vmId or \a vmIdType is NULL, or \a vgpuInstance is 0- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmID(uint vgpuInstance, IntPtr vmId, uint size, ref nvmlVgpuVmIdType vmIdType);
         
         /// <summary>
@@ -14282,7 +14282,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a uuid is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetUUID(uint vgpuInstance, IntPtr uuid, uint size);
         
         /// <summary>
@@ -14301,7 +14301,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmDriverVersion(uint vgpuInstance, IntPtr version, uint length);
         
         /// <summary>
@@ -14315,7 +14315,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a fbUsage is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetFbUsage(uint vgpuInstance, ref ulong fbUsage);
         
         /// <summary>
@@ -14329,7 +14329,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a licensed has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a licensed is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetLicenseStatus(uint vgpuInstance, ref uint licensed);
         
         /// <summary>
@@ -14343,7 +14343,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a vgpuTypeId has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a vgpuTypeId is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetType(uint vgpuInstance, ref uint vgpuTypeId);
         
         /// <summary>
@@ -14357,7 +14357,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a frameRateLimit has been set- NVML_ERROR_NOT_SUPPORTED     if frame rate limiter is turned off for the vGPU type- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a frameRateLimit is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetFrameRateLimit(uint vgpuInstance, ref uint frameRateLimit);
         
         /// <summary>
@@ -14371,7 +14371,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a encoderCapacity has been retrived- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a encoderQueryType is invalid- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetEncoderCapacity(uint vgpuInstance, ref uint encoderCapacity);
         
         /// <summary>
@@ -14385,7 +14385,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if \a encoderCapacity has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a encoderCapacity is out of range of 0-100.- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceSetEncoderCapacity(uint vgpuInstance, uint encoderCapacity);
         
         /// <summary>
@@ -14417,7 +14417,7 @@ namespace Kokkos
         /// to a timeStamp retrieved from a previous query to read utilization since the previous query. NVML_SUCCESS                 if utilization samples are successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a vgpuInstanceSamplesCount or \a sampleValType isNULL, or a sample count of 0 is passed with a non-NULL @a utilizationSamples - NVML_ERROR_INSUFFICIENT_SIZE if supplied \a vgpuInstanceSamplesCount is too small to return samples for allvGPU instances currently executing on the device
         /// - NVML_ERROR_NOT_SUPPORTED     if vGPU is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_NOT_FOUND         if sample entries are not found- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetVgpuUtilization(nvmlDevice_st device, ulong lastSeenTimeStamp, ref nvmlValueType_enum sampleValType, ref uint vgpuInstanceSamplesCount, ref nvmlVgpuInstanceUtilizationSample_st utilizationSamples);
         
         /// <summary>
@@ -14447,10 +14447,10 @@ namespace Kokkos
         /// to a timeStamp retrieved from a previous query to read utilization since the previous query. NVML_SUCCESS                 if utilization samples are successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a vgpuProcessSamplesCount or a sample count of 0 ispassed with a non-NULL @a utilizationSamples - NVML_ERROR_INSUFFICIENT_SIZE if supplied \a vgpuProcessSamplesCount is too small to return samples for allvGPU instances currently executing on the device
         /// - NVML_ERROR_NOT_SUPPORTED     if vGPU is not supported by the device- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_NOT_FOUND         if sample entries are not found- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetVgpuProcessUtilization(nvmlDevice_st device, ulong lastSeenTimeStamp, ref uint vgpuProcessSamplesCount, ref nvmlVgpuProcessUtilizationSample_st utilizationSamples);
         
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetGridLicensableFeatures_v2(nvmlDevice_st device, ref nvmlGridLicensableFeatures_st pGridLicensableFeatures);
         
         /// <summary>
@@ -14467,7 +14467,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                  if \a sessionCount, \a averageFps and \a averageLatency is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a sessionCount , or \a averageFps or \a averageLatency is NULLor @a vgpuInstance is 0.
         /// - NVML_ERROR_NOT_FOUND          if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetEncoderStats(uint vgpuInstance, ref uint sessionCount, ref uint averageFps, ref uint averageLatency);
         
         /// <summary>
@@ -14488,7 +14488,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a sessionInfo is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INSUFFICIENT_SIZE  if \a sessionCount is too small, array element count isreturned in @a sessionCount - NVML_ERROR_INVALID_ARGUMENT   if \a sessionCount is NULL, or \a vgpuInstance is 0.- NVML_ERROR_NOT_FOUND          if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetEncoderSessions(uint vgpuInstance, ref uint sessionCount, ref nvmlEncoderSessionInfo_st sessionInfo);
         
         /// <summary>
@@ -14502,7 +14502,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                  if \a fbcStats is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a vgpuInstance is 0, or \a fbcStats is NULL- NVML_ERROR_NOT_FOUND          if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetFBCStats(uint vgpuInstance, ref nvmlFBCStats_st fbcStats);
         
         /// <summary>
@@ -14522,7 +14522,7 @@ namespace Kokkos
         /// or newer fully supported devices.@note hResolution, vResolution, averageFPS and averageLatency data for a FBC session returned in @a sessionInfo may
         /// be zero if there are no new frames captured since the session started. NVML_SUCCESS                  if \a sessionInfo is fetched- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a vgpuInstance is 0, or \a sessionCount is NULL.- NVML_ERROR_NOT_FOUND          if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE  if \a sessionCount is too small, array element count is returned in \a sessionCount- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetFBCSessions(uint vgpuInstance, ref uint sessionCount, ref nvmlFBCSessionInfo_st sessionInfo);
         
         /// <summary>
@@ -14549,7 +14549,7 @@ namespace Kokkos
         /// to read utilization based on all the samples maintained by the driver's internal sample buffer. Set lastSeenTimeStamp
         /// to a timeStamp retrieved from a previous query to read utilization since the previous query. NVML_SUCCESS                 if \a utilization has been populated- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, \a utilization is NULL, or \a samplingPeriodUs is NULL- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetProcessUtilization(nvmlDevice_st device, ref nvmlProcessUtilizationSample_st utilization, ref uint processSamplesCount, ulong lastSeenTimeStamp);
         
         /// <summary>
@@ -14563,7 +14563,7 @@ namespace Kokkos
         /// &amp;tm;
         /// or newer fully supported devices. NVML_SUCCESS                 if the mode has been successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a mode is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_NOT_SUPPORTED     if the vGPU doesn't support this feature- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetAccountingMode(uint vgpuInstance, ref nvmlEnableState_enum mode);
         
         /// <summary>
@@ -14583,7 +14583,7 @@ namespace Kokkos
         /// or newer fully supported devices.To just query the maximum number of processes that can be queried, call this function with *count = 0 and
         /// pids=NULL. The return code will be NVML_ERROR_INSUFFICIENT_SIZE, or NVML_SUCCESS if list is empty.For more details see nvmlVgpuInstanceGetAccountingStats.@note In case of PID collision some processes might not be accessible before the circular buffer is full. NVML_SUCCESS                 if pids were successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a count is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_NOT_SUPPORTED     if the vGPU doesn't support this feature or accounting mode is disabled- NVML_ERROR_INSUFFICIENT_SIZE if \a count is too small (\a count is set to expected value)- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetAccountingPids(uint vgpuInstance, ref uint count, ref uint pids);
         
         /// <summary>
@@ -14604,7 +14604,7 @@ namespace Kokkos
         /// queried since they don't contribute to GPU utilization.@note In case of pid collision stats of only the latest process (that terminated last) will be reported NVML_SUCCESS                 if stats have been successfully retrieved- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a stats is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the systemor @a stats is not found
         /// - NVML_ERROR_NOT_SUPPORTED     if the vGPU doesn't support this feature or accounting mode is disabled- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetAccountingStats(uint vgpuInstance, uint pid, ref nvmlAccountingStats_st stats);
         
         /// <summary>
@@ -14624,7 +14624,7 @@ namespace Kokkos
         /// is too large to fit in the supplied buffer, the function returns NVML_ERROR_INSUFFICIENT_SIZE with the size needed
         /// in @a bufferSize. NVML_SUCCESS                   vGPU metadata structure was successfully returned- NVML_ERROR_INSUFFICIENT_SIZE   vgpuMetadata buffer is too small, required size is returned in \a bufferSize- NVML_ERROR_INVALID_ARGUMENT    if \a bufferSize is NULL or \a vgpuInstance is 0; if \a vgpuMetadata is NULL and the value of \a bufferSize is not 0.- NVML_ERROR_NOT_FOUND           if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlVgpuInstanceGetMetadata(uint vgpuInstance, ref nvmlVgpuMetadata_st vgpuMetadata, ref uint bufferSize);
         
         /// <summary>
@@ -14640,7 +14640,7 @@ namespace Kokkos
         /// The caller passes in a buffer via @a pgpuMetadata, with the size of the buffer in @a bufferSize. If the @a pgpuMetadata structure is too large to fit in the supplied buffer, the function returns NVML_ERROR_INSUFFICIENT_SIZE with the size needed
         /// in @a bufferSize. NVML_SUCCESS                   GPU metadata structure was successfully returned- NVML_ERROR_INSUFFICIENT_SIZE   pgpuMetadata buffer is too small, required size is returned in \a bufferSize- NVML_ERROR_INVALID_ARGUMENT    if \a bufferSize is NULL or \a device is invalid; if \a pgpuMetadata is NULL and the value of \a bufferSize is not 0.- NVML_ERROR_NOT_SUPPORTED       vGPU is not supported by the system- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlDeviceGetVgpuMetadata(nvmlDevice_st device, ref nvmlVgpuPgpuMetadata_st pgpuMetadata, ref uint bufferSize);
         
         /// <summary>
@@ -14657,7 +14657,7 @@ namespace Kokkos
         /// (see nvmlVgpuPgpuCompatibilityLimitCode_t for details).Note: vGPU compatibility does not take into account dynamic capacity conditions that may limit a system's ability to
         /// boot a given vGPU or associated VM. NVML_SUCCESS                   vGPU metadata structure was successfully returned- NVML_ERROR_INVALID_ARGUMENT    if \a vgpuMetadata or \a pgpuMetadata or \a bufferSize are NULL- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlGetVgpuCompatibility(ref nvmlVgpuMetadata_st vgpuMetadata, ref nvmlVgpuPgpuMetadata_st pgpuMetadata, ref nvmlVgpuPgpuCompatibility_st compatibilityInfo);
         
         /// <summary>
@@ -14671,7 +14671,7 @@ namespace Kokkos
         /// If the preset range has not been overridden by nvmlSetVgpuVersion, both ranges are the same.The caller passes pointers to the following nvmlVgpuVersion_t structures, into which the NVIDIA vGPU Manager writes the ranges:1. @a supported structure that represents the preset range of vGPU versions supported by the NVIDIA vGPU Manager.
         /// 2. @a current structure that represents the range of supported vGPU versions set by an administrator. By default, this range is the same as the preset range. NVML_SUCCESS                 The vGPU version range structures were successfully obtained.- NVML_ERROR_NOT_SUPPORTED     The API is not supported.- NVML_ERROR_INVALID_ARGUMENT  The \a supported parameter or the \a current parameter is NULL.- NVML_ERROR_UNKNOWN           An error occurred while the data was being fetched.
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlGetVgpuVersion(ref nvmlVgpuVersion_st supported, ref nvmlVgpuVersion_st current);
         
         /// <summary>
@@ -14688,7 +14688,7 @@ namespace Kokkos
         /// vGPU version that is the maximum value in the overlapping range.
         /// 4. No VMs must be running on the host when this function is called. If a VM is running on the host, the call to this function fails. NVML_SUCCESS                 The preset range of supported vGPU versions was successfully overridden.- NVML_ERROR_NOT_SUPPORTED     The API is not supported.- NVML_ERROR_IN_USE            The range was not overridden because a VM is running on the host.- NVML_ERROR_INVALID_ARGUMENT  The \a vgpuVersion parameter specifies a range that is outside the range supported by the NVIDIA vGPU Manager or if \a vgpuVersion is NULL.
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlSetVgpuVersion(ref nvmlVgpuVersion_st vgpuVersion);
         
         /// <summary>
@@ -14699,7 +14699,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products. NVML_SUCCESS                 if \a deviceCount has been set- NVML_ERROR_INVALID_ARGUMENT  if \a deviceCount is NULL
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlGetBlacklistDeviceCount(ref uint deviceCount);
         
         /// <summary>
@@ -14715,7 +14715,7 @@ namespace Kokkos
         /// <remarks>
         /// For all products.Valid indices are derived from the @a deviceCount returned by nvmlGetBlacklistDeviceCount(). For example, if \a deviceCount is 2 the valid indicesare 0 and 1, corresponding to GPU 0 and GPU 1. NVML_SUCCESS                  if \a device has been set- NVML_ERROR_INVALID_ARGUMENT   if \a index is invalid or \a info is NULL
         /// </remarks>
-        [DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
         public static extern nvmlReturn_enum nvmlGetBlacklistDeviceInfoByIndex(uint index, ref nvmlBlacklistDeviceInfo_st info);
     
     }

@@ -336,7 +336,7 @@ namespace System
 
             if(_length <= destination.Length)
             {
-                Mem.Memmove(ref destination._pointer.Value, ref _pointer.Value, _length);
+                Mem.move(ref destination._pointer.Value, ref _pointer.Value, _length);
             }
             else
             {
@@ -359,7 +359,7 @@ namespace System
 
             if(_length <= destination.Length)
             {
-                Mem.Memmove(ref destination._pointer.Value, ref _pointer.Value, _length);
+                Mem.move(ref destination._pointer.Value, ref _pointer.Value, _length);
                 retVal = true;
             }
 
@@ -459,7 +459,7 @@ namespace System
             }
 
             T[] destination = new T[_length];
-            Mem.Memmove(ref GetArrayDataReference(destination), ref _pointer.Value, _length);
+            Mem.move(ref GetArrayDataReference(destination), ref _pointer.Value, _length);
 
             return destination;
         }

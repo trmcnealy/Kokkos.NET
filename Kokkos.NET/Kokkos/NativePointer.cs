@@ -24,7 +24,7 @@ namespace Kokkos
 
         private bool _mustDeallocate;
 
-        private ExecutionSpaceKind _executionSpace;
+        private readonly ExecutionSpaceKind _executionSpace;
 
 #if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -54,6 +54,12 @@
     <ClCompile Include="Utilities\GpuMemoryMap.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="Analyzes\SpatialMethods.cpp">
+      <Filter>Analyzes</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\MemoryCopy.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KokkosAPI.hpp" />
@@ -115,6 +121,15 @@
       <Filter>Analyzes</Filter>
     </ClInclude>
     <ClInclude Include="Analyzes\CartographicMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\SpatialMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\GeoJson.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\Variant.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
   </ItemGroup>

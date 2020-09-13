@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\Versioning.props" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -18,12 +18,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Kokkos.NET" Version="0.7.0" />
-    <PackageReference Include="RuntimeGeneration" Version="1.1.0" />
+    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
+    <ProjectReference Include="..\..\Utilities\RuntimeGeneration\RuntimeGeneration\RuntimeGeneration.csproj" />
+    <ProjectReference Include="..\Kokkos.NET\Kokkos.NET.csproj" />
   </ItemGroup>
 
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="cd /D &quot;D:\TFS_Sources\Github\Compilation\trmcnealy\Kokkos.NET\Kokkos.NET.Test&quot; &amp; dotnet restore" />
+    <Exec Command="dotnet restore" />
   </Target>
 
 </Project>

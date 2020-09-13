@@ -7,8 +7,6 @@
 
 #include <Kokkos_Core.hpp>
 
-#define PrintValue(X) System::out << #X ":" << X << System::endl
-
 namespace Kokkos
 {
     template<>

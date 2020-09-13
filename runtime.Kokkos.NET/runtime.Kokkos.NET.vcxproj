@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\Versioning.props" />
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -15,7 +15,7 @@
     <None Include=".clang-format" />
     <None Include="runtime.Kokkos.NET.nuspec">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NuGet.exe pack %(FullPath) -Properties Configuration=$(Configuration) -OutputDirectory C:\AssemblyCache\_packages</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NuGet.exe pack %(FullPath) -Properties $(NUGET_PROPERTIES) -OutputDirectory C:\AssemblyCache\_packages</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </Command>
       <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
@@ -30,6 +30,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Analyzes\InterpolationMethods.cpp" />
+    <ClCompile Include="Analyzes\SpatialMethods.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosApi.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp" />
@@ -44,16 +45,20 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="Utilities\MemoryCopy.cpp" />
     <ClCompile Include="Utilities\MemoryMapped.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analyzes\CartographicMethods.hpp" />
+    <ClInclude Include="Analyzes\GeoJson.hpp" />
     <ClInclude Include="Analyzes\InterpolationMethods.hpp" />
     <ClInclude Include="Analyzes\kMeansClustering.hpp" />
     <ClInclude Include="Analyzes\kNearestNeighbor.hpp" />
     <ClInclude Include="Analyzes\Kriging.hpp" />
     <ClInclude Include="Analyzes\Linq.hpp" />
     <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp" />
+    <ClInclude Include="Analyzes\SpatialMethods.hpp" />
+    <ClInclude Include="Analyzes\Variant.hpp" />
     <ClInclude Include="KokkosAPI.hpp" />
     <ClInclude Include="KokkosLapack\gelq2.hpp" />
     <ClInclude Include="KokkosLapack\KokkosLapack.config.h" />
@@ -113,7 +118,7 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <AdditionalIncludeDirectories>../../BuildTools;./;D:/TFS_Sources/ManagedProjects/Misc/EngineeringAnalysisStudio/2 Service Layer/EAS.NumericalMethods.Native;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-shared -gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
+      <AdditionalOptions>-shared -gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fno-short-enums -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -268,7 +273,7 @@
       <UndefinePreprocessorDefinitions>_MT;_MSC_VER</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>NDEBUG;_NDEBUG;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;MBCS;_MBCS</PreprocessorDefinitions>
       <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>../../BuildTools;./;D:/TFS_Sources/ManagedProjects/Misc/EngineeringAnalysisStudio/2 Service Layer/EAS.NumericalMethods.Native;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../BuildTools;./;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>-Xcuda-ptxas -w -w -O3 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -ftls-model=global-dynamic -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp -Xclang -flto-visibility-public-std </AdditionalOptions>
       <DebugInformationFormat>
@@ -369,7 +374,7 @@
       <SuppressStartupBanner />
     </Lib>
     <PostBuildEvent>
-      <Command>C:\PROGRA~2\NuGet\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties Configuration=$(Configuration);Platform=$(Platform);Version=$(RUNTIME_KOKKOS_VERSION) -OutputDirectory C:\AssemblyCache\_packages</Command>
+      <Command>C:\PROGRA~2\NuGet\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties $(NUGET_PROPERTIES) -OutputDirectory C:\AssemblyCache\_packages</Command>
     </PostBuildEvent>
     <CustomBuild>
       <Command>

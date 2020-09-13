@@ -13,6 +13,23 @@ namespace System.Runtime.Versioning
     }
 }
 
+namespace System.Runtime.InteropServices
+{
+    [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+#if SYSTEM_PRIVATE_CORELIB
+    public
+#else
+    internal
+#endif
+        sealed class SuppressGCTransitionAttribute : Attribute
+    {
+        public SuppressGCTransitionAttribute()
+        {
+        }
+    }
+}
+
+
 [AttributeUsage(AttributeTargets.Method)]
 public sealed class CallIndirectAttribute : Attribute
 {

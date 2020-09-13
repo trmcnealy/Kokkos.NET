@@ -135,7 +135,7 @@ namespace Kokkos
 
             //Kernel32.AddToPath(nativeLibraryPath);
 #if DEBUG
-            Console.WriteLine("nativeLibraryPath: " + nativeLibraryPath);
+            Console.WriteLine("nativeLibraryPath: " + KokkosCoreLibraryName);
 #endif
             OpenMpHandle = PlatformApi.NativeLibrary.Load(OpenMpLibraryName, out ulong _);
 #if DEBUG

@@ -3,52 +3,53 @@
 #include "KokkosAPI.hpp"
 
 #include <cuda.h>
+#include <cuda_runtime_api.h>
 
 #include <iostream>
 
-__inline static void checkDrvError(const CUresult res, const char* tok, const char* file, const unsigned line)
+enum cnmemStatus
 {
-    if(res != CUDA_SUCCESS)
-    {
-        const char* errStr = nullptr;
-        (void)cuGetErrorString(res, &errStr);
-        std::cerr << file << ':' << line << ' ' << tok << "failed (" << (unsigned)res << "): " << errStr << std::endl;
-        abort();
-    }
-}
-
-#define CHECK_DRV(x) checkDrvError(x, #x, __FILE__, __LINE__);
-
-class MMAPAllocation
-{
-public:
-    size_type                    sz;
-    CUmemGenericAllocationHandle hdl;
-    CUmemAccessDesc              accessDesc;
-    CUdeviceptr                  ptr;
-
-    MMAPAllocation(const size_type size, const int dev = 0)
-    {
-        size_type           aligned_sz;
-        CUmemAllocationProp prop = {};
-        prop.type                = CU_MEM_ALLOCATION_TYPE_PINNED;
-        prop.location.type       = CU_MEM_LOCATION_TYPE_DEVICE;
-        prop.location.id         = dev;
-        accessDesc.location      = prop.location;
-        accessDesc.flags         = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
-
-        CHECK_DRV(cuMemGetAllocationGranularity(&aligned_sz, &prop, CU_MEM_ALLOC_GRANULARITY_MINIMUM));
-        sz = ((size + aligned_sz - 1) / aligned_sz) * aligned_sz;
-
-        CHECK_DRV(cuMemAddressReserve(&ptr, sz, 0ULL, 0ULL, 0ULL));
-        CHECK_DRV(cuMemCreate(&hdl, sz, &prop, 0));
-        CHECK_DRV(cuMemMap(ptr, sz, 0ULL, hdl, 0ULL));
-        CHECK_DRV(cuMemSetAccess(ptr, sz, &accessDesc, 1ULL));
-    }
-    ~MMAPAllocation()
-    {
-        CHECK_DRV(cuMemUnmap(ptr, sz));
-        CHECK_DRV(cuMemAddressFree(ptr, sz));
-        CHECK_DRV(cuMemRelease(hdl));
-    }
+    CNMEM_STATUS_SUCCESS = 0,
+    CNMEM_STATUS_CUDA_ERROR,
+    CNMEM_STATUS_INVALID_ARGUMENT,
+    CNMEM_STATUS_NOT_INITIALIZED,
+    CNMEM_STATUS_OUT_OF_MEMORY,
+    CNMEM_STATUS_UNKNOWN_ERROR
 };
+
+enum cnmemManagerFlags
+{
+    CNMEM_FLAGS_DEFAULT      = 0,
+    CNMEM_FLAGS_CANNOT_GROW  = 1,
+    CNMEM_FLAGS_CANNOT_STEAL = 2,
+    CNMEM_FLAGS_MANAGED      = 4,
+};
+
+struct cnmemDevice
+{
+    int           device;
+    std::size_t   size;
+    int           numStreams;
+    cudaStream_t* streams;
+    std::size_t*  streamSizes;
+};
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemInit(const int numDevices, const cnmemDevice* devices, unsigned flags);
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemFinalize();
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRetain();
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRelease();
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRegisterStream(cudaStream_t stream);
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cudaStream_t stream);
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemFree(void* ptr, cudaStream_t stream);
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(std::size_t* freeMem, std::size_t* totalMem, cudaStream_t stream);
+
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemPrintMemoryState(FILE* file, cudaStream_t stream);
+
+KOKKOS_NET_API_EXTERNC const char* cnmemGetErrorString(cnmemStatus status);

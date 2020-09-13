@@ -20,11 +20,10 @@ namespace System
     // around lack of first class support for byref fields in C# and IL. The JIT and
     // type loader has special handling for it that turns it into a thin wrapper around ref T.
 
-    public static unsafe class Mem
+    internal static unsafe class Mem
     {
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
-        public static extern void Memmove(void* dest,
+        [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport("Kernel32.dll", EntryPoint = "RtlMoveMemory", SetLastError = false)]
+        public static extern void move(void* dest,
                                           void* src,
                                           int   size);
 
@@ -37,11 +36,11 @@ namespace System
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
 #endif
-        public static void Memmove<T>(ref T destination,
+        public static void move<T>(ref T destination,
                                       ref T source,
                                       ulong elementCount)
         {
-            Memmove(Unsafe.AsPointer(ref destination), Unsafe.AsPointer(ref source), (int)elementCount * Unsafe.SizeOf<T>());
+            move(Unsafe.AsPointer(ref destination), Unsafe.AsPointer(ref source), (int)elementCount * Unsafe.SizeOf<T>());
         }
     }
 }
@@ -79,7 +78,7 @@ namespace Kokkos
 
         public MemoryMapped(string    filename,
                             ulong     mappedBytes = (ulong)MapRange.WholeFile,
-                            CacheHint hint        = CacheHint.Normal)
+                            CacheHint hint        = CacheHint.SequentialScan)
         {
             if(!File.Exists(filename))
             {
@@ -257,14 +256,38 @@ namespace Kokkos
             [NativeCall(LibraryName, "Remap", true)]
             public static RemapDelegate Remap;
 
-    #if NETSTANDARD
+#if NETSTANDARD
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
             static Native()
             {
-                RuntimeCil.Generate(typeof(MemoryMapped).Assembly);
+                //RuntimeCil.Generate(typeof(MemoryMapped).Assembly);
+
+                ulong errorCode;
+
+                Create = Marshal.GetDelegateForFunctionPointer<CreateDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Create", out errorCode));
+
+                CreateAndOpen = Marshal.GetDelegateForFunctionPointer<CreateAndOpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "CreateAndOpen", out errorCode));
+
+                Destory = Marshal.GetDelegateForFunctionPointer<DestoryDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Destory", out errorCode));
+
+                Open = Marshal.GetDelegateForFunctionPointer<OpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Open", out errorCode));
+
+                Close = Marshal.GetDelegateForFunctionPointer<CloseDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Close", out errorCode));
+
+                At = Marshal.GetDelegateForFunctionPointer<AtDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "At", out errorCode));
+
+                GetData = Marshal.GetDelegateForFunctionPointer<GetDataDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "GetData", out errorCode));
+
+                IsValid = Marshal.GetDelegateForFunctionPointer<IsValidDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "IsValid", out errorCode));
+
+                Size = Marshal.GetDelegateForFunctionPointer<SizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Size", out errorCode));
+
+                MappedSize = Marshal.GetDelegateForFunctionPointer<MappedSizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "MappedSize", out errorCode));
+
+                Remap = Marshal.GetDelegateForFunctionPointer<RemapDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Remap", out errorCode));
             }
         }
     }
