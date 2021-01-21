@@ -28,7 +28,10 @@ namespace KokkosDotNET
 
         struct type_info_less
         {
-            bool operator()(const std::type_info* a, const std::type_info* b) { return a->before(*b); }
+            bool operator()(const std::type_info* a, const std::type_info* b)
+            {
+                return a->before(*b);
+            }
         };
 
         template<typename BuilderOpT>

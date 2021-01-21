@@ -35,9 +35,10 @@ namespace Microsoft.Data.Analysis
                                                            int  length)
         {
             List<object> ret = new List<object>();
+            long index = startIndex;
             while (ret.Count < length)
             {
-                ret.Add(_dataBuffer[startIndex++]);
+                ret.Add(_dataBuffer[index++]);
             }
             return ret;
         }

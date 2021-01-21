@@ -15,7 +15,7 @@ namespace Kokkos
 {
     public sealed class MemoryMappedStream : Stream
     {
-        private readonly IntPtr _content;
+        private readonly nint _content;
         private readonly long   _length;
 
         private long _position;
@@ -25,7 +25,7 @@ namespace Kokkos
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 #endif
-        public MemoryMappedStream(IntPtr content,
+        public MemoryMappedStream(nint content,
                                   long   length)
         {
             _content = content;

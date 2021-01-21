@@ -1,0 +1,112 @@
+
+
+cpp_quote( "namespace Kokkos {" )
+cpp_quote( "template <typename TDataType> struct __declspec(uuid(\"D21E4706-D308-448A-B776-35EDADF609E2\")) IVector" )
+cpp_quote( "{" )
+    cpp_quote( "virtual void assign(UInt64 n, in TDataType val) = 0;")
+    cpp_quote( "virtual ref TDataType back() = 0;")
+    cpp_quote( "virtual IntPtr begin() = 0;")
+    cpp_quote( "virtual void clear() = 0;")
+    cpp_quote( "virtual IntPtr data() = 0;")
+    cpp_quote( "virtual void device_to_host() = 0;")
+    cpp_quote( "virtual bool empty() = 0;")
+    cpp_quote( "virtual IntPtr end() = 0;")
+    cpp_quote( "virtual IntPtr find(TDataType val) = 0;")
+    cpp_quote( "virtual ref TDataType front() = 0;")
+    cpp_quote( "virtual void host_to_device() = 0;")
+    cpp_quote( "virtual IntPtr insert(IntPtr it, in TDataType val) = 0;")
+    cpp_quote( "virtual IntPtr insert(IntPtr it, UInt64 count, ref const TDataType val) = 0;")
+    cpp_quote( "virtual bool is_allocated() = 0;")
+    cpp_quote( "virtual bool is_sorted() = 0;")
+    cpp_quote( "virtual UInt64 lower_bound(ref const UInt64 start, ref const UInt64 theEnd, ref const TDataType comp_val) = 0;")
+    cpp_quote( "virtual UInt64 max_size() = 0;")
+    cpp_quote( "virtual void on_device() = 0;")
+    cpp_quote( "virtual void on_host() = 0;")
+    cpp_quote( "virtual void pop_back() = 0;")
+    cpp_quote( "virtual void push_back(TDataType val) = 0;")
+    cpp_quote( "virtual void reserve(UInt64  n) = 0;")
+    cpp_quote( "virtual void resize(UInt64  n) = 0;")
+    cpp_quote( "virtual void resize(UInt64 n, ref const TDataType val) = 0;")
+    cpp_quote( "virtual void set_overallocation(Single extra) = 0;")
+    cpp_quote( "virtual UInt64 size() = 0;")
+    cpp_quote( "virtual UInt64 span() = 0;")
+cpp_quote( "};" )
+cpp_quote( "}" )
+
+
+namespace Kokkos
+{
+    [exclusiveto(Vector)]
+    interface IVector<TDataType>
+    {
+        void assign(UInt64 n, in TDataType val);
+        ref TDataType back();
+        IntPtr begin();
+        void clear();
+        IntPtr data();
+        void device_to_host();
+        bool empty();
+        IntPtr end();
+        IntPtr find(TDataType val);
+        ref TDataType front();
+        void host_to_device();
+        IntPtr insert(IntPtr it, in TDataType val);
+        IntPtr insert(IntPtr it, UInt64 count, ref const TDataType val);
+        bool is_allocated();
+        bool is_sorted();
+        UInt64 lower_bound(ref const UInt64 start, ref const UInt64 theEnd, ref const TDataType comp_val);
+        UInt64 max_size();
+        void on_device();
+        void on_host();
+        void pop_back();
+        void push_back(TDataType val);
+        void reserve(UInt64  n);
+        void resize(UInt64  n);
+        void resize(UInt64 n, ref const TDataType val);
+        void set_overallocation(Single extra);
+        UInt64 size();
+        UInt64 span();
+    }
+
+    [interface_name("IVector", D21E4706-D308-448A-B776-35EDADF609E2)]
+    runtimeclass Vector
+    {
+        static IVector<TDataType> Create(in IVector<TDataType> vector);
+        static IVector<TDataType> Create(Int32 n, TDataType value);
+        static IVector<TDataType> Create();
+
+        
+        //ref TDataType operator_brackets(Int32    i);
+        //ref TDataType operator(Int32    i);
+
+        void assign(UInt64 n, in TDataType val);
+        ref TDataType back();
+        IntPtr begin();
+        void clear();
+        IntPtr data();
+        void device_to_host();
+        bool empty();
+        IntPtr end();
+        IntPtr find(TDataType val);
+        ref TDataType front();
+        void host_to_device();
+        IntPtr insert(IntPtr it, in TDataType val);
+        IntPtr insert(IntPtr it, UInt64 count, ref const TDataType val);
+        bool is_allocated();
+        bool is_sorted();
+        UInt64 lower_bound(ref const UInt64 start, ref const UInt64 theEnd, ref const TDataType comp_val);
+        UInt64 max_size();
+        void on_device();
+        void on_host();
+        void pop_back();
+        void push_back(TDataType val);
+        void reserve(UInt64  n);
+        void resize(UInt64  n);
+        void resize(UInt64 n, ref const TDataType val);
+        void set_overallocation(Single extra);
+        UInt64 size();
+        UInt64 span();
+    }
+
+
+}

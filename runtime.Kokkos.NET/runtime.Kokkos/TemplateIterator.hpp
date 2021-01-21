@@ -18,13 +18,25 @@ namespace KokkosDotNET
     public:
         TemplateIterator(TemplateManager<TypeSeq, BaseT, ObjectT>& m, typename std::vector<Teuchos::RCP<BaseT>>::iterator p) : manager(&m), object_iterator(p) {}
 
-        bool operator==(const TemplateIterator& t) const { return object_iterator == t.objectIterator; }
+        bool operator==(const TemplateIterator& t) const
+        {
+            return object_iterator == t.objectIterator;
+        }
 
-        bool operator!=(const TemplateIterator& t) const { return object_iterator != t.object_iterator; }
+        bool operator!=(const TemplateIterator& t) const
+        {
+            return object_iterator != t.object_iterator;
+        }
 
-        typename TemplateIterator<TypeSeq, BaseT, ObjectT>::reference operator*() const { return *(*object_iterator); }
+        typename TemplateIterator<TypeSeq, BaseT, ObjectT>::reference operator*() const
+        {
+            return *(*object_iterator);
+        }
 
-        typename TemplateIterator<TypeSeq, BaseT, ObjectT>::pointer operator->() const { return &(*(*object_iterator)); }
+        typename TemplateIterator<TypeSeq, BaseT, ObjectT>::pointer operator->() const
+        {
+            return &(*(*object_iterator));
+        }
 
         TemplateIterator& operator++()
         {
@@ -39,7 +51,10 @@ namespace KokkosDotNET
             return tmp;
         }
 
-        Teuchos::RCP<BaseT> rcp() const { return *object_iterator; }
+        Teuchos::RCP<BaseT> rcp() const
+        {
+            return *object_iterator;
+        }
     };
 
     template<typename TypeSeq, typename BaseT, typename ObjectT>
@@ -50,15 +65,29 @@ namespace KokkosDotNET
         typename std::vector<Teuchos::RCP<BaseT>>::const_iterator object_iterator;
 
     public:
-        ConstTemplateIterator(const TemplateManager<TypeSeq, BaseT, ObjectT>& m, typename std::vector<Teuchos::RCP<BaseT>>::const_iterator p) : manager(&m), object_iterator(p) {}
+        ConstTemplateIterator(const TemplateManager<TypeSeq, BaseT, ObjectT>& m, typename std::vector<Teuchos::RCP<BaseT>>::const_iterator p) : manager(&m), object_iterator(p)
+        {
+        }
 
-        bool operator==(const ConstTemplateIterator& t) const { return object_iterator == t.objectIterator; }
+        bool operator==(const ConstTemplateIterator& t) const
+        {
+            return object_iterator == t.objectIterator;
+        }
 
-        bool operator!=(const ConstTemplateIterator& t) const { return object_iterator != t.object_iterator; }
+        bool operator!=(const ConstTemplateIterator& t) const
+        {
+            return object_iterator != t.object_iterator;
+        }
 
-        const typename ConstTemplateIterator<TypeSeq, BaseT, ObjectT>::reference operator*() const { return *(*object_iterator); }
+        const typename ConstTemplateIterator<TypeSeq, BaseT, ObjectT>::reference operator*() const
+        {
+            return *(*object_iterator);
+        }
 
-        const typename ConstTemplateIterator<TypeSeq, BaseT, ObjectT>::pointer operator->() const { return &(*(*object_iterator)); }
+        const typename ConstTemplateIterator<TypeSeq, BaseT, ObjectT>::pointer operator->() const
+        {
+            return &(*(*object_iterator));
+        }
 
         ConstTemplateIterator& operator++()
         {
@@ -73,6 +102,9 @@ namespace KokkosDotNET
             return tmp;
         }
 
-        Teuchos::RCP<BaseT> rcp() const { return *object_iterator; }
+        Teuchos::RCP<BaseT> rcp() const
+        {
+            return *object_iterator;
+        }
     };
 }

@@ -16,34 +16,37 @@
     <Filter Include="KokkosLapack">
       <UniqueIdentifier>{88edb994-b1f6-4d5e-9a4b-8da0c3954fe5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Analyzes\TODO">
+      <UniqueIdentifier>{6bf4e839-e680-4ae1-b129-813b875f08b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="InMemoryData">
+      <UniqueIdentifier>{fa9126b0-22de-4f76-96d4-5ea9249f1b4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="COM">
+      <UniqueIdentifier>{809bf1c9-ae7a-4748-b12a-9cbd1557876d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Interop">
+      <UniqueIdentifier>{54987747-e5c2-411f-87f6-be49f2a166ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="runtime.Kokkos\Extensions">
+      <UniqueIdentifier>{06f3a763-9429-4dc1-9a77-89363f4eb001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Analyzes\Trees">
+      <UniqueIdentifier>{7b92f2c0-225d-4d41-afea-78f6603a0d6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Geometry">
+      <UniqueIdentifier>{342968aa-69aa-43fd-a7d0-87e6506f2776}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="runtime.Kokkos\Source Files">
+      <UniqueIdentifier>{30cb9d38-9c27-4a4e-b2ea-c6d1835f3271}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="runtime.Kokkos\Header Files">
+      <UniqueIdentifier>{a3b0234b-2741-4f0b-907d-884705857be3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\ViewProperties.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\ViewFunctions.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClCompile>
-    <ClCompile Include="runtime.Kokkos\ViewConvert.cpp">
-      <Filter>runtime.Kokkos</Filter>
     </ClCompile>
     <ClCompile Include="Utilities\MemoryMapped.cpp">
       <Filter>Utilities</Filter>
@@ -60,32 +63,68 @@
     <ClCompile Include="Utilities\MemoryCopy.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="TODO\BKTIndex.cpp">
+      <Filter>Analyzes\TODO</Filter>
+    </ClCompile>
+    <ClCompile Include="TODO\KDTIndex.cpp">
+      <Filter>Analyzes\TODO</Filter>
+    </ClCompile>
+    <ClCompile Include="Analyzes\SpecialMethods.cpp">
+      <Filter>Analyzes</Filter>
+    </ClCompile>
+    <ClCompile Include="InMemoryData\InMemory.cpp">
+      <Filter>InMemoryData</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\GpuCsvReader.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\InterprocessMemory.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosViews.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\VectorSpecializations.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewConvert.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewFunctions.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewProperties.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewSpecializations.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\ViewRcpConvert.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosHwloc.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KokkosAPI.hpp" />
-    <ClInclude Include="runtime.Kokkos\ViewTypes.hpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\KokkosApi.h">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\TemplateManager.hpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\TemplateManager_Def.hpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\TemplateIterator.hpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp">
-      <Filter>runtime.Kokkos</Filter>
-    </ClInclude>
     <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp">
       <Filter>Analyzes</Filter>
-    </ClInclude>
-    <ClInclude Include="runtime.Kokkos\Extensions.hpp">
-      <Filter>runtime.Kokkos</Filter>
     </ClInclude>
     <ClInclude Include="Analyzes\Linq.hpp">
       <Filter>Analyzes</Filter>
@@ -123,18 +162,187 @@
     <ClInclude Include="Analyzes\CartographicMethods.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
-    <ClInclude Include="Analyzes\SpatialMethods.hpp">
-      <Filter>Analyzes</Filter>
-    </ClInclude>
     <ClInclude Include="Analyzes\GeoJson.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
     <ClInclude Include="Analyzes\Variant.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
+    <ClInclude Include="Analyzes\SpatialMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\BKTIndex.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\BKTParameterDefinitionList.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\BKTree.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTIndex.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTParameterDefinitionList.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTree.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\KNearestNeighborhoodGraph.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\NeighborhoodGraph.h">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\Distance.hxx">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\Refine.hxx">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="TODO\TPtree.hxx">
+      <Filter>Analyzes\TODO</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\SpecialMethods.h">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\JacobiEigenvalue.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\kMeansClustering2.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\minpack.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\ReverseCuthillMckee.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterp2D.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterpNd.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterp1D.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\BesselMethods.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="COMWrappers.hpp">
+      <Filter>COM</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>COM</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\KDtree.hpp">
+      <Filter>Analyzes</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\IndexOf.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\VectorOps.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\MatrixOps.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\Solvers.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\SparseOps.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
+    <ClInclude Include="Analyzes\Trees\KDtree.hpp">
+      <Filter>Analyzes\Trees</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Point.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Sphere.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\BoundingBox.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Box.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\Vector.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\ObjectBoundingBox.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Geometry\ObjectBoundingBoxHierarchy.hpp">
+      <Filter>Geometry</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\InMemoryLibraryLoader.hpp">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\InterprocessMemory.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\KokkosApi.h">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\KokkosIVector.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\KokkosVector.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Ratio.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateIterator.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateManager.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\TemplateManager_Def.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\ViewTypes.hpp">
+      <Filter>runtime.Kokkos\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include="runtime.Kokkos.NET.nuspec" />
+    <None Include="TODO\Kernel.cu">
+      <Filter>Analyzes\TODO</Filter>
+    </None>
+    <None Include="ClassDiagram.cd" />
+    <None Include="runtime.Kokkos.NET.rgs">
+      <Filter>COM</Filter>
+    </None>
+    <None Include="cpp.hint" />
+    <None Include="runtime.Kokkos.NET.targets" />
+    <None Include="E:\TFS_Sources\trmcnealy\trmcnealy.github.io\assets\nindra.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="runtime.Kokkos.NET.manifest">
+      <Filter>COM</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="runtime.Kokkos.NET.rc">
+      <Filter>COM</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MIDL Include="Interop\Interfaces.idl">
+      <Filter>Interop</Filter>
+    </MIDL>
   </ItemGroup>
 </Project>

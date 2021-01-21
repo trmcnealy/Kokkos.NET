@@ -7,6 +7,7 @@
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
+      <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET" commit="57a32ada206125f9ffdc0bbc758f45f0604bf700" />
     <icon>nindra.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Kokkos .NET</description>
@@ -14,26 +15,65 @@
     <copyright>© Timothy R. McNealy</copyright>
     <tags></tags>
     <dependencies>
-      <group targetFramework="netcoreapp3.1">
-        <dependency id="native.Kokkos.NET"
-                    version="$RUNTIME_KOKKOS$"/>
-        <dependency id="PlatformApi"
-                    version="$PLATFORMAPI$"/>
-        <dependency id="RuntimeGeneration"
-                    version="$RUNTIMEGENERATION$"/>
-        <dependency id="NvAPIWrapper.Net"
-                    version="0.8.0.98"/>
+      <group targetFramework="net5.0">
+          <dependency id="Microsoft.Data.Analysis" version="0.5.0"/>
+          <dependency id="MSMPIDIST" version="10.1.12498.18"/>
+          <dependency id="native.Kokkos.NET" version="$RUNTIME_KOKKOS$"/>
+          <dependency id="NvAPIWrapper.Net" version="0.8.0.98"/>
+          <dependency id="PlatformApi" version="$PLATFORMAPI$"/>
+          <dependency id="RuntimeGeneration" version="$RUNTIMEGENERATION$"/>
+          <dependency id="UnManagedCil" version="$UNMANAGED$"/>
       </group>
     </dependencies>
+
+    <!--<platforms>-->
+      <!--<platform targetFramework="net5.0-windows"
+                platformVersion="10.0.19042.508"
+                platformMinimumVersion="10.0.19042.508" />-->
+
+      <!--<platform targetFramework="net5.0-wasm"
+                platformVersion="14.0"
+                platformMinimumVersion="14.0" />-->
+
+      <!--<platform targetFramework="net6.0-ios14"
+                platformVersion="14.0"
+                platformMinimumVersion="14.0" />-->
+    <!--</platforms>-->
   </metadata>
   <files>
     <file src="..\..\trmcnealy.github.io\Assets\nindra.png"
           target=""/>
 
-    <file src="..\bin\$Configuration$\netcoreapp3.1\Kokkos.NET.dll"
-          target="lib\netcoreapp3.1\Kokkos.NET.dll"/>
 
-    <file src="..\bin\$Configuration$\netcoreapp3.1\Kokkos.NET.pdb"
-          target="lib\netcoreapp3.1\Kokkos.NET.pdb"/>
+    <!--<file src="..\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
+          target="lib\ref\net5.0"/>-->
+
+    <file src="..\bin\Release\AnyCPU\net5.0\Kokkos.NET.pdb"
+          target="lib\net5.0"/>
+
+    <file src="..\bin\Release\AnyCPU\net5.0\Kokkos.NET.dll"
+          target="lib\net5.0"/>
+
+
+
+
+          
+    <!--<file src="Kokkos.NET.props"
+          target="build"/>
+
+    <file src="Kokkos.NET.targets"
+          target="build"/>
+          
+    <file src="..\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
+          target="ref\net5.0"/>
+
+    <file src="..\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
+          target="lib\net5.0"/>
+          
+    <file src="..\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
+          target="lib\net5.0\Debug"/>
+
+    <file src="..\bin\Release\AnyCPU\net5.0\Kokkos.NET.dll"
+          target="lib\net5.0\Release"/>-->
   </files>
 </package>

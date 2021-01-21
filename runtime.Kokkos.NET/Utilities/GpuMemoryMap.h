@@ -28,10 +28,10 @@ enum cnmemManagerFlags
 struct cnmemDevice
 {
     int           device;
-    std::size_t   size;
+    uint64   size;
     int           numStreams;
     cudaStream_t* streams;
-    std::size_t*  streamSizes;
+    uint64*  streamSizes;
 };
 
 KOKKOS_NET_API_EXTERNC cnmemStatus cnmemInit(const int numDevices, const cnmemDevice* devices, unsigned flags);
@@ -44,11 +44,11 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRelease();
 
 KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRegisterStream(cudaStream_t stream);
 
-KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cudaStream_t stream);
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, uint64 size, cudaStream_t stream);
 
 KOKKOS_NET_API_EXTERNC cnmemStatus cnmemFree(void* ptr, cudaStream_t stream);
 
-KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(std::size_t* freeMem, std::size_t* totalMem, cudaStream_t stream);
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(uint64* freeMem, uint64* totalMem, cudaStream_t stream);
 
 KOKKOS_NET_API_EXTERNC cnmemStatus cnmemPrintMemoryState(FILE* file, cudaStream_t stream);
 

@@ -4,58 +4,68 @@ using System.Runtime.InteropServices;
 namespace Kokkos
 {
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    public struct KokkosApi
+    public unsafe struct KokkosApi
     {
-        public IntPtr AllocatePtr;
+        public nint AllocatePtr;
 
-        public IntPtr ReallocatePtr;
+        public nint ReallocatePtr;
 
-        public IntPtr FreePtr;
+        public nint FreePtr;
 
-        public IntPtr InitializePtr;
+        public nint InitializePtr;
 
-        public IntPtr InitializeThreadsPtr;
+        public nint InitializeThreadsPtr;
 
-        public IntPtr InitializeArgumentsPtr;
+        public nint InitializeArgumentsPtr;
 
-        public IntPtr FinalizePtr;
+        public nint FinalizePtr;
 
-        public IntPtr FinalizeAllPtr;
+        public nint FinalizeAllPtr;
 
-        public IntPtr IsInitializedPtr;
+        public nint IsInitializedPtr;
 
-        public IntPtr PrintConfigurationPtr;
+        public nint PrintConfigurationPtr;
 
-        public IntPtr GetDeviceCountPtr;
+        public nint GetDeviceCountPtr;
 
-        public IntPtr GetComputeCapabilityPtr;
+        public nint GetComputeCapabilityPtr;
 
-        public IntPtr CreateViewRank0Ptr;
+        public nint CreateViewRank0Ptr;
 
-        public IntPtr CreateViewRank1Ptr;
+        public nint CreateViewRank1Ptr;
 
-        public IntPtr CreateViewRank2Ptr;
+        public nint CreateViewRank2Ptr;
 
-        public IntPtr CreateViewRank3Ptr;
+        public nint CreateViewRank3Ptr;
 
-        public IntPtr CreateViewPtr;
+        public nint CreateViewRank4Ptr;
 
-        public IntPtr GetLabelPtr;
+        public nint CreateViewRank5Ptr;
 
-        public IntPtr GetSizePtr;
+        public nint CreateViewRank6Ptr;
 
-        public IntPtr GetStridePtr;
+        public nint CreateViewRank7Ptr;
 
-        public IntPtr GetExtentPtr;
+        public nint CreateViewRank8Ptr;
 
-        public IntPtr CopyToPtr;
+        public nint CreateViewPtr;
 
-        public IntPtr GetValuePtr;
+        public nint GetLabelPtr;
 
-        public IntPtr SetValuePtr;
+        public nint GetSizePtr;
 
-        public IntPtr RcpViewToNdArrayPtr;
+        public nint GetStridePtr;
 
-        public IntPtr ViewToNdArrayPtr;
+        public nint GetExtentPtr;
+
+        public nint CopyToPtr;
+
+        public nint GetValuePtr;
+
+        public nint SetValuePtr;
+
+        public /*delegate* unmanaged[Cdecl]<nint, ExecutionSpaceKind, LayoutKind, DataTypeKind, ushort, out NdArray, void>*/ nint RcpViewToNdArrayPtr;
+
+        public nint ViewToNdArrayPtr;
     }
 }

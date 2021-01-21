@@ -65,22 +65,22 @@ namespace Kokkos
         /// <summary>
         /// The streams associated with the device. It can be NULL. The NULL stream is managed.
         /// </summary>
-        public IntPtr streams;
+        public nint streams;
 
         /// <summary>
         /// The size reserved for each streams. It can be 0.
         /// </summary>
-        public IntPtr streamSizes;
+        public nint streamSizes;
     }
 
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public readonly struct CUstream : IEquatable<CUstream>
     {
-        private readonly IntPtr _handle;
+        private readonly nint _handle;
 
-        public CUstream(IntPtr handle) => _handle = handle;
+        public CUstream(nint handle) => _handle = handle;
 
-        public IntPtr Handle => _handle;
+        public nint Handle => _handle;
 
         public bool Equals(in CUstream other) => _handle.Equals(other._handle);
 
@@ -88,7 +88,7 @@ namespace Kokkos
 
         public override int GetHashCode() => _handle.GetHashCode();
 
-        public override string ToString() => "0x" + (IntPtr.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
+        public override string ToString() => "0x" + (nint.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
 
         public static bool operator ==(in CUstream left,
                                        in CUstream right) =>
@@ -102,11 +102,11 @@ namespace Kokkos
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct iobuf
     {
-        public IntPtr _ptr;
+        public nint _ptr;
 
         public int _cnt;
 
-        public IntPtr _base;
+        public nint _base;
 
         public int _flag;
 
@@ -116,7 +116,7 @@ namespace Kokkos
 
         public int _bufsiz;
 
-        public IntPtr _tmpfname;
+        public nint _tmpfname;
     }
 
     public static class CNMeM
@@ -133,11 +133,11 @@ namespace Kokkos
 
         public delegate CNMeMStatus cnmemRegisterStreamDelegate(ref CUstream stream);
 
-        public delegate CNMeMStatus cnmemMallocDelegate(out IntPtr   ptr,
+        public delegate CNMeMStatus cnmemMallocDelegate(out nint   ptr,
                                                         ulong        size,
                                                         ref CUstream stream);
 
-        public delegate CNMeMStatus cnmemFreeDelegate(IntPtr       ptr,
+        public delegate CNMeMStatus cnmemFreeDelegate(nint       ptr,
                                                       ref CUstream stream);
 
         public delegate CNMeMStatus cnmemMemGetInfoDelegate(ref ulong    freeMem,
@@ -147,13 +147,9 @@ namespace Kokkos
         public delegate CNMeMStatus cnmemPrintMemoryStateDelegate(ref iobuf    file,
                                                                   ref CUstream stream);
 
-        public delegate IntPtr cnmemGetErrorStringDelegate(ref CNMeMStatus status);
+        public delegate nint cnmemGetErrorStringDelegate(ref CNMeMStatus status);
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         static CNMeM()
         {
             RuntimeCil.Generate(typeof(CNMeM).Assembly);

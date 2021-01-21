@@ -21,7 +21,7 @@ namespace Kokkos
         
         public static View<float, TExecutionSpace> NearestNeighbor(View<float, TExecutionSpace> latlongdegrees)
         {
-            IntPtr result = KokkosLibrary.NearestNeighborSingle(latlongdegrees.Pointer, executionSpace);
+            nint result = KokkosLibrary.NearestNeighborSingle(latlongdegrees.Pointer, executionSpace);
 
             NdArray ndArray = View<float, TExecutionSpace>.RcpConvert(result, 1);
 
@@ -32,7 +32,7 @@ namespace Kokkos
 
         public static View<double, TExecutionSpace> NearestNeighbor(View<double, TExecutionSpace> latlongdegrees)
         {
-            IntPtr result = KokkosLibrary.NearestNeighborDouble(latlongdegrees.Pointer, executionSpace);
+            nint result = KokkosLibrary.NearestNeighborDouble(latlongdegrees.Pointer, executionSpace);
 
             NdArray ndArray = View<double, TExecutionSpace>.RcpConvert(result, 1);
 

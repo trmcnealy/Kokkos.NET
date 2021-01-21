@@ -6,7 +6,7 @@ class Block
     /// The pointer to the memory region on the device.
     char* mData;
     /// The size of the memory buffer.
-    std::size_t mSize;
+    uint64 mSize;
     /// The prev/next blocks in the linked list of blocks.
     Block* mNext;
     /// Is it a head node (i.e. a node obtained from parent->allocate or cudaMalloc).
@@ -14,7 +14,7 @@ class Block
 
 public:
     /// Create a block.
-    Block(char* data, std::size_t size, Block* next, bool isHead) : mData(data), mSize(size), mNext(next), mIsHead(isHead) {}
+    Block(char* data, uint64 size, Block* next, bool isHead) : mData(data), mSize(size), mNext(next), mIsHead(isHead) {}
 
     /// The data.
     inline const char* getData() const { return mData; }
@@ -22,7 +22,7 @@ public:
     inline char* getData() { return mData; }
 
     /// The size of the block.
-    inline std::size_t getSize() const { return mSize; }
+    inline uint64 getSize() const { return mSize; }
 
     /// The next block in the linked list.
     inline const Block* getNext() const { return mNext; }
@@ -35,7 +35,7 @@ public:
     /// Change the next block.
     inline void setNext(Block* next) { mNext = next; }
     /// Change the size of the block.
-    inline void setSize(std::size_t size) { mSize = size; }
+    inline void setSize(uint64 size) { mSize = size; }
     /// Set the head flag.
     inline void setHeadFlag(bool isHead) { mIsHead = isHead; }
 };
@@ -57,7 +57,7 @@ class Manager
     /// The list of free blocks.
     Block* mFreeBlocks;
     /// The managed memory size.
-    std::size_t mSize;
+    uint64 mSize;
     /// The flags.
     unsigned mFlags;
     /// To support multi-threading. Each manager has its own mutex.
@@ -70,32 +70,32 @@ public:
     ~Manager();
 
     /// Allocate a block of memory.
-    cnmemStatus_t allocate(void*& ptr, std::size_t size, bool isBlocking = true);
+    cnmemStatus_t allocate(void*& ptr, uint64 size, bool isBlocking = true);
     /// Release a block of memory.
     cnmemStatus_t release(void* ptr);
     /// Release memory. It returns true if we have no memory leak.
     cnmemStatus_t releaseAllUnsafe();
     /// Reserve memory for a manager.
-    cnmemStatus_t reserve(std::size_t size);
+    cnmemStatus_t reserve(uint64 size);
     /// Steal memory from another manager.
-    cnmemStatus_t stealUnsafe(void*& ptr, std::size_t size);
+    cnmemStatus_t stealUnsafe(void*& ptr, uint64 size);
 
     /// Print the full memory state.
     cnmemStatus_t printMemoryState(FILE* file) const;
 
     /// The amount of used memory.
-    inline cnmemStatus_t getUsedMemoryUnsafe(std::size_t& usedMemory) const { return getMemoryUnsafe(usedMemory, mUsedBlocks); }
+    inline cnmemStatus_t getUsedMemoryUnsafe(uint64& usedMemory) const { return getMemoryUnsafe(usedMemory, mUsedBlocks); }
     /// The amount of used memory.
-    inline cnmemStatus_t getFreeMemoryUnsafe(std::size_t& freeMemory) const { return getMemoryUnsafe(freeMemory, mFreeBlocks); }
+    inline cnmemStatus_t getFreeMemoryUnsafe(uint64& freeMemory) const { return getMemoryUnsafe(freeMemory, mFreeBlocks); }
 
     /// Get a specific child based on the stream id.
     cnmemStatus_t getChildFromStream(Manager*& manager, cudaStream_t stream) const;
     /// Get a specific child based on the stream id.
-    cnmemStatus_t getChild(Manager*& manager, std::size_t i) const;
+    cnmemStatus_t getChild(Manager*& manager, uint64 i) const;
     /// Add a new child.
     cnmemStatus_t addChild(Manager* manager);
     /// The number of children.
-    cnmemStatus_t getNumChildren(std::size_t& numChildren) const;
+    cnmemStatus_t getNumChildren(uint64& numChildren) const;
 
     /// The associated device.
     inline int getDevice() const { return mDevice; }
@@ -104,7 +104,7 @@ public:
     /// Get the mutex.
     inline const Mutex* getMutex() const { return &mMutex; }
     /// The size allocated to that manager.
-    inline std::size_t getSize() const { return mSize; }
+    inline uint64 getSize() const { return mSize; }
     /// The CUDA stream.
     inline cudaStream_t getStream() const { return mStream; }
 
@@ -135,21 +135,21 @@ private:
     /// same Manager object. Make sure they are called by a single thread in that case.
 
     /// Allocate a new block and add it to the free list.
-    cnmemStatus_t allocateBlockUnsafe(Block*& curr, Block*& prev, std::size_t size);
+    cnmemStatus_t allocateBlockUnsafe(Block*& curr, Block*& prev, uint64 size);
     /// Release a block from the active list.
     cnmemStatus_t releaseBlockUnsafe(Block* curr, Block* prev);
     /// Find the best free node based on the size.
-    cnmemStatus_t findBestBlockUnsafe(Block*& curr, Block*& prev, std::size_t size);
+    cnmemStatus_t findBestBlockUnsafe(Block*& curr, Block*& prev, uint64 size);
     /// Extract a node from the list of free blocks.
-    cnmemStatus_t extractBlockUnsafe(Block* curr, Block* prev, std::size_t size, bool stolen);
+    cnmemStatus_t extractBlockUnsafe(Block* curr, Block* prev, uint64 size, bool stolen);
 
     /// Give a free block from that manager.
-    cnmemStatus_t giveBlockUnsafe(void*& data, std::size_t& dataSize, std::size_t size);
+    cnmemStatus_t giveBlockUnsafe(void*& data, uint64& dataSize, uint64 size);
     /// Steal a block from another manager.
-    cnmemStatus_t stealBlockUnsafe(void*& data, std::size_t& dataSize, std::size_t size);
+    cnmemStatus_t stealBlockUnsafe(void*& data, uint64& dataSize, uint64 size);
 
     /// The memory consumption of a list.
-    cnmemStatus_t getMemoryUnsafe(std::size_t& memSize, const Block* head) const;
+    cnmemStatus_t getMemoryUnsafe(uint64& memSize, const Block* head) const;
     /// Print an internal linked list.
     cnmemStatus_t printListUnsafe(FILE* file, const char* name, const Block* head) const;
 };
@@ -178,7 +178,7 @@ cnmemStatus_t Manager::addChild(Manager* manager)
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::allocate(void*& ptr, std::size_t size, bool isBlocking)
+cnmemStatus_t Manager::allocate(void*& ptr, uint64 size, bool isBlocking)
 {
     CNMEM_CHECK(mMutex.lock());
 
@@ -219,7 +219,7 @@ cnmemStatus_t Manager::allocate(void*& ptr, std::size_t size, bool isBlocking)
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::allocateBlockUnsafe(Block*& curr, Block*& prev, std::size_t size)
+cnmemStatus_t Manager::allocateBlockUnsafe(Block*& curr, Block*& prev, uint64 size)
 {
     // Reset the outputs.
     curr = prev = NULL;
@@ -243,7 +243,7 @@ cnmemStatus_t Manager::allocateBlockUnsafe(Block*& curr, Block*& prev, std::size
             CNMEM_DEBUG_INFO("cudaMalloc(%lu)\n", size);
             CNMEM_CHECK_CUDA(cudaMalloc(&data, size));
         }
-        CNMEM_DEBUG_INFO(">> returned address=0x%016lx\n", (size_t)data);
+        CNMEM_DEBUG_INFO(">> returned address=0x%016lx\n", (uint64)data);
     }
 
     // If it failed, there's an unexpected issue.
@@ -272,7 +272,7 @@ cnmemStatus_t Manager::allocateBlockUnsafe(Block*& curr, Block*& prev, std::size
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::extractBlockUnsafe(Block* curr, Block* prev, std::size_t size, bool stolen)
+cnmemStatus_t Manager::extractBlockUnsafe(Block* curr, Block* prev, uint64 size, bool stolen)
 {
     // We have two cases: 1/ It is the right size so we keep it or 2/ it is too large and we split the node.
     Block* next;
@@ -282,7 +282,7 @@ cnmemStatus_t Manager::extractBlockUnsafe(Block* curr, Block* prev, std::size_t 
     }
     else
     {
-        std::size_t remaining = curr->getSize() - size;
+        uint64 remaining = curr->getSize() - size;
         Block*      newBlock  = new Block(curr->getData() + size, remaining, curr->getNext(), stolen);
         if(!newBlock)
         {
@@ -304,7 +304,7 @@ cnmemStatus_t Manager::extractBlockUnsafe(Block* curr, Block* prev, std::size_t 
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::findBestBlockUnsafe(Block*& best, Block*& prev, std::size_t size)
+cnmemStatus_t Manager::findBestBlockUnsafe(Block*& best, Block*& prev, uint64 size)
 {
     best = NULL, prev = NULL;
     for(Block *temp = mFreeBlocks, *tempPrev = NULL; temp; temp = temp->getNext())
@@ -322,7 +322,7 @@ cnmemStatus_t Manager::findBestBlockUnsafe(Block*& best, Block*& prev, std::size
 cnmemStatus_t Manager::getChildFromStream(Manager*& manager, cudaStream_t stream) const
 {
     CNMEM_CHECK(mMutex.lock());
-    std::size_t i = 0, numChildren = mChildren.size();
+    uint64 i = 0, numChildren = mChildren.size();
     for(; i < numChildren; ++i)
     {
         if(mChildren[i]->mStream == stream)
@@ -335,7 +335,7 @@ cnmemStatus_t Manager::getChildFromStream(Manager*& manager, cudaStream_t stream
     return i < numChildren ? CNMEM_STATUS_SUCCESS : CNMEM_STATUS_INVALID_ARGUMENT;
 }
 
-cnmemStatus_t Manager::getChild(Manager*& manager, std::size_t i) const
+cnmemStatus_t Manager::getChild(Manager*& manager, uint64 i) const
 {
     CNMEM_CHECK(mMutex.lock());
     if(i >= mChildren.size())
@@ -349,7 +349,7 @@ cnmemStatus_t Manager::getChild(Manager*& manager, std::size_t i) const
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::getMemoryUnsafe(std::size_t& size, const Block* head) const
+cnmemStatus_t Manager::getMemoryUnsafe(uint64& size, const Block* head) const
 {
     size = 0;
     for(Block* curr = (Block*)head; curr; curr = curr->getNext())
@@ -360,7 +360,7 @@ cnmemStatus_t Manager::getMemoryUnsafe(std::size_t& size, const Block* head) con
 }
 
 #if 0
-cnmemStatus_t Manager::getMemory(std::size_t &size, const Block *head) const {
+cnmemStatus_t Manager::getMemory(uint64 &size, const Block *head) const {
     CNMEM_CHECK(mMutex.lock());
     CNMEM_CHECK_OR_UNLOCK(getMemoryUnsafe(size, head));
     CNMEM_CHECK(mMutex.unlock());
@@ -368,7 +368,7 @@ cnmemStatus_t Manager::getMemory(std::size_t &size, const Block *head) const {
 }
 #endif
 
-cnmemStatus_t Manager::getNumChildren(std::size_t& numChildren) const
+cnmemStatus_t Manager::getNumChildren(uint64& numChildren) const
 {
     CNMEM_CHECK(mMutex.lock());
     numChildren = mChildren.size();
@@ -376,7 +376,7 @@ cnmemStatus_t Manager::getNumChildren(std::size_t& numChildren) const
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::giveBlockUnsafe(void*& blockData, std::size_t& blockSize, std::size_t size)
+cnmemStatus_t Manager::giveBlockUnsafe(void*& blockData, uint64& blockSize, uint64 size)
 {
     // Make sure the block is not in use any more. It could be too coarse grain and we may change
     // it in the future.
@@ -404,7 +404,7 @@ cnmemStatus_t Manager::giveBlockUnsafe(void*& blockData, std::size_t& blockSize,
 
 cnmemStatus_t Manager::printListUnsafe(FILE* file, const char* name, const Block* head) const
 {
-    std::size_t size = 0;
+    uint64 size = 0;
     for(Block* curr = (Block*)head; curr; curr = curr->getNext())
     {
         size += curr->getSize();
@@ -422,11 +422,11 @@ cnmemStatus_t Manager::printListUnsafe(FILE* file, const char* name, const Block
         fprintf(file,
                 "| | node=0x%016lx, data=0x%016lx, size=%lu, next=0x%016lx, head=%2lu\n",
 #endif
-                (std::size_t)curr,
-                (std::size_t)curr->getData(),
-                (std::size_t)curr->getSize(),
-                (std::size_t)curr->getNext(),
-                (std::size_t)curr->isHead());
+                (uint64)curr,
+                (uint64)curr->getData(),
+                (uint64)curr->getSize(),
+                (uint64)curr->getNext(),
+                (uint64)curr->isHead());
     }
     fprintf(file, "|\n");
     return CNMEM_STATUS_SUCCESS;
@@ -435,8 +435,8 @@ cnmemStatus_t Manager::printListUnsafe(FILE* file, const char* name, const Block
 cnmemStatus_t Manager::printMemoryState(FILE* file) const
 {
     CNMEM_CHECK(mMutex.lock());
-    std::size_t streamCode = (std::size_t)mStream;
-    std::size_t usedMemory, freeMemory;
+    uint64 streamCode = (uint64)mStream;
+    uint64 usedMemory, freeMemory;
     CNMEM_CHECK_OR_UNLOCK(getUsedMemoryUnsafe(usedMemory), mMutex);
     CNMEM_CHECK_OR_UNLOCK(getFreeMemoryUnsafe(freeMemory), mMutex);
 
@@ -498,7 +498,7 @@ cnmemStatus_t Manager::release(void* ptr)
 cnmemStatus_t Manager::releaseAllUnsafe()
 {
     // Destroy the children if any.
-    for(std::size_t i = 0; i < mChildren.size(); ++i)
+    for(uint64 i = 0; i < mChildren.size(); ++i)
     {
         Manager* child = mChildren[i];
         CNMEM_CHECK(child->releaseAllUnsafe());
@@ -525,7 +525,7 @@ cnmemStatus_t Manager::releaseAllUnsafe()
         else if(mFreeBlocks->isHead())
         {
             void* data = mFreeBlocks->getData();
-            CNMEM_DEBUG_INFO("cudaFree(%lu, 0x%016lx)\n", mFreeBlocks->getSize(), (size_t)data);
+            CNMEM_DEBUG_INFO("cudaFree(%lu, 0x%016lx)\n", mFreeBlocks->getSize(), (uint64)data);
             CNMEM_CHECK_CUDA(cudaFree(data));
             CNMEM_DEBUG_INFO(">> success\n");
         }
@@ -594,7 +594,7 @@ cnmemStatus_t Manager::releaseBlockUnsafe(Block* curr, Block* prev)
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::reserve(std::size_t size)
+cnmemStatus_t Manager::reserve(uint64 size)
 {
     CNMEM_CHECK(mMutex.lock());
     Block *curr, *prev;
@@ -604,7 +604,7 @@ cnmemStatus_t Manager::reserve(std::size_t size)
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::stealUnsafe(void*& stolen, std::size_t size)
+cnmemStatus_t Manager::stealUnsafe(void*& stolen, uint64 size)
 {
     // If we cannot steal, don't even try.
     if(mFlags & CNMEM_FLAGS_CANNOT_STEAL)
@@ -615,7 +615,7 @@ cnmemStatus_t Manager::stealUnsafe(void*& stolen, std::size_t size)
 
     // The stolen block.
     void*       data     = NULL;
-    std::size_t dataSize = 0;
+    uint64 dataSize = 0;
     if(!mChildren.empty())
     {
         CNMEM_CHECK(stealBlockUnsafe(data, dataSize, size));
@@ -644,11 +644,11 @@ cnmemStatus_t Manager::stealUnsafe(void*& stolen, std::size_t size)
     return CNMEM_STATUS_SUCCESS;
 }
 
-cnmemStatus_t Manager::stealBlockUnsafe(void*& data, std::size_t& dataSize, ::size_t size)
+cnmemStatus_t Manager::stealBlockUnsafe(void*& data, uint64& dataSize, ::uint64 size)
 {
     // No block found and no room to grow. Try to steal from a children (if we have any).
     data = NULL;
-    for(std::size_t i = 0; !data && i < mChildren.size(); ++i)
+    for(uint64 i = 0; !data && i < mChildren.size(); ++i)
     {
         Manager* child = mChildren[i];
         if(child->giveBlockUnsafe(data, dataSize, size) == CNMEM_STATUS_SUCCESS)
@@ -688,8 +688,8 @@ cnmemStatus_t Manager::stealBlockUnsafe(void*& data, std::size_t& dataSize, ::si
     Block* next = curr->getNext();
 
     // We may have up to 3 blocks.
-    std::size_t sizeBefore = (std::size_t)((char*)data - curr->getData());
-    std::size_t sizeAfter  = (curr->getSize() - sizeBefore - dataSize);
+    uint64 sizeBefore = (uint64)((char*)data - curr->getData());
+    uint64 sizeAfter  = (curr->getSize() - sizeBefore - dataSize);
 
     // The resulting block.
     Block* result = curr;
@@ -776,7 +776,7 @@ Context::~Context()
 {
     int oldDevice;
     cudaGetDevice(&oldDevice);
-    for(std::size_t i = 0; i < mManagers.size(); ++i)
+    for(uint64 i = 0; i < mManagers.size(); ++i)
     {
         if(mManagers[i].getDevice() != -1)
         { // Skip invalid managers.
@@ -856,7 +856,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemInit(const int numDevices, const cnmemDe
     for(int i = 0; i < numDevices; ++i)
     {
         CNMEM_CHECK_CUDA(cudaSetDevice(devices[i].device));
-        std::size_t    size = devices[i].size;
+        uint64    size = devices[i].size;
         cudaDeviceProp props;
         CNMEM_CHECK_CUDA(cudaGetDeviceProperties(&props, devices[i].device));
         if(size == 0)
@@ -930,7 +930,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemRegisterStream(cudaStream_t stream)
     return CNMEM_STATUS_SUCCESS;
 }
 
-KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cudaStream_t stream)
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, uint64 size, cudaStream_t stream)
 {
     CNMEM_CHECK_TRUE(cnmem::Context::check(), CNMEM_STATUS_NOT_INITIALIZED);
     if(!ptr && !size)
@@ -963,12 +963,12 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cud
     if(result == CNMEM_STATUS_OUT_OF_MEMORY)
     {
         // Try to acquire locks on all the children.
-        std::size_t numChildren;
+        uint64 numChildren;
         CNMEM_CHECK(root.getNumChildren(numChildren));
         std::vector<const cnmem::Mutex*> mutexes(numChildren);
 
-        std::size_t numLocked = 0;
-        for(size_t i = 0; i < numChildren; ++i, ++numLocked)
+        uint64 numLocked = 0;
+        for(uint64 i = 0; i < numChildren; ++i, ++numLocked)
         {
             cnmem::Manager* child;
             CNMEM_CHECK(root.getChild(child, i));
@@ -982,7 +982,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cud
         // One lock failed, quit. Reduce the damage as much as possible, though.
         if(numLocked != numChildren)
         {
-            for(std::size_t i = 0; i < numLocked; ++i)
+            for(uint64 i = 0; i < numLocked; ++i)
             {
                 cnmemStatus lockStatus = mutexes[i]->unlock();
             }
@@ -998,7 +998,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMalloc(void** ptr, std::size_t size, cud
         {
             result = manager->stealUnsafe(ptr[0], size);
         }
-        for(std::size_t i = 0; i < numLocked; ++i)
+        for(uint64 i = 0; i < numLocked; ++i)
         {
             cnmemStatus lockStatus = mutexes[i]->unlock();
             if(lockStatus != CNMEM_STATUS_SUCCESS)
@@ -1035,7 +1035,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemFree(void* ptr, cudaStream_t stream)
     return manager->release(ptr);
 }
 
-KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(std::size_t* freeMem, std::size_t* totalMem, cudaStream_t stream)
+KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(uint64* freeMem, uint64* totalMem, cudaStream_t stream)
 {
     CNMEM_CHECK_TRUE(cnmem::Context::check(), CNMEM_STATUS_NOT_INITIALIZED);
     CNMEM_CHECK_TRUE(totalMem && freeMem, CNMEM_STATUS_INVALID_ARGUMENT);
@@ -1053,7 +1053,7 @@ KOKKOS_NET_API_EXTERNC cnmemStatus cnmemMemGetInfo(std::size_t* freeMem, std::si
     const cnmem::Mutex* mutex = manager->getMutex();
     CNMEM_CHECK(mutex->lock());
     CNMEM_CHECK_OR_UNLOCK(manager->getFreeMemoryUnsafe(*freeMem), *mutex);
-    size_t usedMem;
+    uint64 usedMem;
     CNMEM_CHECK_OR_UNLOCK(manager->getUsedMemoryUnsafe(usedMem), *mutex);
     CNMEM_CHECK(mutex->unlock());
     totalMem[0] = usedMem + freeMem[0];

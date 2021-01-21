@@ -1118,11 +1118,11 @@ namespace Kokkos
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public readonly partial struct nvmlDevice_st : IEquatable<nvmlDevice_st>
         {
-            private readonly IntPtr _handle;
+            private readonly nint _handle;
             
-            public nvmlDevice_st(IntPtr handle) => _handle = handle;
+            public nvmlDevice_st(nint handle) => _handle = handle;
             
-            public IntPtr Handle => _handle;
+            public nint Handle => _handle;
             
             public bool Equals(nvmlDevice_st other) => _handle.Equals(other._handle);
             
@@ -1130,7 +1130,7 @@ namespace Kokkos
             
             public override int GetHashCode() => _handle.GetHashCode();
             
-            public override string ToString() => "0x" + (IntPtr.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
+            public override string ToString() => "0x" + (nint.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
             
             public static bool operator ==(nvmlDevice_st left, nvmlDevice_st right) => left.Equals(right);
             
@@ -1458,11 +1458,11 @@ namespace Kokkos
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public readonly partial struct nvmlUnit_st : IEquatable<nvmlUnit_st>
         {
-            private readonly IntPtr _handle;
+            private readonly nint _handle;
             
-            public nvmlUnit_st(IntPtr handle) => _handle = handle;
+            public nvmlUnit_st(nint handle) => _handle = handle;
             
-            public IntPtr Handle => _handle;
+            public nint Handle => _handle;
             
             public bool Equals(nvmlUnit_st other) => _handle.Equals(other._handle);
             
@@ -1470,7 +1470,7 @@ namespace Kokkos
             
             public override int GetHashCode() => _handle.GetHashCode();
             
-            public override string ToString() => "0x" + (IntPtr.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
+            public override string ToString() => "0x" + (nint.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
             
             public static bool operator ==(nvmlUnit_st left, nvmlUnit_st right) => left.Equals(right);
             
@@ -1617,11 +1617,11 @@ namespace Kokkos
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
         public readonly partial struct nvmlEventSet_st : IEquatable<nvmlEventSet_st>
         {
-            private readonly IntPtr _handle;
+            private readonly nint _handle;
             
-            public nvmlEventSet_st(IntPtr handle) => _handle = handle;
+            public nvmlEventSet_st(nint handle) => _handle = handle;
             
-            public IntPtr Handle => _handle;
+            public nint Handle => _handle;
             
             public bool Equals(nvmlEventSet_st other) => _handle.Equals(other._handle);
             
@@ -1629,7 +1629,7 @@ namespace Kokkos
             
             public override int GetHashCode() => _handle.GetHashCode();
             
-            public override string ToString() => "0x" + (IntPtr.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
+            public override string ToString() => "0x" + (nint.Size == 8 ? _handle.ToString("X16") : _handle.ToString("X8"));
             
             public static bool operator ==(nvmlEventSet_st left, nvmlEventSet_st right) => left.Equals(right);
             
@@ -2204,7 +2204,7 @@ namespace Kokkos
         /// For all products.
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr nvmlErrorString(nvmlReturn_enum result);
+        public static extern nint nvmlErrorString(nvmlReturn_enum result);
         
         /// <summary>
         /// Retrieves the version of the system's graphics driver.
@@ -2217,7 +2217,7 @@ namespace Kokkos
         /// (including the NULL terminator).  See nvmlConstants::NVML_SYSTEM_DRIVER_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlSystemGetDriverVersion(IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlSystemGetDriverVersion(nint version, uint length);
         
         /// <summary>
         /// Retrieves the version of the NVML library.
@@ -2230,7 +2230,7 @@ namespace Kokkos
         /// (including the NULL terminator).  See nvmlConstants::NVML_SYSTEM_NVML_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlSystemGetNVMLVersion(IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlSystemGetNVMLVersion(nint version, uint length);
         
         /// <summary>
         /// Retrieves the version of the CUDA driver.
@@ -2267,7 +2267,7 @@ namespace Kokkos
         /// name string is encoded in ANSI. NVML_SUCCESS                 if \a name has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a name is NULL or \a length is 0.- NVML_ERROR_NOT_FOUND         if process doesn't exists- NVML_ERROR_NO_PERMISSION     if the user doesn't have permission to perform this operation- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlSystemGetProcessName(uint pid, IntPtr name, uint length);
+        public static extern nvmlReturn_enum nvmlSystemGetProcessName(uint pid, nint name, uint length);
         
         /// <summary>
         /// Retrieves the number of units in the system.
@@ -2410,7 +2410,7 @@ namespace Kokkos
         /// - NVML_ERROR_NOT_FOUND          if \a serial does not match a valid device on the system- NVML_ERROR_INSUFFICIENT_POWER if any attached devices have improperly attached external power cables- NVML_ERROR_IRQ_ISSUE          if NVIDIA kernel detected an interrupt issue with the attached GPUs- NVML_ERROR_GPU_IS_LOST        if any GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetHandleBySerial(IntPtr serial, ref nvmlDevice_st device);
+        public static extern nvmlReturn_enum nvmlDeviceGetHandleBySerial(nint serial, ref nvmlDevice_st device);
         
         /// <summary>
         /// Acquire the handle for a particular device, based on its globally unique immutable UUID associated with each device.
@@ -2425,10 +2425,10 @@ namespace Kokkos
         /// NVML may initialize additional GPUs as it searches for the target GPU NVML_SUCCESS                  if \a device has been set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT   if \a uuid is invalid or \a device is null- NVML_ERROR_NOT_FOUND          if \a uuid does not match a valid device on the system- NVML_ERROR_INSUFFICIENT_POWER if any attached devices have improperly attached external power cables- NVML_ERROR_IRQ_ISSUE          if NVIDIA kernel detected an interrupt issue with the attached GPUs- NVML_ERROR_GPU_IS_LOST        if any GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetHandleByUUID(IntPtr uuid, ref nvmlDevice_st device);
+        public static extern nvmlReturn_enum nvmlDeviceGetHandleByUUID(nint uuid, ref nvmlDevice_st device);
         
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetHandleByPciBusId_v2(IntPtr pciBusId, ref nvmlDevice_st device);
+        public static extern nvmlReturn_enum nvmlDeviceGetHandleByPciBusId_v2(nint pciBusId, ref nvmlDevice_st device);
         
         /// <summary>
         /// Retrieves the name of this device.
@@ -6718,7 +6718,7 @@ namespace Kokkos
         /// #endifnvmlConstants::NVML_DEVICE_NAME_BUFFER_SIZE. NVML_SUCCESS                 if \a name has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a name is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetName(nvmlDevice_st device, IntPtr name, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetName(nvmlDevice_st device, nint name, uint length);
         
         /// <summary>
         /// Retrieves the brand of this device.
@@ -10963,7 +10963,7 @@ namespace Kokkos
         /// #endifnvmlConstants::NVML_DEVICE_SERIAL_BUFFER_SIZE. NVML_SUCCESS                 if \a serial has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a serial is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetSerial(nvmlDevice_st device, IntPtr serial, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetSerial(nvmlDevice_st device, nint serial, uint length);
         
         /// <summary>
         /// Retrieves an array of unsigned ints (sized to cpuSetSize) of bitmasks with the ideal CPU affinity for the device
@@ -11090,7 +11090,7 @@ namespace Kokkos
         /// (including the NULL terminator).  See nvmlConstants::NVML_DEVICE_UUID_BUFFER_SIZE. NVML_SUCCESS                 if \a uuid has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a uuid is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not support this feature- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetUUID(nvmlDevice_st device, IntPtr uuid, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetUUID(nvmlDevice_st device, nint uuid, uint length);
         
         /// <summary>
         /// Retrieves minor number for the device. The minor number for the device is such that the Nvidia device node file for 
@@ -11117,7 +11117,7 @@ namespace Kokkos
         /// For all products. NVML_SUCCESS                  if \a partNumber has been set- NVML_ERROR_UNINITIALIZED      if the library has not been successfully initialized- NVML_ERROR_NOT_SUPPORTED      if the needed VBIOS fields have not been filled- NVML_ERROR_INVALID_ARGUMENT   if \a device is invalid or \a serial is NULL- NVML_ERROR_GPU_IS_LOST        if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN            on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetBoardPartNumber(nvmlDevice_st device, IntPtr partNumber, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetBoardPartNumber(nvmlDevice_st device, nint partNumber, uint length);
         
         /// <summary>
         /// Retrieves the version information for the device's infoROM object.
@@ -11136,7 +11136,7 @@ namespace Kokkos
         /// See nvmlConstants::NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE.See nvmlInforomObject_t for details on the available infoROM objects. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not have an infoROM- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetInforomVersion(nvmlDevice_st device, nvmlInforomObject_enum @object, IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetInforomVersion(nvmlDevice_st device, nvmlInforomObject_enum @object, nint version, uint length);
         
         /// <summary>
         /// Retrieves the global infoROM image version
@@ -11154,7 +11154,7 @@ namespace Kokkos
         /// See nvmlConstants::NVML_DEVICE_INFOROM_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_NOT_SUPPORTED     if the device does not have an infoROM- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetInforomImageVersion(nvmlDevice_st device, IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetInforomImageVersion(nvmlDevice_st device, nint version, uint length);
         
         /// <summary>
         /// Retrieves the checksum of the configuration stored in the device's infoROM.
@@ -12100,7 +12100,7 @@ namespace Kokkos
         /// (including the NULL terminator).  See nvmlConstants::NVML_DEVICE_VBIOS_VERSION_BUFFER_SIZE. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a device is invalid, or \a version is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_GPU_IS_LOST       if the target GPU has fallen off the bus or is otherwise inaccessible- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlDeviceGetVbiosVersion(nvmlDevice_st device, IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlDeviceGetVbiosVersion(nvmlDevice_st device, nint version, uint length);
         
         /// <summary>
         /// Get Bridge Chip Information for all the bridge chips on the board.
@@ -13090,7 +13090,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                   successful completion- NVML_ERROR_INVALID_ARGUMENT    if \a vgpuTypeId is invalid, or \a vgpuTypeClass is NULL- NVML_ERROR_INSUFFICIENT_SIZE   if \a size is too small- NVML_ERROR_UNKNOWN             on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuTypeGetClass(uint vgpuTypeId, IntPtr vgpuTypeClass, ref uint size);
+        public static extern nvmlReturn_enum nvmlVgpuTypeGetClass(uint vgpuTypeId, nint vgpuTypeClass, ref uint size);
         
         /// <summary>
         /// Retrieve the vGPU type name.
@@ -14102,7 +14102,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a name is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuTypeGetName(uint vgpuTypeId, IntPtr vgpuTypeName, ref uint size);
+        public static extern nvmlReturn_enum nvmlVgpuTypeGetName(uint vgpuTypeId, nint vgpuTypeName, ref uint size);
         
         /// <summary>
         /// Retrieve the device ID of a vGPU type.
@@ -14184,7 +14184,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuTypeId is invalid, or \a vgpuTypeLicenseString is NULL- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuTypeGetLicense(uint vgpuTypeId, IntPtr vgpuTypeLicenseString, uint size);
+        public static extern nvmlReturn_enum nvmlVgpuTypeGetLicense(uint vgpuTypeId, nint vgpuTypeLicenseString, uint size);
         
         /// <summary>
         /// Retrieve the static frame rate limit value of the vGPU type
@@ -14266,7 +14266,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vmId or \a vmIdType is NULL, or \a vgpuInstance is 0- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmID(uint vgpuInstance, IntPtr vmId, uint size, ref nvmlVgpuVmIdType vmIdType);
+        public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmID(uint vgpuInstance, nint vmId, uint size, ref nvmlVgpuVmIdType vmIdType);
         
         /// <summary>
         /// Retrieve the UUID of a vGPU instance.
@@ -14283,7 +14283,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 successful completion- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0, or \a uuid is NULL- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a size is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuInstanceGetUUID(uint vgpuInstance, IntPtr uuid, uint size);
+        public static extern nvmlReturn_enum nvmlVgpuInstanceGetUUID(uint vgpuInstance, nint uuid, uint size);
         
         /// <summary>
         /// Retrieve the NVIDIA driver version installed in the VM associated with a vGPU.
@@ -14302,7 +14302,7 @@ namespace Kokkos
         /// or newer fully supported devices. NVML_SUCCESS                 if \a version has been set- NVML_ERROR_UNINITIALIZED     if the library has not been successfully initialized- NVML_ERROR_INVALID_ARGUMENT  if \a vgpuInstance is 0- NVML_ERROR_NOT_FOUND         if \a vgpuInstance does not match a valid active vGPU instance on the system- NVML_ERROR_INSUFFICIENT_SIZE if \a length is too small- NVML_ERROR_UNKNOWN           on any unexpected error
         /// </remarks>
         [SuppressGCTransition, SuppressUnmanagedCodeSecurity, DllImport(LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmDriverVersion(uint vgpuInstance, IntPtr version, uint length);
+        public static extern nvmlReturn_enum nvmlVgpuInstanceGetVmDriverVersion(uint vgpuInstance, nint version, uint length);
         
         /// <summary>
         /// Retrieve the framebuffer usage in bytes.

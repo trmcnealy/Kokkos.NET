@@ -19,24 +19,31 @@
 namespace Linq
 {
 #define __always_inline __attribute__((always_inline))
-#define __flatten __attribute__((flatten))
+#define __flatten       __attribute__((flatten))
 #define __forceinline __inline
-
-    typedef std::size_t size_type;
 
     struct BaseException : std::exception
     {
-        virtual const char* what() const noexcept { return "base_exception"; }
+        virtual const char* what() const noexcept
+        {
+            return "base_exception";
+        }
     };
 
     struct ProgrammingErrorException : BaseException
     {
-        virtual const char* what() const noexcept { return "programming_error_exception"; }
+        virtual const char* what() const noexcept
+        {
+            return "programming_error_exception";
+        }
     };
 
     struct SequenceEmptyException : BaseException
     {
-        virtual const char* what() const noexcept { return "sequence_empty_exception"; }
+        virtual const char* what() const noexcept
+        {
+            return "sequence_empty_exception";
+        }
     };
 
     // Tedious implementation details of cpplinq
@@ -92,23 +99,29 @@ namespace Linq
 
             __forceinline Opt() noexcept : is_initialized(false) {}
 
-            __forceinline explicit Opt(value_type&& value) : is_initialized(true) { new(&storage) value_type(std::move(value)); }
+            __forceinline explicit Opt(value_type&& value) : is_initialized(true)
+            {
+                new (&storage) value_type(std::move(value));
+            }
 
-            __forceinline explicit Opt(value_type const& value) : is_initialized(true) { new(&storage) value_type(value); }
+            __forceinline explicit Opt(const value_type& value) : is_initialized(true)
+            {
+                new (&storage) value_type(value);
+            }
 
             __forceinline ~Opt() noexcept
             {
                 auto ptr = get_ptr();
-                if(ptr)
+                if (ptr)
                 {
                     ptr->~value_type();
                 }
                 is_initialized = false;
             }
 
-            __forceinline Opt(Opt const& v) : is_initialized(v.is_initialized)
+            __forceinline Opt(const Opt& v) : is_initialized(v.is_initialized)
             {
-                if(v.is_initialized)
+                if (v.is_initialized)
                 {
                     copy(&storage, &v.storage);
                 }
@@ -116,7 +129,7 @@ namespace Linq
 
             __forceinline Opt(Opt&& v) noexcept : is_initialized(v.is_initialized)
             {
-                if(v.is_initialized)
+                if (v.is_initialized)
                 {
                     move(&storage, &v.storage);
                 }
@@ -125,7 +138,7 @@ namespace Linq
 
             KOKKOS_FUNCTION void swap(Opt& v) noexcept
             {
-                if(is_initialized && v.is_initialized)
+                if (is_initialized && v.is_initialized)
                 {
                     storage_type tmp;
 
@@ -133,13 +146,13 @@ namespace Linq
                     move(&storage, &v.storage);
                     move(&v.storage, &tmp);
                 }
-                else if(is_initialized)
+                else if (is_initialized)
                 {
                     move(&v.storage, &storage);
                     v.is_initialized = true;
                     is_initialized   = false;
                 }
-                else if(v.is_initialized)
+                else if (v.is_initialized)
                 {
                     move(&storage, &v.storage);
                     v.is_initialized = false;
@@ -151,9 +164,9 @@ namespace Linq
                 }
             }
 
-            __forceinline Opt& operator=(Opt const& v)
+            __forceinline Opt& operator=(const Opt& v)
             {
-                if(this == std::addressof(v))
+                if (this == std::addressof(v))
                 {
                     return *this;
                 }
@@ -167,7 +180,7 @@ namespace Linq
 
             __forceinline Opt& operator=(Opt&& v) noexcept
             {
-                if(this == std::addressof(v))
+                if (this == std::addressof(v))
                 {
                     return *this;
                 }
@@ -177,7 +190,10 @@ namespace Linq
                 return *this;
             }
 
-            __forceinline Opt& operator=(value_type v) { return *this = Opt(std::move(v)); }
+            __forceinline Opt& operator=(value_type v)
+            {
+                return *this = Opt(std::move(v));
+            }
 
             __forceinline void clear() noexcept
             {
@@ -187,7 +203,7 @@ namespace Linq
 
             __forceinline value_type const* get_ptr() const noexcept
             {
-                if(is_initialized)
+                if (is_initialized)
                 {
                     return reinterpret_cast<value_type const*>(&storage);
                 }
@@ -196,14 +212,14 @@ namespace Linq
 
             __forceinline value_type* get_ptr() noexcept
             {
-                if(is_initialized)
+                if (is_initialized)
                 {
                     return reinterpret_cast<value_type*>(&storage);
                 }
                 return nullptr;
             }
 
-            __forceinline value_type const& get() const noexcept
+            __forceinline const value_type& get() const noexcept
             {
                 Assert(is_initialized);
                 return *get_ptr();
@@ -215,20 +231,38 @@ namespace Linq
                 return *get_ptr();
             }
 
-            __forceinline bool has_value() const noexcept { return is_initialized; }
+            __forceinline bool has_value() const noexcept
+            {
+                return is_initialized;
+            }
 
             // TODO: To be replaced with explicit operator bool ()
             typedef bool (Opt::*type_safe_bool_type)() const;
 
-            __forceinline operator type_safe_bool_type() const noexcept { return is_initialized ? &Opt::has_value : nullptr; }
+            __forceinline operator type_safe_bool_type() const noexcept
+            {
+                return is_initialized ? &Opt::has_value : nullptr;
+            }
 
-            __forceinline value_type const& operator*() const noexcept { return get(); }
+            __forceinline const value_type& operator*() const noexcept
+            {
+                return get();
+            }
 
-            __forceinline value_type& operator*() noexcept { return get(); }
+            __forceinline value_type& operator*() noexcept
+            {
+                return get();
+            }
 
-            __forceinline value_type const* operator->() const noexcept { return get_ptr(); }
+            __forceinline value_type const* operator->() const noexcept
+            {
+                return get_ptr();
+            }
 
-            __forceinline value_type* operator->() noexcept { return get_ptr(); }
+            __forceinline value_type* operator->() noexcept
+            {
+                return get_ptr();
+            }
 
         private:
             typedef typename std::aligned_storage<sizeof(value_type), std::alignment_of<value_type>::value>::type storage_type;
@@ -239,14 +273,14 @@ namespace Linq
             __forceinline static void move(storage_type* to, storage_type* from) noexcept
             {
                 auto f = reinterpret_cast<value_type*>(from);
-                new(to) value_type(std::move(*f));
+                new (to) value_type(std::move(*f));
                 f->~value_type();
             }
 
             __forceinline static void copy(storage_type* to, storage_type const* from)
             {
                 auto f = reinterpret_cast<value_type const*>(from);
-                new(to) value_type(*f);
+                new (to) value_type(*f);
             }
         };
 
@@ -323,7 +357,7 @@ namespace Linq
 
             typedef decltype(*GetIterator())                   raw_value_type;
             typedef typename CleanupType<raw_value_type>::type value_type;
-            typedef value_type const&                          return_type;
+            typedef const value_type&                          return_type;
             enum
             {
                 returns_reference = 1,
@@ -355,7 +389,7 @@ namespace Linq
 
             __forceinline bool Next() noexcept
             {
-                if(upcoming == end)
+                if (upcoming == end)
                 {
                     return false;
                 }
@@ -374,7 +408,7 @@ namespace Linq
             typedef TContainer                          container_type;
             typedef typename TContainer::const_iterator iterator_type;
             typedef typename TContainer::value_type     value_type;
-            typedef value_type const&                   return_type;
+            typedef const value_type&                   return_type;
             enum
             {
                 returns_reference = 1,
@@ -387,7 +421,10 @@ namespace Linq
             iterator_type end;
 
             __forceinline FromCopyRange(container_type&& container) :
-                container(std::move(container)), current(container.begin()), upcoming(container.begin()), end(container.end())
+                container(std::move(container)),
+                current(container.begin()),
+                upcoming(container.begin()),
+                end(container.end())
             {
             }
 
@@ -398,7 +435,10 @@ namespace Linq
             __forceinline FromCopyRange(FromCopyRange const& v) : container(v.container), current(v.current), upcoming(v.upcoming), end(v.end) {}
 
             __forceinline FromCopyRange(FromCopyRange&& v) noexcept :
-                container(std::move(v.container)), current(std::move(v.current)), upcoming(std::move(v.upcoming)), end(std::move(v.end))
+                container(std::move(v.container)),
+                current(std::move(v.current)),
+                upcoming(std::move(v.upcoming)),
+                end(std::move(v.end))
             {
             }
 
@@ -418,7 +458,7 @@ namespace Linq
 
             __forceinline bool Next() noexcept
             {
-                if(upcoming == end)
+                if (upcoming == end)
                 {
                     return false;
                 }
@@ -464,11 +504,14 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return current; }
+            __forceinline return_type Front() const
+            {
+                return current;
+            }
 
             __forceinline bool Next() noexcept
             {
-                if(current >= end)
+                if (current >= end)
                 {
                     return false;
                 }
@@ -505,11 +548,14 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return value; }
+            __forceinline return_type Front() const
+            {
+                return value;
+            }
 
             __forceinline bool Next() noexcept
             {
-                if(remaining == 0U)
+                if (remaining == 0U)
                 {
                     return false;
                 }
@@ -549,7 +595,10 @@ namespace Linq
                 throw ProgrammingErrorException();
             }
 
-            __forceinline bool Next() noexcept { return false; }
+            __forceinline bool Next() noexcept
+            {
+                return false;
+            }
         };
 
         template<typename TValue>
@@ -581,7 +630,10 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const noexcept { return value; }
+            __forceinline return_type Front() const noexcept
+            {
+                return value;
+            }
 
             __forceinline bool Next() noexcept
             {
@@ -620,7 +672,7 @@ namespace Linq
 
             typedef typename TRange::value_type  value_type;
             typedef typename TRange::return_type forwarding_return_type;
-            typedef value_type const&            return_type;
+            typedef const value_type&            return_type;
             enum
             {
                 forward_returns_reference = TRange::returns_reference,
@@ -635,13 +687,20 @@ namespace Linq
             std::vector<value_type> sorted_values;
 
             __forceinline OrderbyRange(range_type range, predicate_type predicate, const bool sort_ascending) noexcept :
-                range(std::move(range)), predicate(std::move(predicate)), sort_ascending(sort_ascending), current(invalid_size)
+                range(std::move(range)),
+                predicate(std::move(predicate)),
+                sort_ascending(sort_ascending),
+                current(invalid_size)
             {
                 static_assert(!std::is_convertible<range_type, SortingRange>::value, "orderby may not follow orderby or thenby");
             }
 
             __forceinline OrderbyRange(OrderbyRange const& v) :
-                range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values)
+                range(v.range),
+                predicate(v.predicate),
+                sort_ascending(v.sort_ascending),
+                current(v.current),
+                sorted_values(v.sorted_values)
             {
             }
 
@@ -654,13 +713,19 @@ namespace Linq
             {
             }
 
-            __forceinline forwarding_return_type ForwardingFront() const { return range.Front(); }
-
-            __forceinline bool ForwardingNext() { return range.Next(); }
-
-            __forceinline bool CompareValues(value_type const& l, value_type const& r) const
+            __forceinline forwarding_return_type ForwardingFront() const
             {
-                if(sort_ascending)
+                return range.Front();
+            }
+
+            __forceinline bool ForwardingNext()
+            {
+                return range.Next();
+            }
+
+            __forceinline bool CompareValues(const value_type& l, const value_type& r) const
+            {
+                if (sort_ascending)
                 {
                     return predicate(l) < predicate(r);
                 }
@@ -673,31 +738,36 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return sorted_values[current]; }
+            __forceinline return_type Front() const
+            {
+                return sorted_values[current];
+            }
 
             KOKKOS_FUNCTION bool Next()
             {
-                if(current == invalid_size)
+                if (current == invalid_size)
                 {
                     sorted_values.clear();
 
-                    while(range.Next())
+                    while (range.Next())
                     {
                         sorted_values.push_back(range.Front());
                     }
 
-                    if(sorted_values.size() == 0)
+                    if (sorted_values.size() == 0)
                     {
                         return false;
                     }
 
-                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->CompareValues(l, r); });
+                    std::sort(sorted_values.begin(), sorted_values.end(), [this](const value_type& l, const value_type& r) {
+                        return this->CompareValues(l, r);
+                    });
 
                     current = 0U;
                     return true;
                 }
 
-                if(current < sorted_values.size())
+                if (current < sorted_values.size())
                 {
                     ++current;
                 }
@@ -716,7 +786,8 @@ namespace Linq
             bool           sort_ascending;
 
             __forceinline explicit OrderbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept :
-                predicate(std::move(predicate)), sort_ascending(sort_ascending)
+                predicate(std::move(predicate)),
+                sort_ascending(sort_ascending)
             {
             }
 
@@ -740,7 +811,7 @@ namespace Linq
 
             typedef typename TRange::value_type             value_type;
             typedef typename TRange::forwarding_return_type forwarding_return_type;
-            typedef value_type const&                       return_type;
+            typedef const value_type&                       return_type;
             enum
             {
                 forward_returns_reference = TRange::forward_returns_reference,
@@ -755,13 +826,20 @@ namespace Linq
             std::vector<value_type> sorted_values;
 
             __forceinline ThenbyRange(range_type range, predicate_type predicate, const bool sort_ascending) noexcept :
-                range(std::move(range)), predicate(std::move(predicate)), sort_ascending(sort_ascending), current(invalid_size)
+                range(std::move(range)),
+                predicate(std::move(predicate)),
+                sort_ascending(sort_ascending),
+                current(invalid_size)
             {
                 static_assert(std::is_convertible<range_type, SortingRange>::value, "thenby may only follow orderby or thenby");
             }
 
             __forceinline ThenbyRange(ThenbyRange const& v) :
-                range(v.range), predicate(v.predicate), sort_ascending(v.sort_ascending), current(v.current), sorted_values(v.sorted_values)
+                range(v.range),
+                predicate(v.predicate),
+                sort_ascending(v.sort_ascending),
+                current(v.current),
+                sorted_values(v.sorted_values)
             {
             }
 
@@ -780,56 +858,67 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline forwarding_return_type ForwardingFront() const { return range.Front(); }
+            __forceinline forwarding_return_type ForwardingFront() const
+            {
+                return range.Front();
+            }
 
-            __forceinline bool ForwardingNext() { return range.Next(); }
+            __forceinline bool ForwardingNext()
+            {
+                return range.Next();
+            }
 
-            __forceinline bool CompareValues(value_type const& l, value_type const& r) const
+            __forceinline bool CompareValues(const value_type& l, const value_type& r) const
             {
                 auto pless = range.compare_values(l, r);
-                if(pless)
+                if (pless)
                 {
                     return true;
                 }
 
                 auto pgreater = range.compare_values(r, l);
-                if(pgreater)
+                if (pgreater)
                 {
                     return false;
                 }
 
-                if(sort_ascending)
+                if (sort_ascending)
                 {
                     return predicate(l) < predicate(r);
                 }
                 return predicate(r) < predicate(l);
             }
 
-            __forceinline return_type Front() const { return sorted_values[current]; }
+            __forceinline return_type Front() const
+            {
+                return sorted_values[current];
+            }
 
             KOKKOS_FUNCTION bool Next()
             {
-                if(current == invalid_size)
+                if (current == invalid_size)
                 {
                     sorted_values.clear();
 
-                    while(range.forwarding_next())
+                    while (range.forwarding_next())
                     {
                         sorted_values.push_back(range.forwarding_front());
                     }
 
-                    if(sorted_values.size() == 0)
+                    if (sorted_values.size() == 0)
                     {
                         return false;
                     }
 
-                    std::sort(sorted_values.begin(), sorted_values.end(), [this](value_type const& l, value_type const& r) { return this->CompareValues(l, r); });
+                    std::sort(sorted_values.begin(), sorted_values.end(), [this](const value_type& l, const value_type& r) {
+                        return this->CompareValues(l, r);
+                    });
 
                     current = 0U;
                     return true;
                 }
 
-                if(current < sorted_values.size())
+                if (current < sorted_values.size())
                 {
                     ++current;
                 }
@@ -862,7 +951,8 @@ namespace Linq
 
         template<typename TPredicate>
         ThenbyBuilder<TPredicate>::ThenbyBuilder(predicate_type predicate, const bool sort_ascending) noexcept :
-            predicate(std::move(predicate)), sort_ascending(sort_ascending)
+            predicate(std::move(predicate)),
+            sort_ascending(sort_ascending)
         {
         }
 
@@ -873,7 +963,7 @@ namespace Linq
             typedef TRange               range_type;
 
             typedef typename TRange::value_type value_type;
-            typedef value_type const&           return_type;
+            typedef const value_type&           return_type;
 
             typedef std::vector<value_type> stack_type;
 
@@ -892,7 +982,10 @@ namespace Linq
             __forceinline ReverseRange(ReverseRange const& v) noexcept : range(v.range), capacity(v.capacity), reversed(v.reversed), start(v.start) {}
 
             __forceinline ReverseRange(ReverseRange&& v) noexcept :
-                range(std::move(v.range)), capacity(std::move(v.capacity)), reversed(std::move(v.reversed)), start(std::move(v.start))
+                range(std::move(v.range)),
+                capacity(std::move(v.capacity)),
+                reversed(std::move(v.reversed)),
+                start(std::move(v.start))
             {
             }
 
@@ -911,14 +1004,14 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(start)
+                if (start)
                 {
                     start = false;
 
                     reversed.clear();
                     reversed.reserve(capacity);
 
-                    while(range.Next())
+                    while (range.Next())
                     {
                         reversed.push_back(range.Front());
                     }
@@ -926,7 +1019,7 @@ namespace Linq
                     return !reversed.empty();
                 }
 
-                if(reversed.empty())
+                if (reversed.empty())
                 {
                     return false;
                 }
@@ -985,13 +1078,16 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return range.Front(); }
+            __forceinline return_type Front() const
+            {
+                return range.Front();
+            }
 
             __forceinline bool Next()
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front()))
+                    if (predicate(range.Front()))
                     {
                         return true;
                     }
@@ -1051,11 +1147,14 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return range.Front(); }
+            __forceinline return_type Front() const
+            {
+                return range.Front();
+            }
 
             __forceinline bool Next()
             {
-                if(current >= count)
+                if (current >= count)
                 {
                     return false;
                 }
@@ -1114,22 +1213,25 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return range.Front(); }
+            __forceinline return_type Front() const
+            {
+                return range.Front();
+            }
 
             __forceinline bool Next()
             {
-                if(done)
+                if (done)
                 {
                     return false;
                 }
 
-                if(!range.Next())
+                if (!range.Next())
                 {
                     done = true;
                     return false;
                 }
 
-                if(!predicate(range.Front()))
+                if (!predicate(range.Front()))
                 {
                     done = true;
                     return false;
@@ -1189,21 +1291,24 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return range.Front(); }
+            __forceinline return_type Front() const
+            {
+                return range.Front();
+            }
 
             __forceinline bool Next()
             {
-                if(current == invalid_size)
+                if (current == invalid_size)
                 {
                     return false;
                 }
 
-                while(current < count && range.Next())
+                while (current < count && range.Next())
                 {
                     ++current;
                 }
 
-                if(current < count)
+                if (current < count)
                 {
                     current = invalid_size;
                     return false;
@@ -1262,18 +1367,21 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return range.Front(); }
+            __forceinline return_type Front() const
+            {
+                return range.Front();
+            }
 
             __forceinline bool Next()
             {
-                if(!skipping)
+                if (!skipping)
                 {
                     return range.Next();
                 }
 
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(!predicate(range.Front()))
+                    if (!predicate(range.Front()))
                     {
                         skipping = false;
                         return true;
@@ -1335,9 +1443,15 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return value_type(range.Front()); }
+            __forceinline return_type Front() const
+            {
+                return value_type(range.Front());
+            }
 
-            __forceinline bool Next() { return range.Next(); }
+            __forceinline bool Next()
+            {
+                return range.Next();
+            }
         };
 
         struct RefBuilder : BaseBuilder
@@ -1365,7 +1479,7 @@ namespace Linq
 
             typedef decltype(GetPredicate()(GetSource()))      raw_value_type;
             typedef typename CleanupType<raw_value_type>::type value_type;
-            typedef value_type const&                          return_type;
+            typedef const value_type&                          return_type;
             enum
             {
                 returns_reference = 1,
@@ -1400,7 +1514,7 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(range.Next())
+                if (range.Next())
                 {
                     cache_value = predicate(range.Front());
                     return true;
@@ -1493,12 +1607,12 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(inner_range && inner_range->Next())
+                if (inner_range && inner_range->Next())
                 {
                     return true;
                 }
 
-                if(range.Next())
+                if (range.Next())
                 {
                     inner_range = predicate(range.Front());
                     return inner_range && inner_range->Next();
@@ -1625,10 +1739,10 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(start)
+                if (start)
                 {
                     start = false;
-                    while(other_range.Next())
+                    while (other_range.Next())
                     {
                         auto other_value = other_range.Front();
                         auto other_key   = other_key_selector(other_value);
@@ -1636,29 +1750,29 @@ namespace Linq
                     }
 
                     current = map.end();
-                    if(map.size() == 0U)
+                    if (map.size() == 0U)
                     {
                         return false;
                     }
                 }
 
-                if(current != map.end())
+                if (current != map.end())
                 {
                     auto previous = current;
                     ++current;
-                    if(current != map.end() && !(previous->first < current->first))
+                    if (current != map.end() && !(previous->first < current->first))
                     {
                         return true;
                     }
                 }
 
-                while(range.Next())
+                while (range.Next())
                 {
                     auto value = range.Front();
                     auto key   = key_selector(value);
 
                     current = map.find(key);
-                    if(current != map.end())
+                    if (current != map.end())
                     {
                         return true;
                     }
@@ -1687,12 +1801,18 @@ namespace Linq
                                       key_selector_type       key_selector,
                                       other_key_selector_type other_key_selector,
                                       combiner_type           combiner) noexcept :
-                other_range(std::move(other_range)), key_selector(std::move(key_selector)), other_key_selector(std::move(other_key_selector)), combiner(std::move(combiner))
+                other_range(std::move(other_range)),
+                key_selector(std::move(key_selector)),
+                other_key_selector(std::move(other_key_selector)),
+                combiner(std::move(combiner))
             {
             }
 
             __forceinline JoinBuilder(JoinBuilder const& v) :
-                other_range(v.other_range), key_selector(v.key_selector), other_key_selector(v.other_key_selector), combiner(v.combiner)
+                other_range(v.other_range),
+                key_selector(v.key_selector),
+                other_key_selector(v.other_key_selector),
+                combiner(v.combiner)
             {
             }
 
@@ -1718,7 +1838,7 @@ namespace Linq
             typedef TRange                range_type;
 
             typedef typename CleanupType<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                       return_type;
+            typedef const value_type&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1743,14 +1863,17 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return *current; }
+            __forceinline return_type Front() const
+            {
+                return *current;
+            }
 
             __forceinline bool Next()
             {
-                while(range.Next())
+                while (range.Next())
                 {
                     auto result = set.insert(range.Front());
-                    if(result.second)
+                    if (result.second)
                     {
                         current = result.first;
                         return true;
@@ -1786,7 +1909,7 @@ namespace Linq
             typedef TOtherRange                     other_range_type;
 
             typedef typename CleanupType<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                       return_type;
+            typedef const value_type&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1805,7 +1928,10 @@ namespace Linq
             __forceinline UnionRange(UnionRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current) {}
 
             __forceinline UnionRange(UnionRange&& v) noexcept :
-                range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current))
+                range(std::move(v.range)),
+                other_range(std::move(v.other_range)),
+                set(std::move(v.set)),
+                current(std::move(v.current))
             {
             }
 
@@ -1815,24 +1941,27 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return *current; }
+            __forceinline return_type Front() const
+            {
+                return *current;
+            }
 
             __forceinline bool Next()
             {
-                while(range.Next())
+                while (range.Next())
                 {
                     auto result = set.insert(range.Front());
-                    if(result.second)
+                    if (result.second)
                     {
                         current = result.first;
                         return true;
                     }
                 }
 
-                while(other_range.Next())
+                while (other_range.Next())
                 {
                     auto result = set.insert(other_range.Front());
-                    if(result.second)
+                    if (result.second)
                     {
                         current = result.first;
                         return true;
@@ -1872,7 +2001,7 @@ namespace Linq
             typedef TOtherRange                         other_range_type;
 
             typedef typename CleanupType<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                       return_type;
+            typedef const value_type&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -1894,7 +2023,11 @@ namespace Linq
             __forceinline IntersectRange(IntersectRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
 
             __forceinline IntersectRange(IntersectRange&& v) noexcept :
-                range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current)), start(std::move(v.start))
+                range(std::move(v.range)),
+                other_range(std::move(v.other_range)),
+                set(std::move(v.set)),
+                current(std::move(v.current)),
+                start(std::move(v.start))
             {
             }
 
@@ -1912,19 +2045,19 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(start)
+                if (start)
                 {
                     start = false;
 
-                    while(other_range.Next())
+                    while (other_range.Next())
                     {
                         set.insert(other_range.Front());
                     }
 
-                    while(range.Next())
+                    while (range.Next())
                     {
                         current = set.find(range.Front());
-                        if(current != set.end())
+                        if (current != set.end())
                         {
                             return true;
                         }
@@ -1935,17 +2068,17 @@ namespace Linq
                     return false;
                 }
 
-                if(set.empty())
+                if (set.empty())
                 {
                     return false;
                 }
 
                 set.erase(current);
 
-                while(range.Next())
+                while (range.Next())
                 {
                     current = set.find(range.Front());
-                    if(current != set.end())
+                    if (current != set.end())
                     {
                         return true;
                     }
@@ -1984,7 +2117,7 @@ namespace Linq
             typedef TOtherRange                      other_range_type;
 
             typedef typename CleanupType<typename TRange::value_type>::type value_type;
-            typedef value_type const&                                       return_type;
+            typedef const value_type&                                       return_type;
             enum
             {
                 returns_reference = 1,
@@ -2004,7 +2137,11 @@ namespace Linq
             __forceinline ExceptRange(ExceptRange const& v) noexcept : range(v.range), other_range(v.other_range), set(v.set), current(v.current), start(v.start) {}
 
             __forceinline ExceptRange(ExceptRange&& v) noexcept :
-                range(std::move(v.range)), other_range(std::move(v.other_range)), set(std::move(v.set)), current(std::move(v.current)), start(std::move(v.start))
+                range(std::move(v.range)),
+                other_range(std::move(v.other_range)),
+                set(std::move(v.set)),
+                current(std::move(v.current)),
+                start(std::move(v.start))
             {
             }
 
@@ -2014,23 +2151,26 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return *current; }
+            __forceinline return_type Front() const
+            {
+                return *current;
+            }
 
             __forceinline bool Next()
             {
-                if(start)
+                if (start)
                 {
                     start = false;
-                    while(other_range.Next())
+                    while (other_range.Next())
                     {
                         set.insert(other_range.Front());
                     }
                 }
 
-                while(range.Next())
+                while (range.Next())
                 {
                     auto result = set.insert(range.Front());
-                    if(result.second)
+                    if (result.second)
                     {
                         current = result.first;
                         return true;
@@ -2091,7 +2231,9 @@ namespace Linq
             state            state;
 
             __forceinline ConcatRange(range_type range, other_range_type other_range) noexcept :
-                range(std::move(range)), other_range(std::move(other_range)), state(state_initial)
+                range(std::move(range)),
+                other_range(std::move(other_range)),
+                state(state_initial)
             {
             }
 
@@ -2107,28 +2249,31 @@ namespace Linq
 
             __forceinline return_type Front() const
             {
-                switch(state)
+                switch (state)
                 {
                     case state_initial:
                     case state_end:
-                    default: Assert(false); // Intentionally falls through
-                    case state_iterating_range: return range.Front();
-                    case state_iterating_other_range: return other_range.Front();
+                    default:
+                        Assert(false); // Intentionally falls through
+                    case state_iterating_range:
+                        return range.Front();
+                    case state_iterating_other_range:
+                        return other_range.Front();
                 };
             }
 
             __forceinline bool Next()
             {
-                switch(state)
+                switch (state)
                 {
                     case state_initial:
-                        if(range.Next())
+                        if (range.Next())
                         {
                             state = state_iterating_range;
                             return true;
                         }
 
-                        if(other_range.Next())
+                        if (other_range.Next())
                         {
                             state = state_iterating_other_range;
                             return true;
@@ -2137,12 +2282,12 @@ namespace Linq
                         state = state_end;
                         return false;
                     case state_iterating_range:
-                        if(range.Next())
+                        if (range.Next())
                         {
                             return true;
                         }
 
-                        if(other_range.Next())
+                        if (other_range.Next())
                         {
                             state = state_iterating_other_range;
                             return true;
@@ -2151,7 +2296,7 @@ namespace Linq
                         state = state_end;
                         return false;
                     case state_iterating_other_range:
-                        if(other_range.Next())
+                        if (other_range.Next())
                         {
                             return true;
                         }
@@ -2159,7 +2304,8 @@ namespace Linq
                         state = state_end;
                         return false;
                     case state_end:
-                    default: return false;
+                    default:
+                        return false;
                 }
             }
         };
@@ -2212,7 +2358,10 @@ namespace Linq
 
                 __forceinline ContainerIterator() noexcept : has_value(false) {}
 
-                __forceinline ContainerIterator(range_type r) noexcept : range(std::move(r)) { has_value = range && range->Next(); }
+                __forceinline ContainerIterator(range_type r) noexcept : range(std::move(r))
+                {
+                    has_value = range && range->Next();
+                }
 
                 __forceinline ContainerIterator(ContainerIterator const& v) noexcept : has_value(v.has_value), range(v.range) {}
 
@@ -2233,7 +2382,7 @@ namespace Linq
 
                 __forceinline this_type& operator++()
                 {
-                    if(has_value && range)
+                    if (has_value && range)
                     {
                         has_value = range->Next();
                     }
@@ -2243,12 +2392,12 @@ namespace Linq
 
                 __forceinline bool operator==(this_type const& v) const noexcept
                 {
-                    if(!has_value && !v.has_value)
+                    if (!has_value && !v.has_value)
                     {
                         return true;
                     }
 
-                    if(has_value && v.has_value && range.get_ptr() == v.range.get_ptr())
+                    if (has_value && v.has_value && range.get_ptr() == v.range.get_ptr())
                     {
                         return true;
                     }
@@ -2256,7 +2405,10 @@ namespace Linq
                     return false;
                 }
 
-                __forceinline bool operator!=(this_type const& v) const noexcept { return !(*this == v); }
+                __forceinline bool operator!=(this_type const& v) const noexcept
+                {
+                    return !(*this == v);
+                }
             };
 
             template<typename TRange>
@@ -2279,9 +2431,15 @@ namespace Linq
 
                 __forceinline Container(Container&& v) noexcept : range(std::move(v.range)) {}
 
-                __forceinline ContainerIterator<TRange> begin() noexcept { return ContainerIterator<TRange>(range); }
+                __forceinline ContainerIterator<TRange> begin() noexcept
+                {
+                    return ContainerIterator<TRange>(range);
+                }
 
-                __forceinline ContainerIterator<TRange> end() noexcept { return ContainerIterator<TRange>(); }
+                __forceinline ContainerIterator<TRange> end() noexcept
+                {
+                    return ContainerIterator<TRange>();
+                }
             };
 
             struct ContainerBuilder : BaseBuilder
@@ -2320,7 +2478,7 @@ namespace Linq
                 std::vector<typename TRange::value_type> result;
                 result.reserve(capacity);
 
-                while(range.Next())
+                while (range.Next())
                 {
                     result.push_back(range.Front());
                 }
@@ -2344,7 +2502,7 @@ namespace Linq
             {
                 std::list<typename TRange::value_type> result;
 
-                while(range.Next())
+                while (range.Next())
                 {
                     result.push_back(range.Front());
                 }
@@ -2376,7 +2534,7 @@ namespace Linq
 
                 result_type result;
 
-                while(range.Next())
+                while (range.Next())
                 {
                     auto v = range.Front();
                     auto k = key_predicate(v);
@@ -2408,7 +2566,7 @@ namespace Linq
                 v.reserve(capacity);
 
                 auto index = 0U;
-                while(range.Next())
+                while (range.Next())
                 {
                     auto value = range.Front();
                     auto key   = selector(value);
@@ -2417,12 +2575,14 @@ namespace Linq
                     ++index;
                 }
 
-                if(v.size() == 0)
+                if (v.size() == 0)
                 {
                     return;
                 }
 
-                std::sort(k.begin(), k.end(), [](typename keys_type::value_type const& l, typename keys_type::value_type const& r) { return l.first < r.first; });
+                std::sort(k.begin(), k.end(), [](typename keys_type::const value_type& l, typename keys_type::const value_type& r) {
+                    return l.first < r.first;
+                });
 
                 keys.reserve(k.size());
                 values.reserve(v.size());
@@ -2432,7 +2592,7 @@ namespace Linq
 
                 index = 0U;
 
-                if(iter != end)
+                if (iter != end)
                 {
                     values.push_back(std::move(v[iter->second]));
                     keys.push_back(typename keys_type::value_type(iter->first, index));
@@ -2442,11 +2602,11 @@ namespace Linq
                 ++iter;
                 ++index;
 
-                while(iter != end)
+                while (iter != end)
                 {
                     values.push_back(v[iter->second]);
 
-                    if(previous->first < iter->first)
+                    if (previous->first < iter->first)
                     {
                         keys.push_back(typename keys_type::value_type(iter->first, index));
                     }
@@ -2469,7 +2629,7 @@ namespace Linq
 
             __forceinline Lookup& operator=(Lookup const& v)
             {
-                if(this == std::addressof(v))
+                if (this == std::addressof(v))
                 {
                     return *this;
                 }
@@ -2483,7 +2643,7 @@ namespace Linq
 
             __forceinline Lookup& operator=(Lookup&& v) noexcept
             {
-                if(this == std::addressof(v))
+                if (this == std::addressof(v))
                 {
                     return *this;
                 }
@@ -2503,7 +2663,7 @@ namespace Linq
                 };
 
                 typedef TValue            value_type;
-                typedef value_type const& return_type;
+                typedef const value_type& return_type;
 
                 enum state
                 {
@@ -2518,7 +2678,10 @@ namespace Linq
                 state              state;
 
                 __forceinline LookupRange(values_type const* values, const size_type iter, const size_type end) noexcept :
-                    values(values), iter(iter), end(end), state(state_initial)
+                    values(values),
+                    iter(iter),
+                    end(end),
+                    state(state_initial)
                 {
                     Assert(values);
                 }
@@ -2543,7 +2706,7 @@ namespace Linq
 
                 __forceinline bool Next() noexcept
                 {
-                    switch(state)
+                    switch (state)
                     {
                         case state_initial:
                         {
@@ -2560,14 +2723,15 @@ namespace Linq
                             return has_elements;
                         }
                         case state_end:
-                        default: return false;
+                        default:
+                            return false;
                     }
                 }
             };
 
             KOKKOS_FUNCTION LookupRange operator[](key_type const& key) const noexcept
             {
-                if(values.empty())
+                if (values.empty())
                 {
                     return LookupRange(std::addressof(values), 0U, 0U);
                 }
@@ -2575,15 +2739,17 @@ namespace Linq
                 auto find = std::lower_bound(keys.begin(),
                                              keys.end(),
                                              typename keys_type::value_type(key, 0U),
-                                             [](typename keys_type::value_type const& l, typename keys_type::value_type const& r) { return l.first < r.first; });
+                                             [](typename keys_type::const value_type& l, typename keys_type::const value_type& r) {
+                                                 return l.first < r.first;
+                                             });
 
-                if(find == keys.end())
+                if (find == keys.end())
                 {
                     return LookupRange(std::addressof(values), 0U, 0U);
                 }
 
                 auto next = find + 1;
-                if(next == keys.end())
+                if (next == keys.end())
                 {
                     return LookupRange(std::addressof(values), find->second, values.size());
                 }
@@ -2591,11 +2757,20 @@ namespace Linq
                 return LookupRange(std::addressof(values), find->second, next->second);
             }
 
-            __forceinline size_type size_of_keys() const noexcept { return keys.size(); }
+            __forceinline size_type size_of_keys() const noexcept
+            {
+                return keys.size();
+            }
 
-            __forceinline size_type size_of_values() const noexcept { return values.size(); }
+            __forceinline size_type size_of_values() const noexcept
+            {
+                return values.size();
+            }
 
-            __forceinline FromRange<values_iterator_type> range_of_values() const noexcept { return FromRange<values_iterator_type>(values.begin(), values.end()); }
+            __forceinline FromRange<values_iterator_type> range_of_values() const noexcept
+            {
+                return FromRange<values_iterator_type>(values.begin(), values.end());
+            }
 
         private:
             values_type values;
@@ -2646,7 +2821,7 @@ namespace Linq
             template<typename TRange>
             __forceinline void build(TRange range) const
             {
-                while(range.Next())
+                while (range.Next())
                 {
                     predicate(range.Front());
                 }
@@ -2670,9 +2845,9 @@ namespace Linq
             template<typename TRange>
             __forceinline typename TRange::value_type build(TRange range)
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front()))
+                    if (predicate(range.Front()))
                     {
                         return range.Front();
                     }
@@ -2695,7 +2870,7 @@ namespace Linq
             template<typename TRange>
             __forceinline typename TRange::value_type build(TRange range)
             {
-                if(range.Next())
+                if (range.Next())
                 {
                     return range.Front();
                 }
@@ -2721,9 +2896,9 @@ namespace Linq
             template<typename TRange>
             __forceinline typename TRange::value_type build(TRange range) const
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front()))
+                    if (predicate(range.Front()))
                     {
                         return range.Front();
                     }
@@ -2746,7 +2921,7 @@ namespace Linq
             template<typename TRange>
             __forceinline typename TRange::value_type build(TRange range) const
             {
-                if(range.Next())
+                if (range.Next())
                 {
                     return range.Front();
                 }
@@ -2774,9 +2949,9 @@ namespace Linq
             {
                 auto current = typename TRange::value_type();
 
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front()))
+                    if (predicate(range.Front()))
                     {
                         current = std::move(range.Front());
                     }
@@ -2801,7 +2976,7 @@ namespace Linq
             {
                 auto current = typename TRange::value_type();
 
-                while(range.Next())
+                while (range.Next())
                 {
                     current = std::move(range.Front());
                 }
@@ -2828,9 +3003,9 @@ namespace Linq
             __forceinline size_type build(TRange range) const
             {
                 size_type count = 0U;
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front()))
+                    if (predicate(range.Front()))
                     {
                         ++count;
                     }
@@ -2853,7 +3028,7 @@ namespace Linq
             __forceinline size_type build(TRange range) const
             {
                 size_type count = 0U;
-                while(range.Next())
+                while (range.Next())
                 {
                     ++count;
                 }
@@ -2881,7 +3056,7 @@ namespace Linq
                 typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto sum = value_type();
-                while(range.Next())
+                while (range.Next())
                 {
                     sum += selector(range.Front());
                 }
@@ -2903,7 +3078,7 @@ namespace Linq
             __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto sum = typename TRange::value_type();
-                while(range.Next())
+                while (range.Next())
                 {
                     sum += range.Front();
                 }
@@ -2931,10 +3106,10 @@ namespace Linq
                 typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto current = std::numeric_limits<value_type>::lowest();
-                while(range.Next())
+                while (range.Next())
                 {
                     auto v = selector(range.Front());
-                    if(current < v)
+                    if (current < v)
                     {
                         current = std::move(v);
                     }
@@ -2958,10 +3133,10 @@ namespace Linq
             __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = std::numeric_limits<typename TRange::value_type>::lowest();
-                while(range.Next())
+                while (range.Next())
                 {
                     auto v = range.Front();
-                    if(current < v)
+                    if (current < v)
                     {
                         current = std::move(v);
                     }
@@ -2991,10 +3166,10 @@ namespace Linq
                 typedef typename GetTransformedType<selector_type, typename TRange::value_type>::type value_type;
 
                 auto current = std::numeric_limits<value_type>::max();
-                while(range.Next())
+                while (range.Next())
                 {
                     auto v = selector(range.Front());
-                    if(v < current)
+                    if (v < current)
                     {
                         current = std::move(v);
                     }
@@ -3018,10 +3193,10 @@ namespace Linq
             __forceinline typename TRange::value_type build(TRange range) const
             {
                 auto current = std::numeric_limits<typename TRange::value_type>::max();
-                while(range.Next())
+                while (range.Next())
                 {
                     auto v = range.Front();
-                    if(v < current)
+                    if (v < current)
                     {
                         current = std::move(v);
                     }
@@ -3052,13 +3227,13 @@ namespace Linq
 
                 auto sum   = value_type();
                 int  count = 0;
-                while(range.Next())
+                while (range.Next())
                 {
                     sum += selector(range.Front());
                     ++count;
                 }
 
-                if(count == 0)
+                if (count == 0)
                 {
                     return sum;
                 }
@@ -3082,13 +3257,13 @@ namespace Linq
             {
                 auto sum   = typename TRange::value_type();
                 int  count = 0;
-                while(range.Next())
+                while (range.Next())
                 {
                     sum += range.Front();
                     ++count;
                 }
 
-                if(count == 0)
+                if (count == 0)
                 {
                     return sum;
                 }
@@ -3117,7 +3292,7 @@ namespace Linq
             __forceinline seed_type build(TRange range) const
             {
                 auto sum = seed;
-                while(range.Next())
+                while (range.Next())
                 {
                     sum = accumulator(sum, range.Front());
                 }
@@ -3138,17 +3313,23 @@ namespace Linq
             result_selector_type result_selector;
 
             __forceinline AggregateResultSelectorBuilder(seed_type seed, accumulator_type accumulator, result_selector_type result_selector) noexcept :
-                seed(std::move(seed)), accumulator(std::move(accumulator)), result_selector(std::move(result_selector))
+                seed(std::move(seed)),
+                accumulator(std::move(accumulator)),
+                result_selector(std::move(result_selector))
             {
             }
 
             __forceinline AggregateResultSelectorBuilder(AggregateResultSelectorBuilder const& v) noexcept :
-                seed(v.seed), accumulator(v.accumulator), result_selector(v.result_selector)
+                seed(v.seed),
+                accumulator(v.accumulator),
+                result_selector(v.result_selector)
             {
             }
 
             __forceinline AggregateResultSelectorBuilder(AggregateResultSelectorBuilder&& v) noexcept :
-                seed(std::move(v.seed)), accumulator(std::move(v.accumulator)), result_selector(std::move(v.result_selector))
+                seed(std::move(v.seed)),
+                accumulator(std::move(v.accumulator)),
+                result_selector(std::move(v.result_selector))
             {
             }
 
@@ -3156,7 +3337,7 @@ namespace Linq
             __forceinline auto build(TRange range) const -> decltype(result_selector(seed))
             {
                 auto sum = seed;
-                while(range.Next())
+                while (range.Next())
                 {
                     sum = accumulator(sum, range.Front());
                 }
@@ -3176,7 +3357,8 @@ namespace Linq
             comparer_type    comparer;
 
             __forceinline SequenceEqualPredicateBuilder(TOtherRange other_range, comparer_type comparer) noexcept :
-                other_range(std::move(other_range)), comparer(std::move(comparer))
+                other_range(std::move(other_range)),
+                comparer(std::move(comparer))
             {
             }
 
@@ -3188,24 +3370,24 @@ namespace Linq
             __forceinline bool Build(TRange range) const
             {
                 auto copy = other_range;
-                for(;;)
+                for (;;)
                 {
                     const bool next1 = range.Next();
                     const bool next2 = copy.Next();
 
                     // sequences are not of same length
-                    if(next1 != next2)
+                    if (next1 != next2)
                     {
                         return false;
                     }
 
                     // both sequences are over, next1 = next2 = false
-                    if(!next1)
+                    if (!next1)
                     {
                         return true;
                     }
 
-                    if(!comparer(range.Front(), copy.Front()))
+                    if (!comparer(range.Front(), copy.Front()))
                     {
                         return false;
                     }
@@ -3231,24 +3413,24 @@ namespace Linq
             __forceinline bool Build(TRange range) const
             {
                 auto copy = other_range;
-                for(;;)
+                for (;;)
                 {
                     const bool next1 = range.Next();
                     const bool next2 = copy.Next();
 
                     // sequences are not of same length
-                    if(next1 != next2)
+                    if (next1 != next2)
                     {
                         return false;
                     }
 
                     // both sequences are over, next1 = next2 = false
-                    if(!next1)
+                    if (!next1)
                     {
                         return true;
                     }
 
-                    if(range.Front() != copy.Front())
+                    if (range.Front() != copy.Front())
                     {
                         return false;
                     }
@@ -3280,9 +3462,9 @@ namespace Linq
 
                 buffer.reserve(capacity);
 
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(first)
+                    if (first)
                     {
                         first = false;
                     }
@@ -3318,7 +3500,7 @@ namespace Linq
             __forceinline bool build(TRange range) const
             {
                 bool any = false;
-                while(range.Next() && !any)
+                while (range.Next() && !any)
                 {
                     any = predicate(range.Front());
                 }
@@ -3360,9 +3542,9 @@ namespace Linq
             template<typename TRange>
             __forceinline bool build(TRange range) const
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(!predicate(range.Front()))
+                    if (!predicate(range.Front()))
                     {
                         return false;
                     }
@@ -3389,9 +3571,9 @@ namespace Linq
             template<typename TRange>
             __forceinline bool build(TRange range) const
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(range.Front() == value)
+                    if (range.Front() == value)
                     {
                         return true;
                     }
@@ -3420,9 +3602,9 @@ namespace Linq
             template<typename TRange>
             __forceinline bool build(TRange range) const
             {
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(predicate(range.Front(), value))
+                    if (predicate(range.Front(), value))
                     {
                         return true;
                     }
@@ -3449,9 +3631,9 @@ namespace Linq
             {
                 size_type current = 0U;
 
-                while(range.Next())
+                while (range.Next())
                 {
-                    if(current < index)
+                    if (current < index)
                     {
                         ++current;
                     }
@@ -3505,9 +3687,9 @@ namespace Linq
 
             __forceinline bool Next()
             {
-                if(!previous.has_value())
+                if (!previous.has_value())
                 {
-                    if(range.Next())
+                    if (range.Next())
                     {
                         current = range.Front();
                     }
@@ -3519,7 +3701,7 @@ namespace Linq
 
                 previous.swap(current);
 
-                if(range.Next())
+                if (range.Next())
                 {
                     current = range.Front();
                     return true;
@@ -3580,9 +3762,15 @@ namespace Linq
                 return range_builder.build(*this);
             }
 
-            __forceinline return_type Front() const { return std::make_pair(range.Front(), other_range.Front()); }
+            __forceinline return_type Front() const
+            {
+                return std::make_pair(range.Front(), other_range.Front());
+            }
 
-            __forceinline bool Next() { return range.Next() && other_range.Next(); }
+            __forceinline bool Next()
+            {
+                return range.Next() && other_range.Next();
+            }
         };
 
         template<typename TOtherRange>
@@ -3619,7 +3807,7 @@ namespace Linq
 
             typedef GenerateRange<TPredicate> this_type;
             typedef TPredicate                predicate_type;
-            typedef value_type const&         return_type;
+            typedef const value_type&         return_type;
 
             enum
             {
@@ -3714,7 +3902,10 @@ namespace Linq
 
     // Projection operators
 
-    __forceinline detail::RefBuilder Ref() noexcept { return detail::RefBuilder(); }
+    __forceinline detail::RefBuilder Ref() noexcept
+    {
+        return detail::RefBuilder();
+    }
 
     template<typename TPredicate>
     __forceinline detail::SelectBuilder<TPredicate> Select(TPredicate predicate) noexcept
@@ -3734,8 +3925,10 @@ namespace Linq
                                                                                                     TOtherKeySelector other_key_selector,
                                                                                                     TCombiner         combiner) noexcept
     {
-        return detail::JoinBuilder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(
-            std::move(other_range), std::move(key_selector), std::move(other_key_selector), std::move(combiner));
+        return detail::JoinBuilder<TOtherRange, TKeySelector, TOtherKeySelector, TCombiner>(std::move(other_range),
+                                                                                            std::move(key_selector),
+                                                                                            std::move(other_key_selector),
+                                                                                            std::move(combiner));
     }
 
     // Concatenation operators
@@ -3754,7 +3947,10 @@ namespace Linq
         return detail::TakeWhileBuilder<TPredicate>(std::move(predicate));
     }
 
-    __forceinline detail::TakeBuilder Take(const size_type count) noexcept { return detail::TakeBuilder(count); }
+    __forceinline detail::TakeBuilder Take(const size_type count) noexcept
+    {
+        return detail::TakeBuilder(count);
+    }
 
     template<typename TPredicate>
     __forceinline detail::SkipWhileBuilder<TPredicate> SkipWhile(TPredicate predicate) noexcept
@@ -3762,7 +3958,10 @@ namespace Linq
         return detail::SkipWhileBuilder<TPredicate>(predicate);
     }
 
-    __forceinline detail::SkipBuilder Skip(const size_type count) noexcept { return detail::SkipBuilder(count); }
+    __forceinline detail::SkipBuilder Skip(const size_type count) noexcept
+    {
+        return detail::SkipBuilder(count);
+    }
 
     // Ordering operators
 
@@ -3802,13 +4001,19 @@ namespace Linq
         return detail::ThenbyBuilder<TPredicate>(std::move(predicate), false);
     }
 
-    __forceinline detail::ReverseBuilder Reverse(const size_type capacity = 16U) noexcept { return detail::ReverseBuilder(capacity); }
+    __forceinline detail::ReverseBuilder Reverse(const size_type capacity = 16U) noexcept
+    {
+        return detail::ReverseBuilder(capacity);
+    }
 
     // Conversion operators
 
     namespace experimental
     {
-        __forceinline detail::experimental::ContainerBuilder Container() noexcept { return detail::experimental::ContainerBuilder(); }
+        __forceinline detail::experimental::ContainerBuilder Container() noexcept
+        {
+            return detail::experimental::ContainerBuilder();
+        }
     }
 
     template<typename TValue>
@@ -3823,9 +4028,15 @@ namespace Linq
         return detail::Opt<TValue>();
     }
 
-    __forceinline detail::ToVectorBuilder ToVector(const size_type capacity = 16U) noexcept { return detail::ToVectorBuilder(capacity); }
+    __forceinline detail::ToVectorBuilder ToVector(const size_type capacity = 16U) noexcept
+    {
+        return detail::ToVectorBuilder(capacity);
+    }
 
-    __forceinline detail::ToListBuilder ToList() noexcept { return detail::ToListBuilder(); }
+    __forceinline detail::ToListBuilder ToList() noexcept
+    {
+        return detail::ToListBuilder();
+    }
 
     template<typename TKeyPredicate>
     __forceinline detail::ToMapBuilder<TKeyPredicate> ToMap(TKeyPredicate key_predicate) noexcept
@@ -3860,7 +4071,10 @@ namespace Linq
         return detail::FirstPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    __forceinline detail::FirstBuilder First() { return detail::FirstBuilder(); }
+    __forceinline detail::FirstBuilder First()
+    {
+        return detail::FirstBuilder();
+    }
 
     template<typename TPredicate>
     __forceinline detail::FirstOrDefaultPredicateBuilder<TPredicate> FirstOrDefault(TPredicate predicate) noexcept
@@ -3868,7 +4082,10 @@ namespace Linq
         return detail::FirstOrDefaultPredicateBuilder<TPredicate>(predicate);
     }
 
-    __forceinline detail::FirstOrDefaultBuilder FirstOrDefault() noexcept { return detail::FirstOrDefaultBuilder(); }
+    __forceinline detail::FirstOrDefaultBuilder FirstOrDefault() noexcept
+    {
+        return detail::FirstOrDefaultBuilder();
+    }
 
     template<typename TPredicate>
     __forceinline detail::LastOrDefaultPredicateBuilder<TPredicate> LastOrDefault(TPredicate predicate) noexcept
@@ -3876,9 +4093,15 @@ namespace Linq
         return detail::LastOrDefaultPredicateBuilder<TPredicate>(predicate);
     }
 
-    __forceinline detail::LastOrDefaultBuilder LastOrDefault() noexcept { return detail::LastOrDefaultBuilder(); }
+    __forceinline detail::LastOrDefaultBuilder LastOrDefault() noexcept
+    {
+        return detail::LastOrDefaultBuilder();
+    }
 
-    __forceinline detail::ElementAtOrDefaultBuilder ElementAtOrDefault(const size_type index) noexcept { return detail::ElementAtOrDefaultBuilder(index); }
+    __forceinline detail::ElementAtOrDefaultBuilder ElementAtOrDefault(const size_type index) noexcept
+    {
+        return detail::ElementAtOrDefaultBuilder(index);
+    }
 
     // Generation operators
 
@@ -3916,7 +4139,10 @@ namespace Linq
         return detail::AnyPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    __forceinline detail::AnyBuilder Any() noexcept { return detail::AnyBuilder(); }
+    __forceinline detail::AnyBuilder Any() noexcept
+    {
+        return detail::AnyBuilder();
+    }
 
     template<typename TPredicate>
     __forceinline detail::AllPredicateBuilder<TPredicate> All(TPredicate predicate) noexcept
@@ -3944,7 +4170,10 @@ namespace Linq
         return detail::CountPredicateBuilder<TPredicate>(std::move(predicate));
     }
 
-    __forceinline detail::CountBuilder Count() noexcept { return detail::CountBuilder(); }
+    __forceinline detail::CountBuilder Count() noexcept
+    {
+        return detail::CountBuilder();
+    }
 
     template<typename TSelector>
     __forceinline detail::SumSelectorBuilder<TSelector> Sum(TSelector selector) noexcept
@@ -3952,7 +4181,10 @@ namespace Linq
         return detail::SumSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    __forceinline detail::SumBuilder Sum() noexcept { return detail::SumBuilder(); }
+    __forceinline detail::SumBuilder Sum() noexcept
+    {
+        return detail::SumBuilder();
+    }
 
     template<typename TSelector>
     __forceinline detail::MaxSelectorBuilder<TSelector> Max(TSelector selector) noexcept
@@ -3960,7 +4192,10 @@ namespace Linq
         return detail::MaxSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    __forceinline detail::MaxBuilder Max() noexcept { return detail::MaxBuilder(); }
+    __forceinline detail::MaxBuilder Max() noexcept
+    {
+        return detail::MaxBuilder();
+    }
 
     template<typename TSelector>
     __forceinline detail::MinSelectorBuilder<TSelector> Min(TSelector selector) noexcept
@@ -3968,7 +4203,10 @@ namespace Linq
         return detail::MinSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    __forceinline detail::MinBuilder Min() noexcept { return detail::MinBuilder(); }
+    __forceinline detail::MinBuilder Min() noexcept
+    {
+        return detail::MinBuilder();
+    }
 
     template<typename TSelector>
     __forceinline detail::AvgSelectorBuilder<TSelector> Average(TSelector selector) noexcept
@@ -3976,7 +4214,10 @@ namespace Linq
         return detail::AvgSelectorBuilder<TSelector>(std::move(selector));
     }
 
-    __forceinline detail::AvgBuilder Average() noexcept { return detail::AvgBuilder(); }
+    __forceinline detail::AvgBuilder Average() noexcept
+    {
+        return detail::AvgBuilder();
+    }
 
     template<typename TAccumulate, typename TAccumulator>
     __forceinline detail::AggregateBuilder<TAccumulate, TAccumulator> Aggregate(TAccumulate seed, TAccumulator accumulator) noexcept
@@ -3993,7 +4234,10 @@ namespace Linq
     }
 
     // set operators
-    __forceinline detail::DistinctBuilder Distinct() noexcept { return detail::DistinctBuilder(); }
+    __forceinline detail::DistinctBuilder Distinct() noexcept
+    {
+        return detail::DistinctBuilder();
+    }
 
     template<typename TOtherRange>
     __forceinline detail::UnionBuilder<TOtherRange> UnionWith(TOtherRange other_range) noexcept
@@ -4031,7 +4275,10 @@ namespace Linq
         return detail::ConcatenateBuilder<wchar_t>(std::move(separator), capacity);
     }
 
-    __forceinline detail::PairwiseBuilder Pairwise() noexcept { return detail::PairwiseBuilder(); }
+    __forceinline detail::PairwiseBuilder Pairwise() noexcept
+    {
+        return detail::PairwiseBuilder();
+    }
 
     template<typename TOtherRange>
     __forceinline detail::ZipWithBuilder<TOtherRange> ZipWith(TOtherRange other_range) noexcept

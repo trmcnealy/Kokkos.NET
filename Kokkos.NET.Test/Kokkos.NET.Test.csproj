@@ -1,30 +1,47 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <IsPackable>false</IsPackable>
-    <Platforms>x64;AnyCPU</Platforms>
-    <OutputType>Exe</OutputType>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <StartupObject>Kokkos.Program</StartupObject>
-    <RootNamespace>Kokkos</RootNamespace>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-    <TieredCompilation>false</TieredCompilation>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
-  </PropertyGroup>
+    <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\DataStorage\Engineering.DataSource\Engineering.DataSource.csproj" />
-    <ProjectReference Include="..\..\Utilities\RuntimeGeneration\RuntimeGeneration\RuntimeGeneration.csproj" />
-    <ProjectReference Include="..\Kokkos.NET\Kokkos.NET.csproj" />
-  </ItemGroup>
+    <PropertyGroup>
+        <LangVersion>9.0</LangVersion>
+        <TargetFramework>net5.0</TargetFramework>
+        <!--<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>-->
+        <IsPackable>false</IsPackable>
+        <Platforms>AnyCPU;x86;x64</Platforms>
+        <OutputType>Exe</OutputType>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <StartupObject>Kokkos.Program</StartupObject>
+        <RootNamespace>Kokkos</RootNamespace>
+        <PublishTrimmed>true</PublishTrimmed>
+        <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+        <TieredCompilation>false</TieredCompilation>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+    </PropertyGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet restore" />
-  </Target>
+    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))\Artifacts.props"
+            Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))' != '' " />
+
+    <ItemGroup>
+        <Compile Remove="Tests\MemoryMappedTest.cs" />
+        <Compile Remove="Tests\VectorTests.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Kokkos.NET.Test.csproj.DotSettings" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="Tests\MemoryMappedTest.cs" />
+        <None Include="Tests\VectorTests.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Kokkos.NET" Version="$(KOKKOS_VERSION)" />
+    </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="dotnet restore" />
+    </Target>
 
 </Project>

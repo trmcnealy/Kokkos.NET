@@ -7,11 +7,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using RuntimeGeneration;
-#if TARGET_64BIT
-using nuint = System.UInt64;
-#else
+#if X86
 using nuint = System.UInt32;
-
+#else
+using nuint = System.UInt64;
 #endif
 
 namespace System
@@ -69,7 +68,7 @@ namespace Kokkos
             WholeFile = 0
         }
 
-        public IntPtr Pointer;
+        public nint Pointer;
 
         public MemoryMapped()
         {
@@ -96,12 +95,13 @@ namespace Kokkos
 
         private void ReleaseUnmanagedResources()
         {
+            Native.Close(Pointer);
             Native.Destory(Pointer);
         }
 
         ~MemoryMapped()
         {
-            ReleaseUnmanagedResources();
+            Dispose();
         }
 
         public bool Open(string    filename,
@@ -127,7 +127,7 @@ namespace Kokkos
 
             byte[] bytes = new byte[length];
 
-            IntPtr data = Native.GetData(Pointer);
+            nint data = Native.GetData(Pointer);
 
             Marshal.Copy(bytes, 0, data, length);
 
@@ -138,7 +138,7 @@ namespace Kokkos
         {
             unsafe
             {
-                return new UnmanagedMemoryStream((byte*)Pointer.ToPointer(), (long)Size());
+                return new UnmanagedMemoryStream((byte*)Pointer, (long)Size());
             }
         }
 
@@ -154,13 +154,13 @@ namespace Kokkos
                 throw new Exception("Retards at Microsoft limited ReadOnlySpan to 2147483647 bytes. Use the GetPointer method.");
             }
 
-            return new ReadOnlySpan<byte>(Native.GetData(Pointer).ToPointer(), Length());
+            return new ReadOnlySpan<byte>((void*)Native.GetData(Pointer), Length());
         }
 
         public unsafe T* GetPointer<T>()
             where T : unmanaged
         {
-            return (T*)Native.GetData(Pointer).ToPointer();
+            return (T*)Native.GetData(Pointer);
         }
 
         public bool IsValid()
@@ -191,35 +191,38 @@ namespace Kokkos
 
         public static class Native
         {
-            public delegate byte AtDelegate(IntPtr mm,
+            
+            
+            
+            public delegate byte AtDelegate(nint mm,
                                             ulong  offset);
 
-            public delegate void CloseDelegate(IntPtr mm);
+            public delegate void CloseDelegate(nint mm);
 
-            public delegate IntPtr CreateAndOpenDelegate(IntPtr    filename,
+            public delegate nint CreateAndOpenDelegate(nint    filename,
                                                          ulong     mappedBytes,
                                                          CacheHint hint);
 
-            public delegate IntPtr CreateDelegate();
+            public delegate nint CreateDelegate();
 
-            public delegate void DestoryDelegate(IntPtr mm);
+            public delegate void DestoryDelegate(nint mm);
 
-            public delegate IntPtr GetDataDelegate(IntPtr mm);
+            public delegate nint GetDataDelegate(nint mm);
 
-            public delegate bool IsValidDelegate(IntPtr mm);
+            public delegate bool IsValidDelegate(nint mm);
 
-            public delegate ulong MappedSizeDelegate(IntPtr mm);
+            public delegate ulong MappedSizeDelegate(nint mm);
 
-            public delegate bool OpenDelegate(IntPtr    mm,
-                                              IntPtr    filename,
+            public delegate bool OpenDelegate(nint    mm,
+                                              nint    filename,
                                               ulong     mappedBytes,
                                               CacheHint hint);
 
-            public delegate bool RemapDelegate(IntPtr mm,
+            public delegate bool RemapDelegate(nint mm,
                                                ulong  offset,
                                                ulong  mappedBytes);
 
-            public delegate ulong SizeDelegate(IntPtr mm);
+            public delegate ulong SizeDelegate(nint mm);
 
             public const string LibraryName = "runtime.Kokkos.NET";
 
@@ -256,38 +259,32 @@ namespace Kokkos
             [NativeCall(LibraryName, "Remap", true)]
             public static RemapDelegate Remap;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
             [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
             static Native()
             {
                 //RuntimeCil.Generate(typeof(MemoryMapped).Assembly);
+                
+                Create = Marshal.GetDelegateForFunctionPointer<CreateDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Create"));
 
-                ulong errorCode;
+                CreateAndOpen = Marshal.GetDelegateForFunctionPointer<CreateAndOpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "CreateAndOpen"));
 
-                Create = Marshal.GetDelegateForFunctionPointer<CreateDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Create", out errorCode));
+                Destory = Marshal.GetDelegateForFunctionPointer<DestoryDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Destory"));
 
-                CreateAndOpen = Marshal.GetDelegateForFunctionPointer<CreateAndOpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "CreateAndOpen", out errorCode));
+                Open = Marshal.GetDelegateForFunctionPointer<OpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Open"));
 
-                Destory = Marshal.GetDelegateForFunctionPointer<DestoryDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Destory", out errorCode));
+                Close = Marshal.GetDelegateForFunctionPointer<CloseDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Close"));
 
-                Open = Marshal.GetDelegateForFunctionPointer<OpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Open", out errorCode));
+                At = Marshal.GetDelegateForFunctionPointer<AtDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "At"));
 
-                Close = Marshal.GetDelegateForFunctionPointer<CloseDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Close", out errorCode));
+                GetData = Marshal.GetDelegateForFunctionPointer<GetDataDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "GetData"));
 
-                At = Marshal.GetDelegateForFunctionPointer<AtDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "At", out errorCode));
+                IsValid = Marshal.GetDelegateForFunctionPointer<IsValidDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "IsValid"));
 
-                GetData = Marshal.GetDelegateForFunctionPointer<GetDataDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "GetData", out errorCode));
+                Size = Marshal.GetDelegateForFunctionPointer<SizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Size"));
 
-                IsValid = Marshal.GetDelegateForFunctionPointer<IsValidDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "IsValid", out errorCode));
+                MappedSize = Marshal.GetDelegateForFunctionPointer<MappedSizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "MappedSize"));
 
-                Size = Marshal.GetDelegateForFunctionPointer<SizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Size", out errorCode));
-
-                MappedSize = Marshal.GetDelegateForFunctionPointer<MappedSizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "MappedSize", out errorCode));
-
-                Remap = Marshal.GetDelegateForFunctionPointer<RemapDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Remap", out errorCode));
+                Remap = Marshal.GetDelegateForFunctionPointer<RemapDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Remap"));
             }
         }
     }

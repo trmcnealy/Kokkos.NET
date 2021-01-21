@@ -3,27 +3,25 @@ using System.Runtime.InteropServices;
 
 namespace Kokkos
 {
-    [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit,
-                  Size = sizeof(int) * 5 + sizeof(bool))]
+    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public struct InitArguments
     {
-        [FieldOffset(0)]
-        public int num_threads;
-
-        [FieldOffset(4)]
-        public int num_numa;
-
-        [FieldOffset(8)]
-        public int device_id;
-
-        [FieldOffset(12)]
-        public int ndevices;
-
-        [FieldOffset(16)]
-        public int skip_device;
-
-        [FieldOffset(20)]
+        public int  num_threads;
+        public int  num_numa;
+        public int  device_id;
+        public int  ndevices;
+        public int  skip_device;
         public bool disable_warnings;
+
+        //public InitArguments()
+        //{
+        //    num_threads      = -1;
+        //    num_numa         = -1;
+        //    device_id        = -1;
+        //    ndevices         = -1;
+        //    skip_device      = 9999;
+        //    disable_warnings = false;
+        //}
 
         public InitArguments(int  nt = -1,
                              int  nn = -1,

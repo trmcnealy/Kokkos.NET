@@ -20,6 +20,11 @@ static constexpr KokkosApi kokkos_api_version_1 =
     &CreateViewRank1,
     &CreateViewRank2,
     &CreateViewRank3,
+    &CreateViewRank4,
+    &CreateViewRank5,
+    &CreateViewRank6,
+    &CreateViewRank7,
+    &CreateViewRank8,
     &CreateView,
     &GetLabel,
     &GetSize,
@@ -33,43 +38,13 @@ static constexpr KokkosApi kokkos_api_version_1 =
 };
 // clang-format on
 
-KOKKOS_NET_API_EXTERNC const KokkosApi* GetApi(const uint32& version)
+KOKKOS_NET_API_EXTERNC const KokkosApi* GetApi(const uint32 version)
 {
-    if(version == 1)
+    if (version == 1)
     {
         return &kokkos_api_version_1;
     }
     return nullptr;
 }
-
-NativeString::NativeString(const std::string& str) :
-    Length(isNullTerminating(str) ? str.size() : str.size() + 1), Bytes((int8*)Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(Length))
-{
-    // memcpy(const_cast<int8*>(Bytes), str.c_str(), isNullTerminating(str) ? str.size() - 1 : str.size());
-
-    int index = 0;
-
-    while(str[index] != '\0')
-    {
-        Bytes[index] = str[index];
-        ++index;
-    }
-}
-
-NativeString::NativeString(const int& length, char* const bytes) :
-    Length(isNullTerminating(length, bytes) ? length : length + 1), Bytes((int8*)Kokkos::kokkos_malloc<Kokkos::Serial::memory_space>(Length))
-{
-    // memcpy(const_cast<int8*>(Bytes), bytes, isNullTerminating(length, bytes) ? length - 1 : length);
-
-    int index = 0;
-
-    while(bytes[index] != '\0')
-    {
-        Bytes[index] = bytes[index];
-        ++index;
-    }
-}
-
-std::string NativeString::ToString() const { return std::string(Bytes, isNullTerminating(Length, Bytes) ? Length - 1 : Length); }
 
 // KokkosDotNET::KokkosView_TemplateManager* templateManager = new KokkosDotNET::KokkosView_TemplateManager();

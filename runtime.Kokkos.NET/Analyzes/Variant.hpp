@@ -5,7 +5,7 @@
 #include <Kokkos_Core.hpp>
 
 #include <utility>
-#include <new>
+//#include <new>
 #include <utility>
 #include <type_traits>
 
@@ -568,7 +568,7 @@ namespace System
         struct hasher
         {
             template<typename T>
-            std::size_t operator()(const T& hashable) const
+            uint64 operator()(const T& hashable) const
             {
                 return std::hash<T> {}(hashable);
             }
@@ -589,8 +589,8 @@ namespace System
         static_assert(sizeof...(Types) < std::numeric_limits<type_index_t>::max(), "Internal index type must be able to accommodate all alternatives.");
 
     private:
-        static const std::size_t data_size  = detail::static_max<sizeof(Types)...>::value;
-        static const std::size_t data_align = detail::static_max<alignof(Types)...>::value;
+        static const uint64 data_size  = detail::static_max<sizeof(Types)...>::value;
+        static const uint64 data_align = detail::static_max<alignof(Types)...>::value;
 
     public:
         struct adapted_variant_tag;
@@ -993,22 +993,22 @@ namespace System
     };
 
     template<typename... Types>
-    struct variant_size<variant<Types...>> : std::integral_constant<std::size_t, sizeof...(Types)>
+    struct variant_size<variant<Types...>> : std::integral_constant<uint64, sizeof...(Types)>
     {
     };
 
-    template<std::size_t Index, typename T>
+    template<uint64 Index, typename T>
     struct variant_alternative;
 
 #if defined(has_type_pack_element)
-    template<std::size_t Index, typename... Types>
+    template<uint64 Index, typename... Types>
     struct variant_alternative<Index, variant<Types...>>
     {
         static_assert(sizeof...(Types) > Index, "Index out of range");
         using type = __type_pack_element<Index, Types...>;
     };
 #else
-    template<std::size_t Index, typename First, typename... Types>
+    template<uint64 Index, typename First, typename... Types>
     struct variant_alternative<Index, variant<First, Types...>> : variant_alternative<Index - 1, variant<Types...>>
     {
         static_assert(sizeof...(Types) > Index - 1, "Index out of range");
@@ -1022,20 +1022,20 @@ namespace System
 
 #endif
 
-    template<std::size_t Index, typename T>
+    template<uint64 Index, typename T>
     using variant_alternative_t = typename variant_alternative<Index, T>::type;
 
-    template<std::size_t Index, typename T>
+    template<uint64 Index, typename T>
     struct variant_alternative<Index, const T> : std::add_const<variant_alternative<Index, T>>
     {
     };
 
-    template<std::size_t Index, typename T>
+    template<uint64 Index, typename T>
     struct variant_alternative<Index, volatile T> : std::add_volatile<variant_alternative<Index, T>>
     {
     };
 
-    template<std::size_t Index, typename T>
+    template<uint64 Index, typename T>
     struct variant_alternative<Index, const volatile T> : std::add_cv<variant_alternative<Index, T>>
     {
     };
@@ -1047,6 +1047,6 @@ namespace std
     template<typename... Types>
     struct hash<System::variant<Types...>>
     {
-        std::size_t operator()(const System::variant<Types...>& v) const noexcept { return System::apply_visitor(System::detail::hasher {}, v); }
+        uint64 operator()(const System::variant<Types...>& v) const noexcept { return System::apply_visitor(System::detail::hasher {}, v); }
     };
 }

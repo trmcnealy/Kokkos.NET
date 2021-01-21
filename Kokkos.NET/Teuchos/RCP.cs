@@ -18,7 +18,7 @@ namespace Teuchos
     [StructLayout(LayoutKind.Sequential)]
     public struct RCPNodeHandle
     {
-        public IntPtr       node;
+        public nint       node;
         public ERCPStrength strength;
     }
 
@@ -26,7 +26,7 @@ namespace Teuchos
     [StructLayout(LayoutKind.Sequential)]
     public struct RCP/*<T>*/
     {
-        public /* T* */ IntPtr ptr;
+        public /* T* */ nint ptr;
 
         public RCPNodeHandle node;
 

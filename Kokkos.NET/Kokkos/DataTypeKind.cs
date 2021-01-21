@@ -6,16 +6,17 @@ namespace Kokkos
     {
         Unknown = ushort.MaxValue,
         Single  = 0,
-        Double,
-        Bool,
-        Int8,
-        UInt8,
-        Int16,
-        UInt16,
-        Int32,
-        UInt32,
-        Int64,
-        UInt64
+        Double  = 1,
+        Bool    = 2,
+        Int8    = 3,
+        UInt8   = 4,
+        Int16   = 5,
+        UInt16  = 6,
+        Int32   = 7,
+        UInt32  = 8,
+        Int64   = 9,
+        UInt64  = 10,
+        Char16  = 11
 
         //ConstSingle = UInt64 + 1,
         //ConstDouble,
@@ -33,69 +34,70 @@ namespace Kokkos
     internal static class DataType<T>
         where T : struct
     {
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static DataTypeKind GetKind()//bool const_value = false)
+        public static DataTypeKind GetKind() //bool const_value = false)
         {
             //if(const_value)
             //{
-                if(typeof(T) == typeof(float))
-                {
-                    return DataTypeKind.Single;
-                }
+            if(typeof(T) == typeof(float))
+            {
+                return DataTypeKind.Single;
+            }
 
-                if(typeof(T) == typeof(double))
-                {
-                    return DataTypeKind.Double;
-                }
+            if(typeof(T) == typeof(double))
+            {
+                return DataTypeKind.Double;
+            }
 
-                if(typeof(T) == typeof(bool))
-                {
-                    return DataTypeKind.Bool;
-                }
+            if(typeof(T) == typeof(bool))
+            {
+                return DataTypeKind.Bool;
+            }
 
-                if(typeof(T) == typeof(sbyte))
-                {
-                    return DataTypeKind.Int8;
-                }
+            if(typeof(T) == typeof(sbyte))
+            {
+                return DataTypeKind.Int8;
+            }
 
-                if(typeof(T) == typeof(byte))
-                {
-                    return DataTypeKind.UInt8;
-                }
+            if(typeof(T) == typeof(byte))
+            {
+                return DataTypeKind.UInt8;
+            }
 
-                if(typeof(T) == typeof(short))
-                {
-                    return DataTypeKind.Int16;
-                }
+            if(typeof(T) == typeof(short))
+            {
+                return DataTypeKind.Int16;
+            }
 
-                if(typeof(T) == typeof(ushort))
-                {
-                    return DataTypeKind.UInt16;
-                }
+            if(typeof(T) == typeof(ushort))
+            {
+                return DataTypeKind.UInt16;
+            }
 
-                if(typeof(T) == typeof(int))
-                {
-                    return DataTypeKind.Int32;
-                }
+            if(typeof(T) == typeof(int))
+            {
+                return DataTypeKind.Int32;
+            }
 
-                if(typeof(T) == typeof(uint))
-                {
-                    return DataTypeKind.UInt32;
-                }
+            if(typeof(T) == typeof(uint))
+            {
+                return DataTypeKind.UInt32;
+            }
 
-                if(typeof(T) == typeof(long))
-                {
-                    return DataTypeKind.Int64;
-                }
+            if(typeof(T) == typeof(long))
+            {
+                return DataTypeKind.Int64;
+            }
 
-                if(typeof(T) == typeof(ulong))
-                {
-                    return DataTypeKind.UInt64;
-                }
+            if(typeof(T) == typeof(ulong))
+            {
+                return DataTypeKind.UInt64;
+            }
+
+            if(typeof(T) == typeof(char))
+            {
+                return DataTypeKind.Char16;
+            }
             //}
             //else
             //{

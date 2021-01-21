@@ -2,13 +2,98 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
+using System.Text;
 
 namespace Kokkos
 {
+    [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+    public unsafe struct NativeString<TExecutionSpace> : IDisposable
+        where TExecutionSpace : IExecutionSpace, new() 
+    {
+
+        private static readonly ExecutionSpaceKind executionSpaceType;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        static NativeString()
+        {
+            executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
+        }
+        
+        public long Length;
+        
+        public sbyte* Bytes;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public NativeString(string @string)
+        {
+            if(@string[^1] != char.MinValue)
+            {
+                @string += char.MinValue;
+            }
+
+            Length = @string.Length;
+
+            Bytes = (sbyte*)KokkosLibrary.Allocate(executionSpaceType, (ulong)Length);
+
+            //Win32.Kernel32.Native.LocalAlloc(Win32.Kernel32.LMEM_FIXED, (ulong)Length); //= KokkosLibrary.Allocate(ExecutionSpaceKind.Serial, (ulong)Length);
+
+            byte[] bytes = Encoding.ASCII.GetBytes(@string);
+
+            //if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            //{
+            //    bytes = Encoding.ASCII.GetBytes(@string);
+            //}
+            //else
+            //{
+            //    bytes = Encoding.UTF8.GetBytes(@string);
+            //}
+
+            //byte* bytePtr = (byte*)Bytes.ToPointer();
+
+            for(int i = 0; i < Length; i++)
+            {
+                Bytes[i] = (sbyte)bytes[i];
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void Dispose()
+        {
+            DisposeUnmanaged();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public override string ToString()
+        {
+            return FromToBytes(Length - 1L, Bytes);
+        }
+        
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static string FromToBytes(long length, sbyte* bytesPtr)
+        {
+            byte[] bytes = new ReadOnlySpan<byte>(bytesPtr, (int)length).ToArray();
+
+            return Encoding.UTF8.GetString(bytes, 0, (int)length);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        private void DisposeUnmanaged()
+        {
+            if(Bytes != null)
+            {
+                KokkosLibrary.Free(executionSpaceType, (nint)Bytes);
+
+                Bytes  = null;
+                Length = 0;
+            }
+        }
+    }
+
     //[Serializer(typeof(NativePointer.CustomSerializer))]
     [NonVersionable]
     public sealed class NativePointer : IDisposable
     {
+        private readonly ExecutionSpaceKind _executionSpace;
         //[MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         //static NativePointer()
         //{
@@ -18,20 +103,26 @@ namespace Kokkos
         //    }
         //}
 
-        private IntPtr _data;
-
         private int _size;
+
+        private nint _data;
 
         private bool _mustDeallocate;
 
-        private readonly ExecutionSpaceKind _executionSpace;
+        public ref nint Data
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return ref _data; }
+        }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
+        public int Size
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+            get { return _size; }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativePointer(IntPtr             data,
+        public NativePointer(nint               data,
                              int                size,
                              bool               mustDeallocate = false,
                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
@@ -42,12 +133,8 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativePointer(IntPtr             data,
+        public NativePointer(nint               data,
                              uint               size,
                              bool               mustDeallocate = false,
                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
@@ -58,12 +145,8 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativePointer(IntPtr             data,
+        public NativePointer(nint               data,
                              long               size,
                              bool               mustDeallocate = false,
                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
@@ -74,12 +157,8 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativePointer(IntPtr             data,
+        public NativePointer(nint               data,
                              ulong              size,
                              bool               mustDeallocate = false,
                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
@@ -90,30 +169,24 @@ namespace Kokkos
             _executionSpace = executionSpace;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public NativePointer(int                size,
                              ExecutionSpaceKind executionSpace)
-            : this(KokkosLibrary.Allocate(executionSpace,
-                                          (ulong)size),
-                   size,
-                   true,
-                   executionSpace)
+            : this(KokkosLibrary.Allocate(executionSpace, (ulong)size), size, true, executionSpace)
         {
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public NativePointer(ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
-            : this(Unsafe.SizeOf<IntPtr>(),
-                   executionSpace)
+            : this(Unsafe.SizeOf<nint>(), executionSpace)
         {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public void Dispose()
+        {
+            DisposeUnmanaged();
+            GC.SuppressFinalize(this);
         }
 
         ~NativePointer()
@@ -121,184 +194,108 @@ namespace Kokkos
             DisposeUnmanaged();
         }
 
-        public ref IntPtr Data
-        {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-            get { return ref _data; }
-        }
-
-        public int Size
-        {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-            get { return _size; }
-        }
-
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static implicit operator IntPtr(NativePointer pointer)
+        public static implicit operator nint(NativePointer pointer)
         {
             return pointer.Data;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static unsafe implicit operator void*(NativePointer pointer)
         {
-            return pointer.Data.ToPointer();
+            return (void*)pointer.Data;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static NativePointer Allocate(int                size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
-            IntPtr data = KokkosLibrary.Allocate(executionSpace,
-                                                 (ulong)size);
+            nint data = KokkosLibrary.Allocate(executionSpace, (ulong)size);
 
             unsafe
             {
-                byte* d = (byte*)data.ToPointer();
+                byte* d = (byte*)data;
 
-                for(byte* i = d; i < d + size; i++)
+                for(byte* i = d; i < (d + size); i++)
                 {
                     *i = 0;
                 }
             }
 
-            return new NativePointer(data,
-                                     size,
-                                     true,
-                                     executionSpace);
+            return new NativePointer(data, size, true, executionSpace);
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static NativePointer Allocate(uint               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
-            IntPtr data = KokkosLibrary.Allocate(executionSpace,
-                                                 size);
+            nint data = KokkosLibrary.Allocate(executionSpace, size);
 
             unsafe
             {
-                byte* d = (byte*)data.ToPointer();
+                byte* d = (byte*)data;
 
-                for(byte* i = d; i < d + size; i++)
+                for(byte* i = d; i < (d + size); i++)
                 {
                     *i = 0;
                 }
             }
 
-            return new NativePointer(data,
-                                     size,
-                                     true,
-                                     executionSpace);
+            return new NativePointer(data, size, true, executionSpace);
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static NativePointer Allocate(long               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
-            IntPtr data = KokkosLibrary.Allocate(executionSpace,
-                                                 (ulong)size);
+            nint data = KokkosLibrary.Allocate(executionSpace, (ulong)size);
 
             unsafe
             {
-                byte* d = (byte*)data.ToPointer();
+                byte* d = (byte*)data;
 
-                for(byte* i = d; i < d + size; i++)
+                for(byte* i = d; i < (d + size); i++)
                 {
                     *i = 0;
                 }
             }
 
-            return new NativePointer(data,
-                                     size,
-                                     true,
-                                     executionSpace);
+            return new NativePointer(data, size, true, executionSpace);
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static NativePointer Allocate(ulong              size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
-            IntPtr data = KokkosLibrary.Allocate(executionSpace,
-                                                 size);
+            nint data = KokkosLibrary.Allocate(executionSpace, size);
 
             unsafe
             {
-                byte* d = (byte*)data.ToPointer();
+                byte* d = (byte*)data;
 
-                for(byte* i = d; i < d + size; i++)
+                for(byte* i = d; i < (d + size); i++)
                 {
                     *i = 0;
                 }
             }
 
-            return new NativePointer(data,
-                                     size,
-                                     true,
-                                     executionSpace);
+            return new NativePointer(data, size, true, executionSpace);
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public void Dispose()
-        {
-            DisposeUnmanaged();
-            GC.SuppressFinalize(this);
-        }
-
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         private void DisposeUnmanaged()
         {
-            if(_mustDeallocate && _data != IntPtr.Zero)
+            if(_mustDeallocate && _data != 0)
             {
-                KokkosLibrary.Free(_executionSpace,
-                                   _data);
+                KokkosLibrary.Free(_executionSpace, _data);
 
-                _data           = IntPtr.Zero;
+                _data           = default;
                 _size           = 0;
                 _mustDeallocate = false;
             }
         }
 
-        //public static NativePointer WrapIntPtr(IntPtr data,
+        //public static NativePointer WrapIntPtr(nint data,
         //                                       int    size)
         //{
         //    return new NativePointer(data,
@@ -306,10 +303,10 @@ namespace Kokkos
         //                             false);
         //}
 
-        //public static NativePointer CreateCopyFrom(IntPtr data,
+        //public static NativePointer CreateCopyFrom(nint data,
         //                                           int    size)
         //{
-        //    IntPtr newData = Marshal.AllocHGlobal(size);
+        //    nint newData = Marshal.AllocHGlobal(size);
 
         //    CopyUnmanagedMemory(newData,
         //                        data,
@@ -330,7 +327,7 @@ namespace Kokkos
 
         //public NativePointer Clone()
         //{
-        //    IntPtr newData = Marshal.AllocHGlobal(size);
+        //    nint newData = Marshal.AllocHGlobal(size);
 
         //    CopyUnmanagedMemory(newData,
         //                        data,
@@ -364,7 +361,7 @@ namespace Kokkos
         //{
         //    byte[] result = new byte[count];
 
-        //    Marshal.Copy(IntPtr.Add(data,
+        //    Marshal.Copy(nint.Add(data,
         //                            offset),
         //                 result,
         //                 0,
@@ -390,7 +387,7 @@ namespace Kokkos
         //                 destination.Length);
         //}
 
-        //public void CopyTo(IntPtr destination,
+        //public void CopyTo(nint destination,
         //                   int    size)
         //{
         //    if(size != this.size)
@@ -436,7 +433,7 @@ namespace Kokkos
         //                 source.Length);
         //}
 
-        //public void CopyFrom(IntPtr source,
+        //public void CopyFrom(nint source,
         //                     int    size)
         //{
         //    if(size != this.size)
@@ -449,8 +446,8 @@ namespace Kokkos
         //                        this.size);
         //}
 
-        //private static unsafe void CopyUnmanagedMemory(IntPtr dst,
-        //                                               IntPtr src,
+        //private static unsafe void CopyUnmanagedMemory(nint dst,
+        //                                               nint src,
         //                                               int    count)
         //{
         //    unsafe

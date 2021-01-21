@@ -14,9 +14,8 @@ void ParallelViews()
 
     range_t range(range_t::member_type(0), range_t::member_type(1000));
 
-    Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const range_t::member_type i)
-    {
-        for(int j = 0; j < numInner; ++j)
+    Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const range_t::member_type i) {
+        for (int j = 0; j < numInner; ++j)
         {
             outer[i][j] = 10.0 * double(i) + double(j);
         }
@@ -49,10 +48,10 @@ void ViewOfViews()
     outer_view_type outer(view_alloc(std::string("Outer"), WithoutInitializing), numOuter);
 
     // Create inner Views on host, outside of a parallel region, uninitialized
-    for(int k = 0; k < numOuter; ++k)
+    for (int k = 0; k < numOuter; ++k)
     {
         const std::string label = std::string("Inner ") + std::to_string(k);
-        new(&outer[k]) inner_view_type(view_alloc(label, WithoutInitializing), numInner);
+        new (&outer[k]) inner_view_type(view_alloc(label, WithoutInitializing), numInner);
     }
 
     // Outer and inner views are now ready for use on device
@@ -60,7 +59,7 @@ void ViewOfViews()
     Kokkos::RangePolicy<Cuda, int> range(0, numOuter);
 
     Kokkos::parallel_for("my kernel label", range, [=] __host__ __device__(const int i) {
-        for(int j = 0; j < numInner; ++j)
+        for (int j = 0; j < numInner; ++j)
         {
             outer[i][j] = 10.0 * double(i) + double(j);
         }
@@ -73,7 +72,7 @@ void ViewOfViews()
     Cuda().fence();
 
     // Destroy inner Views, again on host, outside of a parallel region.
-    for(int k = 0; k < 5; ++k)
+    for (int k = 0; k < 5; ++k)
     {
         outer[k].~inner_view_type();
     }

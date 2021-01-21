@@ -3,7 +3,7 @@
 #include "runtime.Kokkos/ViewTypes.hpp"
 #include "runtime.Kokkos/Extensions.hpp"
 
-#include "StdExtensions.hpp"
+#include <StdExtensions.hpp>
 
 #include <NumericalMethods/Algebra/Eigenvalue.hpp>
 

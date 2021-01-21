@@ -1,86 +1,118 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
+    <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
-  <PropertyGroup>
-    <Version>$(KOKKOS_VERSION)</Version>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <RuntimeIdentifiers>any;win-x64</RuntimeIdentifiers>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <RootNamespace>Kokkos</RootNamespace>
-    <Platforms>AnyCPU;x64</Platforms>
-    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Authors>Timothy R. McNealy</Authors>
-    <PackageIcon>nindra.png</PackageIcon>
-    <PackageIconUrl />
-    <PackageProjectUrl>https://github.com/trmcnealy/Kokkos.NET</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/trmcnealy/Kokkos.NET</RepositoryUrl>
-    <Copyright>© Timothy R. McNealy</Copyright>
-    <PublishTrimmed>true</PublishTrimmed>
-    <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-    <TieredCompilation>false</TieredCompilation>
-    <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
-    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
-    <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
-    <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">NETSTANDARD</DefineConstants>
-    <DefineConstants Condition="'$(TargetFramework)'=='netcoreapp3.1'">NETCOREAPP</DefineConstants>
-  </PropertyGroup>
+    <PropertyGroup>
+        <LangVersion>9.0</LangVersion>
+        <Nullable>enable</Nullable>
+        
+        <NuspecFile>Kokkos.NET.nuspec</NuspecFile>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>TRACE;TARGET_64BIT</DefineConstants>
-  </PropertyGroup>
+        <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+        <Version>$(KOKKOS_VERSION)</Version>
+        <TargetFramework>net5.0</TargetFramework>
+        <RuntimeIdentifiers>any;win-x64</RuntimeIdentifiers>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <RootNamespace>Kokkos</RootNamespace>
+        <Platforms>AnyCPU;x86;x64</Platforms>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <Authors>Timothy R. McNealy</Authors>
+        <PackageIcon>nindra.png</PackageIcon>
+        <PackageIconUrl />
+        <PackageProjectUrl>https://github.com/trmcnealy/Kokkos.NET</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/trmcnealy/Kokkos.NET</RepositoryUrl>
+        <Copyright>© Timothy R. McNealy</Copyright>
+        <PublishTrimmed>true</PublishTrimmed>
+        <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
+        <TieredCompilation>false</TieredCompilation>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+        <!--<PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
+        <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
+        <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">NETSTANDARD</DefineConstants>
+        <DefineConstants Condition="'$(TargetFramework)'=='netcoreapp3.1'">NETCOREAPP</DefineConstants>-->
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="CNMeM.cs" />
-    <Compile Remove="Kokkos\ErrorCode.cs" />
-    <Compile Remove="Kokkos\Kernel32.cs" />
-    <Compile Remove="Kokkos\NativeArray.cs" />
-    <Compile Remove="MemoryMappedPtr.cs" />
-    <Compile Remove="MemoryMappedStream.cs" />
-    <Compile Remove="Nvml.cs" />
-  </ItemGroup>
+    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))\Artifacts.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))' != '' " />
 
-  <ItemGroup>
-    <None Remove="Kokkos.NET.csproj.DotSettings" />
-    <None Include="..\..\trmcnealy.github.io\Assets\nindra.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-    <None Include="CNMeM.cs" />
-    <None Include="Kokkos\ErrorCode.cs" />
-    <None Include="Kokkos\Kernel32.cs" />
-    <None Include="Kokkos\NativeArray.cs" />
-    <None Include="MemoryMappedPtr.cs" />
-    <None Include="Nvml.cs" />
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DefineConstants>TRACE;X64</DefineConstants>
+        <NoWarn>0649;0169;0414;1416</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Data.Analysis" Version="0.4.0" />
-    <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
-    <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
-    <PackageReference Include="PlatformApi" Version="$(PLATFORMAPI_VERSION)" />
-    <PackageReference Include="RuntimeGeneration" Version="$(RUNTIMEGENERATION_VERSION)" />
-    <PackageReference Include="System.Management" Version="4.7.0" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <NoWarn>0649;0169;0414;1416</NoWarn>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Remove="Kokkos.NET.csprojobj\**" />
+        <EmbeddedResource Remove="Kokkos.NET.csprojobj\**" />
+        <None Remove="Kokkos.NET.csprojobj\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="CNMeM.cs" />
+        <Compile Remove="Kokkos\Kernel32.cs" />
+        <Compile Remove="Kokkos\NativeArray.cs" />
+        <Compile Remove="Kokkos\Vector.cs" />
+        <Compile Remove="MemoryMappedPtr.cs" />
+        <Compile Remove="MemoryMappedStream.cs" />
+        <Compile Remove="Nvml.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Kokkos.NET.csproj.DotSettings" />
+        <Compile Update="Kokkos\Complex.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Complex.tt</DependentUpon>
+        </Compile>
+        <None Include="CNMeM.cs" />
+        <None Include="Kokkos.NET.nuspec" />
+        <None Include="Kokkos.NET.props" />
+        <None Include="Kokkos.NET.targets" />
+        <None Include="Kokkos\Complex.tt" />
+        <None Include="Kokkos\NativeArray.cs" />
+        <None Include="Kokkos\Vector.cs" />
+        <None Include="MemoryMappedPtr.cs" />
+        <None Include="Nvml.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="UnManagedCil" Version="$(UNMANAGED_VERSION)" />
+        <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
+        <PackageReference Include="PlatformApi" Version="$(PLATFORMAPI_VERSION)" />
+        <PackageReference Include="RuntimeGeneration" Version="$(RUNTIMEGENERATION_VERSION)" />
+        <PackageReference Include="Microsoft.Data.Analysis" Version="0.5.0" />
+        <PackageReference Include="MSMPIDIST" Version="10.1.12498.18" />
+        <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
+        <!--<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
     <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
-  </ItemGroup>
+    <PackageReference Include="System.Text.Utf8String" Version="0.1.2-e200127-1" />-->
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Include="MemoryMappedStream.cs" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Include="MemoryMappedStream.cs" />
+    </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties $(NUGET_PROPERTIES) -OutputDirectory C:\AssemblyCache\_packages&#xD;&#xA;&#xA;rd /s /q C:\Users\tehgo\.nuget\packages\kokkos.net" />
-  </Target>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command=":: NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)&#xD;&#xA;&#xA;:: rd /s /q C:\Users\trmcnealy\.nuget\packages\kokkos.net" />
+    </Target>
 
-  <ItemGroup>
-    <!--<Analyzer Include="..\..\Utilities\CodeGeneration\CodeGeneration.csproj"/>-->
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Kokkos\Complex.tt">
+            <Generator>TextTemplatingFileGenerator</Generator>
+            <LastGenOutput>Complex.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet restore" />
-  </Target>
+    <ItemGroup>
+        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+    </ItemGroup>
+
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="dotnet restore" />
+    </Target>
 
 </Project>

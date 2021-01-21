@@ -1,66 +1,81 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 
 namespace Kokkos
 {
+    //[TypeConverter(typeof(EnumDescriptionTypeConverter))]
     public enum ExecutionSpaceKind : ushort
     {
         Unknown = ushort.MaxValue,
+        [Description("Serial processing on the CPU")]
         Serial  = 0,
-        OpenMP,
-        Cuda
+        [Description("OpenMP parallel processing on the CPU")]
+        OpenMP = 1,
+        [Description("Cuda parallel processing on the GPU")]
+        Cuda = 2
     }
 
     [NonVersionable]
     public struct Cuda : IExecutionSpace
     {
+        public static int  Id              { get; set; } = 0;
+        public static int  NumberOfDevices { get; set; } = 1;
+        public static int  SkipDevice      { get; set; } = 9999;
+        public static bool DisableWarnings { get; set; } = true;
+        
         public LayoutKind DefaultLayout
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return LayoutKind.Left; }
+        }
+
+        public override string ToString()
+        {
+            return "Cuda";
         }
     }
 
     [NonVersionable]
     public struct Serial : IExecutionSpace
     {
+        public static bool DisableWarnings { get; set; } = true;
+        
         public LayoutKind DefaultLayout
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return LayoutKind.Right; }
+        }
+
+        public override string ToString()
+        {
+            return "Serial";
         }
     }
 
     [NonVersionable]
     public struct OpenMP : IExecutionSpace
     {
+        public static int  NumberOfThreads { get; set; } = Environment.ProcessorCount;
+        public static bool DisableWarnings { get; set; } = true;
+    
         public LayoutKind DefaultLayout
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return LayoutKind.Right; }
+        }
+
+        public override string ToString()
+        {
+            return "OpenMP";
         }
     }
 
     public static class ExecutionSpace<T>
         where T : IExecutionSpace
     {
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static ExecutionSpaceKind GetKind()
         {
             if(typeof(T) == typeof(Serial))
@@ -82,11 +97,7 @@ namespace Kokkos
         }
 
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static LayoutKind GetLayout()
         {
             if(typeof(T) == typeof(Serial))

@@ -39,13 +39,13 @@ namespace Spatial
     };
 
     template<typename T>
-    constexpr bool operator==(point<T> const& lhs, point<T> const& rhs)
+    constexpr bool operator==(const point<T> & lhs, const point<T> & rhs)
     {
         return lhs.x == rhs.x && lhs.y == rhs.y;
     }
 
     template<typename T>
-    constexpr bool operator!=(point<T> const& lhs, point<T> const& rhs)
+    constexpr bool operator!=(const point<T> & lhs, const point<T> & rhs)
     {
         return !(lhs == rhs);
     }
@@ -56,26 +56,26 @@ namespace Spatial
         using coordinate_type = T;
         using point_type      = point<coordinate_type>;
 
-        constexpr box(point_type const& min_, point_type const& max_) : min(min_), max(max_) {}
+        constexpr box(const point_type & min_, const point_type & max_) : min(min_), max(max_) {}
 
         point_type min;
         point_type max;
     };
 
     template<typename T>
-    constexpr bool operator==(box<T> const& lhs, box<T> const& rhs)
+    constexpr bool operator==(const box<T> & lhs, const box<T> & rhs)
     {
         return lhs.min == rhs.min && lhs.max == rhs.max;
     }
 
     template<typename T>
-    constexpr bool operator!=(box<T> const& lhs, box<T> const& rhs)
+    constexpr bool operator!=(const box<T> & lhs, const box<T> & rhs)
     {
         return lhs.min != rhs.min || lhs.max != rhs.max;
     }
 
     template<typename G, typename T = typename G::coordinate_type>
-    box<T> envelope(G const& geometry)
+    box<T> envelope(const G & geometry)
     {
         using limits = std::numeric_limits<T>;
 
@@ -85,7 +85,7 @@ namespace Spatial
         point<T> min(max_t, max_t);
         point<T> max(min_t, min_t);
 
-        for_each_point(geometry, [&](point<T> const& point) {
+        for_each_point(geometry, [&](const point<T> & point) {
             if(min.x > point.x)
                 min.x = point.x;
             if(min.y > point.y)
@@ -228,13 +228,13 @@ namespace Spatial
     struct equal_comp_shared_ptr
     {
         template<typename T>
-        bool operator()(T const& lhs, T const& rhs) const
+        bool operator()(const T & lhs, const T & rhs) const
         {
             return lhs == rhs;
         }
 
         template<typename T>
-        bool operator()(std::shared_ptr<T> const& lhs, std::shared_ptr<T> const& rhs) const
+        bool operator()(const std::shared_ptr<T> & lhs, const std::shared_ptr<T> & rhs) const
         {
             if(lhs == rhs)
             {
@@ -300,7 +300,7 @@ namespace Spatial
         value(object_type object) : value_base(std::make_shared<object_type>(std::forward<object_type>(object))) {}
         value(object_ptr_type object) : value_base(object) {}
 
-        bool operator==(value const& rhs) const
+        bool operator==(const value & rhs) const
         {
             assert(valid() && rhs.valid());
             if(this->which() != rhs.which())
@@ -349,22 +349,22 @@ namespace Spatial
         identifier    id;
 
         feature() : geometry(), properties(), id() {}
-        feature(geometry_type const& geom_) : geometry(geom_), properties(), id() {}
+        feature(const geometry_type & geom_) : geometry(geom_), properties(), id() {}
         feature(geometry_type&& geom_) : geometry(std::move(geom_)), properties(), id() {}
-        feature(geometry_type const& geom_, property_map const& prop_) : geometry(geom_), properties(prop_), id() {}
+        feature(const geometry_type & geom_, const property_map & prop_) : geometry(geom_), properties(prop_), id() {}
         feature(geometry_type&& geom_, property_map&& prop_) : geometry(std::move(geom_)), properties(std::move(prop_)), id() {}
-        feature(geometry_type const& geom_, property_map const& prop_, identifier const& id_) : geometry(geom_), properties(prop_), id(id_) {}
+        feature(const geometry_type & geom_, const property_map & prop_, const identifier & id_) : geometry(geom_), properties(prop_), id(id_) {}
         feature(geometry_type&& geom_, property_map&& prop_, identifier&& id_) : geometry(std::move(geom_)), properties(std::move(prop_)), id(std::move(id_)) {}
     };
 
     template<class T>
-    constexpr bool operator==(feature<T> const& lhs, feature<T> const& rhs)
+    constexpr bool operator==(const feature<T> & lhs, const feature<T> & rhs)
     {
         return lhs.id == rhs.id && lhs.geometry == rhs.geometry && lhs.properties == rhs.properties;
     }
 
     template<class T>
-    constexpr bool operator!=(feature<T> const& lhs, feature<T> const& rhs)
+    constexpr bool operator!=(const feature<T> & lhs, const feature<T> & rhs)
     {
         return !(lhs == rhs);
     }

@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
-using System.Threading;
 
 using PlatformApi.Win32;
 
@@ -15,8 +14,7 @@ namespace Kokkos
 {
     [ComVisible(true)]
     [Serializable]
-    
-    public delegate void KokkosLibraryEventHandler(object                 sender,
+    public delegate void KokkosLibraryEventHandler(object?                sender,
                                                    KokkosLibraryEventArgs e);
 
     public enum KokkosLibraryEventKind
@@ -39,28 +37,25 @@ namespace Kokkos
     [NonVersionable]
     public static class KokkosLibrary
     {
-        public static event KokkosLibraryEventHandler Loaded;
-
-        public static event KokkosLibraryEventHandler Unloaded;
-
         public const string LibraryName = "runtime.Kokkos.NET";
 
         public static readonly string RuntimeKokkosLibraryName;
 
-        public static IntPtr Handle;
-        public static IntPtr ModuleHandle;
+        public static nint Handle;
+        public static nint ModuleHandle;
 
         public static KokkosApi Api;
 
         public static volatile bool Initialized;
 
+        public static volatile bool IsLoaded;
+
         private static readonly string nativeLibraryPath;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
+        private static readonly KokkosLibraryEventArgs loadedEventArgs   = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
+        private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         static KokkosLibrary()
         {
             string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
@@ -72,130 +67,163 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool IsLoaded()
+        public static unsafe void Load()
         {
-            return Handle != IntPtr.Zero;
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void Load()
-        {
-            KokkosCoreLibrary.Load();
+            if(!IsLoaded)
+            {
+                KokkosCoreLibrary.Load();
 
 #if DEBUG
-            Console.WriteLine("Loading " + RuntimeKokkosLibraryName);
+                Console.WriteLine("Loading " + RuntimeKokkosLibraryName);
 #endif
 
-            // if(!NativeLibrary.TryLoad(RuntimeKokkosLibraryName,
-            //                           typeof(KokkosLibrary).Assembly,
-            //                           DllImportSearchPath.UseDllDirectoryForDependencies,
-            //                           out Handle))
-            // {
-            //     KokkosLibraryException.Throw();
-            // }
+                // if(!NativeLibrary.TryLoad(RuntimeKokkosLibraryName,
+                //                           typeof(KokkosLibrary).Assembly,
+                //                           DllImportSearchPath.UseDllDirectoryForDependencies,
+                //                           out Handle))
+                // {
+                //     KokkosLibraryException.Throw();
+                // }
 
-            Handle = PlatformApi.NativeLibrary.Load(RuntimeKokkosLibraryName, out ulong _);
+                PlatformApi.NativeLibrary.LoadLibrary("nvcuda");
 
-            ModuleHandle = Kernel32.Native.GetModuleHandle(RuntimeKokkosLibraryName + ".dll");
+                Handle = PlatformApi.NativeLibrary.Load(RuntimeKokkosLibraryName);
 
-            IntPtr getApiHandle = PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetApi", out ulong _);
+                ModuleHandle = Kernel32.Native.GetModuleHandle(RuntimeKokkosLibraryName + ".dll");
 
-            if(getApiHandle == IntPtr.Zero)
-            {
-                getApiHandle = Handle + 0x000019E0;
-            }
+                nint getApiHandle = PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetApi");
 
-            if(getApiHandle != IntPtr.Zero) //NativeLibrary.TryGetExport(ModuleHandle, "GetApi", out IntPtr getApiHandle))
-            {
-                GetApi = Marshal.GetDelegateForFunctionPointer<GetApiDelegate>(getApiHandle);
+                if(getApiHandle == 0)
+                {
+                    getApiHandle = Handle + 0x000019E0;
+                }
 
-                Api = GetApi(1);
+                if(getApiHandle == 0)
+                {
+                    KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
+                }
 
-                Allocate = Marshal.GetDelegateForFunctionPointer<AllocateDelegate>(Api.AllocatePtr);
+                if(getApiHandle != 0) //NativeLibrary.TryGetExport(ModuleHandle, "GetApi", out nint getApiHandle))
+                {
+                    GetApi = Marshal.GetDelegateForFunctionPointer<GetApiDelegate>(getApiHandle);
 
-                Reallocate = Marshal.GetDelegateForFunctionPointer<ReallocateDelegate>(Api.ReallocatePtr);
+                    Api = GetApi(1);
 
-                Free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
+                    Allocate = Marshal.GetDelegateForFunctionPointer<AllocateDelegate>(Api.AllocatePtr);
 
-                _initialize = Marshal.GetDelegateForFunctionPointer<InitializeDelegate>(Api.InitializePtr);
+                    Reallocate = Marshal.GetDelegateForFunctionPointer<ReallocateDelegate>(Api.ReallocatePtr);
 
-                _initializeThreads = Marshal.GetDelegateForFunctionPointer<InitializeThreadsDelegate>(Api.InitializeThreadsPtr);
+                    Free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
 
-                _initializeArguments = Marshal.GetDelegateForFunctionPointer<InitializeArgumentsDelegate>(Api.InitializeArgumentsPtr);
+                    _initialize = Marshal.GetDelegateForFunctionPointer<InitializeDelegate>(Api.InitializePtr);
 
-                _finalize = Marshal.GetDelegateForFunctionPointer<FinalizeDelegate>(Api.FinalizePtr);
+                    _initializeThreads = Marshal.GetDelegateForFunctionPointer<InitializeThreadsDelegate>(Api.InitializeThreadsPtr);
 
-                _finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
+                    _initializeArguments = Marshal.GetDelegateForFunctionPointer<InitializeArgumentsDelegate>(Api.InitializeArgumentsPtr);
 
-                _isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
+                    _finalize = Marshal.GetDelegateForFunctionPointer<FinalizeDelegate>(Api.FinalizePtr);
 
-                PrintConfiguration = Marshal.GetDelegateForFunctionPointer<PrintConfigurationDelegate>(Api.PrintConfigurationPtr);
+                    _finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
 
-                GetComputeCapability = Marshal.GetDelegateForFunctionPointer<CudaGetComputeCapabilityDelegate>(Api.GetComputeCapabilityPtr);
+                    _isInitialized = Marshal.GetDelegateForFunctionPointer<IsInitializedDelegate>(Api.IsInitializedPtr);
 
-                GetDeviceCount = Marshal.GetDelegateForFunctionPointer<CudaGetDeviceCountDelegate>(Api.GetDeviceCountPtr);
+                    PrintConfiguration = Marshal.GetDelegateForFunctionPointer<PrintConfigurationDelegate>(Api.PrintConfigurationPtr);
 
-                CreateViewRank0 = Marshal.GetDelegateForFunctionPointer<CreateViewRank0Delegate>(Api.CreateViewRank0Ptr);
+                    GetComputeCapability = Marshal.GetDelegateForFunctionPointer<CudaGetComputeCapabilityDelegate>(Api.GetComputeCapabilityPtr);
 
-                CreateViewRank1 = Marshal.GetDelegateForFunctionPointer<CreateViewRank1Delegate>(Api.CreateViewRank1Ptr);
+                    GetDeviceCount = Marshal.GetDelegateForFunctionPointer<CudaGetDeviceCountDelegate>(Api.GetDeviceCountPtr);
 
-                CreateViewRank2 = Marshal.GetDelegateForFunctionPointer<CreateViewRank2Delegate>(Api.CreateViewRank2Ptr);
+                    CreateViewRank0 = Marshal.GetDelegateForFunctionPointer<CreateViewRank0Delegate>(Api.CreateViewRank0Ptr);
 
-                CreateViewRank3 = Marshal.GetDelegateForFunctionPointer<CreateViewRank3Delegate>(Api.CreateViewRank3Ptr);
+                    CreateViewRank1 = Marshal.GetDelegateForFunctionPointer<CreateViewRank1Delegate>(Api.CreateViewRank1Ptr);
 
-                CreateView = Marshal.GetDelegateForFunctionPointer<CreateViewDelegate>(Api.CreateViewPtr);
+                    CreateViewRank2 = Marshal.GetDelegateForFunctionPointer<CreateViewRank2Delegate>(Api.CreateViewRank2Ptr);
 
-                GetLabel = Marshal.GetDelegateForFunctionPointer<GetLabelDelegate>(Api.GetLabelPtr);
+                    CreateViewRank3 = Marshal.GetDelegateForFunctionPointer<CreateViewRank3Delegate>(Api.CreateViewRank3Ptr);
 
-                GetSize = Marshal.GetDelegateForFunctionPointer<GetSizeDelegate>(Api.GetSizePtr);
+                    CreateViewRank4 = Marshal.GetDelegateForFunctionPointer<CreateViewRank4Delegate>(Api.CreateViewRank4Ptr);
 
-                GetStride = Marshal.GetDelegateForFunctionPointer<GetStrideDelegate>(Api.GetStridePtr);
+                    CreateViewRank5 = Marshal.GetDelegateForFunctionPointer<CreateViewRank5Delegate>(Api.CreateViewRank5Ptr);
 
-                GetExtent = Marshal.GetDelegateForFunctionPointer<GetExtentDelegate>(Api.GetExtentPtr);
+                    CreateViewRank6 = Marshal.GetDelegateForFunctionPointer<CreateViewRank6Delegate>(Api.CreateViewRank6Ptr);
 
-                CopyTo = Marshal.GetDelegateForFunctionPointer<CopyToDelegate>(Api.CopyToPtr);
+                    CreateViewRank7 = Marshal.GetDelegateForFunctionPointer<CreateViewRank7Delegate>(Api.CreateViewRank7Ptr);
 
-                GetValue = Marshal.GetDelegateForFunctionPointer<GetValueDelegate>(Api.GetValuePtr);
+                    CreateViewRank8 = Marshal.GetDelegateForFunctionPointer<CreateViewRank8Delegate>(Api.CreateViewRank8Ptr);
 
-                SetValue = Marshal.GetDelegateForFunctionPointer<SetValueDelegate>(Api.SetValuePtr);
+                    CreateView = Marshal.GetDelegateForFunctionPointer<CreateViewDelegate>(Api.CreateViewPtr);
 
-                RcpViewToNdArray = Marshal.GetDelegateForFunctionPointer<RcpViewToNdArrayDelegate>(Api.RcpViewToNdArrayPtr);
+                    GetLabel = Marshal.GetDelegateForFunctionPointer<GetLabelDelegate>(Api.GetLabelPtr);
 
-                ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
+                    GetSize = Marshal.GetDelegateForFunctionPointer<GetSizeDelegate>(Api.GetSizePtr);
 
-                Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dSingle", out ulong _));
+                    GetStride = Marshal.GetDelegateForFunctionPointer<GetStrideDelegate>(Api.GetStridePtr);
 
-                Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dDouble", out ulong _));
+                    GetExtent = Marshal.GetDelegateForFunctionPointer<GetExtentDelegate>(Api.GetExtentPtr);
 
-                NearestNeighborSingle =
-                    Marshal.GetDelegateForFunctionPointer<NearestNeighborSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborSingle", out ulong _));
+                    CopyTo = Marshal.GetDelegateForFunctionPointer<CopyToDelegate>(Api.CopyToPtr);
 
-                NearestNeighborDouble =
-                    Marshal.GetDelegateForFunctionPointer<NearestNeighborDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborDouble", out ulong _));
-            }
-            else
-            {
-                KokkosLibraryException.Throw("'runtime.Kokkos.NET::GetApi' not found.");
-            }
+                    GetValue = Marshal.GetDelegateForFunctionPointer<GetValueDelegate>(Api.GetValuePtr);
+
+                    SetValue = Marshal.GetDelegateForFunctionPointer<SetValueDelegate>(Api.SetValuePtr);
+
+                    RcpViewToNdArray = Marshal.GetDelegateForFunctionPointer<RcpViewToNdArrayDelegate>(Api.RcpViewToNdArrayPtr);
+
+                    ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
+                }
+
+                GetNumaCount = Marshal.GetDelegateForFunctionPointer<GetNumaCountDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetNumaCount"));
+
+                GetCoresPerNuma = Marshal.GetDelegateForFunctionPointer<GetCoresPerNumaDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetCoresPerNuma"));
+
+                GetThreadsPerCore = Marshal.GetDelegateForFunctionPointer<GetThreadsPerCoreDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetThreadsPerCore"));
+
+                Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dSingle"));
+
+                Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dDouble"));
+
+                NearestNeighborSingle = Marshal.GetDelegateForFunctionPointer<NearestNeighborSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborSingle"));
+
+                NearestNeighborDouble = Marshal.GetDelegateForFunctionPointer<NearestNeighborDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborDouble"));
+
+                CountLineEndingsSerial = Marshal.GetDelegateForFunctionPointer<CountLineEndingsSerialDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsSerial"));
+
+                CountLineEndingsOpenMP = Marshal.GetDelegateForFunctionPointer<CountLineEndingsOpenMPDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsOpenMP"));
+
+                CountLineEndingsCuda = Marshal.GetDelegateForFunctionPointer<CountLineEndingsCudaDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsCuda"));
+
+                IpcCreate           = Marshal.GetDelegateForFunctionPointer<IpcCreateDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,           "IpcCreate"));
+                IpcCreateFrom       = Marshal.GetDelegateForFunctionPointer<IpcCreateFromDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,       "IpcCreateFrom"));
+                IpcOpenExisting     = Marshal.GetDelegateForFunctionPointer<IpcOpenExistingDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,     "IpcOpenExisting"));
+                IpcDestory          = Marshal.GetDelegateForFunctionPointer<IpcDestoryDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,          "IpcDestory"));
+                IpcClose            = Marshal.GetDelegateForFunctionPointer<IpcCloseDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,            "IpcClose"));
+                IpcGetMemoryPointer = Marshal.GetDelegateForFunctionPointer<IpcGetMemoryPointerDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcGetMemoryPointer"));
+                IpcGetDeviceHandle  = Marshal.GetDelegateForFunctionPointer<IpcGetDeviceHandleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,  "IpcGetDeviceHandle"));
+                IpcGetSize          = Marshal.GetDelegateForFunctionPointer<IpcGetSizeDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,          "IpcGetSize"));
+
+                IpcMakeViewFromPointer = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromPointerDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcMakeViewFromPointer"));
+
+                IpcMakeViewFromHandle = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromHandleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcMakeViewFromHandle"));
 
 #if DEBUG
-            Console.WriteLine("Loaded " + RuntimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
+                Console.WriteLine("Loaded " + RuntimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
 #endif
 
-            OnLoaded();
+                IsLoaded = true;
+            }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Unload()
         {
-            if(!PlatformApi.NativeLibrary.Free(ModuleHandle, out ulong _))
+            if(!PlatformApi.NativeLibrary.Free(ModuleHandle))
             {
                 KokkosLibraryException.Throw(RuntimeKokkosLibraryName + "failed to unload.");
             }
             else
             {
-                Handle       = IntPtr.Zero;
-                ModuleHandle = IntPtr.Zero;
+                Handle       = (nint)0;
+                ModuleHandle = (nint)0;
             }
 
             //KokkosCoreLibrary.Unload();
@@ -203,165 +231,422 @@ namespace Kokkos
             //Kernel32.UnmapViewOfFile(Kernel32.GetModuleHandleA(RuntimeKokkosLibraryName + ".dll"));
             //Kernel32.UnmapViewOfFile(Kernel32.GetModuleHandleA(KokkosCoreLibrary.KokkosCoreLibraryName));
 
-            OnUnloaded();
+            IsLoaded = false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ulong CalculateRank(ulong arg_N0 = ulong.MaxValue,
+                                          ulong arg_N1 = ulong.MaxValue,
+                                          ulong arg_N2 = ulong.MaxValue,
+                                          ulong arg_N3 = ulong.MaxValue,
+                                          ulong arg_N4 = ulong.MaxValue,
+                                          ulong arg_N5 = ulong.MaxValue,
+                                          ulong arg_N6 = ulong.MaxValue,
+                                          ulong arg_N7 = ulong.MaxValue)
+
+        {
+            if(arg_N0 == ulong.MaxValue)
+            {
+                return 0;
+            }
+
+            if(arg_N1 == ulong.MaxValue)
+            {
+                return 1;
+            }
+
+            if(arg_N2 == ulong.MaxValue)
+            {
+                return 2;
+            }
+
+            if(arg_N3 == ulong.MaxValue)
+            {
+                return 3;
+            }
+
+            if(arg_N4 == ulong.MaxValue)
+            {
+                return 4;
+            }
+
+            if(arg_N5 == ulong.MaxValue)
+            {
+                return 5;
+            }
+
+            if(arg_N6 == ulong.MaxValue)
+            {
+                return 6;
+            }
+
+            if(arg_N7 == ulong.MaxValue)
+            {
+                return 7;
+            }
+
+            return 8;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static ulong CalculateSize(ulong arg_N0 = 0ul,
+                                          ulong arg_N1 = 0ul,
+                                          ulong arg_N2 = 0ul,
+                                          ulong arg_N3 = 0ul,
+                                          ulong arg_N4 = 0ul,
+                                          ulong arg_N5 = 0ul,
+                                          ulong arg_N6 = 0ul,
+                                          ulong arg_N7 = 0ul)
+
+        {
+            return (arg_N0 == 0ul ? 1ul : arg_N0) *
+                   (arg_N1 == 0ul ? 1ul : arg_N1) *
+                   (arg_N2 == 0ul ? 1ul : arg_N2) *
+                   (arg_N3 == 0ul ? 1ul : arg_N3) *
+                   (arg_N4 == 0ul ? 1ul : arg_N4) *
+                   (arg_N5 == 0ul ? 1ul : arg_N5) *
+                   (arg_N6 == 0ul ? 1ul : arg_N6) *
+                   (arg_N7 == 0ul ? 1ul : arg_N7);
         }
 
         #region Delegates
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate ref KokkosApi GetApiDelegate(in uint version);
+        public delegate ref KokkosApi GetApiDelegate(uint version);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr AllocateDelegate(in ExecutionSpaceKind execution_space,
-                                                in ulong              arg_alloc_size);
+        public delegate nint AllocateDelegate(ExecutionSpaceKind execution_space,
+                                              ulong              arg_alloc_size);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr ReallocateDelegate(in ExecutionSpaceKind execution_space,
-                                                  IntPtr                instance,
-                                                  in ulong              arg_alloc_size);
+        public delegate nint ReallocateDelegate(ExecutionSpaceKind execution_space,
+                                                nint               instance,
+                                                ulong              arg_alloc_size);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void FreeDelegate(in ExecutionSpaceKind execution_space,
-                                          IntPtr                instance);
+        public delegate void FreeDelegate(ExecutionSpaceKind execution_space,
+                                          nint               instance);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeDelegate(int                                                                             narg,
                                                 [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] arg);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeThreadsDelegate(int num_cpu_threads,
                                                        int gpu_device_id);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void InitializeArgumentsDelegate(in InitArguments arguments);
+        public delegate void InitializeArgumentsDelegate(InitArguments arguments);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeDelegate();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeAllDelegate();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate bool IsInitializedDelegate();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void PrintConfigurationDelegate(bool detail);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetDeviceCountDelegate();
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate uint CudaGetComputeCapabilityDelegate(uint device_id);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CreateViewRank0Delegate(IntPtr      instance,
+        public delegate void CreateViewRank0Delegate(nint        instance,
                                                      ref NdArray nArray);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CreateViewRank1Delegate(IntPtr      instance,
+        public delegate void CreateViewRank1Delegate(nint        instance,
                                                      ref NdArray nArray,
-                                                     in  ulong   n0);
+                                                     ulong       n0);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CreateViewRank2Delegate(IntPtr      instance,
+        public delegate void CreateViewRank2Delegate(nint        instance,
                                                      ref NdArray nArray,
-                                                     in  ulong   n0,
-                                                     in  ulong   n1);
+                                                     ulong       n0,
+                                                     ulong       n1);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CreateViewRank3Delegate(IntPtr      instance,
+        public delegate void CreateViewRank3Delegate(nint        instance,
                                                      ref NdArray nArray,
-                                                     in  ulong   n0,
-                                                     in  ulong   n1,
-                                                     in  ulong   n2);
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CreateViewDelegate(IntPtr      instance,
+        public delegate void CreateViewRank4Delegate(nint        instance,
+                                                     ref NdArray nArray,
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2,
+                                                     ulong       n3);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CreateViewRank5Delegate(nint        instance,
+                                                     ref NdArray nArray,
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2,
+                                                     ulong       n3,
+                                                     ulong       n4);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CreateViewRank6Delegate(nint        instance,
+                                                     ref NdArray nArray,
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2,
+                                                     ulong       n3,
+                                                     ulong       n4,
+                                                     ulong       n5);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CreateViewRank7Delegate(nint        instance,
+                                                     ref NdArray nArray,
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2,
+                                                     ulong       n3,
+                                                     ulong       n4,
+                                                     ulong       n5,
+                                                     ulong       n6);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CreateViewRank8Delegate(nint        instance,
+                                                     ref NdArray nArray,
+                                                     ulong       n0,
+                                                     ulong       n1,
+                                                     ulong       n2,
+                                                     ulong       n3,
+                                                     ulong       n4,
+                                                     ulong       n5,
+                                                     ulong       n6,
+                                                     ulong       n7);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CreateViewDelegate(nint        instance,
                                                 ref NdArray nArray);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate NativeString GetLabelDelegate(IntPtr     instance,
-                                                      in NdArray nArray);
+        public delegate NativeString<Serial> GetLabelDelegate(nint    instance,
+                                                              NdArray nArray);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate ulong GetSizeDelegate(IntPtr     instance,
-                                              in NdArray nArray);
+        public delegate ulong GetSizeDelegate(nint    instance,
+                                              NdArray nArray);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate ulong GetStrideDelegate(IntPtr     instance,
-                                                in NdArray nArray,
-                                                in uint    dim);
+        public delegate ulong GetStrideDelegate(nint    instance,
+                                                NdArray nArray,
+                                                uint    dim);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate ulong GetExtentDelegate(IntPtr     instance,
-                                                in NdArray nArray,
-                                                in uint    dim);
+        public delegate ulong GetExtentDelegate(nint    instance,
+                                                NdArray nArray,
+                                                uint    dim);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void CopyToDelegate(IntPtr      instance,
-                                            in NdArray  nArray,
+        public delegate void CopyToDelegate(nint        instance,
+                                            NdArray     nArray,
                                             ValueType[] values);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate ValueType GetValueDelegate(IntPtr     instance,
-                                                   in NdArray nArray,
-                                                   in ulong   i0 = ulong.MaxValue,
-                                                   in ulong   i1 = ulong.MaxValue,
-                                                   in ulong   i2 = ulong.MaxValue,
-                                                   in ulong   i4 = ulong.MaxValue,
-                                                   in ulong   i5 = ulong.MaxValue,
-                                                   in ulong   i6 = ulong.MaxValue,
-                                                   in ulong   i7 = ulong.MaxValue,
-                                                   in ulong   i8 = ulong.MaxValue);
+        public delegate ValueType GetValueDelegate(nint    instance,
+                                                   NdArray nArray,
+                                                   ulong   i0 = ulong.MaxValue,
+                                                   ulong   i1 = ulong.MaxValue,
+                                                   ulong   i2 = ulong.MaxValue,
+                                                   ulong   i3 = ulong.MaxValue,
+                                                   ulong   i4 = ulong.MaxValue,
+                                                   ulong   i5 = ulong.MaxValue,
+                                                   ulong   i6 = ulong.MaxValue,
+                                                   ulong   i7 = ulong.MaxValue);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void SetValueDelegate(IntPtr       instance,
-                                              in NdArray   nArray,
-                                              in ValueType value,
-                                              in ulong     i0 = ulong.MaxValue,
-                                              in ulong     i1 = ulong.MaxValue,
-                                              in ulong     i2 = ulong.MaxValue,
-                                              in ulong     i4 = ulong.MaxValue,
-                                              in ulong     i5 = ulong.MaxValue,
-                                              in ulong     i6 = ulong.MaxValue,
-                                              in ulong     i7 = ulong.MaxValue,
-                                              in ulong     i8 = ulong.MaxValue);
+        public delegate void SetValueDelegate(nint      instance,
+                                              NdArray   nArray,
+                                              ValueType value,
+                                              ulong     i0 = ulong.MaxValue,
+                                              ulong     i1 = ulong.MaxValue,
+                                              ulong     i2 = ulong.MaxValue,
+                                              ulong     i3 = ulong.MaxValue,
+                                              ulong     i4 = ulong.MaxValue,
+                                              ulong     i5 = ulong.MaxValue,
+                                              ulong     i6 = ulong.MaxValue,
+                                              ulong     i7 = ulong.MaxValue);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate NdArray RcpViewToNdArrayDelegate(IntPtr                instance,
-                                                         in ExecutionSpaceKind execution_space,
-                                                         in LayoutKind         layout,
-                                                         in DataTypeKind       data_type,
-                                                         in ushort             rank);
+        public delegate void RcpViewToNdArrayDelegate(nint               instance,
+                                                      ExecutionSpaceKind execution_space,
+                                                      LayoutKind         layout,
+                                                      DataTypeKind       data_type,
+                                                      ushort             rank,
+                                                      out NdArray        ndArray);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate NdArray ViewToNdArrayDelegate(IntPtr                instance,
-                                                      in ExecutionSpaceKind execution_space,
-                                                      in LayoutKind         layout,
-                                                      in DataTypeKind       data_type,
-                                                      in ushort             rank);
+        public delegate ref NdArray ViewToNdArrayDelegate(nint               instance,
+                                                          ExecutionSpaceKind execution_space,
+                                                          LayoutKind         layout,
+                                                          DataTypeKind       data_type,
+                                                          ushort             rank);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr Shepard2dSingleDelegate(IntPtr                xd_rcp_view_ptr,
-                                                       IntPtr                zd_rcp_view_ptr,
-                                                       in float              p,
-                                                       IntPtr                xi_rcp_view_ptr,
-                                                       in ExecutionSpaceKind execution_space);
+        public delegate nint Shepard2dSingleDelegate(nint               xd_rcp_view_ptr,
+                                                     nint               zd_rcp_view_ptr,
+                                                     float              p,
+                                                     nint               xi_rcp_view_ptr,
+                                                     ExecutionSpaceKind execution_space);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr Shepard2dDoubleDelegate(IntPtr                xd_rcp_view_ptr,
-                                                       IntPtr                zd_rcp_view_ptr,
-                                                       in double             p,
-                                                       IntPtr                xi_rcp_view_ptr,
-                                                       in ExecutionSpaceKind execution_space);
+        public delegate nint Shepard2dDoubleDelegate(nint               xd_rcp_view_ptr,
+                                                     nint               zd_rcp_view_ptr,
+                                                     double             p,
+                                                     nint               xi_rcp_view_ptr,
+                                                     ExecutionSpaceKind execution_space);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr NearestNeighborSingleDelegate(IntPtr                latlongdegrees_rcp_view_ptr,
-                                                             in ExecutionSpaceKind execution_space);
+        public delegate nint NearestNeighborSingleDelegate(nint               latlongdegrees_rcp_view_ptr,
+                                                           ExecutionSpaceKind execution_space);
 
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate IntPtr NearestNeighborDoubleDelegate(IntPtr                latlongdegrees_rcp_view_ptr,
-                                                             in ExecutionSpaceKind execution_space);
+        public delegate nint NearestNeighborDoubleDelegate(nint               latlongdegrees_rcp_view_ptr,
+                                                           ExecutionSpaceKind execution_space);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint CountLineEndingsSerialDelegate(nint instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint CountLineEndingsOpenMPDelegate(nint instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint CountLineEndingsCudaDelegate(nint instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcCreateDelegate(ExecutionSpaceKind   execution_space,
+                                               ulong                size,
+                                               NativeString<Serial> label);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcCreateFromDelegate(ExecutionSpaceKind   execution_space,
+                                                   nint                 memoryPtr,
+                                                   ulong                size,
+                                                   NativeString<Serial> label);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcOpenExistingDelegate(ExecutionSpaceKind   execution_space,
+                                                     NativeString<Serial> label);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void IpcDestoryDelegate(ExecutionSpaceKind execution_space,
+                                                nint               instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void IpcCloseDelegate(ExecutionSpaceKind execution_space,
+                                              nint               instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcGetMemoryPointerDelegate(ExecutionSpaceKind execution_space,
+                                                         nint               instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcGetDeviceHandleDelegate(ExecutionSpaceKind execution_space,
+                                                        nint               instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate ulong IpcGetSizeDelegate(ExecutionSpaceKind execution_space,
+                                                 nint               instance);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcMakeViewFromPointerDelegate(ExecutionSpaceKind execution_space,
+                                                            DataTypeKind       data_type,
+                                                            nint               instance,
+                                                            ulong              arg_N0 = ulong.MaxValue,
+                                                            ulong              arg_N1 = ulong.MaxValue,
+                                                            ulong              arg_N2 = ulong.MaxValue,
+                                                            ulong              arg_N3 = ulong.MaxValue,
+                                                            ulong              arg_N4 = ulong.MaxValue,
+                                                            ulong              arg_N5 = ulong.MaxValue,
+                                                            ulong              arg_N6 = ulong.MaxValue,
+                                                            ulong              arg_N7 = ulong.MaxValue);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate nint IpcMakeViewFromHandleDelegate(ExecutionSpaceKind execution_space,
+                                                           DataTypeKind       data_type,
+                                                           nint               instance,
+                                                           ulong              arg_N0 = ulong.MaxValue,
+                                                           ulong              arg_N1 = ulong.MaxValue,
+                                                           ulong              arg_N2 = ulong.MaxValue,
+                                                           ulong              arg_N3 = ulong.MaxValue,
+                                                           ulong              arg_N4 = ulong.MaxValue,
+                                                           ulong              arg_N5 = ulong.MaxValue,
+                                                           ulong              arg_N6 = ulong.MaxValue,
+                                                           ulong              arg_N7 = ulong.MaxValue);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate uint GetNumaCountDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate uint GetCoresPerNumaDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate uint GetThreadsPerCoreDelegate();
 
         #endregion
 
@@ -369,130 +654,130 @@ namespace Kokkos
 
         // public static void CalliInitialize(int      narg,
         //                                   string[] arg,
-        //                                   IntPtr   funcPtr)
+        //                                   nint   funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
         // public static void CalliInitializeThreads(int    num_cpu_threads,
         //                                          int    gpu_device_id,
-        //                                          IntPtr funcPtr)
+        //                                          nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliInitializeArguments(in InitArguments arguments,
-        //                                            IntPtr           funcPtr)
+        // public static void CalliInitializeArguments( InitArguments arguments,
+        //                                            nint           funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliFinalize(IntPtr funcPtr)
+        // public static void CalliFinalize(nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliFinalizeAll(IntPtr funcPtr)
+        // public static void CalliFinalizeAll(nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static bool CalliIsInitialized(IntPtr funcPtr)
+        // public static bool CalliIsInitialized(nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
         // public static void CalliPrintConfiguration(bool   detail,
-        //                                           IntPtr funcPtr)
+        //                                           nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static uint CalliCudaGetDeviceCount(IntPtr funcPtr)
+        // public static uint CalliCudaGetDeviceCount(nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
         // public static uint CalliCudaGetComputeCapability(uint   device_id,
-        //                                                 IntPtr funcPtr)
+        //                                                 nint funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliCreateViewRank0(IntPtr                instance,
-        //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind
+        // public static void CalliCreateViewRank0(nint                instance,
+        //                                         DataTypeKind       data_type,
+        //                                         ExecutionSpaceKind
         //                                        execution_space, byte[] label,
-        //                                        IntPtr                funcPtr)
+        //                                        nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliCreateViewRank1(IntPtr                instance,
-        //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind
+        // public static void CalliCreateViewRank1(nint                instance,
+        //                                         DataTypeKind       data_type,
+        //                                         ExecutionSpaceKind
         //                                        execution_space, byte[] label, in
-        //                                        ulong              n0, IntPtr
+        //                                        ulong              n0, nint
         //                                        funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliCreateViewRank2(IntPtr                instance,
-        //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind
+        // public static void CalliCreateViewRank2(nint                instance,
+        //                                         DataTypeKind       data_type,
+        //                                         ExecutionSpaceKind
         //                                        execution_space, byte[] label, in
-        //                                        ulong              n0, in ulong n1,
-        //                                        IntPtr                funcPtr)
+        //                                        ulong              n0,  ulong n1,
+        //                                        nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static void CalliCreateViewRank3(IntPtr                instance,
-        //                                        in DataTypeKind       data_type,
-        //                                        in ExecutionSpaceKind
+        // public static void CalliCreateViewRank3(nint                instance,
+        //                                         DataTypeKind       data_type,
+        //                                         ExecutionSpaceKind
         //                                        execution_space, byte[] label, in
-        //                                        ulong              n0, in ulong n1,
-        //                                        in ulong              n2,
-        //                                        IntPtr                funcPtr)
+        //                                        ulong              n0,  ulong n1,
+        //                                         ulong              n2,
+        //                                        nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static byte[] CalliGetLabel(IntPtr                instance,
-        //                                   in DataTypeKind       data_type,
-        //                                   in ExecutionSpaceKind execution_space,
-        //                                   in uint               rank,
-        //                                   IntPtr                funcPtr)
+        // public static byte[] CalliGetLabel(nint                instance,
+        //                                    DataTypeKind       data_type,
+        //                                    ExecutionSpaceKind execution_space,
+        //                                    uint               rank,
+        //                                   nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static ulong CalliGetSize(IntPtr                instance,
-        //                                 in DataTypeKind       data_type,
-        //                                 in ExecutionSpaceKind execution_space,
-        //                                 in uint               rank,
-        //                                 IntPtr                funcPtr)
+        // public static ulong CalliGetSize(nint                instance,
+        //                                  DataTypeKind       data_type,
+        //                                  ExecutionSpaceKind execution_space,
+        //                                  uint               rank,
+        //                                 nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static ulong CalliGetStride(IntPtr                instance,
-        //                                   in DataTypeKind       data_type,
-        //                                   in ExecutionSpaceKind execution_space,
-        //                                   in uint               rank,
-        //                                   in uint               dim,
-        //                                   IntPtr                funcPtr)
+        // public static ulong CalliGetStride(nint                instance,
+        //                                    DataTypeKind       data_type,
+        //                                    ExecutionSpaceKind execution_space,
+        //                                    uint               rank,
+        //                                    uint               dim,
+        //                                   nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
 
-        // public static ulong CalliGetExtent(IntPtr                instance,
-        //                                   in DataTypeKind       data_type,
-        //                                   in ExecutionSpaceKind execution_space,
-        //                                   in uint               rank,
-        //                                   in uint               dim,
-        //                                   IntPtr                funcPtr)
+        // public static ulong CalliGetExtent(nint                instance,
+        //                                    DataTypeKind       data_type,
+        //                                    ExecutionSpaceKind execution_space,
+        //                                    uint               rank,
+        //                                    uint               dim,
+        //                                   nint                funcPtr)
         //{
         //    throw new NotImplementedException();
         //}
@@ -511,11 +796,7 @@ namespace Kokkos
 
         private static InitializeDelegate _initialize;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static void Initialize(int      narg,
                                       string[] arg)
         {
@@ -531,11 +812,7 @@ namespace Kokkos
 
         private static InitializeThreadsDelegate _initializeThreads;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static void Initialize(int num_cpu_threads,
                                       int gpu_device_id)
         {
@@ -551,28 +828,23 @@ namespace Kokkos
 
         private static InitializeArgumentsDelegate _initializeArguments;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static void Initialize(in InitArguments arguments)
+        public static void Initialize(InitArguments arguments)
         {
-            Load();
+            if(!IsInitialized())
+            {
+                Load();
 
-            _initializeArguments(arguments);
+                _initializeArguments(arguments);
 
-            Initialized = true;
+                Initialized = true;
+            }
         }
 
         private static FinalizeDelegate _finalize;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static void @Finalize()
+        public static void Finalize()
         {
             _finalize();
 
@@ -583,11 +855,7 @@ namespace Kokkos
 
         private static FinalizeAllDelegate _finalizeAll;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static void FinalizeAll()
         {
             _finalizeAll();
@@ -599,11 +867,7 @@ namespace Kokkos
 
         private static IsInitializedDelegate _isInitialized;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static bool IsInitialized()
         {
             if(!Initialized)
@@ -628,7 +892,25 @@ namespace Kokkos
 
         public static CreateViewRank3Delegate CreateViewRank3;
 
+        public static CreateViewRank4Delegate CreateViewRank4;
+
+        public static CreateViewRank5Delegate CreateViewRank5;
+
+        public static CreateViewRank6Delegate CreateViewRank6;
+
+        public static CreateViewRank7Delegate CreateViewRank7;
+
+        public static CreateViewRank8Delegate CreateViewRank8;
+
         public static CreateViewDelegate CreateView;
+
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, NativeString<Serial>> GetLabel;
+
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ulong> GetSize;
+
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, uint, ulong> GetStride;
+
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, uint, ulong> GetExtent;
 
         public static GetLabelDelegate GetLabel;
 
@@ -640,6 +922,10 @@ namespace Kokkos
 
         public static CopyToDelegate CopyTo;
 
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ValueType> GetValue;
+
+        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ValueType, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, void> SetValue;
+
         public static GetValueDelegate GetValue;
 
         public static SetValueDelegate SetValue;
@@ -647,6 +933,12 @@ namespace Kokkos
         public static RcpViewToNdArrayDelegate RcpViewToNdArray;
 
         public static ViewToNdArrayDelegate ViewToNdArray;
+
+        public static GetNumaCountDelegate      GetNumaCount;
+
+        public static GetCoresPerNumaDelegate   GetCoresPerNuma;
+
+        public static GetThreadsPerCoreDelegate GetThreadsPerCore;
 
         public static Shepard2dSingleDelegate Shepard2dSingle;
 
@@ -656,33 +948,23 @@ namespace Kokkos
 
         public static NearestNeighborDoubleDelegate NearestNeighborDouble;
 
+        public static CountLineEndingsSerialDelegate CountLineEndingsSerial;
+
+        public static CountLineEndingsOpenMPDelegate CountLineEndingsOpenMP;
+
+        public static CountLineEndingsCudaDelegate CountLineEndingsCuda;
+
+        public static IpcCreateDelegate              IpcCreate;
+        public static IpcCreateFromDelegate          IpcCreateFrom;
+        public static IpcOpenExistingDelegate        IpcOpenExisting;
+        public static IpcDestoryDelegate             IpcDestory;
+        public static IpcCloseDelegate               IpcClose;
+        public static IpcGetMemoryPointerDelegate    IpcGetMemoryPointer;
+        public static IpcGetDeviceHandleDelegate     IpcGetDeviceHandle;
+        public static IpcGetSizeDelegate             IpcGetSize;
+        public static IpcMakeViewFromPointerDelegate IpcMakeViewFromPointer;
+        public static IpcMakeViewFromHandleDelegate  IpcMakeViewFromHandle;
+
         #endregion
-
-        private static readonly KokkosLibraryEventArgs loadedEventArgs   = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
-        private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
-
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        private static void OnLoaded()
-        {
-            Loaded?.Invoke(null, loadedEventArgs);
-
-            Console.WriteLine("KokkosLibrary Loaded.");
-        }
-
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        private static void OnUnloaded()
-        {
-            Unloaded?.Invoke(null, unloadedEventArgs);
-
-            Console.WriteLine("KokkosLibrary Unloaded.");
-        }
     }
 }

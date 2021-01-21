@@ -17,7 +17,7 @@ namespace Kokkos
             public int Length;
 
             [FieldOffset(sizeof(int))]
-            public IntPtr Data;
+            public nint Data;
         }
 
         private static readonly Type _T = typeof(T);
@@ -26,11 +26,7 @@ namespace Kokkos
 
         private static readonly ExecutionSpaceKind executionSpace;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         static NativeArray()
         {
             //if(!KokkosLibrary.IsInitialized())
@@ -49,55 +45,31 @@ namespace Kokkos
 
         public int Length
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return ((NativeStruct*)Instance)->Length; }
         }
 
         public T* Pointer
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return data_pointer; }
         }
 
         public NativePointer Instance
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return _pointer; }
         }
 
         public T this[in int index]
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return data_pointer[index]; }
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set { data_pointer[index] = value; }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public NativeArray(int size)
         {
             _pointer = NativePointer.Allocate(sizeof(NativeStruct),
@@ -113,12 +85,8 @@ namespace Kokkos
             data_pointer = (T*)((NativeStruct*)Instance)->Data;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativeArray(IntPtr nativeStructPointer)
+        public NativeArray(nint nativeStructPointer)
         {
             _pointer = new NativePointer(nativeStructPointer,
                                          ((NativeStruct*)nativeStructPointer)->Length * elementSize);
@@ -128,12 +96,8 @@ namespace Kokkos
             data_pointer = (T*)((NativeStruct*)Instance)->Data;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public NativeArray(IntPtr nativePointer,
+        public NativeArray(nint nativePointer,
                            int    length)
         {
             _pointer = new NativePointer(nativePointer,
@@ -144,11 +108,7 @@ namespace Kokkos
             data_pointer = (T*)((NativeStruct*)Instance)->Data;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public NativeArray(T[] array)
         {
             _pointer = NativePointer.Allocate(sizeof(NativeStruct),
@@ -172,16 +132,12 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public T[] ToManaged()
         {
             T[] result = new T[Length];
 
-            if(Instance == IntPtr.Zero)
+            if(Instance == 0)
             {
                 return result;
             }
@@ -194,12 +150,8 @@ namespace Kokkos
             return result;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static T[] ToManaged(IntPtr nativeArray,
+        public static T[] ToManaged(nint nativeArray,
                                     int    length)
         {
             NativeArray<T, TExecutionSpace> array = new NativeArray<T, TExecutionSpace>(nativeArray,
@@ -210,11 +162,7 @@ namespace Kokkos
 
         #region IDisposable
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         private void ReleaseUnmanagedResources()
         {
             if(_isOwner)

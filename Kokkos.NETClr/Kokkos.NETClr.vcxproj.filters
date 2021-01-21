@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Kokkos\ClrLibrary.cpp">
+      <Filter>Kokkos.NETClr\Kokkos</Filter>
+    </ClCompile>
+    <ClCompile Include="AssemblyInfo.cpp">
+      <Filter>Kokkos.NETClr\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Kokkos\Native.cpp">
+      <Filter>Kokkos.NETClr\Kokkos</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Kokkos\ClrLibrary.h">
+      <Filter>Kokkos.NETClr\Kokkos</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Kokkos.NETClr\Resources</Filter>
+    </ClInclude>
+    <ClInclude Include="Kokkos\Native.h">
+      <Filter>Kokkos.NETClr\Kokkos</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Kokkos.NETClr">
+      <UniqueIdentifier>{9a508e66-3a7d-4250-b51f-7f939cc475cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kokkos.NETClr\Kokkos">
+      <UniqueIdentifier>{b13462db-8338-4037-8e7a-dd53882a89c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Kokkos.NETClr\Resources">
+      <UniqueIdentifier>{fc9ca14e-7e76-4aea-b29f-cf0d41a2766b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="app.ico">
+      <Filter>Kokkos.NETClr\Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="app.rc">
+      <Filter>Kokkos.NETClr\Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="build_cs.rsp">
+      <Filter>Kokkos.NETClr</Filter>
+    </None>
+    <None Include="build_clr.rsp">
+      <Filter>Kokkos.NETClr</Filter>
+    </None>
+    <None Include="build.cmd">
+      <Filter>Kokkos.NETClr</Filter>
+    </None>
+  </ItemGroup>
+</Project>

@@ -13,68 +13,194 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
-    <None Include="runtime.Kokkos.NET.nuspec">
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NuGet.exe pack %(FullPath) -Properties $(NUGET_PROPERTIES) -OutputDirectory C:\AssemblyCache\_packages</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Command>
-      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</VerifyInputsAndOutputsExist>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">runtime.Kokkos.NET.nupkg</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\AssemblyCache\_packages\native.Kokkos.$(Platform).$(RUNTIME_KOKKOS_VERSION).nupkg</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </Message>
+    <None Include="ClassDiagram.cd" />
+    <None Include="cpp.hint" />
+    <None Include="runtime.Kokkos.NET.rgs">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </None>
+    <None Include="runtime.Kokkos.NET.nuspec" />
+    <None Include="runtime.Kokkos.NET.targets" />
+    <None Include="TODO\Kernel.cu">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Analyzes\InterpolationMethods.cpp" />
     <ClCompile Include="Analyzes\SpatialMethods.cpp" />
-    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Analyzes\SpecialMethods.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">-ffp-model=strict %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">-ffp-model=strict %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <EnableClangCuda Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disable</EnableClangCuda>
+    </ClCompile>
+    <ClCompile Include="InMemoryData\InMemory.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="runtime.Kokkos\KokkosApi.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp" />
+    <ClCompile Include="runtime.Kokkos\KokkosHwloc.cpp" />
+    <ClCompile Include="runtime.Kokkos\KokkosViews.cpp" />
+    <ClCompile Include="runtime.Kokkos\VectorSpecializations.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">-fforce-emit-vtables -Xclang -mconstructor-aliases %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">-fforce-emit-vtables -Xclang -mconstructor-aliases %(AdditionalOptions)</AdditionalOptions>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="runtime.Kokkos\ViewAllocator.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewConvert.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.GetValue.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewFunctions.SetValue.cpp" />
     <ClCompile Include="runtime.Kokkos\ViewProperties.cpp" />
+    <ClCompile Include="runtime.Kokkos\ViewRcpConvert.cpp" />
+    <ClCompile Include="runtime.Kokkos\ViewSpecializations.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TODO\BKTIndex.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TODO\KDTIndex.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Utilities\GpuCsvReader.cpp" />
     <ClCompile Include="Utilities\GpuMemoryMap.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">-shared -gfull -gcodeview -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Utilities\MemoryCopy.cpp" />
+    <ClCompile Include="Utilities\InterprocessMemory.cpp" />
+    <ClCompile Include="Utilities\MemoryCopy.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Utilities\MemoryMapped.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Analyzes\BesselMethods.hpp" />
     <ClInclude Include="Analyzes\CartographicMethods.hpp" />
     <ClInclude Include="Analyzes\GeoJson.hpp" />
     <ClInclude Include="Analyzes\InterpolationMethods.hpp" />
+    <ClInclude Include="Analyzes\JacobiEigenvalue.hpp" />
+    <ClInclude Include="Analyzes\KDtree.hpp" />
     <ClInclude Include="Analyzes\kMeansClustering.hpp" />
+    <ClInclude Include="Analyzes\kMeansClustering2.hpp" />
     <ClInclude Include="Analyzes\kNearestNeighbor.hpp" />
     <ClInclude Include="Analyzes\Kriging.hpp" />
     <ClInclude Include="Analyzes\Linq.hpp" />
+    <ClInclude Include="Analyzes\minpack.hpp" />
     <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp" />
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterp1D.hpp" />
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterp2D.hpp" />
+    <ClInclude Include="Analyzes\RadialBasisFunctionInterpNd.hpp" />
+    <ClInclude Include="Analyzes\ReverseCuthillMckee.hpp" />
     <ClInclude Include="Analyzes\SpatialMethods.hpp" />
+    <ClInclude Include="Analyzes\SpecialMethods.h" />
+    <ClInclude Include="Analyzes\Trees\KDtree.hpp" />
     <ClInclude Include="Analyzes\Variant.hpp" />
+    <ClInclude Include="COMWrappers.hpp" />
+    <ClInclude Include="Geometry\BoundingBox.hpp" />
+    <ClInclude Include="Geometry\Box.hpp" />
+    <ClInclude Include="Geometry\ObjectBoundingBox.hpp" />
+    <ClInclude Include="Geometry\ObjectBoundingBoxHierarchy.hpp" />
+    <ClInclude Include="Geometry\Point.hpp" />
+    <ClInclude Include="Geometry\Sphere.hpp" />
+    <ClInclude Include="Geometry\Vector.hpp" />
     <ClInclude Include="KokkosAPI.hpp" />
     <ClInclude Include="KokkosLapack\gelq2.hpp" />
     <ClInclude Include="KokkosLapack\KokkosLapack.config.h" />
     <ClInclude Include="KokkosLapack\KokkosLapack.hpp" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="runtime.Kokkos\Extensions.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\IndexOf.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\MatrixOps.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\Solvers.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\SparseOps.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\VectorOps.hpp" />
     <ClInclude Include="runtime.Kokkos\KokkosApi.h" />
+    <ClInclude Include="runtime.Kokkos\KokkosIVector.hpp" />
+    <ClInclude Include="runtime.Kokkos\KokkosVector.hpp" />
+    <ClInclude Include="runtime.Kokkos\Ratio.hpp" />
     <ClInclude Include="runtime.Kokkos\TemplateIterator.hpp" />
     <ClInclude Include="runtime.Kokkos\TemplateManager.hpp" />
     <ClInclude Include="runtime.Kokkos\TemplateManager_Def.hpp" />
     <ClInclude Include="runtime.Kokkos\ViewOfViews.hpp" />
     <ClInclude Include="runtime.Kokkos\ViewTypes.hpp" />
+    <ClInclude Include="TODO\BKTIndex.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\BKTParameterDefinitionList.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\BKTree.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\Distance.hxx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTIndex.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTParameterDefinitionList.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\KDTree.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\KNearestNeighborhoodGraph.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\NeighborhoodGraph.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\Refine.hxx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TODO\TPtree.hxx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Utilities\GpuMemoryMap.h" />
     <ClInclude Include="Utilities\GpuCsvReader.hpp" />
+    <ClInclude Include="Utilities\InMemoryLibraryLoader.hpp" />
+    <ClInclude Include="Utilities\InterprocessMemory.h" />
     <ClInclude Include="Utilities\MemoryMapped.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="runtime.Kokkos.NET.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="runtime.Kokkos.NET.rc">
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </PreprocessorDefinitions>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">echo C:/POSIX/mingw64/bin/windres.exe -i %(FullPath) -o $(IntPosixDir)%(filename).res</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntPosixDir)%(filename).res</Outputs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <MIDL Include="Interop\Interfaces.idl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </MIDL>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
+    <NuspecFile>runtime.Kokkos.NET.nuspec</NuspecFile>
     <ProjectGuid>{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}</ProjectGuid>
     <RootSolutionDir>..\..\Kokkos.NET\</RootSolutionDir>
     <UseMultiToolTask>true</UseMultiToolTask>
@@ -84,27 +210,38 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
+    <Import Project="$(RootSolutionDir)..\BuildTools\WinMD.targets" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
+    <Import Project="$(RootSolutionDir)..\BuildTools\WinMD.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(TargetName)</TargetName>
+    <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
+    <CustomBuildAfterTargets>
+    </CustomBuildAfterTargets>
+    <CustomBuildBeforeTargets>
+    </CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>$(TargetName)</TargetName>
+    <CodeAnalysisRuleSet>NativeMinimumRules.ruleset</CodeAnalysisRuleSet>
     <CustomBuildAfterTargets>
     </CustomBuildAfterTargets>
     <CustomBuildBeforeTargets>
@@ -113,20 +250,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <CompileAs />
-      <UndefinePreprocessorDefinitions>_MSC_VER</UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>DEBUG;_DEBUG;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;MBCS;_MBCS</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>../../BuildTools;./;D:/TFS_Sources/ManagedProjects/Misc/EngineeringAnalysisStudio/2 Service Layer/EAS.NumericalMethods.Native;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-shared -gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fno-short-enums -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
+      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
-      <MultiProcessorCompilation />
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion />
       <IntrinsicFunctions />
       <FavorSizeOrSpeed />
-      <OmitFramePointers>false</OmitFramePointers>
+      <OmitFramePointers>
+      </OmitFramePointers>
       <EnableFiberSafeOptimizations />
       <StringPooling />
       <MinimalRebuild />
@@ -176,6 +313,12 @@
       <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <SupportJustMyCode />
+      <StructMemberAlignment />
+      <RemoveUnreferencedCodeData />
+      <OpenMPSupport />
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
@@ -184,7 +327,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,-lkokkoscore.dll,-lkokkoscontainers.dll,-Bstatic,-lteuchoscore,-lkokkoskernels</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -192,7 +335,8 @@
       <UACUIAccess />
       <ProgramDatabaseFile />
       <OptimizeReferences />
-      <EnableCOMDATFolding />
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
       <ProfileGuidedDatabase />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
@@ -201,7 +345,10 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-LD:/TFS_Sources/Github/Compilation/trmcnealy</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <MergedIDLBaseFileName>
+      </MergedIDLBaseFileName>
+      <ImportLibrary />
     </Link>
     <Lib>
       <SubSystem>
@@ -214,11 +361,14 @@
       </Command>
     </PostBuildEvent>
     <ProjectReference />
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>
-      </Outputs>
+    <Midl>
+      <WarningLevel />
+      <HeaderFileName />
+    </Midl>
+    <CustomBuildStep Condition="'$(Configuration)'=='Release'">
+      <Command>$(PACKAGE_CACHE)..\bin\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)</Command>
+      <Outputs>$(PACKAGE_CACHE)native.Kokkos.NET.nupkg</Outputs>
+      <TreatOutputAsContent>false</TreatOutputAsContent>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -233,7 +383,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>C:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -255,7 +405,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -270,20 +420,20 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <CompileAs />
-      <UndefinePreprocessorDefinitions>_MT;_MSC_VER</UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>NDEBUG;_NDEBUG;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;MBCS;_MBCS</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>../../BuildTools;./;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-Xcuda-ptxas -w -w -O3 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -ftls-model=global-dynamic -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp -Xclang -flto-visibility-public-std </AdditionalOptions>
+      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
-      <MultiProcessorCompilation />
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion />
       <IntrinsicFunctions />
       <FavorSizeOrSpeed />
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>
+      </OmitFramePointers>
       <EnableFiberSafeOptimizations />
       <StringPooling />
       <MinimalRebuild />
@@ -333,6 +483,14 @@
       <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <SupportJustMyCode />
+      <StructMemberAlignment />
+      <RemoveUnreferencedCodeData />
+      <OpenMPSupport />
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <BasicRuntimeChecks />
+      <EnableClangCuda>Enabled</EnableClangCuda>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
@@ -341,7 +499,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,-lkokkoscore.dll,-lkokkoscontainers.dll,-Bstatic,-lteuchoscore,-lkokkoskernels</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -349,7 +507,8 @@
       <UACUIAccess />
       <ProgramDatabaseFile />
       <OptimizeReferences />
-      <EnableCOMDATFolding />
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
       <ProfileGuidedDatabase />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
@@ -358,14 +517,12 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-LD:/TFS_Sources/Github/Compilation/trmcnealy</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <MergedIDLBaseFileName>
+      </MergedIDLBaseFileName>
+      <ImportLibrary />
     </Link>
-    <CustomBuildStep>
-      <Command>
-      </Command>
-      <Outputs>C:\AssemblyCache\_packages\native.Kokkos.$(Platform).$(RUNTIME_KOKKOS_VERSION).nupkg</Outputs>
-      <TreatOutputAsContent>false</TreatOutputAsContent>
-    </CustomBuildStep>
+    <CustomBuildStep />
     <ProjectReference />
     <Lib>
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
@@ -374,7 +531,8 @@
       <SuppressStartupBanner />
     </Lib>
     <PostBuildEvent>
-      <Command>C:\PROGRA~2\NuGet\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties $(NUGET_PROPERTIES) -OutputDirectory C:\AssemblyCache\_packages</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
     <CustomBuild>
       <Command>
@@ -386,9 +544,41 @@
     </CustomBuild>
     <CustomBuild />
     <CustomBuild />
+    <ResourceCompile />
+    <ResourceCompile />
+    <Midl>
+      <AdditionalMetadataDirectories>
+      </AdditionalMetadataDirectories>
+      <EnableWindowsRuntime>
+      </EnableWindowsRuntime>
+      <WarningLevel>
+      </WarningLevel>
+      <HeaderFileName>
+      </HeaderFileName>
+      <OutputDirectory>
+      </OutputDirectory>
+      <PrependWithABINamepsace>
+      </PrependWithABINamepsace>
+      <MetadataFileName>
+      </MetadataFileName>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <TargetEnvironment>
+      </TargetEnvironment>
+    </Midl>
+    <CustomBuildStep Condition="'$(Configuration)'=='Release'">
+      <Command>
+      </Command>
+      <Outputs>
+      </Outputs>
+      <TreatOutputAsContent>
+      </TreatOutputAsContent>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Import Project="$(RootSolutionDir)..\BuildTools\Clang.targets" />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.props))\Nuget.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.props))' != '' " />
+  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.targets))\Nuget.targets" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.targets))' != '' " />
   <Target Name="Link">
     <CallTarget Targets="ClangLink" />
   </Target>

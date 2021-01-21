@@ -1,9 +1,9 @@
 
 #include "runtime.Kokkos/KokkosApi.h"
 
-void* Allocate(const ExecutionSpaceKind& execution_space, const size_type& arg_alloc_size) noexcept
+void* Allocate(const ExecutionSpaceKind execution_space, const size_type arg_alloc_size) noexcept
 {
-    switch(execution_space)
+    switch (execution_space)
     {
         case ExecutionSpaceKind::Serial:
         {
@@ -25,9 +25,15 @@ void* Allocate(const ExecutionSpaceKind& execution_space, const size_type& arg_a
     }
 }
 
-void* Reallocate(const ExecutionSpaceKind& execution_space, void* instance, const size_type& arg_alloc_size) noexcept
+void* Reallocate(const ExecutionSpaceKind execution_space, void* instance, const size_type arg_alloc_size) noexcept
 {
-    switch(execution_space)
+    // const ExecutionSpaceKind kind = execution_space;
+
+    // using ExecutionSpaceType = typename ToTrait<decltype(kind)>::ExecutionSpace;
+
+    // return Kokkos::kokkos_realloc<typename ExecutionSpaceType::memory_space>(instance, arg_alloc_size);
+
+    switch (execution_space)
     {
         case ExecutionSpaceKind::Serial:
         {
@@ -49,9 +55,9 @@ void* Reallocate(const ExecutionSpaceKind& execution_space, void* instance, cons
     }
 }
 
-void Free(const ExecutionSpaceKind& execution_space, void* instance) noexcept
+void Free(const ExecutionSpaceKind execution_space, void* instance) noexcept
 {
-    switch(execution_space)
+    switch (execution_space)
     {
         case ExecutionSpaceKind::Serial:
         {
@@ -75,11 +81,11 @@ void Free(const ExecutionSpaceKind& execution_space, void* instance) noexcept
     }
 }
 
-void Initialize(int& narg, char* arg[]) noexcept
+void Initialize(const int narg, char* arg[]) noexcept
 {
     std::cout << "Initializing Kokkos." << std::endl;
 
-    Kokkos::initialize(narg, arg);
+    Kokkos::initialize((int&)narg, arg);
 }
 
 void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept
@@ -97,7 +103,7 @@ void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexc
     Kokkos::initialize(arguments);
 }
 
-void InitializeArguments(const Kokkos::InitArguments& arguments) noexcept
+void InitializeArguments(Kokkos::InitArguments arguments) noexcept
 {
     std::cout << "Initializing Kokkos." << std::endl;
 
@@ -118,9 +124,15 @@ void FinalizeAll() noexcept
     Kokkos::finalize_all();
 }
 
-__attribute__((flatten)) bool IsInitialized() noexcept { return Kokkos::is_initialized(); }
+__attribute__((flatten)) bool IsInitialized() noexcept
+{
+    return Kokkos::is_initialized();
+}
 
-void PrintConfiguration(const bool& detail) noexcept { Kokkos::print_configuration(std::cout, detail); }
+void PrintConfiguration(const bool detail) noexcept
+{
+    Kokkos::print_configuration(std::cout, detail);
+}
 
 #include <cuda_runtime.h>
 
@@ -133,14 +145,14 @@ unsigned int CudaGetDeviceCount() noexcept
     return deviceCount;
 }
 
-unsigned int CudaGetComputeCapability(unsigned int device_id) noexcept
+unsigned int CudaGetComputeCapability(const unsigned int device_id) noexcept
 {
     cudaSetDevice(device_id);
 
     cudaDeviceProp    deviceProp;
     const cudaError_t error_id = cudaGetDeviceProperties(&deviceProp, device_id);
 
-    if(error_id == cudaSuccess)
+    if (error_id == cudaSuccess)
     {
         return deviceProp.major * 100 + deviceProp.minor * 10;
     }

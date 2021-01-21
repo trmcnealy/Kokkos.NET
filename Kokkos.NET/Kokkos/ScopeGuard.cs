@@ -7,21 +7,13 @@ namespace Kokkos
     {
         private static bool _initialized;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         static ScopeGuard()
         {
             AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         private ScopeGuard()
         {
             //if(_initialized)
@@ -30,21 +22,13 @@ namespace Kokkos
             //}
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public void Dispose()
         {
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        private static void RrcTexasDataAdapter_Dtor(object    sender,
+        private static void RrcTexasDataAdapter_Dtor(object?    sender,
                                                      EventArgs e)
         {
             if(KokkosLibrary.IsInitialized() || _initialized)
@@ -53,11 +37,7 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static ScopeGuard Get()
         {
             if(!_initialized)
@@ -69,11 +49,7 @@ namespace Kokkos
             return new ScopeGuard();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static ScopeGuard Get(int gpuDeviceId)
         {
             if(!_initialized)
@@ -85,11 +61,7 @@ namespace Kokkos
             return new ScopeGuard();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static ScopeGuard Get(int numCpuThreads,
                                      int gpuDeviceId)
         {
@@ -102,12 +74,8 @@ namespace Kokkos
             return new ScopeGuard();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-        public static ScopeGuard Get(in InitArguments arguments)
+        public static ScopeGuard Get(InitArguments arguments)
         {
             if(!_initialized)
             {
@@ -118,11 +86,7 @@ namespace Kokkos
             return new ScopeGuard();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static void Print()
         {
             KokkosLibrary.PrintConfiguration(true);

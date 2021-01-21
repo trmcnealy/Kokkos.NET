@@ -32,7 +32,7 @@ namespace Kokkos
                                                              float                        p,
                                                              View<float, TExecutionSpace> xi)
         {
-            IntPtr result = KokkosLibrary.Shepard2dSingle(xd.Pointer, zd.Pointer, p, xi.Pointer, executionSpace);
+            nint result = KokkosLibrary.Shepard2dSingle(xd.Pointer, zd.Pointer, p, xi.Pointer, executionSpace);
 
             NdArray ndArray = View<float, TExecutionSpace>.RcpConvert(result, 1);
 
@@ -46,7 +46,7 @@ namespace Kokkos
                                                               double                        p,
                                                               View<double, TExecutionSpace> xi)
         {
-            IntPtr result = KokkosLibrary.Shepard2dDouble(xd.Pointer, zd.Pointer, p, xi.Pointer, executionSpace);
+            nint result = KokkosLibrary.Shepard2dDouble(xd.Pointer, zd.Pointer, p, xi.Pointer, executionSpace);
 
             NdArray ndArray = View<double, TExecutionSpace>.RcpConvert(result, 1);
 

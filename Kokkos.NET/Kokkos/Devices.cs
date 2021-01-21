@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Management;
 using System.Runtime.InteropServices;
 
 using Kokkos;
@@ -68,11 +67,7 @@ namespace Kokkos
                          int        coreCount,
                          int        threadCount,
                          DeviceArch architecture)
-            : base(id,
-                   platform,
-                   coreCount,
-                   threadCount,
-                   architecture)
+            : base(id, platform, coreCount, threadCount, architecture)
         {
         }
     }
@@ -84,11 +79,7 @@ namespace Kokkos
                          int        coreCount,
                          int        threadCount,
                          DeviceArch architecture)
-            : base(id,
-                   platform,
-                   coreCount,
-                   threadCount,
-                   architecture)
+            : base(id, platform, coreCount, threadCount, architecture)
         {
         }
     }
@@ -101,42 +92,17 @@ namespace Kokkos
 
         public Devices()
         {
-            int       numberOfProcessors        = 0;
-            List<int> numberOfCores             = new List<int>(numberOfProcessors);
-            List<int> numberOfHyperThreads      = new List<int>(numberOfProcessors);
-            int       numberOfLogicalProcessors = 0;
-
-            foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfProcessors from Win32_ComputerSystem").Get())
-            {
-                numberOfProcessors = int.Parse(item["NumberOfProcessors"].ToString() ?? throw new NullReferenceException("NumberOfProcessors"));
-            }
-
-            Cpu = new List<CpuDevice>(numberOfProcessors);
-
-            foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfLogicalProcessors from Win32_ComputerSystem").Get())
-            {
-                numberOfLogicalProcessors = int.Parse(item["NumberOfLogicalProcessors"].ToString() ?? throw new NullReferenceException("NumberOfLogicalProcessors"));
-            }
-
-            foreach(ManagementBaseObject item in new ManagementObjectSearcher("Select NumberOfCores from Win32_Processor").Get())
-            {
-                numberOfCores.Add(int.Parse(item["NumberOfCores"].ToString() ?? throw new NullReferenceException("NumberOfCores")));
-                numberOfHyperThreads.Add(numberOfLogicalProcessors / numberOfCores.Last());
-            }
-
-            uint cpuId = 0;
+            Cpu = new List<CpuDevice>((int)KokkosLibrary.GetNumaCount());
 
             OperatingSystem os = Environment.OSVersion;
 
-            foreach(int numberOfCore in numberOfCores)
+            for(int i = 0; i < (int)KokkosLibrary.GetNumaCount(); ++i)
             {
-                Cpu.Add(new CpuDevice((int)cpuId,
+                Cpu.Add(new CpuDevice(i,
                                       $"{os.Platform:G}",
-                                      numberOfCores[(int)cpuId],
-                                      numberOfCores[(int)cpuId] * numberOfHyperThreads[(int)cpuId],
+                                      (int)KokkosLibrary.GetCoresPerNuma(),
+                                      (int)KokkosLibrary.GetCoresPerNuma() * (int)KokkosLibrary.GetThreadsPerCore(),
                                       new DeviceArch(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86")));
-
-                ++cpuId;
             }
 
             Gpu = new List<GpuDevice>((int)KokkosLibrary.GetDeviceCount());

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+    <PropertyGroup>
+        <EffectivePlatform>$(Platform)</EffectivePlatform>
+        <EffectivePlatform Condition="'$(Platform)' == 'Win32'">x86</EffectivePlatform>
+        <EffectivePlatform Condition="'$(Platform)' == 'Any CPU' AND '$(Prefer32Bit)'=='true'">x86</EffectivePlatform>
+        <EffectivePlatform Condition="'$(Platform)' == 'AnyCPU' AND '$(Prefer32Bit)'=='true'">x86</EffectivePlatform>
+        <EffectivePlatform Condition="'$(Platform)' == 'Any CPU' AND '$(Prefer32Bit)'=='false'">x64</EffectivePlatform>
+        <EffectivePlatform Condition="'$(Platform)' == 'AnyCPU' AND '$(Prefer32Bit)'=='false'">x64</EffectivePlatform>
+    </PropertyGroup>
+
+    <Choose>
+        <When Condition="$([MSBuild]::IsOsPlatform('Windows'))">
+            <PropertyGroup>
+                <RuntimeIdentifier Condition="'$(Platform)'=='x86'">win10-x86</RuntimeIdentifier>
+                <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win10-x64</RuntimeIdentifier>
+            </PropertyGroup>
+        </When>
+        <When Condition="$([MSBuild]::IsOsPlatform('Linux'))">
+            <PropertyGroup>
+                <RuntimeIdentifier Condition="'$(Platform)'=='x86'">linux-x86</RuntimeIdentifier>
+                <RuntimeIdentifier Condition="'$(Platform)'=='x64'">linux-x64</RuntimeIdentifier>
+            </PropertyGroup>
+        </When>
+        <When Condition="$([MSBuild]::IsOsPlatform('OSX'))">
+            <PropertyGroup>
+                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">osx-x86</RuntimeIdentifier>
+                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">osx-x64</RuntimeIdentifier>
+            </PropertyGroup>
+        </When>
+        <When Condition="$([MSBuild]::IsOsPlatform('FreeBSD'))">
+            <PropertyGroup>
+                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">freebsd-x86</RuntimeIdentifier>
+                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">freebsd-x64</RuntimeIdentifier>
+            </PropertyGroup>
+        </When>
+    </Choose>
+
+    <PropertyGroup>
+        <LibraryRelativePath>runtimes\$(RuntimeIdentifier)\native\</LibraryRelativePath>
+        <LibraryName>runtime.Kokkos.NET.$(EffectivePlatform).dll</LibraryName>
+        <LibraryPdbName>runtime.Kokkos.NET.$(EffectivePlatform).pdb</LibraryPdbName>
+        <ImpLibraryName>runtime.Kokkos.NET.$(EffectivePlatform).dll.a</ImpLibraryName>
+    </PropertyGroup>
+
+    <!--<ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+        </ClCompile>
+    </ItemDefinitionGroup>-->
+
+    <ItemDefinitionGroup>
+        <Link>
+            <AdditionalDependencies>$(ImpLibraryName);%(AdditionalDependencies)</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)$(LibraryRelativePath);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        </Link>
+    </ItemDefinitionGroup>
+
+    <Choose>
+        <When Condition="'$(Configuration)' == 'Debug'">
+            <ItemGroup>
+                <Content Include="$(MSBuildThisFileDirectory)..\$(LibraryRelativePath)Debug\$(LibraryName)">
+                    <Link>$(LibraryRelativePath)\$(LibraryName)</Link>
+                    <PublishState>Excluded</PublishState>
+                    <Visible>False</Visible>
+                    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                </Content>
+                <Content Include="$(MSBuildThisFileDirectory)..\$(LibraryRelativePath)Debug\$(LibraryPdbName)">
+                    <Link>$(LibraryRelativePath)\$(LibraryPdbName)</Link>
+                    <PublishState>Excluded</PublishState>
+                    <Visible>False</Visible>
+                    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                </Content>
+            </ItemGroup>
+        </When>
+        <When Condition="'$(Configuration)' == 'Release'">
+            <ItemGroup>
+                <Content Include="$(MSBuildThisFileDirectory)..\$(LibraryRelativePath)Release\$(LibraryName)">
+                    <!--<Link>%(Filename)%(Extension)</Link>-->
+                    <Link>$(LibraryRelativePath)\$(LibraryName)</Link>
+                    <PublishState>Excluded</PublishState>
+                    <Visible>False</Visible>
+                    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+                </Content>
+            </ItemGroup>
+            <!--<Reference Include="runtime.Kokkos.NET.$(Platform)">
+                <HintPath>$(OutputPath)runtimes\win-$(Platform)\native\runtime.Kokkos.NET.$(Platform).dll</HintPath>
+            </Reference>-->
+        </When>
+    </Choose>
+
+    <Target Name="CleanDownloadContentFiles" AfterTargets="Clean">
+        <Delete Files="$(OutputPath)$(LibraryRelativePath)\$(LibraryName)"/>
+    </Target>
+
+</Project>

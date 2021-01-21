@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
@@ -13,6 +14,9 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A3C531B-04B1-4B9C-AF93-063241A89847}</ProjectGuid>
     <RootSolutionDir>..\..\Kokkos.NET\</RootSolutionDir>
@@ -23,10 +27,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
@@ -50,12 +58,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <CompileAs />
-      <UndefinePreprocessorDefinitions>_MSC_VER</UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>DEBUG;_DEBUG;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;MBCS;_MBCS</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>../../BuildTools;./;../runtime.Kokkos.NET;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET;E:/TFS_Sources/trmcnealy/PVT/runtime.PVT;E:/TFS_Sources/trmcnealy/MultiPorosityModel/runtime.MultiPorosity</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-shared -gfull -gcodeview -Xcuda-ptxas -O0 -Xcuda-ptxas -w -Xcuda-ptxas --device-debug -w -O0 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -femulated-tls -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp</AdditionalOptions>
+      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -63,7 +71,8 @@
       <InlineFunctionExpansion />
       <IntrinsicFunctions />
       <FavorSizeOrSpeed />
-      <OmitFramePointers>false</OmitFramePointers>
+      <OmitFramePointers>
+      </OmitFramePointers>
       <EnableFiberSafeOptimizations />
       <StringPooling />
       <MinimalRebuild />
@@ -113,6 +122,7 @@
       <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
@@ -121,7 +131,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,-lkokkoscore.dll,-lkokkoscontainers.dll,-Bstatic,-lteuchoscore,-lkokkoskernels</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-lruntime.Kokkos.NET.$(Platform),-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore,-luuid</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -138,7 +148,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-LD:/TFS_Sources/Github/Compilation/trmcnealy</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib,-LE:/TFS_Sources/trmcnealy/Kokkos.NET/bin/Release/$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -160,7 +170,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>C:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -182,7 +192,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>C:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -197,12 +207,12 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <CompileAs />
-      <UndefinePreprocessorDefinitions>_MT;_MSC_VER</UndefinePreprocessorDefinitions>
-      <PreprocessorDefinitions>NDEBUG;_NDEBUG;HAVE_WINNT_IGNORE_VOID;KOKKOS_NET_EXPORTS;WIN64;_WIN64;_WINDOWS;_GNU_SOURCE;_USE_MATH_DEFINES;MBCS;_MBCS</PreprocessorDefinitions>
-      <LanguageStandard>stdcpp14</LanguageStandard>
-      <AdditionalIncludeDirectories>../../BuildTools;./;../runtime.Kokkos.NET;$(CUSP_PATH);$(CUDA_PATH)/include;$(CUDNN_PATH)/include</AdditionalIncludeDirectories>
+      <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET;E:/TFS_Sources/trmcnealy/PVT/runtime.PVT;E:/TFS_Sources/trmcnealy/MultiPorosityModel/runtime.MultiPorosity</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>-Xcuda-ptxas -w -w -O3 -std=c++14 -fcaret-diagnostics -fdiagnostics-show-template-tree -fcolor-diagnostics -fdiagnostics-parseable-fixits -fdiagnostics-format=msvc --target=x86_64-w64-windows-gnu-coff -fno-signed-char -fpermissive -ftls-model=global-dynamic -fcxx-exceptions -march=core-avx2 -mtune=core-avx2 -fno-trapping-math -fno-signed-zeros -ftemplate-backtrace-limit=0 -ferror-limit=10 -fvectorize -fslp-vectorize --cuda-path=C:/POSIX/usr/local/cuda-10.2 --cuda-gpu-arch=sm_52 -x cuda -Wa,-mbig-obj -fopenmp=libomp -Xclang -flto-visibility-public-std </AdditionalOptions>
+      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -210,7 +220,8 @@
       <InlineFunctionExpansion />
       <IntrinsicFunctions />
       <FavorSizeOrSpeed />
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>
+      </OmitFramePointers>
       <EnableFiberSafeOptimizations />
       <StringPooling />
       <MinimalRebuild />
@@ -260,6 +271,7 @@
       <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
+      <LanguageStandard_C>stdc11</LanguageStandard_C>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
@@ -268,7 +280,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,-lkokkoscore.dll,-lkokkoscontainers.dll,-Bstatic,-lteuchoscore,-lkokkoskernels</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-lruntime.Kokkos.NET.$(Platform),-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore,-luuid</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -285,7 +297,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-LD:/TFS_Sources/Github/Compilation/trmcnealy</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib,-LE:/TFS_Sources/trmcnealy/Kokkos.NET/bin/Release/$(Platform)</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
     <Lib>

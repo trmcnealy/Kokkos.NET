@@ -1,15 +1,14 @@
-<Project>
-  <PropertyGroup>
-    <SuppressNETCoreSdkPreviewMessage>true</SuppressNETCoreSdkPreviewMessage>
-    <RootSolutionDir Condition="'$(RootSolutionDir)'==''">$(MSBuildThisFileDirectory)</RootSolutionDir>
-    <!--<BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'==''">$(RootSolutionDir)bin\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath Condition="'$(IntermediateOutputPath)'==''">$(BaseIntermediateOutputPath)$(Configuration)\</IntermediateOutputPath>-->
-    <OutputPath Condition="'$(OutputPath)'=='' and '$(OutputType)'!='Exe'">$(RootSolutionDir)bin\$(Configuration)\</OutputPath>
-    <OutputPath Condition="'$(OutputPath)'=='' and '$(OutputType)'=='Exe'">$(RootSolutionDir)bin\$(MSBuildProjectName)\$(Configuration)\</OutputPath>
-  </PropertyGroup>
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <PropertyGroup>
-    <NoWarn>0649;0169;0414</NoWarn>
-  </PropertyGroup>
+    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Global.props))\Global.props"
+            Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Global.props))' != '' " />
+
+    <PropertyGroup>
+        <RootSolutionDir>$(MSBuildThisFileDirectory)</RootSolutionDir>
+    </PropertyGroup>
+    
+    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Build.props))\Build.props"
+            Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Build.props))' != '' " />
 
 </Project>

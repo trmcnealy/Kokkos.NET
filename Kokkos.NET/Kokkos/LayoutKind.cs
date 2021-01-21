@@ -7,8 +7,8 @@ namespace Kokkos
     {
         Unknown = ushort.MaxValue,
         Left    = 0,
-        Right,
-        Stride
+        Right   = 1,
+        Stride  = 2
     }
 
     [NonVersionable]
@@ -29,11 +29,7 @@ namespace Kokkos
     public static class Layout<T>
         where T : ILayout
     {
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public static LayoutKind GetKind()
         {
             if(typeof(T) == typeof(LayoutLeft))
