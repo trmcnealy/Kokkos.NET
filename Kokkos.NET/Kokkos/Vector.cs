@@ -35,6 +35,11 @@ namespace Kokkos
 
             VectorUtilities<TDataType, TExecutionSpace>.Load();
         }
+        
+        ~Vector()
+        {
+            pointer.Dispose();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public nint data()

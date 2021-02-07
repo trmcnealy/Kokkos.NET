@@ -14,11 +14,23 @@ namespace Kokkos
 
         public nint InitializePtr;
 
+        public nint InitializeSerialPtr;
+
+        public nint InitializeOpenMPPtr;
+
+        public nint InitializeCudaPtr;
+
         public nint InitializeThreadsPtr;
 
         public nint InitializeArgumentsPtr;
 
         public nint FinalizePtr;
+
+        public nint FinalizeSerialPtr;
+
+        public nint FinalizeOpenMPPtr;
+
+        public nint FinalizeCudaPtr;
 
         public nint FinalizeAllPtr;
 

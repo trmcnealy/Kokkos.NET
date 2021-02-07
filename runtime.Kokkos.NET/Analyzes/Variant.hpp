@@ -131,7 +131,7 @@ namespace System
 
 namespace System
 {
-    class bad_variant_access : public std::runtime_error
+    derived_class bad_variant_access : public std::runtime_error
     {
     public:
         explicit bad_variant_access(const std::string& what_arg) : runtime_error(what_arg) {}

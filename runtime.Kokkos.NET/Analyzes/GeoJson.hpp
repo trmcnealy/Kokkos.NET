@@ -266,7 +266,7 @@ namespace Spatial
     using value_base = System::
         variant<null_value_t, bool, uint64_t, int64_t, double, std::string, std::shared_ptr<std::vector<value>>, std::shared_ptr<std::unordered_map<std::string, value>>>;
 
-    struct value : public value_base
+    derived_struct value : public value_base
     {
         using array_type            = std::vector<value>;
         using array_ptr_type        = std::shared_ptr<std::vector<value>>;

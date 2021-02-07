@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Kokkos;
 
 using NvAPIWrapper.GPU;
+using NvAPIWrapper.Native.GPU.Structures;
 
 namespace Kokkos
 {
@@ -58,10 +59,17 @@ namespace Kokkos
             ThreadCount  = threadCount;
             Architecture = architecture;
         }
+
+        public abstract int GetUsage();
     }
 
     public sealed class CpuDevice : Device
     {
+
+        static CpuDevice()
+        {
+        }
+
         public CpuDevice(int        id,
                          string     platform,
                          int        coreCount,
@@ -70,9 +78,14 @@ namespace Kokkos
             : base(id, platform, coreCount, threadCount, architecture)
         {
         }
+
+        public override int GetUsage()
+        {
+            return 0;
+        }
     }
 
-    public sealed class GpuDevice : Device
+    public class GpuDevice : Device
     {
         public GpuDevice(int        id,
                          string     platform,
@@ -82,30 +95,56 @@ namespace Kokkos
             : base(id, platform, coreCount, threadCount, architecture)
         {
         }
+
+        public override int GetUsage()
+        {
+            return -1;
+        }
+    }
+
+    public sealed class CudaGpuDevice : GpuDevice
+    {
+        public GPUUsageInformation UsageInformation { get; }
+
+        public CudaGpuDevice(int                 id,
+                             string              platform,
+                             int                 coreCount,
+                             int                 threadCount,
+                             DeviceArch          architecture,
+                             GPUUsageInformation usageInformation)
+            : base(id, platform, coreCount, threadCount, architecture)
+        {
+            UsageInformation = usageInformation;
+        }
+
+        public override int GetUsage()
+        {
+            return UsageInformation.UtilizationDomainsStatus.Sum(gpu => gpu.Percentage);
+        }
     }
 
     public sealed class Devices
     {
-        public List<CpuDevice> Cpu { get; }
+        public List<CpuDevice> Cpus { get; }
 
-        public List<GpuDevice> Gpu { get; }
+        public List<GpuDevice> Gpus { get; }
 
         public Devices()
         {
-            Cpu = new List<CpuDevice>((int)KokkosLibrary.GetNumaCount());
+            Cpus = new List<CpuDevice>((int)KokkosLibrary.GetNumaCount());
 
             OperatingSystem os = Environment.OSVersion;
 
             for(int i = 0; i < (int)KokkosLibrary.GetNumaCount(); ++i)
             {
-                Cpu.Add(new CpuDevice(i,
+                Cpus.Add(new CpuDevice(i,
                                       $"{os.Platform:G}",
                                       (int)KokkosLibrary.GetCoresPerNuma(),
                                       (int)KokkosLibrary.GetCoresPerNuma() * (int)KokkosLibrary.GetThreadsPerCore(),
                                       new DeviceArch(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86")));
             }
 
-            Gpu = new List<GpuDevice>((int)KokkosLibrary.GetDeviceCount());
+            Gpus = new List<GpuDevice>((int)KokkosLibrary.GetDeviceCount());
 
             uint gpuId = 0;
 
@@ -113,11 +152,12 @@ namespace Kokkos
             {
                 uint gpuVersion = KokkosLibrary.GetComputeCapability(gpuId);
 
-                Gpu.Add(new GpuDevice((int)gpuId,
-                                      "Cuda",
-                                      physicalGpu.ArchitectInformation.NumberOfCores,
-                                      physicalGpu.ArchitectInformation.NumberOfCores,
-                                      new DeviceArch(GetCudaDeviceName(gpuVersion), (int)gpuVersion)));
+                Gpus.Add(new CudaGpuDevice((int)gpuId,
+                                          "Cuda",
+                                          physicalGpu.ArchitectInformation.NumberOfCores,
+                                          physicalGpu.ArchitectInformation.NumberOfCores,
+                                          new DeviceArch(GetCudaDeviceName(gpuVersion), (int)gpuVersion),
+                                          physicalGpu.UsageInformation));
 
                 ++gpuId;
             }

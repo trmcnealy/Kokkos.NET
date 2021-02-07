@@ -6,6 +6,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Mixed|x64">
+      <Configuration>Mixed</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -30,6 +34,12 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>clang</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
@@ -39,8 +49,14 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
   <ImportGroup Label="ExtensionSettings" />
-  <ImportGroup Label="Shared" />
+  <ImportGroup Label="Shared">
+    <Import Project="..\..\Native\Core\Core.vcxitems" Label="Shared" />
+    <Import Project="..\..\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -48,6 +64,10 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>$(TargetName)</TargetName>
+    <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
     <TargetName>$(TargetName)</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
   </PropertyGroup>
@@ -61,7 +81,7 @@
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET;E:/TFS_Sources/trmcnealy/PVT/runtime.PVT;E:/TFS_Sources/trmcnealy/MultiPorosityModel/runtime.MultiPorosity</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -131,7 +151,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-lruntime.Kokkos.NET.$(Platform),-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore,-luuid</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -148,13 +168,178 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib,-LE:/TFS_Sources/trmcnealy/Kokkos.NET/bin/Release/$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
       </SubSystem>
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
       <SuppressStartupBanner />
+    </Lib>
+    <ProjectReference />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
+    <ClCompile>
+      <CompileAs>
+      </CompileAs>
+      <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
+      <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <DiagnosticsFormat>
+      </DiagnosticsFormat>
+      <MultiProcessorCompilation>
+      </MultiProcessorCompilation>
+      <InlineFunctionExpansion>
+      </InlineFunctionExpansion>
+      <IntrinsicFunctions>
+      </IntrinsicFunctions>
+      <FavorSizeOrSpeed>
+      </FavorSizeOrSpeed>
+      <OmitFramePointers>
+      </OmitFramePointers>
+      <EnableFiberSafeOptimizations>
+      </EnableFiberSafeOptimizations>
+      <StringPooling>
+      </StringPooling>
+      <MinimalRebuild>
+      </MinimalRebuild>
+      <ControlFlowGuard>
+      </ControlFlowGuard>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>
+      </EnableEnhancedInstructionSet>
+      <FloatingPointModel>
+      </FloatingPointModel>
+      <DisableLanguageExtensions>
+      </DisableLanguageExtensions>
+      <ConformanceMode>
+      </ConformanceMode>
+      <ForceConformanceInForLoopScope>
+      </ForceConformanceInForLoopScope>
+      <EnforceTypeConversionRules>
+      </EnforceTypeConversionRules>
+      <RuntimeTypeInfo>
+      </RuntimeTypeInfo>
+      <ExpandAttributedSource>
+      </ExpandAttributedSource>
+      <BrowseInformation>
+      </BrowseInformation>
+      <CallingConvention>
+      </CallingConvention>
+      <OmitDefaultLibName>
+      </OmitDefaultLibName>
+      <ErrorReporting>
+      </ErrorReporting>
+      <SDLCheck>
+      </SDLCheck>
+      <Optimization>
+      </Optimization>
+      <BufferSecurityCheck>
+      </BufferSecurityCheck>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+      <SuppressStartupBanner>
+      </SuppressStartupBanner>
+      <WarningLevel>
+      </WarningLevel>
+      <TreatWarningAsError>
+      </TreatWarningAsError>
+      <WholeProgramOptimization>
+      </WholeProgramOptimization>
+      <TreatWChar_tAsBuiltInType>
+      </TreatWChar_tAsBuiltInType>
+      <UseFullPaths>
+      </UseFullPaths>
+      <StrictAliasing>
+      </StrictAliasing>
+      <CLanguageStandard>
+      </CLanguageStandard>
+      <CppLanguageStandard>
+      </CppLanguageStandard>
+      <MSCompatibility>
+      </MSCompatibility>
+      <MSExtensions>true</MSExtensions>
+      <UseShortEnums>
+      </UseShortEnums>
+      <PrecompiledHeaderCompileAs>
+      </PrecompiledHeaderCompileAs>
+      <Verbose>
+      </Verbose>
+      <UndefineAllPreprocessorDefinitions>
+      </UndefineAllPreprocessorDefinitions>
+      <ShowIncludes>
+      </ShowIncludes>
+      <DataLevelLinking>
+      </DataLevelLinking>
+      <PositionIndependentCode>
+      </PositionIndependentCode>
+      <PrecompiledHeaderOutputFileDirectory>
+      </PrecompiledHeaderOutputFileDirectory>
+      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
+      <RuntimeLibrary>
+      </RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <LanguageStandard_C>stdc17</LanguageStandard_C>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>
+      </GenerateDebugInformation>
+      <LinkErrorReporting>
+      </LinkErrorReporting>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <SuppressStartupBanner>
+      </SuppressStartupBanner>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <ManifestFile>
+      </ManifestFile>
+      <EnableUAC>
+      </EnableUAC>
+      <UACExecutionLevel>
+      </UACExecutionLevel>
+      <UACUIAccess>
+      </UACUIAccess>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <OptimizeReferences>
+      </OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <ProfileGuidedDatabase>
+      </ProfileGuidedDatabase>
+      <RandomizedBaseAddress>
+      </RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>
+      </TargetMachine>
+      <CLRUnmanagedCodeCheck>
+      </CLRUnmanagedCodeCheck>
+      <CLRSupportLastError>
+      </CLRSupportLastError>
+      <TypeLibraryResourceID>
+      </TypeLibraryResourceID>
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+    </Link>
+    <Lib>
+      <SubSystem>
+      </SubSystem>
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>
+      </SuppressStartupBanner>
     </Lib>
     <ProjectReference />
   </ItemDefinitionGroup>
@@ -174,6 +359,31 @@
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>
+      </SDLCheck>
+      <PreprocessorDefinitions>-D_WIN64 -D_WINDOWS -D_GNU_SOURCE -D_USE_MATH_DEFINES</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <SupportJustMyCode>false</SupportJustMyCode>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
+      <PrecompiledHeaderOutputFileDirectory>
+      </PrecompiledHeaderOutputFileDirectory>
+      <PrecompiledHeaderCompileAs>
+      </PrecompiledHeaderCompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -210,7 +420,7 @@
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET;E:/TFS_Sources/trmcnealy/PVT/runtime.PVT;E:/TFS_Sources/trmcnealy/MultiPorosityModel/runtime.MultiPorosity</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -280,7 +490,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-lruntime.Kokkos.NET.$(Platform),-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore,-luuid</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -297,7 +507,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib,-LE:/TFS_Sources/trmcnealy/Kokkos.NET/bin/Release/$(Platform)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
     <Lib>

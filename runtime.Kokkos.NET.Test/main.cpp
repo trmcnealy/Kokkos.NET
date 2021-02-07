@@ -3,11 +3,11 @@
 
 #include <runtime.Kokkos/ViewTypes.hpp>
 #include <runtime.Kokkos/Extensions.hpp>
-#include <Array.hpp>
-#include <NumericalMethods/Statistics/Random.hpp>
-#include <NumericalMethods/DataStorage/Dictionary.hpp>
+//#include <Array.hpp>
+//#include <Statistics/Random.hpp>
+//#include <DataStorage/Dictionary.hpp>
 
-#include <Kokkos_UnorderedMap.hpp>
+//#include <Kokkos_UnorderedMap.hpp>
 
 #include <iostream>
 #include <cstring>
@@ -33,20 +33,27 @@
 // template<typename DataType, class ExecutionSpace>
 // static void test();
 
-using ExecutionSpace   = Kokkos::Cuda;
-using Array            = System::Array<double, ExecutionSpace>;
-using View             = Kokkos::View<double*, ExecutionSpace /*, Kokkos::MemoryRandomAccess*/>;
-using StringDictionary = NumericalMethods::DataStorage::Dictionary<std::string, Array*, ExecutionSpace>;
-using ViewDictionary   = NumericalMethods::DataStorage::Dictionary<std::string, View, ExecutionSpace>;
+using AtomicTrait       = Kokkos::MemoryTraits<Kokkos::Atomic>;
+using RandomAccessTrait = Kokkos::MemoryTraits<Kokkos::RandomAccess>;
+
+//using ExecutionSpace   = Kokkos::Cuda;
+using ExecutionSpace   = Kokkos::Serial;
+//using Array            = System::Array<double, ExecutionSpace>;
+using LayoutType       = ExecutionSpace::array_layout;
+using AtomicView       = Kokkos::View<double*, LayoutType, ExecutionSpace, AtomicTrait>;
+using RandomAccessView = Kokkos::View<double*, LayoutType, ExecutionSpace, RandomAccessTrait>;
+using View = Kokkos::View<double*, LayoutType, ExecutionSpace>;
+//using StringDictionary = NumericalMethods::DataStorage::Dictionary<std::string, Array*, ExecutionSpace>;
+//using ViewDictionary   = NumericalMethods::DataStorage::Dictionary<std::string, AtomicView, ExecutionSpace>;
 
 typedef Kokkos::UnorderedMap<std::string, size_type, ExecutionSpace> map_type;
 
-using namespace Kokkos;
+//using namespace Kokkos;
 using namespace Kokkos::Extension;
 
 //#include <windows.h>
 //
-//static unsigned long CountSetBits(const unsigned long long bitMask)
+// static unsigned long CountSetBits(const unsigned long long bitMask)
 //{
 //    const unsigned long LSHIFT  = sizeof(unsigned long long) * 8 - 1;
 //    unsigned long long  bitTest = static_cast<unsigned long long>(1) << LSHIFT;
@@ -61,7 +68,7 @@ using namespace Kokkos::Extension;
 //    return bitSetCount;
 //}
 //
-//int GetProcessorInfo(unsigned* available_numa_count, unsigned* available_cores_per_numa, unsigned* available_threads_per_core)
+// int GetProcessorInfo(unsigned* available_numa_count, unsigned* available_cores_per_numa, unsigned* available_threads_per_core)
 //{
 //    const unsigned nSLPI = sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
 //
@@ -170,7 +177,7 @@ using namespace Kokkos::Extension;
 //        byteOffset += nSLPI;
 //        ptr++;
 //    }
-//    
+//
 //    *available_numa_count       = numaNodeCount;
 //    *available_cores_per_numa   = processorCoreCount;
 //    *available_threads_per_core = logicalProcessorCount / processorCoreCount;
@@ -178,42 +185,102 @@ using namespace Kokkos::Extension;
 //    return 0;
 //}
 //
-//void GetInfo()
+// void GetInfo()
 //{
 //    unsigned available_numa_count=0;
 //    unsigned available_cores_per_numa=0;
 //    unsigned available_threads_per_core=0;
 //
 //    GetProcessorInfo(&available_numa_count, &available_cores_per_numa, &available_threads_per_core);
-//    
+//
 //    std::cout << "available_numa_count:" << available_numa_count << std::endl;
 //    std::cout << "available_cores_per_numa:" << available_cores_per_numa << std::endl;
 //    std::cout << "available_threads_per_core:" << available_threads_per_core << std::endl;
 //}
 
-
-template<typename DataType, class ExecutionSpace, typename Layout>
-__inline static NdArray* RcpViewToNdArrayRank1(void* instance) noexcept
-{
-    typedef Kokkos::View<DataType*, Layout, ExecutionSpace> view_type;
-
-    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 1> ndarray_traits;
-
-    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
-
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   1,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   (*view)->data(),
-                                   NativeString((*view)->label().size(), (*view)->label().c_str()));
-
-    ndArray->dims[0] = (*view)->extent(0);
-
-    ndArray->strides[0] = (*view)->stride(0);
-
-    return ndArray;
-}
+// template<typename DataType, class ExecutionSpace, typename Layout>
+//__inline static NdArray* RcpViewToNdArrayRank1(void* instance) noexcept
+//{
+//    typedef Kokkos::View<DataType*, Layout, ExecutionSpace> view_type;
+//
+//    typedef NdArrayTraits<typename view_type::traits::value_type, typename view_type::traits::execution_space, typename view_type::traits::array_layout, 1> ndarray_traits;
+//
+//    Teuchos::RCP<view_type>* view = reinterpret_cast<Teuchos::RCP<view_type>*>(instance);
+//
+//    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
+//                                   1,
+//                                   ndarray_traits::layout,
+//                                   ndarray_traits::execution_space,
+//                                   (*view)->data(),
+//                                   NativeString((*view)->label().size(), (*view)->label().c_str()));
+//
+//    ndArray->dims[0] = (*view)->extent(0);
+//
+//    ndArray->strides[0] = (*view)->stride(0);
+//
+//    return ndArray;
+//}
+//
+// static void MatrixTest()
+//{
+//    Matrix<double, ExecutionSpace>* matrix = new Matrix<double, ExecutionSpace>("matrix", 2, 3);
+//
+//    Teuchos::RCP<Matrix<double, ExecutionSpace>>* instance = new Teuchos::RCP<Matrix<double, ExecutionSpace>>(matrix);
+//
+//    NdArray* ndArray = RcpViewToNdArrayRank1<double, ExecutionSpace, ExecutionSpace::array_layout>(instance);
+//
+//    std::cout << ndArray->label.Bytes << std::endl;
+//
+//    const Matrix<double, ExecutionSpace> lhs("lhs", 2, 3);
+//    lhs(0, 0) = 1.0;
+//    lhs(0, 1) = 2.0;
+//    lhs(0, 2) = 3.0;
+//    lhs(1, 0) = 4.0;
+//    lhs(1, 1) = 5.0;
+//    lhs(1, 2) = 6.0;
+//
+//    const Matrix<double, ExecutionSpace> rhs("rhs", 3, 2);
+//    rhs(0, 0) = 10.0;
+//    rhs(0, 1) = 11.0;
+//    rhs(1, 0) = 20.0;
+//    rhs(1, 1) = 21.0;
+//    rhs(2, 0) = 30.0;
+//    rhs(2, 1) = 31.0;
+//
+//    const Matrix<double, ExecutionSpace> eqs = lhs * rhs;
+//
+//    for (size_type i = 0; i < eqs.extent(0); i++)
+//    {
+//        for (size_type j = 0; j < eqs.extent(1); j++)
+//        {
+//            std::cout << eqs(i, j) << " ";
+//        }
+//        std::cout << std::endl;
+//    }
+//
+//    const Matrix<double, ExecutionSpace> lhs_v("lhs_v", 3, 3);
+//    lhs_v(0, 0) = 3.0;
+//    lhs_v(0, 1) = 2.0;
+//    lhs_v(0, 2) = 0.0;
+//    lhs_v(1, 0) = 0.0;
+//    lhs_v(1, 1) = 4.0;
+//    lhs_v(1, 2) = 1.0;
+//    lhs_v(2, 0) = 2.0;
+//    lhs_v(2, 1) = 0.0;
+//    lhs_v(2, 2) = 1.0;
+//
+//    const Vector<double, ExecutionSpace> rhs_v("rhs_v", 3);
+//    rhs_v(0) = 4.0;
+//    rhs_v(1) = 3.0;
+//    rhs_v(2) = 1.0;
+//
+//    const Vector<double, ExecutionSpace> eqs_v = lhs_v * rhs_v;
+//
+//    for (size_type i = 0; i < eqs_v.extent(0); i++)
+//    {
+//        std::cout << eqs_v(i) << " " << std::endl;
+//    }
+//}
 
 int main(int argc, char** argv)
 {
@@ -229,72 +296,27 @@ int main(int argc, char** argv)
     const bool disable_warnings = false;
 
     Kokkos::InitArguments arguments;
-    arguments.num_threads      = num_threads;
-    arguments.num_numa         = num_numa;
-    arguments.device_id        = device_id;
-    arguments.ndevices         = ndevices;
-    arguments.skip_device      = skip_device;
-    arguments.disable_warnings = disable_warnings;
+    //arguments.num_threads      = num_threads;
+    //arguments.num_numa         = num_numa;
+    //arguments.device_id        = device_id;
+    //arguments.ndevices         = ndevices;
+    //arguments.skip_device      = skip_device;
+    //arguments.disable_warnings = disable_warnings;
 
     Kokkos::ScopeGuard kokkos(arguments);
     {
-        Matrix<double, ExecutionSpace>* matrix = new Matrix<double, ExecutionSpace>("matrix", 2, 3);        
+        Kokkos::View<double*, ExecutionSpace> data("atomic", 10);
 
-        Teuchos::RCP<Matrix<double, ExecutionSpace>>* instance = new Teuchos::RCP<Matrix<double, ExecutionSpace>>(matrix);
-
-        NdArray* ndArray = RcpViewToNdArrayRank1<double, ExecutionSpace, ExecutionSpace::array_layout>(instance);
+        data(0) = Constants<double>::Max();
         
-        std::cout << ndArray->label.Bytes << std::endl;
-        
-        
-        const Matrix<double, ExecutionSpace> lhs("lhs", 2, 3);
-        lhs(0, 0) = 1.0;
-        lhs(0, 1) = 2.0;
-        lhs(0, 2) = 3.0;
-        lhs(1, 0) = 4.0;
-        lhs(1, 1) = 5.0;
-        lhs(1, 2) = 6.0;
+        std::cout << TEXT("data equals ") << data(0) << std::endl;
 
-        const Matrix<double, ExecutionSpace> rhs("rhs", 3, 2);
-        rhs(0, 0) = 10.0;
-        rhs(0, 1) = 11.0;
-        rhs(1, 0) = 20.0;
-        rhs(1, 1) = 21.0;
-        rhs(2, 0) = 30.0;
-        rhs(2, 1) = 31.0;
+        double value = 1.0;
 
-        const Matrix<double, ExecutionSpace> eqs = lhs * rhs;
-
-        for (size_type i = 0; i < eqs.extent(0); i++)
+        if (Kokkos::atomic_greater_than_fetch(&data(0), value))
         {
-            for (size_type j = 0; j < eqs.extent(1); j++)
-            {
-                std::cout << eqs(i, j) << " ";
-            }
-            std::cout << std::endl;
-        }
-
-        const Matrix<double, ExecutionSpace> lhs_v("lhs_v", 3, 3);
-        lhs_v(0, 0) = 3.0;
-        lhs_v(0, 1) = 2.0;
-        lhs_v(0, 2) = 0.0;
-        lhs_v(1, 0) = 0.0;
-        lhs_v(1, 1) = 4.0;
-        lhs_v(1, 2) = 1.0;
-        lhs_v(2, 0) = 2.0;
-        lhs_v(2, 1) = 0.0;
-        lhs_v(2, 2) = 1.0;
-
-        const Vector<double, ExecutionSpace> rhs_v("rhs_v", 3);
-        rhs_v(0) = 4.0;
-        rhs_v(1) = 3.0;
-        rhs_v(2) = 1.0;
-
-        const Vector<double, ExecutionSpace> eqs_v = lhs_v * rhs_v;
-
-        for (size_type i = 0; i < eqs_v.extent(0); i++)
-        {
-            std::cout << eqs_v(i) << " " << std::endl;
+            std::cout << TEXT("data is > ") << value << std::endl;
+            std::cout << TEXT("data now equals ") << data(0) << std::endl;
         }
     }
 
@@ -684,109 +706,109 @@ int main(int argc, char** argv)
 //    ////DataType RelativePermeability::krgl2p_BC(s_g, s_wcon, s_org, s_gcon, k_rogcg, n_og);
 //}
 
-template<typename DataType, class ExecutionSpace>
-static void test()
-{
-    Kokkos::View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", 100);
-
-    NumericalMethods::Statistics::GenerateRandomNumbers(data);
-
-    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
-    {
-        std::cout << data(i0) << " ";
-    }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    const int64 index = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 0.5, true);
-
-    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
-    {
-        std::cout << data(i0) << " ";
-    }
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    std::cout << index << std::endl;
-
-    const int64 index1 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 1.5, false);
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    std::cout << index1 << std::endl;
-
-    const int64 index2 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, -0.5, false);
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    std::cout << index2 << std::endl;
-
-    const int64 index3 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 0.01, false);
-
-    std::cout << std::endl;
-    std::cout << std::endl;
-
-    std::cout << index3 << std::endl;
-}
-
-template<typename DataType, class ExecutionSpace>
-static void test4()
-{
-    Kokkos::View<DataType****, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", 100, 100, 100, 6);
-
-    NumericalMethods::Statistics::GenerateRandomNumbers(data);
-
-    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
-    {
-        for (size_type i1 = 0; i1 < data.extent(1); ++i1)
-        {
-            for (size_type i2 = 0; i2 < data.extent(2); ++i2)
-            {
-                for (size_type i3 = 0; i3 < data.extent(3); ++i3)
-                {
-                    std::cout << data(i0, i1, i2, i3) << " ";
-                }
-                std::cout << std::endl;
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-}
-
-template<typename DataType, class ExecutionSpace, unsigned Size>
-static void test6()
-{
-    Kokkos::View<DataType******, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", Size, Size, Size, Size, Size, Size);
-
-    NumericalMethods::Statistics::GenerateRandomNumbers(data);
-
-    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
-    {
-        for (size_type i1 = 0; i1 < data.extent(1); ++i1)
-        {
-            for (size_type i2 = 0; i2 < data.extent(2); ++i2)
-            {
-                for (size_type i3 = 0; i3 < data.extent(3); ++i3)
-                {
-                    for (size_type i4 = 0; i4 < data.extent(4); ++i4)
-                    {
-                        for (size_type i5 = 0; i5 < data.extent(5); ++i5)
-                        {
-                            std::cout << data(i0, i1, i2, i3, i4, i5) << " ";
-                        }
-                        std::cout << std::endl;
-                    }
-                    std::cout << std::endl;
-                }
-                std::cout << std::endl;
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-    }
-}
+//template<typename DataType, class ExecutionSpace>
+//static void test()
+//{
+//    Kokkos::View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", 100);
+//
+//    NumericalMethods::Statistics::GenerateRandomNumbers(data);
+//
+//    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
+//    {
+//        std::cout << data(i0) << " ";
+//    }
+//
+//    std::cout << std::endl;
+//    std::cout << std::endl;
+//
+//    const int64 index = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 0.5, true);
+//
+//    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
+//    {
+//        std::cout << data(i0) << " ";
+//    }
+//
+//    std::cout << std::endl;
+//    std::cout << std::endl;
+//
+//    std::cout << index << std::endl;
+//
+//    const int64 index1 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 1.5, false);
+//
+//    std::cout << std::endl;
+//    std::cout << std::endl;
+//
+//    std::cout << index1 << std::endl;
+//
+//    const int64 index2 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, -0.5, false);
+//
+//    std::cout << std::endl;
+//    std::cout << std::endl;
+//
+//    std::cout << index2 << std::endl;
+//
+//    const int64 index3 = Kokkos::Extension::BinarySearch<DataType, ExecutionSpace>(data, 0.01, false);
+//
+//    std::cout << std::endl;
+//    std::cout << std::endl;
+//
+//    std::cout << index3 << std::endl;
+//}
+//
+//template<typename DataType, class ExecutionSpace>
+//static void test4()
+//{
+//    Kokkos::View<DataType****, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", 100, 100, 100, 6);
+//
+//    NumericalMethods::Statistics::GenerateRandomNumbers(data);
+//
+//    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
+//    {
+//        for (size_type i1 = 0; i1 < data.extent(1); ++i1)
+//        {
+//            for (size_type i2 = 0; i2 < data.extent(2); ++i2)
+//            {
+//                for (size_type i3 = 0; i3 < data.extent(3); ++i3)
+//                {
+//                    std::cout << data(i0, i1, i2, i3) << " ";
+//                }
+//                std::cout << std::endl;
+//            }
+//            std::cout << std::endl;
+//        }
+//        std::cout << std::endl;
+//    }
+//}
+//
+//template<typename DataType, class ExecutionSpace, unsigned Size>
+//static void test6()
+//{
+//    Kokkos::View<DataType******, typename ExecutionSpace::array_layout, ExecutionSpace> data("data", Size, Size, Size, Size, Size, Size);
+//
+//    NumericalMethods::Statistics::GenerateRandomNumbers(data);
+//
+//    for (size_type i0 = 0; i0 < data.extent(0); ++i0)
+//    {
+//        for (size_type i1 = 0; i1 < data.extent(1); ++i1)
+//        {
+//            for (size_type i2 = 0; i2 < data.extent(2); ++i2)
+//            {
+//                for (size_type i3 = 0; i3 < data.extent(3); ++i3)
+//                {
+//                    for (size_type i4 = 0; i4 < data.extent(4); ++i4)
+//                    {
+//                        for (size_type i5 = 0; i5 < data.extent(5); ++i5)
+//                        {
+//                            std::cout << data(i0, i1, i2, i3, i4, i5) << " ";
+//                        }
+//                        std::cout << std::endl;
+//                    }
+//                    std::cout << std::endl;
+//                }
+//                std::cout << std::endl;
+//            }
+//            std::cout << std::endl;
+//        }
+//        std::cout << std::endl;
+//    }
+//}

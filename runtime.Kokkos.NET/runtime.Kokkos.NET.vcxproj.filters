@@ -315,6 +315,9 @@
     <ClInclude Include="runtime.Kokkos\ViewTypes.hpp">
       <Filter>runtime.Kokkos\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\Atomics.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

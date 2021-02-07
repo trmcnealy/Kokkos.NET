@@ -8,9 +8,8 @@ namespace Kokkos
 {
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
     public unsafe struct NativeString<TExecutionSpace> : IDisposable
-        where TExecutionSpace : IExecutionSpace, new() 
+        where TExecutionSpace : IExecutionSpace, new()
     {
-
         private static readonly ExecutionSpaceKind executionSpaceType;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -18,9 +17,9 @@ namespace Kokkos
         {
             executionSpaceType = ExecutionSpace<TExecutionSpace>.GetKind();
         }
-        
+
         public long Length;
-        
+
         public sbyte* Bytes;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -67,9 +66,10 @@ namespace Kokkos
         {
             return FromToBytes(Length - 1L, Bytes);
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        internal static string FromToBytes(long length, sbyte* bytesPtr)
+        internal static string FromToBytes(long   length,
+                                           sbyte* bytesPtr)
         {
             byte[] bytes = new ReadOnlySpan<byte>(bytesPtr, (int)length).ToArray();
 
@@ -191,7 +191,6 @@ namespace Kokkos
 
         ~NativePointer()
         {
-            DisposeUnmanaged();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -210,6 +209,11 @@ namespace Kokkos
         public static NativePointer Allocate(int                size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
+            if(!KokkosLibrary.IsInitialized())
+            {
+                KokkosInitializedException.Throw();
+            }
+
             nint data = KokkosLibrary.Allocate(executionSpace, (ulong)size);
 
             unsafe
@@ -229,6 +233,11 @@ namespace Kokkos
         public static NativePointer Allocate(uint               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
+            if(!KokkosLibrary.IsInitialized())
+            {
+                KokkosInitializedException.Throw();
+            }
+
             nint data = KokkosLibrary.Allocate(executionSpace, size);
 
             unsafe
@@ -248,6 +257,11 @@ namespace Kokkos
         public static NativePointer Allocate(long               size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
+            if(!KokkosLibrary.IsInitialized())
+            {
+                KokkosInitializedException.Throw();
+            }
+
             nint data = KokkosLibrary.Allocate(executionSpace, (ulong)size);
 
             unsafe
@@ -267,6 +281,11 @@ namespace Kokkos
         public static NativePointer Allocate(ulong              size,
                                              ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
         {
+            if(!KokkosLibrary.IsInitialized())
+            {
+                KokkosInitializedException.Throw();
+            }
+
             nint data = KokkosLibrary.Allocate(executionSpace, size);
 
             unsafe
@@ -288,11 +307,11 @@ namespace Kokkos
             if(_mustDeallocate && _data != 0)
             {
                 KokkosLibrary.Free(_executionSpace, _data);
-
-                _data           = default;
-                _size           = 0;
-                _mustDeallocate = false;
             }
+
+            _data           = (nint)0;
+            _size           = 0;
+            _mustDeallocate = false;
         }
 
         //public static NativePointer WrapIntPtr(nint data,

@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 
 using Kokkos.Tests;
 
-using RuntimeGeneration;
+using PlatformApi;
 
 namespace Kokkos
 {
@@ -16,6 +16,7 @@ namespace Kokkos
         [STAThread]
         private static void Main(string[] args)
         {
+
             //int  num_threads      = 4;
             //int  num_numa         = 1;
             //int  device_id        = 0;
@@ -31,14 +32,17 @@ namespace Kokkos
 
             //KokkosLibrary.FinalizeAll();
 
-
             ViewTests<Cuda> testsCuda = new();
             testsCuda.Run();
 
-            //ViewTests<OpenMP> testsOpenMP = new();
-            //testsOpenMP.Run();
+            ViewTests<OpenMP> testsOpenMP = new();
+            testsOpenMP.Run();
 
             //Test1();
+
+
+
+            //Console.WriteLine(CpuUsage.GetByProcess().Value.UserUsage.);
 
 #if DEBUG
             Console.WriteLine("press any key to exit.");
@@ -48,68 +52,65 @@ namespace Kokkos
 
         private static void Test1()
         {
-            int  num_threads      = 4;
-            int  num_numa         = 1;
-            int  device_id        = 0;
-            int  ndevices         = 1;
-            int  skip_device      = 9999;
-            bool disable_warnings = false;
+            //int  num_threads      = 4;
+            //int  num_numa         = 1;
+            //int  device_id        = 0;
+            //int  ndevices         = 1;
+            //int  skip_device      = 9999;
+            //bool disable_warnings = false;
 
-            InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, disable_warnings);
+            //InitArguments arguments = new InitArguments(num_threads, num_numa, device_id, ndevices, skip_device, disable_warnings);
 
-            using(ScopeGuard.Get(arguments))
-            {
-                View<long, Cuda> lineEndingsView = CsvReader<Cuda>.GetCountLineEndings("R:/DrillingPermits.csv");
+            //using(ScopeGuard.Get(arguments))
+            //{
+            //    View<long, Cuda> lineEndingsView = CsvReader<Cuda>.GetCountLineEndings("R:/DrillingPermits.csv");
 
-                ulong counter = 0;
+            //    ulong counter = 0;
 
-                for(ulong i0 = 0; i0 < lineEndingsView.Extent(0); ++i0)
-                {
-                    if(lineEndingsView[i0] != 0)
-                    {
-                        ++counter;
-                    }
-                }
+            //    for(ulong i0 = 0; i0 < lineEndingsView.Extent(0); ++i0)
+            //    {
+            //        if(lineEndingsView[i0] != 0)
+            //        {
+            //            ++counter;
+            //        }
+            //    }
 
-                long[] lineEndings = new long[counter];
+            //    long[] lineEndings = new long[counter];
 
-                counter = 0;
+            //    counter = 0;
 
-                for(ulong i0 = 0; i0 < lineEndingsView.Extent(0); ++i0)
-                {
-                    if(lineEndingsView[i0] != 0)
-                    {
-                        lineEndings[counter++] = lineEndingsView[i0];
-                    }
-                }
+            //    for(ulong i0 = 0; i0 < lineEndingsView.Extent(0); ++i0)
+            //    {
+            //        if(lineEndingsView[i0] != 0)
+            //        {
+            //            lineEndings[counter++] = lineEndingsView[i0];
+            //        }
+            //    }
 
+            //    Console.WriteLine(lineEndings.LongLength);
 
-                Console.WriteLine(lineEndings.LongLength);
+            //    Array.Sort(lineEndings);
 
-                Array.Sort(lineEndings);
+            //    for(long i0 = 0; i0 < 100; ++i0)
+            //    {
+            //        Console.WriteLine(lineEndings[i0]);
+            //    }
 
+            //    //PrintConfiguration(false);
 
-                for (long i0 = 0; i0 < 100; ++i0)
-                {
-                    Console.WriteLine(lineEndings[i0]);
-                }
+            //    //Console.WriteLine(CudaGetDeviceCount());
 
+            //    //FractureProperties<double> fd = new FractureProperties<double>();
 
-                //PrintConfiguration(false);
+            //    //fd.Height = 654.123;
+            //    //fd.Width  = 9876.2456;
 
-                //Console.WriteLine(CudaGetDeviceCount());
+            //    //Console.WriteLine(fd.Height);
+            //    //Console.WriteLine(fd.Width);
 
-                //FractureProperties<double> fd = new FractureProperties<double>();
-
-                //fd.Height = 654.123;
-                //fd.Width  = 9876.2456;
-
-                //Console.WriteLine(fd.Height);
-                //Console.WriteLine(fd.Width);
-
-                //Tests.ViewTests p = new Tests.ViewTests();
-                //p.Run();
-            }
+            //    //Tests.ViewTests p = new Tests.ViewTests();
+            //    //p.Run();
+            //}
 
             //using (ScopeGuard.Get(arguments))
             ////ParallelProcessor.Initialize();

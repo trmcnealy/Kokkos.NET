@@ -20,7 +20,8 @@ BOOL WINAPI DllMain(HANDLE hModule, const DWORD ul_reason_for_call, LPVOID lpRes
         {
             DisableThreadLibraryCalls(static_cast<HINSTANCE>(hModule));
 
-            std::set_terminate(&onTerminate);
+            std::set_terminate(&onTerminate);           
+
             //atexit(&onatexit);
             break;
         }

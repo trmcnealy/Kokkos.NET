@@ -15,7 +15,7 @@
 
 #include <intrin.h>
 
-//#include <NumericalMethods/Algebra/Eigenvalue.hpp>
+//#include <Algebra/Eigenvalue.hpp>
 
 KOKKOS_NET_API_EXTERNC void* NearestNeighborSingle(void* latlongdegrees_rcp_view_ptr, const ExecutionSpaceKind& execution_space) noexcept;
 

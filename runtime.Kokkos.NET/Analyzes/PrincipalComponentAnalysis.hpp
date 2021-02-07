@@ -5,7 +5,7 @@
 
 #include <StdExtensions.hpp>
 
-#include <NumericalMethods/Algebra/Eigenvalue.hpp>
+#include <Algebra/Eigenvalue.hpp>
 
 namespace PCA
 {

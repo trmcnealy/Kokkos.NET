@@ -11,7 +11,7 @@ namespace Kokkos.Tests
     public static class Assert
     {
         public static void IsTrue(bool                      condition,
-                                  [CallerMemberName] string caller   = null,
+                                  [CallerMemberName] string? caller   = null,
                                   [CallerFilePath]   string __FILE__ = "",
                                   [CallerLineNumber] int    __LINE__ = 0)
         {
@@ -27,7 +27,7 @@ namespace Kokkos.Tests
 
         public static void AreEqual<T>(T                         expected,
                                        T                         actual,
-                                       [CallerMemberName] string caller   = null,
+                                       [CallerMemberName] string? caller   = null,
                                        [CallerFilePath]   string __FILE__ = "",
                                        [CallerLineNumber] int    __LINE__ = 0)
         {
@@ -61,14 +61,14 @@ namespace Kokkos.Tests
                 }
 
                 StackTrace st = new StackTrace();
-                StackFrame sf;
+                StackFrame? sf;
 
                 int frameIndex = -1;
 
                 do
                 {
                     sf = st.GetFrame(++frameIndex);
-                } while(sf.GetMethod().Name.StartsWith("AreEqual") && frameIndex < st.FrameCount - 1);
+                } while(sf != null && sf.GetMethod().Name.StartsWith("AreEqual") && frameIndex < st.FrameCount - 1);
 
                 st = new StackTrace(frameIndex);
 
@@ -100,8 +100,8 @@ namespace Kokkos.Tests
 
             for(int i = 0; i < stackTrace.FrameCount; i++)
             {
-                StackFrame frame  = stackTrace.GetFrame(i);
-                MethodBase method = frame.GetMethod();
+                StackFrame? frame  = stackTrace.GetFrame(i);
+                MethodBase? method = frame?.GetMethod();
 
                 if(method == null)
                 {
@@ -114,7 +114,7 @@ namespace Kokkos.Tests
                 }
 
                 b.Append("   at ");
-                Type declaringType = method.DeclaringType;
+                Type? declaringType = method.DeclaringType;
 
                 if(declaringType != null)
                 {
@@ -175,9 +175,9 @@ namespace Kokkos.Tests
                 b.Append(')');
 
                 // source location
-                if(frame.GetILOffset() >= 0)
+                if(frame is not null && frame.GetILOffset() >= 0)
                 {
-                    string filename = null;
+                    string? filename = null;
 
                     try
                     {

@@ -48,6 +48,11 @@ namespace Kokkos
 
             Pointer = new NativePointer(ptr, size);
         }
+        
+        ~InterprocessMemory()
+        {
+            Dispose();
+        }
 
         public void Dispose()
         {
@@ -55,6 +60,8 @@ namespace Kokkos
             KokkosLibrary.IpcDestory(executionSpaceType, Pointer.Data);
 
             Pointer?.Dispose();
+
+            GC.SuppressFinalize(this);
         }
 
 

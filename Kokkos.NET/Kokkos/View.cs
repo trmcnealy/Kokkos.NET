@@ -187,10 +187,15 @@ namespace Kokkos
 
             NdArray = ndArray;
         }
+        
+        ~View()
+        {
+        }
 
         public void Dispose()
         {
             Pointer.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 

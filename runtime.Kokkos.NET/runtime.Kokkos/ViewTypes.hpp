@@ -435,12 +435,29 @@ struct __declspec(align(2)) NdArray
         return *this;
     }
 
-    __inline explicit NdArray(const DataTypeKind       data_type,
+        explicit __inline NdArray(const DataTypeKind       data_type,
                               const uint16             rank,
                               const LayoutKind         layout,
                               const ExecutionSpaceKind execution_space,
                               void* const              data,
                               const std::string&       label) :
+        data_type(data_type),
+        rank(rank),
+        layout(layout),
+        execution_space(execution_space),
+        dims{},
+        strides{},
+        data(data),
+        label(label)
+    {
+    }
+
+    __inline explicit NdArray(const DataTypeKind       data_type,
+                              const uint16             rank,
+                              const LayoutKind         layout,
+                              const ExecutionSpaceKind execution_space,
+                              void* const              data,
+                              const NativeString&       label) :
         data_type(data_type),
         rank(rank),
         layout(layout),

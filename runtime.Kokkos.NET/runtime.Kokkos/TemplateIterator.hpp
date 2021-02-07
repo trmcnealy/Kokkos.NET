@@ -9,7 +9,7 @@
 namespace KokkosDotNET
 {
     template<typename TypeSeq, typename BaseT, typename ObjectT>
-    class TemplateIterator : public std::iterator<std::input_iterator_tag, BaseT>
+    derived_class TemplateIterator : public std::iterator<std::input_iterator_tag, BaseT>
     {
         TemplateManager<TypeSeq, BaseT, ObjectT>* manager;
 
@@ -58,7 +58,7 @@ namespace KokkosDotNET
     };
 
     template<typename TypeSeq, typename BaseT, typename ObjectT>
-    class ConstTemplateIterator : public std::iterator<std::input_iterator_tag, BaseT>
+    derived_class ConstTemplateIterator : public std::iterator<std::input_iterator_tag, BaseT>
     {
         const TemplateManager<TypeSeq, BaseT, ObjectT>* manager;
 

@@ -1,104 +1,8 @@
 #pragma once
 
 #if !defined(KOKKOS_EXTENSIONS)
-#error "Do not include directly. Include Extensions.hpp"
+#    error "Do not include directly. Include Extensions.hpp"
 #endif
-
-namespace Kokkos
-{
-    namespace Impl
-    {
-        template<class Scalar1, class Scalar2>
-        struct LessThanOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 < val2);
-            }
-        };
-
-        template<class Scalar1, class Scalar2>
-        struct LessThanEqualToOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 <= val2);
-            }
-        };
-
-        template<class Scalar1, class Scalar2>
-        struct GreaterThanOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 > val2);
-            }
-        };
-
-        template<class Scalar1, class Scalar2>
-        struct GreaterThanEqualToOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 >= val2);
-            }
-        };
-
-        template<class Scalar1, class Scalar2>
-        struct EqualToOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 == val2);
-            }
-        };
-
-        template<class Scalar1, class Scalar2>
-        struct NotEqualToOper
-        {
-            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
-            {
-                return (val1 != val2);
-            }
-        };
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_less_than_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::LessThanOper<T, const T>(), dest, val);
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_less_than_equal_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::LessThanEqualToOper<T, const T>(), dest, val);
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::GreaterThanOper<T, const T>(), dest, val);
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_equal_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::GreaterThanEqualToOper<T, const T>(), dest, val);
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_equal_to_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::EqualToOper<T, const T>(), dest, val);
-    }
-
-    template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_not_equal_to_fetch(volatile T* const dest, const T val)
-    {
-        return Impl::atomic_oper_fetch(Impl::NotEqualToOper<T, const T>(), dest, val);
-    }
-}
 
 namespace Kokkos
 {
@@ -312,7 +216,7 @@ namespace Kokkos
 
         //       //Calculates the minimum value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static double MinValue(double[] data)
+        // public static double MinValue(double[] data)
         //{
         //    double minimum = data[0];
         //    double d;
@@ -330,7 +234,7 @@ namespace Kokkos
 
         ////Calculates the minimum absolute value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static double MinAbsValue(double[] data)
+        // public static double MinAbsValue(double[] data)
         //{
         //    double minimum = Math.Abs(data[0]);
         //    double d;
@@ -348,7 +252,7 @@ namespace Kokkos
 
         ////Calculates the index of the minimum value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static int MinIndex(double[] data)
+        // public static int MinIndex(double[] data)
         //{
         //    double minimum = Double.MaxValue;
         //    int index = -1;
@@ -368,7 +272,7 @@ namespace Kokkos
 
         ////Calculates the index of the minimum absolute value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static int MinAbsIndex(double[] data)
+        // public static int MinAbsIndex(double[] data)
         //{
         //    double minimum = Double.MaxValue;
         //    int index = -1;
@@ -388,7 +292,7 @@ namespace Kokkos
 
         ////Calculates the maximum value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static double MaxValue(double[] data)
+        // public static double MaxValue(double[] data)
         //{
         //    double maximum = data[0];
         //    double d;
@@ -406,7 +310,7 @@ namespace Kokkos
 
         ////Calculates the maximum absolute value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static double MaxAbsValue(double[] data)
+        // public static double MaxAbsValue(double[] data)
         //{
         //    double maximum = Math.Abs(data[0]);
         //    double d;
@@ -424,7 +328,7 @@ namespace Kokkos
 
         ////Calculates the index of the maximum value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static int MaxIndex(double[] data)
+        // public static int MaxIndex(double[] data)
         //{
         //    double maximum = Double.MinValue;
         //    int index = -1;
@@ -444,7 +348,7 @@ namespace Kokkos
 
         ////Calculates the index of the maximum absolute value in the given data set.
         //[MethodImpl(MethodImplOptions.AggressiveInlining)]
-        //public static int MaxAbsIndex(double[] data)
+        // public static int MaxAbsIndex(double[] data)
         //{
         //    double maximum = Double.MinValue;
         //    int index = -1;
@@ -463,8 +367,6 @@ namespace Kokkos
         //}
     }
 }
-
-
 
 #if 0
         template<typename DataType>
@@ -774,4 +676,3 @@ namespace Kokkos
             return ~lo;
         }
 #endif
-

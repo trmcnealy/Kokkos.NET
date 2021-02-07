@@ -25,13 +25,13 @@
         <!--<file src="runtime.Kokkos.NET.targets"
               target="include"/>-->
 
-        <file src="..\bin\Release\x64\runtime.Kokkos.NET.x64.dll.a"
+        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll.a"
               target="runtimes\win-x64\native"/>
 
-        <file src="..\bin\Release\x64\runtime.Kokkos.NET.x64.dll"
+        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll"
               target="runtimes\win-x64\native"/>
 
-        <file src="..\bin\Release\x64\runtime.Kokkos.NET.x64.pdb"
+        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.pdb"
               target="runtimes\win-x64\native"/>
 
 

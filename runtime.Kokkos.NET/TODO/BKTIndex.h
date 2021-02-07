@@ -34,9 +34,9 @@ namespace SPTAG
     namespace BKT
     {
         template<typename T>
-        class Index : public VectorIndex
+        derived_class Index : public VectorIndex
         {
-            class RebuildJob : public Helper::ThreadPool::Job {
+            derived_class RebuildJob : public Helper::ThreadPool::Job {
             public:
                 RebuildJob(COMMON::Dataset<T>* p_data, COMMON::BKTree* p_tree, COMMON::RelativeNeighborhoodGraph* p_graph, 
                     DistCalcMethod p_distMethod) : m_data(p_data), m_tree(p_tree), m_graph(p_graph), m_distMethod(p_distMethod) {}

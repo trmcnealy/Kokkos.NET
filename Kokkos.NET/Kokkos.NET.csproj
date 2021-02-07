@@ -28,6 +28,7 @@
         <TieredCompilation>false</TieredCompilation>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+        <Configurations>Debug;Release;Mixed</Configurations>
         <!--<PackageOutputPath Condition="'$(PACKAGE_CACHE)'!=''">$(PACKAGE_CACHE)</PackageOutputPath>
         <PackageOutputPath Condition="'$(PACKAGE_CACHE)'==''">$(OutputPath)</PackageOutputPath>
         <DefineConstants Condition="'$(TargetFramework)'=='netstandard2.1'">NETSTANDARD</DefineConstants>
@@ -43,6 +44,10 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <NoWarn>0649;0169;0414;1416</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|AnyCPU'">
+      <NoWarn>0649;0169;0414;1416</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>
@@ -97,7 +102,7 @@
     </ItemGroup>
 
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <Exec Command=":: NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)&#xD;&#xA;&#xA;:: rd /s /q C:\Users\trmcnealy\.nuget\packages\kokkos.net" />
+        <Exec Command=":: NuGet.exe pack &quot;$(ProjectDir)Kokkos.NET.nuspec&quot; -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)&#xD;&#xA;rd /s /q C:\Users\trmcnealy\.nuget\packages\kokkos.net" />
     </Target>
 
     <ItemGroup>

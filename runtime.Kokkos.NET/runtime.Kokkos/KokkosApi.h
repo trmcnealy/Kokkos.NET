@@ -22,11 +22,23 @@ KOKKOS_NET_API_EXTERN void Free(const ExecutionSpaceKind execution_space, void* 
 
 KOKKOS_NET_API_EXTERN void Initialize(const int narg, char* arg[]) noexcept;
 
+KOKKOS_NET_API_EXTERN void InitializeSerial() noexcept;
+
+KOKKOS_NET_API_EXTERN void InitializeOpenMP(const int num_threads) noexcept;
+
+KOKKOS_NET_API_EXTERN void InitializeCuda(const int use_gpu) noexcept;
+
 KOKKOS_NET_API_EXTERN void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept;
 
 KOKKOS_NET_API_EXTERN void InitializeArguments(const Kokkos::InitArguments arguments) noexcept;
 
 KOKKOS_NET_API_EXTERN void Finalize() noexcept;
+
+KOKKOS_NET_API_EXTERN void FinalizeSerial() noexcept;
+
+KOKKOS_NET_API_EXTERN void FinalizeOpenMP() noexcept;
+
+KOKKOS_NET_API_EXTERN void FinalizeCuda() noexcept;
 
 KOKKOS_NET_API_EXTERN void FinalizeAll() noexcept;
 
@@ -121,9 +133,18 @@ KOKKOS_NET_API_EXTERN void SetValue(void*           instance,
                                     const size_type i6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
                                     const size_type i7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
 
-KOKKOS_NET_API_EXTERN void RcpViewToNdArray(void* instance, const ExecutionSpaceKind execution_space, const LayoutKind layout, const DataTypeKind data_type, const uint16 rank, NdArray* ndArray) noexcept;
+KOKKOS_NET_API_EXTERN void RcpViewToNdArray(void*                    instance,
+                                            const ExecutionSpaceKind execution_space,
+                                            const LayoutKind         layout,
+                                            const DataTypeKind       data_type,
+                                            const uint16             rank,
+                                            NdArray*                 ndArray) noexcept;
 
-KOKKOS_NET_API_EXTERN NdArray* ViewToNdArray(void* instance, const ExecutionSpaceKind execution_space, const LayoutKind layout, const DataTypeKind data_type, const uint16 rank) noexcept;
+KOKKOS_NET_API_EXTERN NdArray* ViewToNdArray(void*                    instance,
+                                             const ExecutionSpaceKind execution_space,
+                                             const LayoutKind         layout,
+                                             const DataTypeKind       data_type,
+                                             const uint16             rank) noexcept;
 
 struct KokkosApi
 {
@@ -135,11 +156,23 @@ struct KokkosApi
 
     void (*Initialize)(const int, char*[]) noexcept;
 
+    void (*InitializeSerial)() noexcept;
+
+    void (*InitializeOpenMP)(const int num_threads) noexcept;
+
+    void (*InitializeCuda)(const int use_gpu) noexcept;
+
     void (*InitializeThreads)(int, int) noexcept;
 
     void (*InitializeArguments)(const Kokkos::InitArguments) noexcept;
 
     void (*Finalize)() noexcept;
+
+    void (*FinalizeSerial)() noexcept;
+
+    void (*FinalizeOpenMP)() noexcept;
+
+    void (*FinalizeCuda)() noexcept;
 
     void (*FinalizeAll)() noexcept;
 
@@ -158,7 +191,7 @@ struct KokkosApi
     void (*CreateViewRank2)(void*, NdArray*, const size_type, const size_type) noexcept;
 
     void (*CreateViewRank3)(void*, NdArray*, const size_type, const size_type, const size_type) noexcept;
-    
+
     void (*CreateViewRank4)(void*, NdArray*, const size_type, const size_type, const size_type, const size_type) noexcept;
 
     void (*CreateViewRank5)(void*, NdArray*, const size_type, const size_type, const size_type, const size_type, const size_type) noexcept;
@@ -167,7 +200,16 @@ struct KokkosApi
 
     void (*CreateViewRank7)(void*, NdArray*, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) noexcept;
 
-    void (*CreateViewRank8)(void*, NdArray*, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type, const size_type) noexcept;
+    void (*CreateViewRank8)(void*,
+                            NdArray*,
+                            const size_type,
+                            const size_type,
+                            const size_type,
+                            const size_type,
+                            const size_type,
+                            const size_type,
+                            const size_type,
+                            const size_type) noexcept;
 
     void (*CreateView)(void*, NdArray*) noexcept;
 
@@ -209,14 +251,14 @@ struct KokkosApi
     NdArray* (*ViewToNdArray)(void*, const ExecutionSpaceKind, const LayoutKind, const DataTypeKind, const uint16) noexcept;
 };
 
-#define KOKKOS_POLICY_TAG(NAME, RANK)                                                                                                                                              \
-    struct NAME##Tag                                                                                                                                                               \
-    {                                                                                                                                                                              \
-    };                                                                                                                                                                             \
-    typedef Kokkos::TeamPolicy<ExecutionSpace, NAME##Tag>                                                      NAME##Rank##RANK##_TeamPolicyType;                                  \
-    typedef typename NAME##Rank##RANK##_TeamPolicyType::member_type                                            NAME##Rank##RANK##_TeamMemberType;                                  \
-    typedef Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<RANK>, Kokkos::IndexType<size_type>, NAME##Tag> NAME##Rank##RANK##_MDRangeType;                                     \
-    typedef typename NAME##Rank##RANK##_MDRangeType::point_type                                                NAME##Rank##RANK##_PointType;                                       \
+#define KOKKOS_POLICY_TAG(NAME, RANK)                                                                                                                                                   \
+    struct NAME##Tag                                                                                                                                                                    \
+    {                                                                                                                                                                                   \
+    };                                                                                                                                                                                  \
+    typedef Kokkos::TeamPolicy<ExecutionSpace, NAME##Tag>                                                      NAME##Rank##RANK##_TeamPolicyType;                                       \
+    typedef typename NAME##Rank##RANK##_TeamPolicyType::member_type                                            NAME##Rank##RANK##_TeamMemberType;                                       \
+    typedef Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<RANK>, Kokkos::IndexType<size_type>, NAME##Tag> NAME##Rank##RANK##_MDRangeType;                                          \
+    typedef typename NAME##Rank##RANK##_MDRangeType::point_type                                                NAME##Rank##RANK##_PointType;                                            \
     typedef Kokkos::RangePolicy<ExecutionSpace, Kokkos::IndexType<size_type>, NAME##Tag>                       NAME##Rank##RANK##_RangeType;
 
 // inline void* operator new(size_type size)

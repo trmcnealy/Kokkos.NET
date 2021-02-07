@@ -131,6 +131,11 @@ namespace Kokkos
                 }
             }
         }
+        
+        ~NativeArray()
+        {
+            pointer.Dispose();
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public T[] ToManaged()

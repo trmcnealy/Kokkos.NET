@@ -7,6 +7,7 @@
 #include <Constants.hpp>
 #include <Complex.hpp>
 
+#include <Kokkos_Cuda.hpp>
 #include <Kokkos_ScatterView.hpp>
 #include <Kokkos_UnorderedMap.hpp>
 
@@ -71,16 +72,34 @@ namespace Kokkos
 
 #define KOKKOS_EXTENSIONS
 
+#include <runtime.Kokkos/Extensions/Atomics.hpp>
 #include <runtime.Kokkos/Extensions/IndexOf.hpp>
 #include <runtime.Kokkos/Extensions/VectorOps.hpp>
 #include <runtime.Kokkos/Extensions/MatrixOps.hpp>
 #include <runtime.Kokkos/Extensions/SparseOps.hpp>
 #include <runtime.Kokkos/Extensions/Solvers.hpp>
 
+
+
+
+template<class ExecutionSpace>
+KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<std::is_same_v<typename ExecutionSpace::memory_space, Kokkos::CudaUVMSpace>, void>
+{
+}
+
+template<class ExecutionSpace>
+KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!std::is_same_v<typename ExecutionSpace::memory_space, Kokkos::CudaUVMSpace>, void>
+{
+    Kokkos::fence();
+}
+
+
+
+
 #undef KOKKOS_EXTENSIONS
 
-//template<typename DataType, class TFunction>
-//KOKKOS_INLINE_FUNCTION static DataType fold(DataType arr[], const int len, TFunction binop, DataType initialValue = DataType(0))
+// template<typename DataType, class TFunction>
+// KOKKOS_INLINE_FUNCTION static DataType fold(DataType arr[], const int len, TFunction binop, DataType initialValue = DataType(0))
 //{
 //    DataType ans = initialValue;
 //
@@ -92,8 +111,8 @@ namespace Kokkos
 //    return ans;
 //}
 //
-//template<typename T>
-//struct comparator
+// template<typename T>
+// struct comparator
 //{
 //    KOKKOS_INLINE_FUNCTION constexpr int operator()(const T& a, const T& b) const
 //    {
@@ -111,18 +130,18 @@ namespace Kokkos
 //    }
 //};
 //
-//struct search_strategy
+// struct search_strategy
 //{
 //    search_strategy() = delete;
 //    ~search_strategy() = delete;
 //};
 //
-//struct linear_search final : public search_strategy
+// struct linear_search final : public search_strategy
 //{
 //
 //    linear_search() = delete;
 //
-//public:
+// public:
 //    template<typename Key, typename Iter, typename Comp>
 //    KOKKOS_INLINE_FUNCTION static constexpr Iter Execute(const Key& k, Iter a, Iter b, Comp& comp)
 //    {
@@ -161,7 +180,7 @@ namespace Kokkos
 //    }
 //};
 //
-//struct binary_search final : public search_strategy
+// struct binary_search final : public search_strategy
 //{
 //    binary_search() = delete;
 //
@@ -237,45 +256,45 @@ namespace Kokkos
 //    }
 //};
 //
-//template<typename S>
-//struct strategy_selection
+// template<typename S>
+// struct strategy_selection
 //{
 //    using type = S;
 //};
 //
-//struct linear : public strategy_selection<linear_search>
+// struct linear : public strategy_selection<linear_search>
 //{
 //};
-//struct binary : public strategy_selection<binary_search>
+// struct binary : public strategy_selection<binary_search>
 //{
 //};
 //
 //// by default every key utilizes binary search
-//template<typename Key>
-//struct default_strategy : public binary
+// template<typename Key>
+// struct default_strategy : public binary
 //{
 //};
 //
-//template<>
-//struct default_strategy<int> : public linear
+// template<>
+// struct default_strategy<int> : public linear
 //{
 //};
 //
-//template<typename... Ts>
-//struct default_strategy<System::Tuple<Ts...>> : public linear
+// template<typename... Ts>
+// struct default_strategy<System::Tuple<Ts...>> : public linear
 //{
 //};
 //
 ///**
 // * The default non-updater
 // */
-//template<typename T>
-//struct updater
+// template<typename T>
+// struct updater
 //{
 //    void update(T& /* old_t */, const T& /* new_t */) {}
 //};
 //
-//template<typename Key,
+// template<typename Key,
 //         typename Comparator,
 //         typename Allocator, // is ignored so far - TODO: add support
 //         unsigned blockSize,
@@ -283,9 +302,9 @@ namespace Kokkos
 //         bool isSet,
 //         typename WeakComparator = Comparator,
 //         typename Updater        = updater<Key>>
-//class btree
+// class btree
 //{
-//public:
+// public:
 //    class iterator;
 //    using const_iterator = iterator;
 //
@@ -293,7 +312,7 @@ namespace Kokkos
 //    using element_type = Key;
 //    using chunk        = range<iterator>;
 //
-//protected:
+// protected:
 //    /* ------------- static utilities ----------------- */
 //
 //    const static SearchStrategy search;
@@ -1166,7 +1185,7 @@ namespace Kokkos
 //
 //    // ------------------- iterators ------------------------
 //
-//public:
+// public:
 //    /**
 //     * The iterator type to be utilized for scanning through btree instances.
 //     */
@@ -1303,7 +1322,7 @@ namespace Kokkos
 //
 //    using operation_hints = btree_operation_hints<1>;
 //
-//protected:
+// protected:
 //    // a pointer to the root node of this tree
 //    node* volatile root;
 //
@@ -1335,7 +1354,7 @@ namespace Kokkos
 //    // the hint statistic of this b-tree instance
 //    mutable hint_statistics hint_stats;
 //
-//public:
+// public:
 //    // the maximum number of keys stored per node
 //    static constexpr size_t max_keys_per_node = node::maxKeys;
 //
@@ -1371,14 +1390,14 @@ namespace Kokkos
 //        *this = set;
 //    }
 //
-//protected:
+// protected:
 //    /**
 //     * An internal constructor enabling the specific creation of a tree
 //     * based on internal parameters.
 //     */
 //    btree(size_type /* size */, node* root, leaf_node* leftmost) : root(root), leftmost(leftmost) {}
 //
-//public:
+// public:
 //    // the destructor freeing all contained nodes
 //    ~btree()
 //    {
@@ -2209,7 +2228,7 @@ namespace Kokkos
 //        return R(b - a, root, static_cast<leaf_node*>(leftmost));
 //    }
 //
-//protected:
+// protected:
 //    /**
 //     * Determines whether the range covered by the given node is also
 //     * covering the given key value.
@@ -2240,7 +2259,7 @@ namespace Kokkos
 //        return !node->isEmpty() && weak_less(node->keys[0], k) && weak_less(k, node->keys[node->numElements - 1]);
 //    }
 //
-//private:
+// private:
 //    /**
 //     * Determines whether the range covered by this node covers
 //     * the upper bound of the given key.
@@ -2316,8 +2335,8 @@ namespace Kokkos
 //}; // namespace souffle
 //
 //// Instantiation of static member search.
-//template<typename Key, typename Comparator, typename Allocator, unsigned blockSize, typename SearchStrategy, bool isSet, typename WeakComparator, typename Updater>
-//const SearchStrategy btree<Key, Comparator, Allocator, blockSize, SearchStrategy, isSet, WeakComparator, Updater>::search;
+// template<typename Key, typename Comparator, typename Allocator, unsigned blockSize, typename SearchStrategy, bool isSet, typename WeakComparator, typename Updater>
+// const SearchStrategy btree<Key, Comparator, Allocator, blockSize, SearchStrategy, isSet, WeakComparator, Updater>::search;
 //
 //} // end namespace detail
 //
@@ -2330,20 +2349,20 @@ namespace Kokkos
 // * @tparam blockSize    .. determines the number of bytes/block utilized by leaf nodes
 // * @tparam SearchStrategy .. enables switching between linear, binary or any other search strategy
 // */
-//template<typename Key,
+// template<typename Key,
 //         typename Comparator     = detail::comparator<Key>,
 //         typename Allocator      = std::allocator<Key>, // is ignored so far
 //         unsigned blockSize      = 256,
 //         typename SearchStrategy = typename souffle::detail::default_strategy<Key>::type,
 //         typename WeakComparator = Comparator,
 //         typename Updater        = souffle::detail::updater<Key>>
-//class btree_set : public souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, true, WeakComparator, Updater>
+// class btree_set : public souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, true, WeakComparator, Updater>
 //{
 //    using super = souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, true, WeakComparator, Updater>;
 //
 //    friend class souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, true, WeakComparator, Updater>;
 //
-//public:
+// public:
 //    /**
 //     * A default constructor creating an empty set.
 //     */
@@ -2364,14 +2383,14 @@ namespace Kokkos
 //    // A move constructor.
 //    btree_set(btree_set&& other) : super(std::move(other)) {}
 //
-//private:
+// private:
 //    // A constructor required by the bulk-load facility.
 //    template<typename s, typename n, typename l>
 //    btree_set(s size, n* root, l* leftmost) : super(size, root, leftmost)
 //    {
 //    }
 //
-//public:
+// public:
 //    // Support for the assignment operator.
 //    btree_set& operator=(const btree_set& other)
 //    {
@@ -2387,20 +2406,20 @@ namespace Kokkos
 //    }
 //};
 //
-//template<typename Key,
+// template<typename Key,
 //         typename Comparator     = detail::comparator<Key>,
 //         typename Allocator      = std::allocator<Key>, // is ignored so far
 //         unsigned blockSize      = 256,
 //         typename SearchStrategy = typename souffle::detail::default_strategy<Key>::type,
 //         typename WeakComparator = Comparator,
 //         typename Updater        = souffle::detail::updater<Key>>
-//class btree_multiset : public souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, false, WeakComparator, Updater>
+// class btree_multiset : public souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, false, WeakComparator, Updater>
 //{
 //    using super = souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, false, WeakComparator, Updater>;
 //
 //    friend class souffle::detail::btree<Key, Comparator, Allocator, blockSize, SearchStrategy, false, WeakComparator, Updater>;
 //
-//public:
+// public:
 //    /**
 //     * A default constructor creating an empty set.
 //     */
@@ -2421,14 +2440,14 @@ namespace Kokkos
 //    // A move constructor.
 //    btree_multiset(btree_multiset&& other) : super(std::move(other)) {}
 //
-//private:
+// private:
 //    // A constructor required by the bulk-load facility.
 //    template<typename s, typename n, typename l>
 //    btree_multiset(s size, n* root, l* leftmost) : super(size, root, leftmost)
 //    {
 //    }
 //
-//public:
+// public:
 //    // Support for the assignment operator.
 //    btree_multiset& operator=(const btree_multiset& other)
 //    {
@@ -2443,4 +2462,3 @@ namespace Kokkos
 //        return super::template load<btree_multiset>(a, b);
 //    }
 //};
-

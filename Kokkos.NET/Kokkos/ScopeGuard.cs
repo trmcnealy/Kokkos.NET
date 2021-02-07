@@ -22,9 +22,15 @@ namespace Kokkos
             //}
         }
 
+        ~ScopeGuard()
+        {
+            Dispose();
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Dispose()
         {
+            GC.Collect();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

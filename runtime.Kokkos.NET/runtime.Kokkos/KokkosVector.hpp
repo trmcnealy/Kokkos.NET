@@ -5,7 +5,7 @@
 namespace Kokkos
 {
     template<typename TDataType, typename TExecustionSpace>
-    struct KOKKOS_NET_API_EXPORT Vector final : public IVector<TDataType, TExecustionSpace>
+    derived_struct KOKKOS_NET_API_EXPORT Vector final : public IVector<TDataType, TExecustionSpace>
     {
     private:
         Kokkos::vector<TDataType, TExecustionSpace>* _vector;

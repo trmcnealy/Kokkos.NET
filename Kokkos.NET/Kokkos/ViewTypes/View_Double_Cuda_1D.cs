@@ -64,6 +64,7 @@ namespace Kokkos
 
         ~View_Double_Cuda_1D()
         {
+            Pointer.Dispose();
         }
 
         public ref double this[int t0]

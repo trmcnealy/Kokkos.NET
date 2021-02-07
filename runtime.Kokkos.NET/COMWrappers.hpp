@@ -43,7 +43,7 @@ private:
 //#define CLSID_NumericTesting __uuidof(NumericTesting)
 //#define IID_INumericTesting  __uuidof(INumericTesting)
 
-class UnknownBase : public IUnknown
+derived_class UnknownBase : public IUnknown
 {
     std::atomic<unsigned int> _ref_count = 1;
 

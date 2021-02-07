@@ -17,10 +17,10 @@
         <TieredCompilation>false</TieredCompilation>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
+        <Configurations>Debug;Release;Mixed</Configurations>
     </PropertyGroup>
 
-    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))\Artifacts.props"
-            Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))' != '' " />
+    <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))\Artifacts.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))' != '' " />
 
     <ItemGroup>
         <Compile Remove="Tests\MemoryMappedTest.cs" />
@@ -38,6 +38,7 @@
 
     <ItemGroup>
         <PackageReference Include="Kokkos.NET" Version="$(KOKKOS_VERSION)" />
+        <PackageReference Include="PlatformApi" Version="$(PLATFORMAPI_VERSION)" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

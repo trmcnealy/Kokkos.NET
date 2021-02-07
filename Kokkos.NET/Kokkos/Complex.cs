@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace Kokkos
 {
     [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-    public sealed unsafe partial class Complex<T>
+    public sealed unsafe partial class Complex<T> : IDisposable
         where T : unmanaged
     {
         private static readonly Type _T = typeof(T);
@@ -52,6 +52,15 @@ namespace Kokkos
         public Complex(ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Cuda)
         {
             pointer = NativePointer.Allocate(ThisSize, executionSpace);
+        }
+        
+        ~Complex()
+        {
+        }
+        public void Dispose()
+        {
+            pointer.Dispose();
+            GC.SuppressFinalize(this);
         }
         
         internal Complex(IntPtr intPtr, ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Cuda)

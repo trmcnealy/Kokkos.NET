@@ -113,15 +113,27 @@ namespace Kokkos
 
                     Reallocate = Marshal.GetDelegateForFunctionPointer<ReallocateDelegate>(Api.ReallocatePtr);
 
-                    Free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
+                    _free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
 
                     _initialize = Marshal.GetDelegateForFunctionPointer<InitializeDelegate>(Api.InitializePtr);
+
+                    InitializeSerial = Marshal.GetDelegateForFunctionPointer<InitializeSerialDelegate>(Api.InitializeSerialPtr);
+
+                    InitializeOpenMP = Marshal.GetDelegateForFunctionPointer<InitializeOpenMPDelegate>(Api.InitializeOpenMPPtr);
+
+                    InitializeCuda = Marshal.GetDelegateForFunctionPointer<InitializeCudaDelegate>(Api.InitializeCudaPtr);
 
                     _initializeThreads = Marshal.GetDelegateForFunctionPointer<InitializeThreadsDelegate>(Api.InitializeThreadsPtr);
 
                     _initializeArguments = Marshal.GetDelegateForFunctionPointer<InitializeArgumentsDelegate>(Api.InitializeArgumentsPtr);
 
                     _finalize = Marshal.GetDelegateForFunctionPointer<FinalizeDelegate>(Api.FinalizePtr);
+
+                    FinalizeSerial = Marshal.GetDelegateForFunctionPointer<FinalizeSerialDelegate>(Api.FinalizeSerialPtr);
+
+                    FinalizeOpenMP = Marshal.GetDelegateForFunctionPointer<FinalizeOpenMPDelegate>(Api.FinalizeOpenMPPtr);
+
+                    FinalizeCuda = Marshal.GetDelegateForFunctionPointer<FinalizeCudaDelegate>(Api.FinalizeCudaPtr);
 
                     _finalizeAll = Marshal.GetDelegateForFunctionPointer<FinalizeAllDelegate>(Api.FinalizeAllPtr);
 
@@ -338,6 +350,18 @@ namespace Kokkos
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
+        public delegate void InitializeSerialDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void InitializeOpenMPDelegate(int num_threads);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void InitializeCudaDelegate(int use_gpu);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
         public delegate void InitializeThreadsDelegate(int num_cpu_threads,
                                                        int gpu_device_id);
 
@@ -348,6 +372,18 @@ namespace Kokkos
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
         public delegate void FinalizeDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void FinalizeSerialDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void FinalizeOpenMPDelegate();
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void FinalizeCudaDelegate();
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
@@ -792,7 +828,21 @@ namespace Kokkos
 
         public static ReallocateDelegate Reallocate;
 
-        public static FreeDelegate Free;
+        private static FreeDelegate _free;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        public static void Free(ExecutionSpaceKind execution_space,
+                                nint               instance)
+        {
+            try
+            {
+                _free(execution_space, instance);
+            }
+            catch(Exception)
+            {
+                Console.WriteLine($"KokkosLibrary Free failed at 0x{instance:X} with {Enum.GetName(execution_space)}.");
+            }
+        }
 
         private static InitializeDelegate _initialize;
 
@@ -809,6 +859,12 @@ namespace Kokkos
                 Initialized = true;
             }
         }
+        
+        public static InitializeSerialDelegate InitializeSerial;
+
+        public static InitializeOpenMPDelegate InitializeOpenMP;
+
+        public static InitializeCudaDelegate InitializeCuda;
 
         private static InitializeThreadsDelegate _initializeThreads;
 
@@ -852,6 +908,12 @@ namespace Kokkos
 
             Initialized = false;
         }
+
+        public static FinalizeSerialDelegate FinalizeSerial;
+
+        public static FinalizeOpenMPDelegate FinalizeOpenMP;
+
+        public static FinalizeCudaDelegate FinalizeCuda;
 
         private static FinalizeAllDelegate _finalizeAll;
 

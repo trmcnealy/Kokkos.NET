@@ -88,6 +88,34 @@ void Initialize(const int narg, char* arg[]) noexcept
     Kokkos::initialize((int&)narg, arg);
 }
 
+void InitializeSerial() noexcept
+{
+    std::cout << "Initializing Kokkos::Serial." << std::endl;
+
+    Kokkos::Serial::impl_initialize();
+}
+
+void InitializeOpenMP(const int num_threads) noexcept
+{
+    std::cout << "Initializing Kokkos::OpenMP." << std::endl;
+
+    Kokkos::OpenMP::impl_initialize(num_threads);
+}
+
+void InitializeCuda(const int use_gpu) noexcept
+{
+    std::cout << "Initializing Kokkos::Cuda." << std::endl;
+
+    if (use_gpu > -1)
+    {
+        Kokkos::Cuda::impl_initialize(Kokkos::Cuda::SelectDevice(use_gpu));
+    }
+    else
+    {
+        Kokkos::Cuda::impl_initialize();
+    }
+}
+
 void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept
 {
     std::cout << "Initializing Kokkos." << std::endl;
@@ -115,6 +143,27 @@ void Finalize() noexcept
     std::cout << "Shuting down Kokkos." << std::endl;
 
     Kokkos::finalize();
+}
+
+void FinalizeSerial() noexcept
+{
+    std::cout << "Shuting down Kokkos::Serial." << std::endl;
+
+    Kokkos::Serial::impl_finalize();
+}
+
+void FinalizeOpenMP() noexcept
+{
+    std::cout << "Shuting down Kokkos::OpenMP." << std::endl;
+
+    Kokkos::OpenMP::impl_finalize();
+}
+
+void FinalizeCuda() noexcept
+{
+    std::cout << "Shuting down Kokkos::Cuda." << std::endl;
+
+    Kokkos::Cuda::impl_finalize();
 }
 
 void FinalizeAll() noexcept

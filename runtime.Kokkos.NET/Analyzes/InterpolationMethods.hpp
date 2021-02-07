@@ -11,7 +11,7 @@
 
 #include <Print.hpp>
 
-//#include <NumericalMethods/Algebra/Eigenvalue.hpp>
+//#include <Algebra/Eigenvalue.hpp>
 
 KOKKOS_NET_API_EXTERNC void* Shepard2dSingle(void* xd_rcp_view_ptr, void* zd_rcp_view_ptr, const float& p, void* xi_rcp_view_ptr, const ExecutionSpaceKind& execution_space) noexcept;
 
