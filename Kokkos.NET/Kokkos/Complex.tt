@@ -1,10 +1,11 @@
 ﻿<#@ template debug="false" hostspecific="false" language="C#" #>
 <#@ assembly name="System.Core" #>
+<#@ import namespace="System.IO" #>
 <#@ import namespace="System.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-<#@ include file="../../../BuildTools/NativeStructBuilder.ttinclude" #>
+<#@ include file="D:/TFS_Sources/EngineeringTools/BuildTools/Templates/NativeStructBuilder.ttinclude" #>
 <#
     string structName = "Complex";
     List<(string Name, string Constraint)> genericTypeList = new List<(string Name, string Constraint)>{("T", "unmanaged")};
@@ -24,3 +25,5 @@ namespace Kokkos
 {
     <#= NATIVE_STRUCT_BUILDER(structName, genericTypeList, propertyList, indentLevel, executionSpace)#>
 }
+
+

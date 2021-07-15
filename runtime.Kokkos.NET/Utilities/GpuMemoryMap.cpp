@@ -454,7 +454,7 @@ cnmemStatus_t Manager::printMemoryState(FILE* file) const
             freeMemory);
     CNMEM_CHECK_OR_UNLOCK(printListUnsafe(file, "used", mUsedBlocks), mMutex);
     CNMEM_CHECK_OR_UNLOCK(printListUnsafe(file, "free", mFreeBlocks), mMutex);
-    fprintf(file, "\n");
+    fprintf(file, std::endl);
     CNMEM_CHECK(mMutex.unlock());
 
     if(mParent)

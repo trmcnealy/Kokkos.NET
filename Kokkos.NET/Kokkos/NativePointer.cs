@@ -49,7 +49,7 @@ namespace Kokkos
 
             //byte* bytePtr = (byte*)Bytes.ToPointer();
 
-            for(int i = 0; i < Length; i++)
+            for(int i = 0; i < Length; ++i)
             {
                 Bytes[i] = (sbyte)bytes[i];
             }
@@ -182,17 +182,19 @@ namespace Kokkos
         {
         }
 
+        public NativePointer(NativePointer      pointer,
+                             ExecutionSpaceKind executionSpace = ExecutionSpaceKind.Serial)
+            : this(KokkosLibrary.Allocate(pointer._executionSpace, (ulong)pointer._size), pointer._size, true, executionSpace)
+        {
+            KokkosLibrary.Copy(pointer._executionSpace, pointer._data, _executionSpace, _data, (ulong)Size);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public void Dispose()
         {
             DisposeUnmanaged();
-            GC.SuppressFinalize(this);
         }
-
-        ~NativePointer()
-        {
-        }
-
+        
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         public static implicit operator nint(NativePointer pointer)
         {
@@ -220,7 +222,7 @@ namespace Kokkos
             {
                 byte* d = (byte*)data;
 
-                for(byte* i = d; i < (d + size); i++)
+                for(byte* i = d; i < (d + size); ++i)
                 {
                     *i = 0;
                 }
@@ -244,7 +246,7 @@ namespace Kokkos
             {
                 byte* d = (byte*)data;
 
-                for(byte* i = d; i < (d + size); i++)
+                for(byte* i = d; i < (d + size); ++i)
                 {
                     *i = 0;
                 }
@@ -268,7 +270,7 @@ namespace Kokkos
             {
                 byte* d = (byte*)data;
 
-                for(byte* i = d; i < (d + size); i++)
+                for(byte* i = d; i < (d + size); ++i)
                 {
                     *i = 0;
                 }
@@ -292,7 +294,7 @@ namespace Kokkos
             {
                 byte* d = (byte*)data;
 
-                for(byte* i = d; i < (d + size); i++)
+                for(byte* i = d; i < (d + size); ++i)
                 {
                     *i = 0;
                 }

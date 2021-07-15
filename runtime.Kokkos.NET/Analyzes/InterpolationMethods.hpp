@@ -1,7 +1,7 @@
 #pragma once
 
-#include "runtime.Kokkos/ViewTypes.hpp"
-#include "runtime.Kokkos/Extensions.hpp"
+#include <runtime.Kokkos/ViewTypes.hpp>
+#include <runtime.Kokkos/Extensions.hpp>
 
 #include <MathExtensions.hpp>
 
@@ -29,7 +29,7 @@ namespace Interpolation
         Kokkos::Extension::Vector<DataType, ExecutionSpace> zd;
         PointVector<DataType, ExecutionSpace, M>            xi;
         Kokkos::Extension::Vector<DataType, ExecutionSpace> zi;
-        Kokkos::Extension::Matrix<DataType, ExecutionSpace> w;
+        Kokkos::View<DataType**, ExecutionSpace> w;
         const DataType                                      p;
         const size_type                                     nd;
         const size_type                                     ni;
@@ -38,10 +38,8 @@ namespace Interpolation
                        Kokkos::Extension::Vector<DataType, ExecutionSpace>& zd,
                        const DataType&                                      p,
                        PointVector<DataType, ExecutionSpace, M>&            xi) :
-            xd(xd), zd(zd), xi(xi), p(p), nd(xd.extent(0)), ni(xi.extent(0))
+            xd(xd), zd(zd), xi(xi), p(p), nd(xd.extent(0)), ni(xi.extent(0)), zi("zi", xi.extent(0)), w("w", xd.extent(0), xi.extent(0))
         {
-            zi = Kokkos::Extension::Vector<DataType, ExecutionSpace>("zi", ni);
-            w  = Kokkos::Extension::Matrix<DataType, ExecutionSpace>("w", nd, ni);
         }
 
         KOKKOS_INLINE_FUNCTION void operator()(const size_type& i) const

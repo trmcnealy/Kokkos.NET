@@ -1,9 +1,10 @@
 #pragma once
 
+#include <Types.hpp>
 #include <Constants.hpp>
 #include <Guid.hpp>
 
-#include "KokkosAPI.hpp"
+#include <KokkosAPI.hpp>
 
 #include <Kokkos_Core.hpp>
 #include <KokkosBlas.hpp>
@@ -734,28 +735,28 @@ KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0)
 template<typename I0, typename I1>
 KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0, REF(I1) N1, REF(I1) i1)
 {
-    return i1 + N1 * i0;
+    return i1 + (N1 * i0);
 }
 
 // rank 3
 template<typename I0, typename I1, typename I2>
 KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0, REF(I1) N1, REF(I1) i1, REF(I2) N2, REF(I2) i2)
 {
-    return i2 + N2 * (i1 + N1 * (i0));
+    return i2 + N2 * (i1 + (N1 * i0));
 }
 
 // rank 4
 template<typename I0, typename I1, typename I2, typename I3>
 KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0, REF(I1) N1, REF(I1) i1, REF(I2) N2, REF(I2) i2, REF(I3) N3, REF(I3) i3)
 {
-    return i3 + N3 * (i2 + N2 * (i1 + N1 * (i0)));
+    return i3 + N3 * (i2 + N2 * (i1 + (N1 * i0)));
 }
 
 // rank 5
 template<typename I0, typename I1, typename I2, typename I3, typename I4>
 KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0, REF(I1) N1, REF(I1) i1, REF(I2) N2, REF(I2) i2, REF(I3) N3, REF(I3) i3, REF(I4) N4, REF(I4) i4)
 {
-    return i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + N1 * (i0))));
+    return i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + (N1 * i0))));
 }
 
 // rank 6
@@ -772,7 +773,7 @@ KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0,
                                                                    REF(I5) N5,
                                                                    REF(I5) i5)
 {
-    return i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + N1 * (i0)))));
+    return i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + (N1 * i0)))));
 }
 
 // rank 7
@@ -791,7 +792,7 @@ KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0,
                                                                    REF(I6) N6,
                                                                    REF(I6) i6)
 {
-    return i6 + N6 * (i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + N1 * (i0))))));
+    return i6 + N6 * (i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + (N1 * i0))))));
 }
 
 // rank 8
@@ -812,7 +813,7 @@ KOKKOS_INLINE_FUNCTION static constexpr size_type view_offset_left(REF(I0) i0,
                                                                    REF(I7) N7,
                                                                    REF(I7) i7)
 {
-    return i7 + N7 * (i6 + N6 * (i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + N1 * (i0)))))));
+    return i7 + N7 * (i6 + N6 * (i5 + N5 * (i4 + N4 * (i3 + N3 * (i2 + N2 * (i1 + (N1 * i0)))))));
 }
 
 // rank 2

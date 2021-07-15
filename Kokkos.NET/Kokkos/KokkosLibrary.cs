@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using System.Security;
 
+using PlatformApi;
 using PlatformApi.Win32;
 
 namespace Kokkos
@@ -42,7 +43,7 @@ namespace Kokkos
         public static readonly string RuntimeKokkosLibraryName;
 
         public static nint Handle;
-        public static nint ModuleHandle;
+        //public static nint ModuleHandle;
 
         public static KokkosApi Api;
 
@@ -50,20 +51,13 @@ namespace Kokkos
 
         public static volatile bool IsLoaded;
 
-        private static readonly string nativeLibraryPath;
-
         private static readonly KokkosLibraryEventArgs loadedEventArgs   = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Loaded);
         private static readonly KokkosLibraryEventArgs unloadedEventArgs = new KokkosLibraryEventArgs(KokkosLibraryEventKind.Unloaded);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static KokkosLibrary()
         {
-            string operatingSystem      = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "win" : "linux";
-            string platformArchitecture = RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86";
-
-            nativeLibraryPath = $"runtimes\\{operatingSystem}-{platformArchitecture}\\native";
-
-            RuntimeKokkosLibraryName = LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
+            RuntimeKokkosLibraryName = $"{LibraryName}.{Platform.GetOSArchitecture()}.dll"; // LibraryName + (RuntimeInformation.ProcessArchitecture == Architecture.X64 ? ".x64" : ".x86");
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
@@ -71,7 +65,7 @@ namespace Kokkos
         {
             if(!IsLoaded)
             {
-                KokkosCoreLibrary.Load();
+                //KokkosCoreLibrary.Load();
 
 #if DEBUG
                 Console.WriteLine("Loading " + RuntimeKokkosLibraryName);
@@ -85,17 +79,17 @@ namespace Kokkos
                 //     KokkosLibraryException.Throw();
                 // }
 
-                PlatformApi.NativeLibrary.LoadLibrary("nvcuda");
+                //PlatformApi.NativeLibrary.LoadLibrary("nvcuda");
 
-                Handle = PlatformApi.NativeLibrary.Load(RuntimeKokkosLibraryName);
+                Handle = PlatformApi.NativeLibrary.LoadLibrary(RuntimeKokkosLibraryName);
 
-                ModuleHandle = Kernel32.Native.GetModuleHandle(RuntimeKokkosLibraryName + ".dll");
+                //ModuleHandle = Kernel32.Native.GetModuleHandle(RuntimeKokkosLibraryName + ".dll");
 
-                nint getApiHandle = PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetApi");
+                nint getApiHandle = PlatformApi.NativeLibrary.GetExport(Handle, "GetApi");
 
                 if(getApiHandle == 0)
                 {
-                    getApiHandle = Handle + 0x000019E0;
+                    getApiHandle = Handle + 0x00038840;
                 }
 
                 if(getApiHandle == 0)
@@ -112,6 +106,8 @@ namespace Kokkos
                     Allocate = Marshal.GetDelegateForFunctionPointer<AllocateDelegate>(Api.AllocatePtr);
 
                     Reallocate = Marshal.GetDelegateForFunctionPointer<ReallocateDelegate>(Api.ReallocatePtr);
+
+                    Copy = Marshal.GetDelegateForFunctionPointer<CopyDelegate>(Api.CopyPtr);
 
                     _free = Marshal.GetDelegateForFunctionPointer<FreeDelegate>(Api.FreePtr);
 
@@ -184,38 +180,38 @@ namespace Kokkos
                     ViewToNdArray = Marshal.GetDelegateForFunctionPointer<ViewToNdArrayDelegate>(Api.ViewToNdArrayPtr);
                 }
 
-                GetNumaCount = Marshal.GetDelegateForFunctionPointer<GetNumaCountDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetNumaCount"));
+                GetNumaCount = Marshal.GetDelegateForFunctionPointer<GetNumaCountDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "GetNumaCount"));
 
-                GetCoresPerNuma = Marshal.GetDelegateForFunctionPointer<GetCoresPerNumaDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetCoresPerNuma"));
+                GetCoresPerNuma = Marshal.GetDelegateForFunctionPointer<GetCoresPerNumaDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "GetCoresPerNuma"));
 
-                GetThreadsPerCore = Marshal.GetDelegateForFunctionPointer<GetThreadsPerCoreDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "GetThreadsPerCore"));
+                GetThreadsPerCore = Marshal.GetDelegateForFunctionPointer<GetThreadsPerCoreDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "GetThreadsPerCore"));
 
-                Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dSingle"));
+                Shepard2dSingle = Marshal.GetDelegateForFunctionPointer<Shepard2dSingleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "Shepard2dSingle"));
 
-                Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "Shepard2dDouble"));
+                Shepard2dDouble = Marshal.GetDelegateForFunctionPointer<Shepard2dDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "Shepard2dDouble"));
 
-                NearestNeighborSingle = Marshal.GetDelegateForFunctionPointer<NearestNeighborSingleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborSingle"));
+                NearestNeighborSingle = Marshal.GetDelegateForFunctionPointer<NearestNeighborSingleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "NearestNeighborSingle"));
 
-                NearestNeighborDouble = Marshal.GetDelegateForFunctionPointer<NearestNeighborDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "NearestNeighborDouble"));
+                NearestNeighborDouble = Marshal.GetDelegateForFunctionPointer<NearestNeighborDoubleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "NearestNeighborDouble"));
 
-                CountLineEndingsSerial = Marshal.GetDelegateForFunctionPointer<CountLineEndingsSerialDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsSerial"));
+                CountLineEndingsSerial = Marshal.GetDelegateForFunctionPointer<CountLineEndingsSerialDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "CountLineEndingsSerial"));
 
-                CountLineEndingsOpenMP = Marshal.GetDelegateForFunctionPointer<CountLineEndingsOpenMPDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsOpenMP"));
+                CountLineEndingsOpenMP = Marshal.GetDelegateForFunctionPointer<CountLineEndingsOpenMPDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "CountLineEndingsOpenMP"));
 
-                CountLineEndingsCuda = Marshal.GetDelegateForFunctionPointer<CountLineEndingsCudaDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "CountLineEndingsCuda"));
+                CountLineEndingsCuda = Marshal.GetDelegateForFunctionPointer<CountLineEndingsCudaDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "CountLineEndingsCuda"));
 
-                IpcCreate           = Marshal.GetDelegateForFunctionPointer<IpcCreateDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,           "IpcCreate"));
-                IpcCreateFrom       = Marshal.GetDelegateForFunctionPointer<IpcCreateFromDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,       "IpcCreateFrom"));
-                IpcOpenExisting     = Marshal.GetDelegateForFunctionPointer<IpcOpenExistingDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,     "IpcOpenExisting"));
-                IpcDestory          = Marshal.GetDelegateForFunctionPointer<IpcDestoryDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,          "IpcDestory"));
-                IpcClose            = Marshal.GetDelegateForFunctionPointer<IpcCloseDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,            "IpcClose"));
-                IpcGetMemoryPointer = Marshal.GetDelegateForFunctionPointer<IpcGetMemoryPointerDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcGetMemoryPointer"));
-                IpcGetDeviceHandle  = Marshal.GetDelegateForFunctionPointer<IpcGetDeviceHandleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,  "IpcGetDeviceHandle"));
-                IpcGetSize          = Marshal.GetDelegateForFunctionPointer<IpcGetSizeDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle,          "IpcGetSize"));
+                IpcCreate           = Marshal.GetDelegateForFunctionPointer<IpcCreateDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,           "IpcCreate"));
+                IpcCreateFrom       = Marshal.GetDelegateForFunctionPointer<IpcCreateFromDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,       "IpcCreateFrom"));
+                IpcOpenExisting     = Marshal.GetDelegateForFunctionPointer<IpcOpenExistingDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,     "IpcOpenExisting"));
+                IpcDestory          = Marshal.GetDelegateForFunctionPointer<IpcDestoryDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,          "IpcDestory"));
+                IpcClose            = Marshal.GetDelegateForFunctionPointer<IpcCloseDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,            "IpcClose"));
+                IpcGetMemoryPointer = Marshal.GetDelegateForFunctionPointer<IpcGetMemoryPointerDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "IpcGetMemoryPointer"));
+                IpcGetDeviceHandle  = Marshal.GetDelegateForFunctionPointer<IpcGetDeviceHandleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,  "IpcGetDeviceHandle"));
+                IpcGetSize          = Marshal.GetDelegateForFunctionPointer<IpcGetSizeDelegate>(PlatformApi.NativeLibrary.GetExport(Handle,          "IpcGetSize"));
 
-                IpcMakeViewFromPointer = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromPointerDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcMakeViewFromPointer"));
+                IpcMakeViewFromPointer = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromPointerDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "IpcMakeViewFromPointer"));
 
-                IpcMakeViewFromHandle = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromHandleDelegate>(PlatformApi.NativeLibrary.GetExport(ModuleHandle, "IpcMakeViewFromHandle"));
+                IpcMakeViewFromHandle = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromHandleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "IpcMakeViewFromHandle"));
 
 #if DEBUG
                 Console.WriteLine("Loaded " + RuntimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
@@ -228,14 +224,14 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static void Unload()
         {
-            if(!PlatformApi.NativeLibrary.Free(ModuleHandle))
+            if(!PlatformApi.NativeLibrary.Free(Handle))
             {
                 KokkosLibraryException.Throw(RuntimeKokkosLibraryName + "failed to unload.");
             }
             else
             {
                 Handle       = (nint)0;
-                ModuleHandle = (nint)0;
+                //ModuleHandle = (nint)0;
             }
 
             //KokkosCoreLibrary.Unload();
@@ -337,6 +333,15 @@ namespace Kokkos
         public delegate nint ReallocateDelegate(ExecutionSpaceKind execution_space,
                                                 nint               instance,
                                                 ulong              arg_alloc_size);
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [SuppressUnmanagedCodeSecurity]
+        public delegate void CopyDelegate(ExecutionSpaceKind src_execution_space,
+                                          nint               src_instance,
+                                          ExecutionSpaceKind dest_execution_space,
+                                          nint               dest_instance,
+                                          ulong              size_in_bytes);
+
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
@@ -828,6 +833,8 @@ namespace Kokkos
 
         public static ReallocateDelegate Reallocate;
 
+        public static CopyDelegate Copy;
+
         private static FreeDelegate _free;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -859,7 +866,7 @@ namespace Kokkos
                 Initialized = true;
             }
         }
-        
+
         public static InitializeSerialDelegate InitializeSerial;
 
         public static InitializeOpenMPDelegate InitializeOpenMP;
@@ -966,13 +973,13 @@ namespace Kokkos
 
         public static CreateViewDelegate CreateView;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, NativeString<Serial>> GetLabel;
+        //public static delegate*<nint, NdArray, NativeString<Serial>> GetLabel;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ulong> GetSize;
+        //public static delegate*<nint, NdArray, ulong> GetSize;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, uint, ulong> GetStride;
+        //public static delegate*<nint, NdArray, uint, ulong> GetStride;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, uint, ulong> GetExtent;
+        //public static delegate*<nint, NdArray, uint, ulong> GetExtent;
 
         public static GetLabelDelegate GetLabel;
 
@@ -984,9 +991,9 @@ namespace Kokkos
 
         public static CopyToDelegate CopyTo;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ValueType> GetValue;
+        //public static delegate*<nint, NdArray, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ValueType> GetValue;
 
-        //public static delegate* unmanaged[Cdecl]<nint, NdArray, ValueType, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, void> SetValue;
+        //public static delegate*<nint, NdArray, ValueType, ulong, ulong, ulong, ulong, ulong, ulong, ulong, ulong, void> SetValue;
 
         public static GetValueDelegate GetValue;
 

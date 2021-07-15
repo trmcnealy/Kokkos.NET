@@ -55,6 +55,95 @@ void* Reallocate(const ExecutionSpaceKind execution_space, void* instance, const
     }
 }
 
+void Copy(const ExecutionSpaceKind src_execution_space, void* src, const ExecutionSpaceKind dest_execution_space, void* dest, const size_type size_in_bytes) noexcept
+{
+    switch (src_execution_space)
+    {
+        case ExecutionSpaceKind::Serial:
+        {
+            switch (dest_execution_space)
+            {
+                case ExecutionSpaceKind::Serial:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::OpenMP:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::Cuda:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToDevice);
+                    break;
+                }
+                default:
+                {
+                    std::cout << "Copy destination ExecutionSpace is not supported." << std::endl;
+                }
+            }
+            break;
+        }
+        case ExecutionSpaceKind::OpenMP:
+        {
+            switch (dest_execution_space)
+            {
+                case ExecutionSpaceKind::Serial:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::OpenMP:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::Cuda:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyHostToDevice);
+                    break;
+                }
+                default:
+                {
+                    std::cout << "Copy destination ExecutionSpace is not supported." << std::endl;
+                }
+            }
+            break;
+        }
+        case ExecutionSpaceKind::Cuda:
+        {
+            switch (dest_execution_space)
+            {
+                case ExecutionSpaceKind::Serial:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyDeviceToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::OpenMP:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyDeviceToHost);
+                    break;
+                }
+                case ExecutionSpaceKind::Cuda:
+                {
+                    cudaMemcpy(dest, src, size_in_bytes, cudaMemcpyDeviceToDevice);
+                    break;
+                }
+                default:
+                {
+                    std::cout << "Copy destination ExecutionSpace is not supported." << std::endl;
+                }
+            }
+            break;
+        }
+        default:
+        {
+            std::cout << "Copy source ExecutionSpace is not supported." << std::endl;
+        }
+    }
+}
+
 void Free(const ExecutionSpaceKind execution_space, void* instance) noexcept
 {
     switch (execution_space)
@@ -131,9 +220,17 @@ void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexc
     Kokkos::initialize(arguments);
 }
 
-void InitializeArguments(Kokkos::InitArguments arguments) noexcept
+void InitializeArguments(Kokkos::InitArguments args) noexcept
 {
     std::cout << "Initializing Kokkos." << std::endl;
+
+    Kokkos::InitArguments arguments;
+    arguments.num_threads      = args.num_threads;
+    arguments.num_numa         = args.num_numa;
+    arguments.device_id        = args.device_id;
+    arguments.ndevices         = args.ndevices;
+    arguments.skip_device      = args.skip_device;
+    arguments.disable_warnings = args.disable_warnings;
 
     Kokkos::initialize(arguments);
 }

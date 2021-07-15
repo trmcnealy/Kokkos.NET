@@ -36,7 +36,7 @@ namespace Kokkos.Tests
     {
         public static void Test()
         {
-            InitArguments arguments = new InitArguments(8, -1, 0, true);
+            InitArguments arguments = new InitArguments(Environment.ProcessorCount, -1, 0, true);
 
             using(ScopeGuard.Get(arguments))
             {
@@ -53,7 +53,7 @@ namespace Kokkos.Tests
                     Parallel.ForEach(Partitioner.Create(0, rows.Count),
                                      (row) =>
                                      {
-                                         for(int i = row.Item1; i < row.Item2; i++)
+                                         for(int i = row.Item1; i < row.Item2; ++i)
                                          {
                                              EagleFordLatLongs[i] = new EagleFordLatLong(rows[i]);
                                          }

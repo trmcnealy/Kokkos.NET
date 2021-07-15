@@ -155,7 +155,7 @@ VOID decryptBinary(PCSTR key)
 {
     SIZE_T keyLenth = strlen(key);
 
-    for (int i = 0; i < sizeof(binary); i++)
+    for (int i = 0; i < sizeof(binary); ++i)
         binary[i] ^= key[i % keyLenth];
 }
 #    endif
@@ -175,7 +175,7 @@ DWORD WINAPI loadLibrary(LoaderData* loaderData)
     DWORD delta = (DWORD)(loaderData->imageBase - ntHeaders->OptionalHeader.ImageBase);
     while (relocation->VirtualAddress) {
         PWORD relocationInfo = (PWORD)(relocation + 1);
-        for (int i = 0, count = (relocation->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(WORD); i < count; i++)
+        for (int i = 0, count = (relocation->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(WORD); i < count; ++i)
             if (relocationInfo[i] >> 12 == IMAGE_REL_BASED_HIGHLOW)
                 * (PDWORD)(loaderData->imageBase + (relocation->VirtualAddress + (relocationInfo[i] & 0xFFF))) += delta;
 
@@ -251,7 +251,7 @@ INT main(INT argc, PCSTR* argv)
 #    if DECRYPT_DLL
     if (argc < 2)
         return 1;
-    for (int i = 1; i < argc; i++) {
+    for (int i = 1; i < argc; ++i) {
         if (!strcmp(argv[i], "-key")) {
             decryptBinary(argv[++i]);
             break;
@@ -269,7 +269,7 @@ INT main(INT argc, PCSTR* argv)
         ntHeaders->OptionalHeader.SizeOfHeaders, NULL);
 
     PIMAGE_SECTION_HEADER sectionHeaders = (PIMAGE_SECTION_HEADER)(ntHeaders + 1);
-    for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; i++)
+    for (int i = 0; i < ntHeaders->FileHeader.NumberOfSections; ++i)
         WriteProcessMemory(process, executableImage + sectionHeaders[i].VirtualAddress,
         binary + sectionHeaders[i].PointerToRawData, sectionHeaders[i].SizeOfRawData, NULL);
 

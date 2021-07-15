@@ -8,6 +8,10 @@ using Kokkos;
 using NvAPIWrapper.GPU;
 using NvAPIWrapper.Native.GPU.Structures;
 
+using PlatformApi.Win32;
+
+using static Kokkos.Devices;
+
 namespace Kokkos
 {
     public struct DeviceArch
@@ -125,6 +129,53 @@ namespace Kokkos
 
     public sealed class Devices
     {
+
+        [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        internal unsafe struct SYSTEM_INFO
+        {
+            [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+            public struct SYSTEM_INFOunion
+            {
+                [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+                public struct SYSTEM_INFOunionstruct
+                {
+                    public ushort wProcessorArchitecture;
+                    
+                    public ushort wReserved;
+                }
+                
+                [FieldOffset(0)]
+                public uint dwOemId;
+
+                [FieldOffset(0)]
+                public SYSTEM_INFOunionstruct DUMMYSTRUCTNAME;
+            }
+
+            public SYSTEM_INFOunion DUMMYUNIONNAME;
+
+            public uint dwPageSize;
+            
+            public void* lpMinimumApplicationAddress;
+            
+            public void* lpMaximumApplicationAddress;
+            
+            public uint* dwActiveProcessorMask;
+            
+            public uint dwNumberOfProcessors;
+            
+            public uint dwProcessorType;
+            
+            public uint dwAllocationGranularity;
+            
+            public ushort wProcessorLevel;
+            
+            public ushort wProcessorRevision;
+        }
+
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        internal static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
+
+
         public List<CpuDevice> Cpus { get; }
 
         public List<GpuDevice> Gpus { get; }
@@ -135,13 +186,26 @@ namespace Kokkos
 
             OperatingSystem os = Environment.OSVersion;
 
-            for(int i = 0; i < (int)KokkosLibrary.GetNumaCount(); ++i)
+            if(Cpus.Capacity == 1)
             {
-                Cpus.Add(new CpuDevice(i,
-                                      $"{os.Platform:G}",
-                                      (int)KokkosLibrary.GetCoresPerNuma(),
-                                      (int)KokkosLibrary.GetCoresPerNuma() * (int)KokkosLibrary.GetThreadsPerCore(),
-                                      new DeviceArch(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86")));
+                GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
+
+                Cpus.Add(new CpuDevice(0,
+                                       $"{os.Platform:G}",
+                                       (int)lpSystemInfo.dwNumberOfProcessors,
+                                       (int)lpSystemInfo.dwNumberOfProcessors,
+                                       new DeviceArch(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86")));
+            }
+            else
+            {
+                for(int i = 0; i < (int)KokkosLibrary.GetNumaCount(); ++i)
+                {
+                    Cpus.Add(new CpuDevice(i,
+                                           $"{os.Platform:G}",
+                                           (int)KokkosLibrary.GetCoresPerNuma(),
+                                           (int)KokkosLibrary.GetCoresPerNuma() * (int)KokkosLibrary.GetThreadsPerCore(),
+                                           new DeviceArch(RuntimeInformation.ProcessArchitecture == Architecture.X64 ? "x64" : "x86")));
+                }
             }
 
             Gpus = new List<GpuDevice>((int)KokkosLibrary.GetDeviceCount());

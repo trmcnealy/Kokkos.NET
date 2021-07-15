@@ -1774,11 +1774,11 @@ double *r8mat_solve_svd ( int m, int n, double a[], double b[] )
 
   if ( info != 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_SOLVE_SVD - Fatal error!\n";
     cerr << "  The SVD could not be calculated.\n";
     cerr << "  LINPACK routine DSVDC returned a nonzero\n";
-    cerr << "  value of the error flag, INFO = " << info << "\n";
+    cerr << "  value of the error flag, INFO = " << info << std::endl;
     exit ( 1 );
   }
 

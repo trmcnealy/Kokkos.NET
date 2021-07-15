@@ -266,7 +266,7 @@ namespace Cartography
 
         /* Build a list of contour levels */
         zlist = gp_alloc(num_of_z_levels * sizeof(double), NULL);
-        for(i = 0; i < num_of_z_levels; i++)
+        for(i = 0; i < num_of_z_levels; ++i)
         {
             switch(contour_levels_kind)
             {
@@ -291,7 +291,7 @@ namespace Cartography
             qsort(zlist, num_of_z_levels, sizeof(double), reverse_sort);
 
         /* Create contour line for each z value in the list */
-        for(i = 0; i < num_of_z_levels; i++)
+        for(i = 0; i < num_of_z_levels; ++i)
         {
             z                 = zlist[i];
             contour_level     = z;

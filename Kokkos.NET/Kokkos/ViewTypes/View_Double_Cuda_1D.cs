@@ -10,16 +10,17 @@ namespace Kokkos
         internal static readonly nint vtable;
         
         internal static readonly        nint                                                GetExtentAddress;
-        internal static readonly unsafe delegate* unmanaged[Cdecl]<nint, uint, ulong> GetExtentPtr;
+        internal static readonly unsafe delegate*<nint, uint, ulong> GetExtentPtr;
 
         static View_Double_Cuda_1D()
         {
             unsafe
             {
-                vtable = NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "_ZTV19View_Double_Cuda_1D");
+                vtable = NativeLibrary.GetExport(KokkosLibrary.Handle, "_ZTV19View_Double_Cuda_1D");
 
                 GetExtentAddress = *(nint*)(vtable + 5 * UnManaged.Unsafe.SizeOf<nint>());
-                GetExtentPtr     = (delegate           * unmanaged[Cdecl]<nint, uint, ulong >)GetExtentAddress;
+                
+                GetExtentPtr     = (delegate*<nint, uint, ulong >)GetExtentAddress;
 
 
                 //type_info + 1

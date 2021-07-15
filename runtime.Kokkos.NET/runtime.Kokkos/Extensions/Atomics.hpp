@@ -15,12 +15,22 @@ namespace Kokkos
             {
                 return (val1 < val2);
             }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 < val2);
+            }
         };
 
         template<class Scalar1, class Scalar2>
         struct LessThanEqualToOper
         {
             KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 <= val2);
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
             {
                 return (val1 <= val2);
             }
@@ -33,12 +43,22 @@ namespace Kokkos
             {
                 return (val1 > val2);
             }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 > val2);
+            }
         };
 
         template<class Scalar1, class Scalar2>
         struct GreaterThanEqualToOper
         {
             KOKKOS_FORCEINLINE_FUNCTION static bool apply(const Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 >= val2);
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
             {
                 return (val1 >= val2);
             }
@@ -51,6 +71,11 @@ namespace Kokkos
             {
                 return (val1 == val2);
             }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 == val2);
+            }
         };
 
         template<class Scalar1, class Scalar2>
@@ -60,64 +85,89 @@ namespace Kokkos
             {
                 return (val1 != val2);
             }
+
+            KOKKOS_FORCEINLINE_FUNCTION static bool apply(const volatile Scalar1& val1, const Scalar2& val2)
+            {
+                return (val1 != val2);
+            }
         };
 
         template<class Oper, typename T>
         KOKKOS_INLINE_FUNCTION bool atomic_boolean_fetch(const Oper&                                                                                                     op,
                                                          volatile T* const                                                                                               dest,
-                                                         typename std::enable_if<sizeof(T) != sizeof(int) && sizeof(T) == sizeof(unsigned long long int), const T>::type val)
+                                                         typename std::enable_if<sizeof(T) != sizeof(int) && sizeof(T) == sizeof(unsigned long long int), const T>::type value)
         {
-            union U
+            bool result;
+
+            union V
             {
                 unsigned long long int i;
                 T                      t;
-                KOKKOS_INLINE_FUNCTION U() {}
-            } oldval, newval;
+                KOKKOS_INLINE_FUNCTION V() {}
+            } newval, oldval;
 
-            oldval.t = *dest;
+            newval.t = value;
 
-            bool result;
+            union Vol
+            {
+                unsigned long long int volatile* i;
+                T volatile*                      t;
+                KOKKOS_INLINE_FUNCTION           Vol() {}
+            } newdest, olddest;
+
+            olddest.t = dest;
+            newdest.t = dest;
 
             do
             {
-                result = op.apply(oldval.t, val);
+                result = op.apply(*olddest.t, value);
 
                 if (result)
                 {
-                    newval.t = val;
-                    oldval.i = Kokkos::atomic_exchange((unsigned long long int*)dest, newval.i);
+                    oldval.i = Kokkos::atomic_exchange(newdest.i, newval.i);
+                    break;
                 }
 
-            } while (result && newval.i != oldval.i);
+            } while (result && *olddest.i != oldval.i);
 
             return result;
         }
 
         template<class Oper, typename T>
-        KOKKOS_INLINE_FUNCTION T atomic_boolean_fetch(const Oper& op, volatile T* const dest, typename std::enable_if<sizeof(T) == sizeof(int), const T>::type val)
+        KOKKOS_INLINE_FUNCTION T atomic_boolean_fetch(const Oper& op, volatile T* const dest, typename std::enable_if<sizeof(T) == sizeof(int), const T>::type value)
         {
-            union U
+            bool result;
+
+            union V
             {
                 int                    i;
                 T                      t;
-                KOKKOS_INLINE_FUNCTION U() {}
-            } oldval, newval;
+                KOKKOS_INLINE_FUNCTION V() {}
+            } newval, oldval;
 
-            oldval.t = *dest;
+            newval.t = value;
 
-            bool result;
+            union Vol
+            {
+                int volatile*          i;
+                T volatile*            t;
+                KOKKOS_INLINE_FUNCTION Vol() {}
+            } newdest, olddest;
+
+            olddest.t = dest;
+            newdest.t = dest;
 
             do
             {
-                result = op.apply(oldval.t, val);
+                result = op.apply(*olddest.t, value);
 
                 if (result)
                 {
-                    newval.t = val;
-                    oldval.i = Kokkos::atomic_exchange((int*)dest, newval.i);
+                    oldval.i = Kokkos::atomic_exchange(newdest.i, newval.i);
+                    break;
                 }
 
-            } while (result && newval.i != oldval.i);
+            } while (result && *olddest.i != oldval.i);
 
             return result;
         }
@@ -130,20 +180,22 @@ namespace Kokkos
                                                                                   && (sizeof(T) != 16)
 #endif
                                                                                   ,
-                                                                              const T>::type& val)
+                                                                              const T>::type& value)
         {
             bool result;
+
+            const T olddest = *dest;
 
 #ifdef KOKKOS_ACTIVE_EXECUTION_MEMORY_SPACE_HOST
             while (!Impl::lock_address_host_space((void*)dest))
                 ;
             Kokkos::memory_fence();
 
-            result = op.apply(*dest, val);
+            result = op.apply(olddest, value);
 
             if (result)
             {
-                *dest = val;
+                *dest = value;
             }
 
             Kokkos::memory_fence();
@@ -166,10 +218,10 @@ namespace Kokkos
                     if (Impl::lock_address_cuda_space((void*)dest))
                     {
                         Kokkos::memory_fence();
-                        result = op.apply(*dest, val);
+                        result = op.apply(olddest, value);
                         if (result)
                         {
-                            *dest = val;
+                            *dest = value;
                         }
                         Kokkos::memory_fence();
                         Impl::unlock_address_cuda_space((void*)dest);
@@ -195,10 +247,10 @@ namespace Kokkos
                 {
                     // if (Impl::lock_address_hip_space((void*)dest))
                     {
-                        result = op.apply(*dest, val);
+                        result = op.apply(olddest, value);
                         if (result)
                         {
-                            *dest = val;
+                            *dest = value;
                         }
                         // Impl::unlock_address_hip_space((void*)dest);
                         done = 1;
@@ -212,38 +264,38 @@ namespace Kokkos
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_less_than_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_less_than_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::LessThanOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::LessThanOper<T, const T>(), dest, value);
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_less_than_equal_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_less_than_equal_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::LessThanEqualToOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::LessThanEqualToOper<T, const T>(), dest, value);
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::GreaterThanOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::GreaterThanOper<T, const T>(), dest, value);
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_equal_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_greater_than_equal_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::GreaterThanEqualToOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::GreaterThanEqualToOper<T, const T>(), dest, value);
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_equal_to_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_equal_to_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::EqualToOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::EqualToOper<T, const T>(), dest, value);
     }
 
     template<typename T>
-    KOKKOS_INLINE_FUNCTION bool atomic_not_equal_to_fetch(volatile T* const dest, const T val)
+    KOKKOS_INLINE_FUNCTION bool atomic_not_equal_to_fetch(volatile T* const dest, const T value)
     {
-        return Impl::atomic_boolean_fetch(Impl::NotEqualToOper<T, const T>(), dest, val);
+        return Impl::atomic_boolean_fetch(Impl::NotEqualToOper<T, const T>(), dest, value);
     }
 }

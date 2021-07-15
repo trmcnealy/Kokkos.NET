@@ -655,19 +655,11 @@ namespace Kokkos
 
 //        public NativePointer Pointer
 //        {
-//#if NETSTANDARD
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//#else
-//            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//#endif
+//        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
 //            get;
 //        }
 
-//#if NETSTANDARD
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//#else
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//#endif
 //        static Vector()
 //        {
 //            dataType           = DataType<TDataType>.GetKind();
@@ -677,11 +669,7 @@ namespace Kokkos
 //            VectorUtilities<TDataType, TExecutionSpace>.Load();
 //        }
 
-//#if NETSTANDARD
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//#else
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//#endif
 //        public Vector()
 //        {
 
@@ -691,21 +679,13 @@ namespace Kokkos
 
 
 //        }
-//#if NETSTANDARD
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//#else
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//#endif
 //        public Vector(NativePointer pointer)
 //        {
 //            Pointer = pointer;
 //        }
 
-//#if NETSTANDARD
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//#else
 //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-//#endif
 //        public Vector(int       n,
 //                      TDataType val = default)
 //        {

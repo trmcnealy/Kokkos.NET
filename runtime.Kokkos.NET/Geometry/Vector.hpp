@@ -285,7 +285,7 @@ namespace Geometry
         std::string to_string() const
         {
             std::string output;
-            for (size_t i = 0; i < DIM; i++)
+            for (size_t i = 0; i < DIM; ++i)
             {
                 output += std::to_string(vec[i]);
                 if (i != DIM - 1)

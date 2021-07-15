@@ -9,11 +9,7 @@ namespace Kokkos
     {
         private static readonly ExecutionSpaceKind executionSpace;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         static SpatialMethods()
         {
             executionSpace = ExecutionSpace<TExecutionSpace>.GetKind();

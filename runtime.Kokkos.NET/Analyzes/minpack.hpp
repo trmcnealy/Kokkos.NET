@@ -2630,7 +2630,7 @@ double r8_uniform_01 ( int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8_UNIFORM_01 - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -2749,8 +2749,8 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
 //
 //  Print the columns of the matrix, in strips of 5.
 //
@@ -2760,7 +2760,7 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
     j2hi = i4_min ( j2hi, n );
     j2hi = i4_min ( j2hi, jhi );
 
-    cout << "\n";
+    cout << std::endl;
 //
 //  For each column J in the current range...
 //
@@ -2771,9 +2771,9 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
     {
       cout << setw(7) << j << "       ";
     }
-    cout << "\n";
+    cout << std::endl;
     cout << "  Row\n";
-    cout << "\n";
+    cout << std::endl;
 //
 //  Determine the range of the rows in this strip.
 //
@@ -2790,7 +2790,7 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
       {
         cout << setw(12) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      cout << std::endl;
     }
   }
 
@@ -2834,13 +2834,13 @@ void r8vec_print ( int n, double a[], string title )
 {
   int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
+  cout << std::endl;
   for ( i = 0; i < n; i++ )
   {
     cout << "  " << setw(8)  << i
-         << "  " << setw(14) << a[i]  << "\n";
+         << "  " << setw(14) << a[i]  << std::endl;
   }
 
   return;
@@ -2888,7 +2888,7 @@ void timestamp ( )
 
   len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
 
-  std::cout << time_buffer << "\n";
+  std::cout << time_buffer << std::endl;
 
   return;
 # undef TIME_SIZE

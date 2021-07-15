@@ -52,23 +52,23 @@ class Point {
     T coords[Dim];
 
  __host__ void load(vector<T> data) {
-    for(int i=0; i<Dim; i++) {
+    for(int i=0; i<Dim; ++i) {
       coords[i] = data[i];
     }
   }
 
   __host__ void loadChunk(T* data, int exact_dim) {
-    for(int i=0; i<exact_dim; i++) {
+    for(int i=0; i<exact_dim; ++i) {
       coords[i] = data[i];
     }
-    for(int i=exact_dim; i<Dim; i++) {
+    for(int i=exact_dim; i<Dim; ++i) {
       coords[i] = 0;
     }
   }
 
 
   __host__ __device__ Point& operator=( const Point& other ) {
-    for(int i=0; i<Dim; i++) {
+    for(int i=0; i<Dim; ++i) {
       coords[i] = other.coords[i];
     }
     id = other.id;
@@ -133,29 +133,29 @@ class Point<uint8_t, SUMTYPE, Dim> {
     uint32_t coords[Dim/4];
 
   __host__ void load(vector<uint8_t> data) {
-    for(int i=0; i<Dim/4; i++) {
+    for(int i=0; i<Dim/4; ++i) {
       coords[i] = 0;
-      for(int j=0; j<4; j++) {
+      for(int j=0; j<4; ++j) {
         coords[i] += (data[i*4 + j] << (j*8));
       }
     }
   }
 
   __host__ void loadChunk(uint8_t* data, int exact_dims) {
-    for(int i=0; i<exact_dims/4; i++) {
+    for(int i=0; i<exact_dims/4; ++i) {
       coords[i] = 0;
-      for(int j=0; j<4; j++) {
+      for(int j=0; j<4; ++j) {
         coords[i] += (data[i*4 + j] << (j*8));
       }
     }
-    for(int i=exact_dims/4; i<Dim/4; i++) {
+    for(int i=exact_dims/4; i<Dim/4; ++i) {
       coords[i]=0;
     }
   }
 
 
   __host__ __device__ Point& operator=( const Point& other ) {
-    for(int i=0; i<Dim/4; i++) {
+    for(int i=0; i<Dim/4; ++i) {
       coords[i] = other.coords[i];
     }
     id = other.id;
@@ -239,9 +239,9 @@ class Point<int8_t, SUMTYPE, Dim> {
   __host__ void load(vector<int8_t> data) {
 
     uint8_t* test = reinterpret_cast<uint8_t*>(data.data());
-    for(int i=0; i<Dim/4; i++) {
+    for(int i=0; i<Dim/4; ++i) {
       coords[i] = 0;
-      for(int j=0; j<4; j++) {
+      for(int j=0; j<4; ++j) {
         coords[i] += ((test[i*4 + j]) << (j*8));
       }
     }
@@ -250,13 +250,13 @@ class Point<int8_t, SUMTYPE, Dim> {
   __host__ void loadChunk(int8_t* data, int exact_dims) {
 
     uint8_t* test = reinterpret_cast<uint8_t*>(data);
-    for(int i=0; i<exact_dims/4; i++) {
+    for(int i=0; i<exact_dims/4; ++i) {
       coords[i] = 0;
-      for(int j=0; j<4; j++) {
+      for(int j=0; j<4; ++j) {
         coords[i] += (test[i*4 + j] << (j*8));
       }
     }
-    for(int i=exact_dims/4; i<Dim/4; i++) {
+    for(int i=exact_dims/4; i<Dim/4; ++i) {
       coords[i]=0;
     }
   }
@@ -278,7 +278,7 @@ class Point<int8_t, SUMTYPE, Dim> {
   }
 
   __host__ __device__ Point& operator=( const Point& other ) {
-    for(int i=0; i<Dim/4; i++) {
+    for(int i=0; i<Dim/4; ++i) {
       coords[i] = other.coords[i];
     }
     id = other.id;
@@ -354,7 +354,7 @@ class Point<int8_t, SUMTYPE, Dim> {
 template<typename T, typename SUMTYPE, int Dim>
 __host__ Point<T, SUMTYPE, Dim>* convertMatrix(T* data, int rows, int exact_dim) {
   Point<T,SUMTYPE,Dim>* pointArray = (Point<T,SUMTYPE,Dim>*)malloc(rows*sizeof(Point<T,SUMTYPE,Dim>));
-  for(int i=0; i<rows; i++) {
+  for(int i=0; i<rows; ++i) {
     pointArray[i].loadChunk(&data[i*exact_dim], exact_dim);
   }
   return pointArray;

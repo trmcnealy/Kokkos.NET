@@ -1,11 +1,12 @@
 
-#include "runtime.Kokkos/KokkosApi.h"
+#include <runtime.Kokkos/KokkosApi.h>
 
 // clang-format off
-static constexpr KokkosApi kokkos_api_version_1 = 
+static constexpr KokkosApi kokkos_api_version_1 =
 {
     &Allocate,
     &Reallocate,
+    &Copy,
     &Free,
     &Initialize,
     &InitializeSerial,
@@ -13,7 +14,7 @@ static constexpr KokkosApi kokkos_api_version_1 =
     &InitializeCuda,
     &InitializeThreads,
     &InitializeArguments,
-    &Finalize,    
+    &Finalize,
     &FinalizeSerial,
     &FinalizeOpenMP,
     &FinalizeCuda,
@@ -54,3 +55,4 @@ KOKKOS_NET_API_EXTERNC const KokkosApi* GetApi(const uint32 version)
 }
 
 // KokkosDotNET::KokkosView_TemplateManager* templateManager = new KokkosDotNET::KokkosView_TemplateManager();
+

@@ -1,2 +1,187 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ClassDiagram /> 
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="SpaceInstance&lt;Kokkos::Cuda&gt;">
+    <Position X="15" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAEABAAAAAEAgAAAAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;">
+    <Position X="12.25" Y="0.5" Width="3.25" />
+    <NestedTypes>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::LayoutType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::ViewType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::traits" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::size_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::const_value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix&lt;DataType, ExecutionSpace, Layout&gt;::non_const_value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAABBgAAAgACAFEAEIBAEAAAAAAhAgAAACAwAAgCQAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;">
+    <Position X="16" Y="0.5" Width="3.25" />
+    <NestedTypes>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::LayoutType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::ViewType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::traits" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::size_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::const_value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="Kokkos::Extension::Matrix3x3&lt;DataType, ExecutionSpace, Layout&gt;::non_const_value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAABBAAAAgACAFEAEIBAEAAAAAABQgAAACAwAAgCQwA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kokkos::Extension::MMAPAllocation">
+    <Position X="12.25" Y="6.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAEAAAAAAAAQEAEAAAAACAAAABAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Kokkos::Extension::MultiDeviceMMAP">
+    <Position X="8.75" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAIIAAAAAAAAAAAAAAAYUIEAAACAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Struct Name="NativeString">
+    <Position X="0.5" Y="2" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAEAAAAAAFAAAAAAAAAAAAoAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="NdArray">
+    <Position X="3" Y="3.25" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AEAAAAAAAQAAABAAAAAgAAAAAAAAAAEAgAAwCAIAAAA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="ToTrait&lt;ExecutionSpaceKind::Serial&gt;" Collapsed="true">
+    <Position X="0.5" Y="0.5" Width="2.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="KokkosApi">
+    <Position X="6" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>UBAAEAAEIAAAG0CAAAEAgQQQAwEAwABAAAgAJoAAIAI=</HashCode>
+      <FileName>runtime.Kokkos\KokkosApi.h</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Kokkos::VOID_TYPE" Collapsed="true">
+    <Position X="0.5" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Kokkos::Extension::ColumnSums&lt;DataType, ExecutionSpace&gt;">
+    <Position X="8.75" Y="5.75" Width="3" />
+    <NestedTypes>
+      <Typedef Name="Kokkos::Extension::ColumnSums&lt;DataType, ExecutionSpace&gt;::value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAEgAAAAAAAAAAAAAAACAAAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Struct Name="Kokkos::Extension::RowSums&lt;DataType, ExecutionSpace&gt;">
+    <Position X="8.75" Y="3.5" Width="2.75" />
+    <NestedTypes>
+      <Typedef Name="Kokkos::Extension::RowSums&lt;DataType, ExecutionSpace&gt;::value_type" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>runtime.Kokkos\Extensions.hpp</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAgAAAAAAAAEgAAAAAABAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>runtime.Kokkos\Extensions.hpp</FileName>
+    </TypeIdentifier>
+  </Struct>
+  <Enum Name="LayoutKind">
+    <Position X="0.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAACACAAAAAABA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="ExecutionSpaceKind">
+    <Position X="0.5" Y="8" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAABAQAAAAAAAAAAAAABA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="DataTypeKind">
+    <Position X="2.5" Y="6.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QgAAAAAAIAAAAAAhAAAAAACAIAACACAAEEAAAAAAABA=</HashCode>
+      <FileName>runtime.Kokkos\ViewTypes.hpp</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

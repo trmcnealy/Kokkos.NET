@@ -125,7 +125,7 @@ namespace Kokkos
 
             if(data_pointer != null)
             {
-                for(int i = 0; i < array.Length; i++)
+                for(int i = 0; i < array.Length; ++i)
                 {
                     data_pointer[i] = array[i];
                 }

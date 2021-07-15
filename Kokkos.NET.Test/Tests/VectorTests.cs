@@ -93,7 +93,7 @@ namespace Kokkos.Tests
         private void check_test(ref Vector<double> a,
                                 int                n)
         {
-            for(int i = 0; i < (int)a.size(); i++)
+            for(int i = 0; i < (int)a.size(); ++i)
             {
                 if(i == 15)
                 {
@@ -192,7 +192,7 @@ namespace Kokkos.Tests
 
             double test1 = 0;
 
-            for(uint i = 0; i < a.size(); i++)
+            for(uint i = 0; i < a.size(); ++i)
             {
                 test1 += a[i];
             }
@@ -200,7 +200,7 @@ namespace Kokkos.Tests
             a.assign(n + 1, -2);
             double test2 = 0;
 
-            for(uint i = 0; i < a.size(); i++)
+            for(uint i = 0; i < a.size(); ++i)
             {
                 test2 += a[i];
             }
@@ -209,7 +209,7 @@ namespace Kokkos.Tests
 
             double test3 = 0;
 
-            for(uint i = 0; i < a.size(); i++)
+            for(uint i = 0; i < a.size(); ++i)
             {
                 test3 += a[i];
             }

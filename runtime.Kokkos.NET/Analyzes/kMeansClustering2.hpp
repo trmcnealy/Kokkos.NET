@@ -800,17 +800,17 @@ void cluster_print_summary ( int point_num, int cluster_num,
 
   ce_total = r8vec_sum ( cluster_num, cluster_energy );
 
-  cout << "\n";
+  cout << std::endl;
   cout << "  Clustering statistics:\n";
-  cout << "\n";
-  cout << "    Number of clusters is " << cluster_num << "\n";
-  cout << "    Number of points is   " << point_num << "\n";
-  cout << "    Total energy is       " << ce_total << "\n";
-  cout << "\n";
+  cout << std::endl;
+  cout << "    Number of clusters is " << cluster_num << std::endl;
+  cout << "    Number of points is   " << point_num << std::endl;
+  cout << "    Total energy is       " << ce_total << std::endl;
+  cout << std::endl;
   cout << "    Cluster   Population        Energy          Variance\n";
   cout << "    -------  -----------  -----------------  --------------\n";
   cout << "                  #    %     value        %\n";
-  cout << "\n";
+  cout << std::endl;
 
   for ( k = 0; k < cluster_num; k++ )
   {
@@ -824,7 +824,7 @@ void cluster_print_summary ( int point_num, int cluster_num,
          << "  " << setw(3) << cpp
          << "  " << setw(12) << ce
          << "  " << setw(3) << cep
-         << "  " << setw(12) << cv << "\n";
+         << "  " << setw(12) << cv << std::endl;
   }
 
   cp = i4vec_sum ( cluster_num, cluster_population );
@@ -834,13 +834,13 @@ void cluster_print_summary ( int point_num, int cluster_num,
   cv = r8vec_i4vec_dot_product ( cluster_num, cluster_variance, 
     cluster_population ) / cp;
 
-  cout << "\n";
+  cout << std::endl;
   cout << "  " << "  Total"
        << "  " << setw(8) << cp
        << "  " << setw(3) << cpp
        << "  " << setw(12) << ce
        << "  " << setw(3) << cep
-       << "  " << setw(12) << cv << "\n";
+       << "  " << setw(12) << cv << std::endl;
 
   return;
 }
@@ -985,10 +985,10 @@ int file_column_count ( string filename )
   if ( !input )
   {
     column_num = -1;
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "FILE_COLUMN_COUNT - Fatal error!\n";
     cerr << "  Could not open the file:\n";
-    cerr << "  \"" << filename << "\"\n";
+    cerr << "  \"" << filename << "\std::endl;
     exit ( 1 );
   }
 //
@@ -1046,7 +1046,7 @@ int file_column_count ( string filename )
 
   if ( !got_one )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "FILE_COLUMN_COUNT - Warning!\n";
     cerr << "  The file does not seem to contain any data.\n";
     return -1;
@@ -1107,9 +1107,9 @@ int file_row_count ( string input_filename )
 
   if ( !input )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "FILE_ROW_COUNT - Fatal error!\n";
-    cerr << "  Could not open the input file: \"" << input_filename << "\"\n";
+    cerr << "  Could not open the input file: \"" << input_filename << "\std::endl;
     exit ( 1 );
   }
 
@@ -1237,7 +1237,7 @@ void hmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_01 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -1245,7 +1245,7 @@ void hmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_01 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -1253,7 +1253,7 @@ void hmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_01 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -1261,7 +1261,7 @@ void hmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_01 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -1522,7 +1522,7 @@ void hmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_02 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -1530,7 +1530,7 @@ void hmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_02 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -1538,7 +1538,7 @@ void hmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_02 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -1546,7 +1546,7 @@ void hmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_02 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -1621,7 +1621,7 @@ void hmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
     if ( debug )
     {
       cout << "  " << setw(3) << it_num
-           << "  " << setw(14) << r8vec_sum ( cluster_num, cluster_energy ) << "\n";
+           << "  " << setw(14) << r8vec_sum ( cluster_num, cluster_energy ) << std::endl;
     }
 
     if ( 0 < it_num )
@@ -1801,7 +1801,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -1809,7 +1809,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -1817,7 +1817,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -1825,7 +1825,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -1833,7 +1833,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_any_negative ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  Some weight entry is negative.\n";
     exit ( 1 );
@@ -1841,7 +1841,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_all_nonpositive ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_01 - Fatal error!\n";
     cout << "  No weight entry is positive.\n";
     exit ( 1 );
@@ -1938,7 +1938,7 @@ void hmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
       energy = energy + weight[j] * point_energy;
     }
     cout << "  " << setw(4) << it_num
-         << "  " << setw(14) << energy << "\n";
+         << "  " << setw(14) << energy << std::endl;
 //
 //  #2:
 //  Determine the centroids of the clusters, and set the 
@@ -2115,7 +2115,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -2123,7 +2123,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -2131,7 +2131,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -2139,7 +2139,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -2147,7 +2147,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_any_negative ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  Some weight entry is negative.\n";
     exit ( 1 );
@@ -2155,7 +2155,7 @@ void hmeans_w_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_all_nonpositive ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "HMEANS_W_02 - Fatal error!\n";
     cout << "  No weight entry is positive.\n";
     exit ( 1 );
@@ -2448,7 +2448,7 @@ int i4_uniform ( int a, int b, int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "I4_UNIFORM - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -2526,7 +2526,7 @@ void i4mat_write ( string output_filename, int m, int n, int table[] )
 
   if ( !output )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "I4MAT_WRITE - Fatal error!\n";
     cerr << "  Could not open the output file.\n";
     exit ( 1 );
@@ -2540,7 +2540,7 @@ void i4mat_write ( string output_filename, int m, int n, int table[] )
     {
       output << "  " << setw(10) << table[i+j*m];
     }
-    output << "\n";
+    output << std::endl;
   }
 //
 //  Close the file.
@@ -2860,7 +2860,7 @@ void kmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_01 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -2868,7 +2868,7 @@ void kmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_01 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -2876,7 +2876,7 @@ void kmeans_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_01 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -3191,7 +3191,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_02 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -3199,7 +3199,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num <= cluster_num )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_02 - Fatal error!\n";
     cout << "  POINT_NUM <= CLUSTER_NUM.\n";
     exit ( 1 );
@@ -3207,7 +3207,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_02 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -3215,7 +3215,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_02 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -3300,7 +3300,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
   {
     if ( cluster_population[k] == 0 )
     {
-      cout << "\n";
+      cout << std::endl;
       cout << "KMEANS_02 - Fatal error!\n";
       cout << "  Cluster " << k << " has zero population.\n";
       exit ( 1 );
@@ -3389,7 +3389,7 @@ void kmeans_02 ( int dim_num, int point_num, int cluster_num, int it_max,
   }
   if ( ifault == 2 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_02 - Warning!\n";
     cout << "  Maximum number of iterations reached\n";
     cout << "  without convergence.\n";
@@ -3966,7 +3966,7 @@ void kmeans_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_03 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -3974,7 +3974,7 @@ void kmeans_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_03 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -3982,7 +3982,7 @@ void kmeans_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_03 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -3990,7 +3990,7 @@ void kmeans_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_03 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -4276,7 +4276,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -4284,7 +4284,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -4292,7 +4292,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -4300,7 +4300,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -4308,7 +4308,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_any_negative ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  Some weight entry is negative.\n";
     exit ( 1 );
@@ -4316,7 +4316,7 @@ void kmeans_w_01 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_all_nonpositive ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_01 - Fatal error!\n";
     cout << "  No weight entry is positive.\n";
     exit ( 1 );
@@ -4652,7 +4652,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 //
   if ( cluster_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  CLUSTER_NUM < 1.\n";
     exit ( 1 );
@@ -4660,7 +4660,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( dim_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  DIM_NUM < 1.\n";
     exit ( 1 );
@@ -4668,7 +4668,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( point_num < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  POINT_NUM < 1.\n";
     exit ( 1 );
@@ -4676,7 +4676,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( it_max < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  IT_MAX < 0.\n";
     exit ( 1 );
@@ -4684,7 +4684,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_any_negative ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  Some weight entry is negative.\n";
     exit ( 1 );
@@ -4692,7 +4692,7 @@ void kmeans_w_03 ( int dim_num, int point_num, int cluster_num, int it_max,
 
   if ( r8vec_all_nonpositive ( point_num, weight ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "KMEANS_W_03 - Fatal error!\n";
     cout << "  No weight entry is positive.\n";
     exit ( 1 );
@@ -5141,7 +5141,7 @@ double r8_uniform_01 ( int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8_UNIFORM_01 - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -5219,9 +5219,9 @@ double *r8mat_data_read ( string input_filename, int m, int n )
 
   if ( !input )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_DATA_READ - Fatal error!\n";
-    cerr << "  Could not open the input file: \"" << input_filename << "\"\n";
+    cerr << "  Could not open the input file: \"" << input_filename << "\std::endl;
     exit ( 1 );
   }
 
@@ -5305,7 +5305,7 @@ void r8mat_header_read ( string input_filename, int *m, int *n )
 
   if ( *m <= 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_HEADER_READ - Fatal error!\n";
     cerr << "  FILE_COLUMN_COUNT failed.\n";
     exit ( 1 );
@@ -5315,7 +5315,7 @@ void r8mat_header_read ( string input_filename, int *m, int *n )
 
   if ( *n <= 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_HEADER_READ - Fatal error!\n";
     cerr << "  FILE_ROW_COUNT failed.\n";
     exit ( 1 );
@@ -5463,7 +5463,7 @@ void r8mat_uniform_01 ( int m, int n, int *seed, double r[] )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_UNIFORM_01 - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -5624,7 +5624,7 @@ void r8mat_write ( string output_filename, int m, int n, double table[] )
 
   if ( !output )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8MAT_WRITE - Fatal error!\n";
     cerr << "  Could not open the output file.\n";
     exit ( 1 );
@@ -5638,7 +5638,7 @@ void r8mat_write ( string output_filename, int m, int n, double table[] )
     {
       output << "  " << setw(24) << setprecision(16) << table[i+j*m];
     }
-    output << "\n";
+    output << std::endl;
   }
 //
 //  Close the file.
@@ -5976,7 +5976,7 @@ void r8vec_uniform_01 ( int n, int *seed, double r[] )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "R8VEC_UNIFORM_01 - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -6601,7 +6601,7 @@ void timestamp ( )
 
   len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
 
-  std::cout << time_buffer << "\n";
+  std::cout << time_buffer << std::endl;
 
   return;
 # undef TIME_SIZE

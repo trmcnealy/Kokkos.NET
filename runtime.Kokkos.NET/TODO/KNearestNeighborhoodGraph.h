@@ -17,13 +17,13 @@ namespace SPTAG
 
             void RebuildNeighbors(VectorIndex* index, const SizeType node, SizeType* nodes, const BasicResult* queryResults, const int numResults) {
                 DimensionType count = 0;
-                for (int j = 0; j < numResults && count < m_iNeighborhoodSize; j++) {
+                for (int j = 0; j < numResults && count < m_iNeighborhoodSize; ++j) {
                     const BasicResult& item = queryResults[j];
                     if (item.VID < 0) break;
                     if (item.VID == node) continue;
                     nodes[count++] = item.VID;
                 }
-                for (DimensionType j = count; j < m_iNeighborhoodSize; j++)  nodes[j] = -1;
+                for (DimensionType j = count; j < m_iNeighborhoodSize; ++j)  nodes[j] = -1;
             }
 
             void InsertNeighbors(VectorIndex* index, const SizeType node, SizeType insertNode, float insertDist)
@@ -44,7 +44,7 @@ namespace SPTAG
                         nodes[k] = insertNode;
                         while (tmpNode >= 0 && ++k < m_iNeighborhoodSize && nodes[k] >= -1)
                         {
-                            std::swap(tmpNode, nodes[k]);
+                            Kokkos::swap(tmpNode, nodes[k]);
                         }
                         break;
                     }

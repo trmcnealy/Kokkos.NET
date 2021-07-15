@@ -302,13 +302,13 @@ void adj_insert_ij ( int node_num, int adj_max, int *adj_num, int adj_row[],
 //
   if ( adj_max < *adj_num + 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_INSERT_IJ - Fatal error!\n";
     cout << "  All available storage has been used.\n";
     cout << "  No more information can be stored!\n";
     cout << "  This error occurred for \n";
-    cout << "  Row I =    " << i << "\n";
-    cout << "  Column J = " << j << "\n";
+    cout << "  Row I =    " << i << std::endl;
+    cout << "  Column J = " << j << std::endl;
     exit ( 1 );
   }
 //
@@ -492,9 +492,9 @@ void adj_perm_show ( int node_num, int adj_num, int adj_row[], int adj[],
   band_lo = 0;
   nonzero_num = 0;
 
-  cout << "\n";
+  cout << std::endl;
   cout << "  Nonzero structure of matrix:\n";
-  cout << "\n";
+  cout << std::endl;
 
   for ( i = 0; i < node_num; i++ )
   {
@@ -526,11 +526,11 @@ void adj_perm_show ( int node_num, int adj_num, int adj_row[], int adj[],
     {
       cout << band[j];
     }
-    cout << "\n";
+    cout << std::endl;
   }
 
-  cout << "\n";
-  cout << "  Lower bandwidth = " << band_lo << "\n";
+  cout << std::endl;
+  cout << "  Lower bandwidth = " << band_lo << std::endl;
   cout << "  Lower envelope contains " << nonzero_num << " nonzeros.\n";
 
   return;
@@ -649,16 +649,16 @@ void adj_print_some ( int node_num, int node_lo, int node_hi, int adj_num,
   int jmax;
   int jmin;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
+  cout << std::endl;
   cout << "  Sparse adjacency structure:\n";
-  cout << "\n";
-  cout << "  Number of nodes       = " << node_num << "\n";;
-  cout << "  Number of adjacencies = " << adj_num << "\n";
-  cout << "\n";
+  cout << std::endl;
+  cout << "  Number of nodes       = " << node_num << std::endl;;
+  cout << "  Number of adjacencies = " << adj_num << std::endl;
+  cout << std::endl;
   cout << "  Node Min Max      Nonzeros \n";
-  cout << "\n";
+  cout << std::endl;
 
   for ( i = node_lo; i <= node_hi; i++ )
   {
@@ -669,7 +669,7 @@ void adj_print_some ( int node_num, int node_lo, int node_hi, int adj_num,
     {
       cout << "  " << setw(4) << i
            << "  " << setw(4) << jmin
-           << "  " << setw(4) << jmax << "\n";
+           << "  " << setw(4) << jmax << std::endl;
     }
     else
     {
@@ -687,7 +687,7 @@ void adj_print_some ( int node_num, int node_lo, int node_hi, int adj_num,
           {
             cout << setw(8) << adj[j-1];
           }
-          cout << "\n";
+          cout << std::endl;
         }
         else
         {
@@ -696,7 +696,7 @@ void adj_print_some ( int node_num, int node_lo, int node_hi, int adj_num,
           {
             cout << setw(8) << adj[j-1];
           }
-          cout << "\n";
+          cout << std::endl;
         }
       }
     }
@@ -771,11 +771,11 @@ void adj_set ( int node_num, int adj_max, int *adj_num, int adj_row[],
 //
   if ( irow < 0 || jcol < 0 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_SET - Note:\n";
     cout << "  Initializing adjacency information.\n";
-    cout << "  Number of nodes NODE_NUM =  " << node_num << "\n";
-    cout << "  Maximum adjacency ADJ_MAX = " << adj_max << "\n";
+    cout << "  Number of nodes NODE_NUM =  " << node_num << std::endl;
+    cout << "  Maximum adjacency ADJ_MAX = " << adj_max << std::endl;
 
     *adj_num = 0;
     for ( i = 0; i < node_num + 1; i++ )
@@ -798,36 +798,36 @@ void adj_set ( int node_num, int adj_max, int *adj_num, int adj_row[],
 
   if ( node_num < irow )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_SET - Fatal error!\n";
     cout << "  NODE_NUM < IROW.\n";
-    cout << "  IROW =     " << irow << "\n";
-    cout << "  NODE_NUM = " << node_num << "\n";
+    cout << "  IROW =     " << irow << std::endl;
+    cout << "  NODE_NUM = " << node_num << std::endl;
     exit ( 1 );
   }
   else if ( irow < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_SET - Fatal error!\n";
     cout << "  IROW < 1.\n";
-    cout << "  IROW = " << irow << "\n";
+    cout << "  IROW = " << irow << std::endl;
     exit ( 1 );
   }
   else if ( node_num < jcol )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_SET - Fatal error!\n";
     cout << "  NODE_NUM < JCOL.\n";
-    cout << "  JCOL =     " << jcol << "\n";
-    cout << "  NODE_NUM = " << node_num << "\n";
+    cout << "  JCOL =     " << jcol << std::endl;
+    cout << "  NODE_NUM = " << node_num << std::endl;
     exit ( 1 );
   }
   else if ( jcol < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "ADJ_SET - Fatal error!\n";
     cout << "  JCOL < 1.\n";
-    cout << "  JCOL = " << jcol << "\n";
+    cout << "  JCOL = " << jcol << std::endl;
     exit ( 1 );
   }
 
@@ -903,9 +903,9 @@ void adj_show ( int node_num, int adj_num, int adj_row[], int adj[] )
   band_lo = 0;
   nonzero_num = 0;
 
-  cout << "\n";
+  cout << std::endl;
   cout << "  Nonzero structure of matrix:\n";
-  cout << "\n";
+  cout << std::endl;
 
   for ( i = 0; i < node_num; i++ )
   {
@@ -931,11 +931,11 @@ void adj_show ( int node_num, int adj_num, int adj_row[], int adj[] )
     {
       cout << band[j];
     }
-    cout << "\n";
+    cout << std::endl;
   }
 
-  cout << "\n";
-  cout << "  Lower bandwidth = " << band_lo << "\n";
+  cout << std::endl;
+  cout << "  Lower bandwidth = " << band_lo << std::endl;
   cout << "  Lower envelope contains " << nonzero_num << " nonzeros.\n";
 
   delete [] band;
@@ -1526,7 +1526,7 @@ int i4_uniform ( int a, int b, int *seed )
 
   if ( *seed == 0 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "I4_UNIFORM - Fatal error!\n";
     cerr << "  Input value of SEED = 0.\n";
     exit ( 1 );
@@ -1615,7 +1615,7 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 //
   if ( i < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_COMPARE - Fatal error!\n";
     cout << "  Column index I = " << i << " is less than 1.\n";
     exit ( 1 );
@@ -1623,7 +1623,7 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 
   if ( n < i )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_COMPARE - Fatal error!\n";
     cout << "  N = " << n << " is less than column index I = " << i << ".\n";
     exit ( 1 );
@@ -1631,7 +1631,7 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 
   if ( j < 1 )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_COMPARE - Fatal error!\n";
     cout << "  Column index J = " << j << " is less than 1.\n";
     exit ( 1 );
@@ -1639,7 +1639,7 @@ int i4col_compare ( int m, int n, int a[], int i, int j )
 
   if ( n < j )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_COMPARE - Fatal error!\n";
     cout << "  N = " << n << " is less than column index J = " << j << ".\n";
     exit ( 1 );
@@ -1804,7 +1804,7 @@ void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 //
   if ( icol1 - OFFSET < 0 || n-1 < icol1 - OFFSET )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_SWAP - Fatal error!\n";
     cout << "  ICOL1 is out of range.\n";
     exit ( 1 );
@@ -1812,7 +1812,7 @@ void i4col_swap ( int m, int n, int a[], int icol1, int icol2 )
 
   if ( icol2 - OFFSET < 0 || n-1 < icol2 - OFFSET )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "I4COL_SWAP - Fatal error!\n";
     cout << "  ICOL2 is out of range.\n";
     exit ( 1 );
@@ -1879,8 +1879,8 @@ void i4mat_print_some ( int m, int n, int a[], int ilo, int jlo, int ihi,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
 //
 //  Print the columns of the matrix, in strips of INCX.
 //
@@ -1890,7 +1890,7 @@ void i4mat_print_some ( int m, int n, int a[], int ilo, int jlo, int ihi,
     j2hi = i4_min ( j2hi, n );
     j2hi = i4_min ( j2hi, jhi );
 
-    cout << "\n";
+    cout << std::endl;
 //
 //  For each column J in the current range...
 //
@@ -1901,9 +1901,9 @@ void i4mat_print_some ( int m, int n, int a[], int ilo, int jlo, int ihi,
     {
       cout << setw(6) << j << "  ";
     }
-    cout << "\n";
+    cout << std::endl;
     cout << "  Row\n";
-    cout << "\n";
+    cout << std::endl;
 //
 //  Determine the range of the rows in this strip.
 //
@@ -1920,12 +1920,12 @@ void i4mat_print_some ( int m, int n, int a[], int ilo, int jlo, int ihi,
       {
         cout << setw(6) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      cout << std::endl;
     }
 
   }
 
-  cout << "\n";
+  cout << std::endl;
 
   return;
 # undef INCX
@@ -2019,8 +2019,8 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
 //
 //  Print the columns of the matrix, in strips of INCX.
 //
@@ -2030,7 +2030,7 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
     i2hi = i4_min ( i2hi, m );
     i2hi = i4_min ( i2hi, ihi );
 
-    cout << "\n";
+    cout << std::endl;
 //
 //  For each row I in the current range...
 //
@@ -2041,9 +2041,9 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
     {
       cout << setw(6) << i << "  ";
     }
-    cout << "\n";
+    cout << std::endl;
     cout << "  Col\n";
-    cout << "\n";
+    cout << std::endl;
 //
 //  Determine the range of the rows in this strip.
 //
@@ -2060,12 +2060,12 @@ void i4mat_transpose_print_some ( int m, int n, int a[], int ilo, int jlo,
       {
         cout << setw(6) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      cout << std::endl;
     }
 
   }
 
-  cout << "\n";
+  cout << std::endl;
 
   return;
 # undef INCX
@@ -2272,13 +2272,13 @@ void i4vec_print ( int n, int a[], string title )
 {
   int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
+  cout << std::endl;
   for ( i = 0; i <= n-1; i++ )
   {
     cout << "  " << setw(8) << i + 1
-         << "  " << setw(8) << a[i] << "\n";
+         << "  " << setw(8) << a[i] << std::endl;
   }
 
   return;
@@ -2594,14 +2594,14 @@ void level_set_print ( int node_num, int level_num, int level_row[],
   int jmax;
   int jmin;
 
-  cout << "\n";
+  cout << std::endl;
   cout << "LEVEL_SET_PRINT\n";
   cout << "  Show the level set structure of a rooted graph.\n";
-  cout << "  The number of nodes is  " << node_num << "\n";
-  cout << "  The number of levels is " << level_num << "\n";
-  cout << "\n";
+  cout << "  The number of nodes is  " << node_num << std::endl;
+  cout << "  The number of levels is " << level_num << std::endl;
+  cout << std::endl;
   cout << "  Level Min Max      Nonzeros\n";
-  cout << "\n";
+  cout << std::endl;
 
   for ( i = 0; i < level_num; i++ )
   {
@@ -2612,7 +2612,7 @@ void level_set_print ( int node_num, int level_num, int level_row[],
     {
       cout << "  " << setw(4) << i+1
            << "  " << setw(4) << jmin
-           << "  " << setw(4) << jmax << "\n";
+           << "  " << setw(4) << jmax << std::endl;
     }
     else
     {
@@ -2630,7 +2630,7 @@ void level_set_print ( int node_num, int level_num, int level_row[],
           {
             cout << setw(8) << level[j-1];
           }
-          cout << "\n";
+          cout << std::endl;
         }
         else
         {
@@ -2639,7 +2639,7 @@ void level_set_print ( int node_num, int level_num, int level_row[],
           {
             cout << setw(8) << level[j-1];
           }
-          cout << "\n";
+          cout << std::endl;
         }
 
       }
@@ -2973,7 +2973,7 @@ void r82vec_permute ( int n, double a[], int p[] )
 
   if ( !perm_check ( n, p ) )
   {
-    cout << "\n";
+    cout << std::endl;
     cout << "R82VEC_PERMUTE - Fatal error!\n";
     cout << "  The input array does not represent\n";
     cout << "  a proper permutation.\n";
@@ -3011,7 +3011,7 @@ void r82vec_permute ( int n, double a[], int p[] )
 
         if ( iget < 1 || n < iget )
         {
-          cout << "\n";
+          cout << std::endl;
           cout << "R82VEC_PERMUTE - Fatal error!\n";
           cout << "  Entry IPUT = " << iput << " of the permutation has\n";
           cout << "  an illegal value IGET = " << iget << ".\n";
@@ -3086,8 +3086,8 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
 //
 //  Print the columns of the matrix, in strips of 5.
 //
@@ -3097,7 +3097,7 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
     j2hi = i4_min ( j2hi, n );
     j2hi = i4_min ( j2hi, jhi );
 
-    cout << "\n";
+    cout << std::endl;
 //
 //  For each column J in the current range...
 //
@@ -3108,9 +3108,9 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
     {
       cout << setw(7) << j << "       ";
     }
-    cout << "\n";
+    cout << std::endl;
     cout << "  Row\n";
-    cout << "\n";
+    cout << std::endl;
 //
 //  Determine the range of the rows in this strip.
 //
@@ -3127,12 +3127,12 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
       {
         cout << setw(12) << a[i-1+(j-1)*m] << "  ";
       }
-      cout << "\n";
+      cout << std::endl;
     }
 
   }
 
-  cout << "\n";
+  cout << std::endl;
 
   return;
 # undef INCX
@@ -3184,8 +3184,8 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
   int j2hi;
   int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+  cout << std::endl;
+  cout << title << std::endl;
 
   for ( i2lo = i4_max ( ilo, 1 ); i2lo <= i4_min ( ihi, m ); i2lo = i2lo + INCX )
   {
@@ -3195,15 +3195,15 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
 
     inc = i2hi + 1 - i2lo;
 
-    cout << "\n";
+    cout << std::endl;
     cout << "  Row: ";
     for ( i = i2lo; i <= i2hi; i++ )
     {
       cout << setw(7) << i << "       ";
     }
-    cout << "\n";
+    cout << std::endl;
     cout << "  Col\n";
-    cout << "\n";
+    cout << std::endl;
 
     j2lo = i4_max ( jlo, 1 );
     j2hi = i4_min ( jhi, n );
@@ -3216,10 +3216,10 @@ void r8mat_transpose_print_some ( int m, int n, double a[], int ilo, int jlo,
         i = i2lo - 1 + i2;
         cout << setw(14) << a[(i-1)+(j-1)*m];
       }
-      cout << "\n";
+      cout << std::endl;
     }
   }
-  cout << "\n";
+  cout << std::endl;
 
   return;
 # undef INCX
@@ -3319,9 +3319,9 @@ void rcm ( int root, int adj_num, int adj_row[], int adj[], int mask[],
 //
   if ( node_num < 1 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "RCM - Fatal error!\n";
-    cerr << "  Unacceptable input value of NODE_NUM = " << node_num << "\n";
+    cerr << "  Unacceptable input value of NODE_NUM = " << node_num << std::endl;
     exit ( 1 );
   }
 //
@@ -3329,9 +3329,9 @@ void rcm ( int root, int adj_num, int adj_row[], int adj[], int mask[],
 //
   if ( root < 1 || node_num < root )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "RCM - Fatal error!\n";
-    cerr << "  Unacceptable input value of ROOT = " << root << "\n";
+    cerr << "  Unacceptable input value of ROOT = " << root << std::endl;
     cerr << "  Acceptable values are between 1 and " << node_num << ", inclusive.\n";
     exit ( 1 );
   }
@@ -3348,10 +3348,10 @@ void rcm ( int root, int adj_num, int adj_row[], int adj[], int mask[],
 //
   if ( *iccsze < 1 )
   {
-    cerr << "\n";
+    cerr << std::endl;
     cerr << "RCM - Fatal error!\n";
     cerr << "  Connected component size ICCSZE returned from DEGREE as "
-         << *iccsze << "\n";
+         << *iccsze << std::endl;
     exit ( 1 );
   }
 //
@@ -3876,7 +3876,7 @@ void timestamp ( void )
 
   len = strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm );
 
-  cout << time_buffer << "\n";
+  cout << time_buffer << std::endl;
 
   return;
 # undef TIME_SIZE

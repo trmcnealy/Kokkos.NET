@@ -25,7 +25,6 @@ namespace Kokkos
             {
                 ValueType& value;
 
-            public:
                 KOKKOS_FORCEINLINE_FUNCTION      ScatterValue(ValueType& value_in) : value(value_in) {}
                 KOKKOS_FORCEINLINE_FUNCTION      ScatterValue(ScatterValue&& other) noexcept : value(other.value) {}
                 KOKKOS_FORCEINLINE_FUNCTION void operator*=(ValueType const& rhs)
@@ -61,7 +60,6 @@ namespace Kokkos
             {
                 ValueType& value;
 
-            public:
                 KOKKOS_FORCEINLINE_FUNCTION ScatterValue(ValueType& value_in) : value(value_in) {}
                 KOKKOS_FORCEINLINE_FUNCTION ScatterValue(ScatterValue&& other) noexcept : value(other.value) {}
 
@@ -74,8 +72,7 @@ namespace Kokkos
                     Kokkos::atomic_div(&value, rhs);
                 }
 
-                KOKKOS_FORCEINLINE_FUNCTION
-                void atomic_prod(ValueType& dest, const ValueType& src) const
+                KOKKOS_FORCEINLINE_FUNCTION void atomic_prod(ValueType& dest, const ValueType& src) const
                 {
                     bool success = false;
                     while (!success)
@@ -87,14 +84,12 @@ namespace Kokkos
                     }
                 }
 
-                KOKKOS_INLINE_FUNCTION
-                void join(ValueType& dest, const ValueType& src) const
+                KOKKOS_INLINE_FUNCTION void join(ValueType& dest, const ValueType& src) const
                 {
                     atomic_prod(&dest, src);
                 }
 
-                KOKKOS_INLINE_FUNCTION
-                void join(volatile ValueType& dest, const volatile ValueType& src) const
+                KOKKOS_INLINE_FUNCTION void join(volatile ValueType& dest, const volatile ValueType& src) const
                 {
                     atomic_prod(&dest, src);
                 }
@@ -221,7 +216,7 @@ namespace Kokkos
         //    double minimum = data[0];
         //    double d;
 
-        //    for (int i = 1; i < data.Length; i++)
+        //    for (int i = 1; i < data.Length; ++i)
         //    {
         //        d = data[i];
         //        if (d < minimum)
@@ -239,7 +234,7 @@ namespace Kokkos
         //    double minimum = Math.Abs(data[0]);
         //    double d;
 
-        //    for (int i = 1; i < data.Length; i++)
+        //    for (int i = 1; i < data.Length; ++i)
         //    {
         //        d = Math.Abs(data[i]);
         //        if (d < minimum)
@@ -258,7 +253,7 @@ namespace Kokkos
         //    int index = -1;
         //    double d;
 
-        //    for (int i = 0; i < data.Length; i++)
+        //    for (int i = 0; i < data.Length; ++i)
         //    {
         //        d = data[i];
         //        if (d < minimum)
@@ -278,7 +273,7 @@ namespace Kokkos
         //    int index = -1;
         //    double d;
 
-        //    for (int i = 0; i < data.Length; i++)
+        //    for (int i = 0; i < data.Length; ++i)
         //    {
         //        d = Math.Abs(data[i]);
         //        if (d < minimum)
@@ -297,7 +292,7 @@ namespace Kokkos
         //    double maximum = data[0];
         //    double d;
 
-        //    for (int i = 1; i < data.Length; i++)
+        //    for (int i = 1; i < data.Length; ++i)
         //    {
         //        d = data[i];
         //        if (d > maximum)
@@ -315,7 +310,7 @@ namespace Kokkos
         //    double maximum = Math.Abs(data[0]);
         //    double d;
 
-        //    for (int i = 1; i < data.Length; i++)
+        //    for (int i = 1; i < data.Length; ++i)
         //    {
         //        d = Math.Abs(data[i]);
         //        if (d > maximum)
@@ -334,7 +329,7 @@ namespace Kokkos
         //    int index = -1;
         //    double d;
 
-        //    for (int i = 0; i < data.Length; i++)
+        //    for (int i = 0; i < data.Length; ++i)
         //    {
         //        d = data[i];
         //        if (d > maximum)
@@ -354,7 +349,7 @@ namespace Kokkos
         //    int index = -1;
         //    double d;
 
-        //    for (int i = 0; i < data.Length; i++)
+        //    for (int i = 0; i < data.Length; ++i)
         //    {
         //        d = Math.Abs(data[i]);
         //        if (d > maximum)
@@ -368,7 +363,10 @@ namespace Kokkos
     }
 }
 
-#if 0
+namespace Kokkos
+{
+    namespace Extension
+    {
         template<typename DataType>
         static int CompareTo(REF(DataType) lhs, REF(DataType) rhs)
         {
@@ -403,13 +401,12 @@ namespace Kokkos
             int32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
             while (lo <= hi)
             {
-                i += (int32)((hi + lo) >> 1);
+                i += ((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(view(i), comparable);
+                const int32 c = CompareTo<DataType>(view(i), comparable);
 
                 if (c == 0)
                 {
@@ -438,15 +435,23 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data, (dimensionToSearch == 0) ? Kokkos::ALL : 0, (dimensionToSearch == 1) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -475,18 +480,27 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data,
-                                                 (dimensionToSearch == 0) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 1) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 2) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0, 0);
+            }
+            else if (dimensionToSearch == 1)
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -515,19 +529,31 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data,
-                                                 (dimensionToSearch == 0) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 1) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 2) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 3) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 1)
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL, 0, 0);
+            }
+            else if (dimensionToSearch == 2)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -556,20 +582,35 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data,
-                                                 (dimensionToSearch == 0) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 1) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 2) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 3) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 4) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 1)
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 2)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, Kokkos::ALL, 0, 0);
+            }
+            else if (dimensionToSearch == 3)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -598,21 +639,39 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data,
-                                                 (dimensionToSearch == 0) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 1) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 2) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 3) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 4) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 5) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 1)
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 2)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, Kokkos::ALL, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 3)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, Kokkos::ALL, 0, 0);
+            }
+            else if (dimensionToSearch == 4)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -641,22 +700,43 @@ namespace Kokkos
             uint32 hi = length - 1;
 
             int32 i = 0;
-            int32 c;
 
-            auto dimensionView = Kokkos::subview(data,
-                                                 (dimensionToSearch == 0) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 1) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 2) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 3) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 4) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 5) ? Kokkos::ALL : 0,
-                                                 (dimensionToSearch == 6) ? Kokkos::ALL : 0);
+            View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace> dimensionView;
+
+            if (dimensionToSearch == 0)
+            {
+                dimensionView = Kokkos::subview(data, Kokkos::ALL, 0, 0, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 1)
+            {
+                dimensionView = Kokkos::subview(data, 0, Kokkos::ALL, 0, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 2)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, Kokkos::ALL, 0, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 3)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, Kokkos::ALL, 0, 0, 0);
+            }
+            else if (dimensionToSearch == 4)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, Kokkos::ALL, 0, 0);
+            }
+            else if (dimensionToSearch == 5)
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, 0, Kokkos::ALL, 0);
+            }
+            else
+            {
+                dimensionView = Kokkos::subview(data, 0, 0, 0, 0, 0, 0, Kokkos::ALL);
+            }
 
             while (lo <= hi)
             {
                 i += (int32)((hi + lo) >> 1);
 
-                c = CompareTo<DataType>(dimensionView(i), comparable);
+                const int32 c = CompareTo<DataType>(dimensionView(i), comparable);
 
                 if (c == 0)
                 {
@@ -675,4 +755,6 @@ namespace Kokkos
 
             return ~lo;
         }
-#endif
+
+    }
+}

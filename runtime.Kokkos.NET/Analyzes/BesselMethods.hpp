@@ -250,7 +250,7 @@ static  int cacon_(System::Complex<float>* z__, float* fnu, int32* kode, int32* 
     /* ----------------------------------------------------------------------- */
     /*     ANALYTIC CONTINUATION TO THE LEFT HALF PLANE FOR THE K FUNCTION */
     /* ----------------------------------------------------------------------- */
-    nn = min(2L, *n);
+    nn = std::min(2L, *n);
     cbknu_(&zn, fnu, kode, &nn, cy, &nw, tol, elim, alim);
     if(nw != 0)
     {
@@ -680,7 +680,7 @@ L80:
     dk  = fid + (float)3. + fid;
     d1  = ak * dk;
     d2  = bk * ck;
-    ad  = min(d1, d2);
+    ad  = std::min(d1, d2);
     ak  = fid * (float)9. + (float)24.;
     bk  = (float)30. - fid * (float)9.;
     z3r = z3.real();
@@ -704,7 +704,7 @@ L80:
         atrm = atrm * az3 / ad;
         d1 += ak;
         d2 += bk;
-        ad = min(d1, d2);
+        ad = std::min(d1, d2);
         if(atrm < tol * ad)
         {
             goto L40;
@@ -786,11 +786,11 @@ L60:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1 = -aa;
@@ -802,7 +802,7 @@ L60:
     /* ----------------------------------------------------------------------- */
     aa   = (float).5 / tol;
     bb   = (float)i1mach_(&c__9) * (float).5;
-    aa   = min(aa, bb);
+    aa   = std::min(aa, bb);
     d__1 = (double)aa;
     d__2 = (double)tth;
     aa   = pow_dd(&d__1, &d__2);
@@ -1068,7 +1068,7 @@ L260:
     x    = z__->real();
     arm  = r1mach_(&c__1) * (float)1e3;
     rtr1 = sqrt(arm);
-    il   = min(2L, *n);
+    il   = std::min(2L, *n);
     dfnu = *fnu + (float)(*n - il);
     /* ----------------------------------------------------------------------- */
     /*     OVERFLOW TEST */
@@ -1499,11 +1499,11 @@ L90:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1   = -aa;
@@ -1525,7 +1525,7 @@ L90:
     /* ----------------------------------------------------------------------- */
     aa = (float).5 / tol;
     bb = (float)i1mach_(&c__9) * (float).5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L240;
@@ -1949,11 +1949,11 @@ L240:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1 = -aa;
@@ -1966,7 +1966,7 @@ L240:
     /* ----------------------------------------------------------------------- */
     aa = (float).5 / tol;
     bb = (float)i1mach_(&c__9) * (float).5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L140;
@@ -2303,11 +2303,11 @@ L140:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1 = -aa;
@@ -2322,7 +2322,7 @@ L140:
     /* ----------------------------------------------------------------------- */
     aa = (float).5 / tol;
     bb = (float)i1mach_(&c__9) * (float).5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     fn = *fnu + (float)(*n - 1);
     if(az > aa)
     {
@@ -2654,11 +2654,11 @@ L140:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1 = -aa;
@@ -2672,7 +2672,7 @@ L140:
     /* ----------------------------------------------------------------------- */
     aa = (float).5 / tol;
     bb = (float)i1mach_(&c__9) * (float).5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L210;
@@ -3051,7 +3051,7 @@ L210:
     {
         goto L90;
     }
-    *nz    = min(nz1, nz2);
+    *nz    = std::min(nz1, nz2);
     ifnu   = (int32)(*fnu);
     ffnu   = *fnu - (float)ifnu;
     arg    = hpi * ffnu;
@@ -3115,7 +3115,7 @@ L60:
     k2   = i1mach_(&c__13);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     r1m5 = r1mach_(&c__5);
     /* ----------------------------------------------------------------------- */
     /*     ELIM IS THE APPROXIMATE EXPONENTIAL UNDER- AND OVERFLOW LIMIT */
@@ -3609,7 +3609,7 @@ L130:
     dk  = fid + (float)3. + fid;
     d1  = ak * dk;
     d2  = bk * ck;
-    ad  = min(d1, d2);
+    ad  = std::min(d1, d2);
     ak  = fid * (float)9. + (float)24.;
     bk  = (float)30. - fid * (float)9.;
     z3r = z3.real();
@@ -3633,7 +3633,7 @@ L130:
         atrm = atrm * az3 / ad;
         d1 += ak;
         d2 += bk;
-        ad = min(d1, d2);
+        ad = std::min(d1, d2);
         if(atrm < tol * ad)
         {
             goto L40;
@@ -3721,11 +3721,11 @@ L60:
     r1m5 = r1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((float)k * r1m5 - (float)3.) * (float)2.303;
     k1   = i1mach_(&c__11) - 1;
     aa   = r1m5 * (float)k1;
-    dig  = min(aa, (float)18.);
+    dig  = std::min(aa, (float)18.);
     aa *= (float)2.303;
     /* Computing MAX */
     r__1 = -aa;
@@ -3737,7 +3737,7 @@ L60:
     /* ----------------------------------------------------------------------- */
     aa   = (float).5 / tol;
     bb   = (float)i1mach_(&c__9) * (float).5;
-    aa   = min(aa, bb);
+    aa   = std::min(aa, bb);
     d__1 = (double)aa;
     d__2 = (double)tth;
     aa   = pow_dd(&d__1, &d__2);
@@ -4280,7 +4280,7 @@ L120:
     /* ----------------------------------------------------------------------- */
     t1 = (float)(i1mach_(&c__11) - 1) * r1mach_(&c__5) * (float)3.321928094;
     t1 = max(t1, (float)12.);
-    t1 = min(t1, (float)60.);
+    t1 = std::min(t1, (float)60.);
     t2 = tth * t1 - (float)6.;
     if(xx != (float)0.)
     {
@@ -5103,7 +5103,7 @@ L20:
     *nz  = 0;
     ic   = 0;
     xx   = zr->real();
-    nn   = min(2L, *n);
+    nn   = std::min(2L, *n);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -5391,7 +5391,7 @@ L20:
         ack  = c_abs(&ck);
         flam = ack + sqrt(ack * ack - (float)1.);
         fkap = ap / c_abs(&p1);
-        rho  = min(flam, fkap);
+        rho  = std::min(flam, fkap);
         tst *= sqrt(rho / (rho * rho - (float)1.));
         itime = 2;
     L30:;
@@ -5668,7 +5668,7 @@ L10:
     flam = ak + sqrt(ak * ak - (float)1.);
     /* Computing MIN */
     r__1  = ap2 / ap1;
-    rho   = min(r__1, flam);
+    rho   = std::min(r__1, flam);
     test  = test1 * sqrt(rho / (rho * rho - (float)1.));
     itime = 2;
     goto L10;
@@ -5969,7 +5969,7 @@ L40:
     q__1.real() = q__2.real() * q__3.real() - q__2.imag() * q__3.imag(), q__1.imag() = q__2.real() * q__3.imag() + q__2.imag() * q__3.real();
     coef.real() = q__1.real(), coef.imag() = q__1.imag();
     atol = *tol * acz / fnup;
-    il   = min(2L, nn);
+    il   = std::min(2L, nn);
     i__1 = il;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -6198,7 +6198,7 @@ L170:
     yi  = r_imag(y);
     yr  = abs(yr);
     yi  = abs(yi);
-    st  = min(yr, yi);
+    st  = std::min(yr, yi);
     if(st > *ascle)
     {
         return 0;
@@ -7088,7 +7088,7 @@ L20:
         goto L130;
     }
 L30:
-    nn   = min(2L, nd);
+    nn   = std::min(2L, nd);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -7459,7 +7459,7 @@ L30:
         goto L150;
     }
 L40:
-    nn   = min(2L, nd);
+    nn   = std::min(2L, nd);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -10245,7 +10245,7 @@ L10:
     wdtol = max(wdtol, 5e-19);
     i1m   = i1mach_(&c__14);
     rln   = d1mach_(&c__5) * (float)i1m;
-    fln   = min(rln, 20.);
+    fln   = std::min(rln, 20.);
     fln   = max(fln, 3.);
     fln += -3.;
     zm   = fln * .3875 + 1.8;
@@ -10502,7 +10502,7 @@ L10:
     wdtol = max(wdtol, (float)5e-19);
     i1m   = i1mach_(&c__11);
     rln   = r1mach_(&c__5) * (float)i1m;
-    fln   = min(rln, (float)20.);
+    fln   = std::min(rln, (float)20.);
     fln   = max(fln, (float)3.);
     fln += (float)-3.;
     zm   = fln * (float).3875 + (float)1.8;
@@ -11225,7 +11225,7 @@ L80:
     /* ----------------------------------------------------------------------- */
     /*     ANALYTIC CONTINUATION TO THE LEFT HALF PLANE FOR THE K FUNCTION */
     /* ----------------------------------------------------------------------- */
-    nn = min(2L, *n);
+    nn = std::min(2L, *n);
     zbknu_(&znr, &zni, fnu, kode, &nn, cyr, cyi, &nw, tol, elim, alim);
     if(nw != 0)
     {
@@ -11661,7 +11661,7 @@ L90:
     dk    = fid + 3. + fid;
     d1    = ak * dk;
     d2    = bk * ck;
-    ad    = min(d1, d2);
+    ad    = std::min(d1, d2);
     ak    = fid * 9. + 24.;
     bk    = 30. - fid * 9.;
     for(k = 1; k <= 25; ++k)
@@ -11679,7 +11679,7 @@ L90:
         atrm = atrm * az3 / ad;
         d1 += ak;
         d2 += bk;
-        ad = min(d1, d2);
+        ad = std::min(d1, d2);
         if(atrm < tol * ad)
         {
             goto L40;
@@ -11752,11 +11752,11 @@ L70:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -11768,7 +11768,7 @@ L70:
     /* ----------------------------------------------------------------------- */
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     aa = pow_dd(&aa, &tth);
     if(az > aa)
     {
@@ -12027,7 +12027,7 @@ L260:
     az   = zabs_(zr, zi);
     arm  = d1mach_(&c__1) * 1e3;
     rtr1 = sqrt(arm);
-    il   = min(2L, *n);
+    il   = std::min(2L, *n);
     dfnu = *fnu + (double)((float)(*n - il));
     /* ----------------------------------------------------------------------- */
     /*     OVERFLOW TEST */
@@ -12467,11 +12467,11 @@ L110:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -12489,7 +12489,7 @@ L110:
     az = zabs_(zr, zi);
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L260;
@@ -12915,11 +12915,11 @@ L260:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -12933,7 +12933,7 @@ L260:
     fn = *fnu + (double)((float)(*n - 1));
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L260;
@@ -13268,11 +13268,11 @@ L260:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -13286,7 +13286,7 @@ L260:
     fn = *fnu + (double)((float)(*n - 1));
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L260;
@@ -13621,11 +13621,11 @@ L260:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -13639,7 +13639,7 @@ L260:
     fn = *fnu + (double)((float)(nn - 1));
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     if(az > aa)
     {
         goto L260;
@@ -14025,7 +14025,7 @@ L260:
     {
         goto L90;
     }
-    *nz   = min(nz1, nz2);
+    *nz   = std::min(nz1, nz2);
     ifnu  = (int32)((float)(*fnu));
     ffnu  = *fnu - (double)((float)ifnu);
     arg   = hpi * ffnu;
@@ -14083,7 +14083,7 @@ L60:
     k2   = i1mach_(&c__16);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     d1m5 = d1mach_(&c__5);
     /* ----------------------------------------------------------------------- */
     /*     ELIM IS THE APPROXIMATE EXPONENTIAL UNDER- AND OVERFLOW LIMIT */
@@ -14583,7 +14583,7 @@ L130:
     dk    = fid + 3. + fid;
     d1    = ak * dk;
     d2    = bk * ck;
-    ad    = min(d1, d2);
+    ad    = std::min(d1, d2);
     ak    = fid * 9. + 24.;
     bk    = 30. - fid * 9.;
     for(k = 1; k <= 25; ++k)
@@ -14601,7 +14601,7 @@ L130:
         atrm = atrm * az3 / ad;
         d1 += ak;
         d2 += bk;
-        ad = min(d1, d2);
+        ad = std::min(d1, d2);
         if(atrm < tol * ad)
         {
             goto L40;
@@ -14677,11 +14677,11 @@ L70:
     r1m5 = d1mach_(&c__5);
     /* Computing MIN */
     i__1 = abs(k1), i__2 = abs(k2);
-    k    = min(i__1, i__2);
+    k    = std::min(i__1, i__2);
     elim = ((double)((float)k) * r1m5 - 3.) * 2.303;
     k1   = i1mach_(&c__14) - 1;
     aa   = r1m5 * (double)((float)k1);
-    dig  = min(aa, 18.);
+    dig  = std::min(aa, 18.);
     aa *= 2.303;
     /* Computing MAX */
     d__1 = -aa;
@@ -14693,7 +14693,7 @@ L70:
     /* ----------------------------------------------------------------------- */
     aa = .5 / tol;
     bb = (double)((float)i1mach_(&c__9)) * .5;
-    aa = min(aa, bb);
+    aa = std::min(aa, bb);
     aa = pow_dd(&aa, &tth);
     if(az > aa)
     {
@@ -15179,7 +15179,7 @@ L120:
     t1 = (double)((float)(i1mach_(&c__14) - 1));
     t1 = t1 * d1mach_(&c__5) * 3.321928094;
     t1 = max(t1, 12.);
-    t1 = min(t1, 60.);
+    t1 = std::min(t1, 60.);
     t2 = tth * t1 - 6.;
     if(*zr != 0.)
     {
@@ -16023,7 +16023,7 @@ L20:
 
     *nz  = 0;
     ic   = 0;
-    nn   = min(2L, *n);
+    nn   = std::min(2L, *n);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -16385,7 +16385,7 @@ L20:
         ack  = zabs_(&ckr, &cki);
         flam = ack + sqrt(ack * ack - 1.);
         fkap = ap / zabs_(&p1r, &p1i);
-        rho  = min(flam, fkap);
+        rho  = std::min(flam, fkap);
         tst *= sqrt(rho / (rho * rho - 1.));
         itime = 2;
     L30:;
@@ -16664,7 +16664,7 @@ L10:
     flam = ak + sqrt(ak * ak - 1.);
     /* Computing MIN */
     d__1  = ap2 / ap1;
-    rho   = min(d__1, flam);
+    rho   = std::min(d__1, flam);
     test  = test1 * sqrt(rho / (rho * rho - 1.));
     itime = 2;
     goto L10;
@@ -16956,7 +16956,7 @@ L50:
     coefr = aa * cos(ak1i);
     coefi = aa * sin(ak1i);
     atol  = *tol * acz / fnup;
-    il    = min(2L, nn);
+    il    = std::min(2L, nn);
     i__1  = il;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -17259,7 +17259,7 @@ L70:
     *nz = 0;
     wr  = abs(*yr);
     wi  = abs(*yi);
-    st  = min(wr, wi);
+    st  = std::min(wr, wi);
     if(st > *ascle)
     {
         return 0;
@@ -18083,7 +18083,7 @@ L20:
         goto L130;
     }
 L30:
-    nn   = min(2L, nd);
+    nn   = std::min(2L, nd);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {
@@ -18431,7 +18431,7 @@ L30:
         goto L150;
     }
 L40:
-    nn   = min(2L, nd);
+    nn   = std::min(2L, nd);
     i__1 = nn;
     for(i__ = 1; i__ <= i__1; ++i__)
     {

@@ -130,7 +130,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //            iy = (-n + 1) * incy;
 //        }
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            dy[iy] = dy[iy] + da * dx[ix];
 //            ix = ix + incx;
@@ -144,7 +144,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //    {
 //        m = n % 4;
 //
-//        for (i = 0; i < m; i++)
+//        for (i = 0; i < m; ++i)
 //        {
 //            dy[i] = dy[i] + da * dx[i];
 //        }
@@ -251,7 +251,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //            iy = (-n + 1) * incy;
 //        }
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            dtemp = dtemp + dx[ix] * dy[iy];
 //            ix = ix + incx;
@@ -265,7 +265,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //    {
 //        m = n % 5;
 //
-//        for (i = 0; i < m; i++)
+//        for (i = 0; i < m; ++i)
 //        {
 //            dtemp = dtemp + dx[i] * dy[i];
 //        }
@@ -352,7 +352,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //        ssq = 1.0;
 //        ix = 0;
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            if (x[ix] != 0.0)
 //            {
@@ -436,7 +436,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //    }
 //    else if (incx == 1 && incy == 1)
 //    {
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            stemp = c * x[i] + s * y[i];
 //            y[i] = c * y[i] - s * x[i];
@@ -463,7 +463,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //            iy = (-n + 1) * incy;
 //        }
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            stemp = c * x[ix] + s * y[iy];
 //            y[iy] = c * y[iy] - s * x[ix];
@@ -653,7 +653,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //    {
 //        m = n % 5;
 //
-//        for (i = 0; i < m; i++)
+//        for (i = 0; i < m; ++i)
 //        {
 //            x[i] = sa * x[i];
 //        }
@@ -678,7 +678,7 @@ double *rbf_weight ( int m, int nd, double xd[], double r0, void (*phi) ( int n,
 //            ix = (-n + 1) * incx;
 //        }
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            x[ix] = sa * x[ix];
 //            ix = ix + incx;
@@ -883,7 +883,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
             s[l - 1] = -s[l - 1];
         }
 
-        for (j = l + 1; j <= n; j++)
+        for (j = l + 1; j <= n; ++j)
         {
             //
             //  Apply the transformation.
@@ -904,7 +904,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
         //
         if (wantu && l <= nct)
         {
-            for (i = l; i <= m; i++)
+            for (i = l; i <= m; ++i)
             {
                 u[i - 1 + (l - 1) * ldu] = a[i - 1 + (l - 1) * lda];
             }
@@ -934,17 +934,17 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
             //
             if (l + 1 <= m && e[l - 1] != 0.0)
             {
-                for (j = l + 1; j <= m; j++)
+                for (j = l + 1; j <= m; ++j)
                 {
                     work[j - 1] = 0.0;
                 }
 
-                for (j = l + 1; j <= n; j++)
+                for (j = l + 1; j <= n; ++j)
                 {
                     BLASFunc(daxpy)(m - l, e[j - 1], a + l + (j - 1) * lda, 1, work + l, 1);
                 }
 
-                for (j = l + 1; j <= n; j++)
+                for (j = l + 1; j <= n; ++j)
                 {
                     BLASFunc(daxpy)(m - l, -e[j - 1] / e[l], work + l, 1, a + l + (j - 1) * lda, 1);
                 }
@@ -954,7 +954,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
             //
             if (wantv)
             {
-                for (j = l + 1; j <= n; j++)
+                for (j = l + 1; j <= n; ++j)
                 {
                     v[j - 1 + (l - 1) * ldv] = e[j - 1];
                 }
@@ -989,15 +989,15 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
     //
     if (wantu)
     {
-        for (i = 1; i <= m; i++)
+        for (i = 1; i <= m; ++i)
         {
-            for (j = nctp1; j <= ncu; j++)
+            for (j = nctp1; j <= ncu; ++j)
             {
                 u[(i - 1) + (j - 1) * ldu] = 0.0;
             }
         }
 
-        for (j = nctp1; j <= ncu; j++)
+        for (j = nctp1; j <= ncu; ++j)
         {
             u[j - 1 + (j - 1) * ldu] = 1.0;
         }
@@ -1008,7 +1008,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
 
             if (s[l - 1] != 0.0)
             {
-                for (j = l + 1; j <= ncu; j++)
+                for (j = l + 1; j <= ncu; ++j)
                 {
                     t = -BLASFunc(ddot)(m - l + 1, u + (l - 1) + (l - 1) * ldu, 1, u + (l - 1) + (j - 1) * ldu, 1) / u[l - 1 + (l - 1) * ldu];
                     BLASFunc(daxpy)(m - l + 1, t, u + (l - 1) + (l - 1) * ldu, 1, u + (l - 1) + (j - 1) * ldu, 1);
@@ -1016,14 +1016,14 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
 
                 BLASFunc(dscal)(m - l + 1, -1.0, u + (l - 1) + (l - 1) * ldu, 1);
                 u[l - 1 + (l - 1) * ldu] = 1.0 + u[l - 1 + (l - 1) * ldu];
-                for (i = 1; i <= l - 1; i++)
+                for (i = 1; i <= l - 1; ++i)
                 {
                     u[i - 1 + (l - 1) * ldu] = 0.0;
                 }
             }
             else
             {
-                for (i = 1; i <= m; i++)
+                for (i = 1; i <= m; ++i)
                 {
                     u[i - 1 + (l - 1) * ldu] = 0.0;
                 }
@@ -1042,13 +1042,13 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
 
             if (l <= nrt && e[l - 1] != 0.0)
             {
-                for (j = l + 1; j <= n; j++)
+                for (j = l + 1; j <= n; ++j)
                 {
                     t = -BLASFunc(ddot)(n - l, v + l + (l - 1) * ldv, 1, v + l + (j - 1) * ldv, 1) / v[l + (l - 1) * ldv];
                     BLASFunc(daxpy)(n - l, t, v + l + (l - 1) * ldv, 1, v + l + (j - 1) * ldv, 1);
                 }
             }
-            for (i = 1; i <= n; i++)
+            for (i = 1; i <= n; ++i)
             {
                 v[i - 1 + (l - 1) * ldv] = 0.0;
             }
@@ -1393,7 +1393,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
 //    {
 //        m = n % 3;
 //
-//        for (i = 0; i < m; i++)
+//        for (i = 0; i < m; ++i)
 //        {
 //            temp = x[i];
 //            x[i] = y[i];
@@ -1435,7 +1435,7 @@ int dsvdc(double a[], int lda, int m, int n, double s[], double e[], double u[],
 //            iy = (-n + 1) * incy;
 //        }
 //
-//        for (i = 0; i < n; i++)
+//        for (i = 0; i < n; ++i)
 //        {
 //            temp = x[ix];
 //            x[ix] = y[iy];
@@ -1489,7 +1489,7 @@ void phi1(int n, double r[], double r0, double v[])
 {
     int i;
 
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; ++i)
     {
         v[i] = sqrt(r[i] * r[i] + r0 * r0);
     }
@@ -1537,7 +1537,7 @@ void phi2(int n, double r[], double r0, double v[])
 {
     int i;
 
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; ++i)
     {
         v[i] = 1.0 / sqrt(r[i] * r[i] + r0 * r0);
     }
@@ -1591,7 +1591,7 @@ void phi3(int n, double r[], double r0, double v[])
 {
     int i;
 
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; ++i)
     {
         if (r[i] <= 0.0)
         {
@@ -1646,7 +1646,7 @@ void phi4(int n, double r[], double r0, double v[])
 {
     int i;
 
-    for (i = 0; i < n; i++)
+    for (i = 0; i < n; ++i)
     {
         v[i] = exp(-0.5 * r[i] * r[i] / r0 / r0);
     }
@@ -1741,24 +1741,24 @@ double *r8mat_solve_svd(int m, int n, double a[], double b[])
 
     if (info != 0)
     {
-        cerr << "\n";
+        cerr << std::endl;
         cerr << "R8MAT_SOLVE_SVD - Fatal error!\n";
         cerr << "  The SVD could not be calculated.\n";
         cerr << "  LINPACK routine DSVDC returned a nonzero\n";
-        cerr << "  value of the error flag, INFO = " << info << "\n";
+        cerr << "  value of the error flag, INFO = " << info << std::endl;
         exit(1);
     }
 
     s = new double[m * n];
 
-    for (j = 0; j < n; j++)
+    for (j = 0; j < n; ++j)
     {
-        for (i = 0; i < m; i++)
+        for (i = 0; i < m; ++i)
         {
             s[i + j * m] = 0.0;
         }
     }
-    for (i = 0; i < i4_min(m, n); i++)
+    for (i = 0; i < i4_min(m, n); ++i)
     {
         s[i + i * m] = sdiag[i];
     }
@@ -1767,14 +1767,14 @@ double *r8mat_solve_svd(int m, int n, double a[], double b[])
     //
     sp = new double[n * m];
 
-    for (j = 0; j < m; j++)
+    for (j = 0; j < m; ++j)
     {
-        for (i = 0; i < n; i++)
+        for (i = 0; i < n; ++i)
         {
             sp[i + j * m] = 0.0;
         }
     }
-    for (i = 0; i < i4_min(m, n); i++)
+    for (i = 0; i < i4_min(m, n); ++i)
     {
         if (s[i + i * m] != 0.0)
         {
@@ -1784,9 +1784,9 @@ double *r8mat_solve_svd(int m, int n, double a[], double b[])
 
     a_pseudo = new double[n * m];
 
-    for (j = 0; j < m; j++)
+    for (j = 0; j < m; ++j)
     {
-        for (i = 0; i < n; i++)
+        for (i = 0; i < n; ++i)
         {
             a_pseudo[i + j * n] = 0.0;
             for (k = 0; k < n; k++)
@@ -1880,9 +1880,9 @@ double *rbf_interp(int m, int nd, double xd[], double r0,
     r = new double[nd];
     v = new double[nd];
 
-    for (i = 0; i < ni; i++)
+    for (i = 0; i < ni; ++i)
     {
-        for (j = 0; j < nd; j++)
+        for (j = 0; j < nd; ++j)
         {
             r[j] = 0.0;
             for (k = 0; k < m; k++)
@@ -1974,9 +1974,9 @@ double *rbf_weight(int m, int nd, double xd[], double r0,
     r = new double[nd];
     v = new double[nd];
 
-    for (i = 0; i < nd; i++)
+    for (i = 0; i < nd; ++i)
     {
-        for (j = 0; j < nd; j++)
+        for (j = 0; j < nd; ++j)
         {
             r[j] = 0.0;
             for (k = 0; k < m; k++)
@@ -1987,7 +1987,7 @@ double *rbf_weight(int m, int nd, double xd[], double r0,
         }
         phi(nd, r, r0, v);
 
-        for (j = 0; j < nd; j++)
+        for (j = 0; j < nd; ++j)
         {
             a[i + j * nd] = v[j];
         }

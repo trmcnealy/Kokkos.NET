@@ -175,7 +175,7 @@ KDNodePtr NewKDNodePtr()
 inline double dist2(const point_t& a, const point_t& b)
 {
     double distc = 0;
-    for (size_t i = 0; i < a.size(); i++)
+    for (size_t i = 0; i < a.size(); ++i)
     {
         double di = a.at(i) - b.at(i);
         distc += di * di;
@@ -278,7 +278,7 @@ KDTree::KDTree(pointVec point_array)
     leaf = std::make_shared<KDNode>();
     // iterators
     pointIndexArr arr;
-    for (size_t i = 0; i < point_array.size(); i++)
+    for (size_t i = 0; i < point_array.size(); ++i)
     {
         arr.push_back(pointIndex(point_array.at(i), i));
     }

@@ -49,7 +49,7 @@ namespace Kokkos::LinearAlgebra
                     {
                         s = DataType(0.0);
 
-                        for (int i = 0; i < k; i++)
+                        for (int i = 0; i < k; ++i)
                         {
                             s += _L(k, i) * _L(j, i);
                         }
@@ -131,7 +131,7 @@ namespace Kokkos::LinearAlgebra
                     {
                         s = DataType(0.0);
 
-                        for (int i = 0; i < k; i++)
+                        for (int i = 0; i < k; ++i)
                         {
                             s += _L(k, i) * _L(j, i);
                         }
@@ -279,7 +279,7 @@ namespace Kokkos
             //        //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
             //        //  Fortran subroutine in EISPACK.
 
-            //        for(int j = 0; j < n; j++)
+            //        for(int j = 0; j < n; ++j)
             //        {
             //            d(j) = V(n - 1, j);
             //        }
@@ -299,7 +299,7 @@ namespace Kokkos
             //            if(scale == DataType(0.0))
             //            {
             //                e(i) = d(i - 1);
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    d(j)    = V(i - 1, j);
             //                    V(i, j) = DataType(0.0);
@@ -324,14 +324,14 @@ namespace Kokkos
             //                e(i)     = scale * g;
             //                h        = h - f * g;
             //                d(i - 1) = f - g;
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    e(j) = DataType(0.0);
             //                }
 
             //                // Apply similarity transformation to remaining columns.
 
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    f       = d(j);
             //                    V(j, i) = f;
@@ -344,17 +344,17 @@ namespace Kokkos
             //                    e(j) = g;
             //                }
             //                f = DataType(0.0);
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    e(j) /= h;
             //                    f += e(j) * d(j);
             //                }
             //                DataType hh = f / (h + h);
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    e(j) -= hh * d(j);
             //                }
-            //                for(int j = 0; j < i; j++)
+            //                for(int j = 0; j < i; ++j)
             //                {
             //                    f = d(j);
             //                    g = e(j);
@@ -371,7 +371,7 @@ namespace Kokkos
 
             //        // Accumulate transformations.
 
-            //        for(int i = 0; i < n - 1; i++)
+            //        for(int i = 0; i < n - 1; ++i)
             //        {
             //            V(n - 1, i) = V(i, i);
             //            V(i, i)     = DataType(1.0);
@@ -382,7 +382,7 @@ namespace Kokkos
             //                {
             //                    d(k) = V(k, i + 1) / h;
             //                }
-            //                for(int j = 0; j <= i; j++)
+            //                for(int j = 0; j <= i; ++j)
             //                {
             //                    DataType g = DataType(0.0);
             //                    for(int k = 0; k <= i; k++)
@@ -400,7 +400,7 @@ namespace Kokkos
             //                V(k, i + 1) = DataType(0.0);
             //            }
             //        }
-            //        for(int j = 0; j < n; j++)
+            //        for(int j = 0; j < n; ++j)
             //        {
             //            d(j)        = V(n - 1, j);
             //            V(n - 1, j) = DataType(0.0);
@@ -418,7 +418,7 @@ namespace Kokkos
             //        //  Auto. Comp., Vol.ii-Linear Algebra, and the corresponding
             //        //  Fortran subroutine in EISPACK.
 
-            //        for(int i = 1; i < n; i++)
+            //        for(int i = 1; i < n; ++i)
             //        {
             //            e(i - 1) = e(i);
             //        }
@@ -467,7 +467,7 @@ namespace Kokkos
             //                    d(l + 1)     = e(l) * (p + r);
             //                    DataType dl1 = d(l + 1);
             //                    DataType h   = g - d(l);
-            //                    for(int i = l + 2; i < n; i++)
+            //                    for(int i = l + 2; i < n; ++i)
             //                    {
             //                        d(i) -= h;
             //                    }
@@ -519,11 +519,11 @@ namespace Kokkos
 
             //        // Sort eigenvalues and corresponding vectors.
 
-            //        for(int i = 0; i < n - 1; i++)
+            //        for(int i = 0; i < n - 1; ++i)
             //        {
             //            int      k = i;
             //            DataType p = d(i);
-            //            for(int j = i + 1; j < n; j++)
+            //            for(int j = i + 1; j < n; ++j)
             //            {
             //                if(d(j) < p)
             //                {
@@ -535,7 +535,7 @@ namespace Kokkos
             //            {
             //                d(k) = d(i);
             //                d(i) = p;
-            //                for(int j = 0; j < n; j++)
+            //                for(int j = 0; j < n; ++j)
             //                {
             //                    p       = V(j, i);
             //                    V(j, i) = V(j, k);
@@ -562,7 +562,7 @@ namespace Kokkos
             //            // Scale column.
 
             //            DataType scale = DataType(0.0);
-            //            for(int i = m; i <= high; i++)
+            //            for(int i = m; i <= high; ++i)
             //            {
             //                scale = scale + abs(H(i, m - 1));
             //            }
@@ -587,7 +587,7 @@ namespace Kokkos
             //                // Apply Householder similarity transformation
             //                // H = (I-u*u'/h)*H*(I-u*u')/h)
 
-            //                for(int j = m; j < n; j++)
+            //                for(int j = m; j < n; ++j)
             //                {
             //                    DataType f = DataType(0.0);
             //                    for(int i = high; i >= m; i--)
@@ -595,13 +595,13 @@ namespace Kokkos
             //                        f += ort(i) * H(i, j);
             //                    }
             //                    f = f / h;
-            //                    for(int i = m; i <= high; i++)
+            //                    for(int i = m; i <= high; ++i)
             //                    {
             //                        H(i, j) -= f * ort(i);
             //                    }
             //                }
 
-            //                for(int i = 0; i <= high; i++)
+            //                for(int i = 0; i <= high; ++i)
             //                {
             //                    DataType f = DataType(0.0);
             //                    for(int j = high; j >= m; j--)
@@ -609,7 +609,7 @@ namespace Kokkos
             //                        f += ort(j) * H(i, j);
             //                    }
             //                    f = f / h;
-            //                    for(int j = m; j <= high; j++)
+            //                    for(int j = m; j <= high; ++j)
             //                    {
             //                        H(i, j) -= f * ort(j);
             //                    }
@@ -621,9 +621,9 @@ namespace Kokkos
 
             //        // Accumulate transformations (Algol's ortran).
 
-            //        for(int i = 0; i < n; i++)
+            //        for(int i = 0; i < n; ++i)
             //        {
-            //            for(int j = 0; j < n; j++)
+            //            for(int j = 0; j < n; ++j)
             //            {
             //                V(i, j) = (i == j ? DataType(1.0) : DataType(0.0));
             //            }
@@ -633,20 +633,20 @@ namespace Kokkos
             //        {
             //            if(H(m, m - 1) != DataType(0.0))
             //            {
-            //                for(int i = m + 1; i <= high; i++)
+            //                for(int i = m + 1; i <= high; ++i)
             //                {
             //                    ort(i) = H(i, m - 1);
             //                }
-            //                for(int j = m; j <= high; j++)
+            //                for(int j = m; j <= high; ++j)
             //                {
             //                    DataType g = DataType(0.0);
-            //                    for(int i = m; i <= high; i++)
+            //                    for(int i = m; i <= high; ++i)
             //                    {
             //                        g += ort(i) * V(i, j);
             //                    }
             //                    // Double division avoids possible underflow
             //                    g = (g / ort(m)) / H(m, m - 1);
-            //                    for(int i = m; i <= high; i++)
+            //                    for(int i = m; i <= high; ++i)
             //                    {
             //                        V(i, j) += g * ort(i);
             //                    }
@@ -699,14 +699,14 @@ namespace Kokkos
             //        // Store roots isolated by balanc and compute matrix norm
 
             //        DataType norm = DataType(0.0);
-            //        for(int i = 0; i < nn; i++)
+            //        for(int i = 0; i < nn; ++i)
             //        {
             //            if((i < low) || (i > high))
             //            {
             //                d(i) = H(i, i);
             //                e(i) = DataType(0.0);
             //            }
-            //            for(int j = max(i - 1, 0); j < nn; j++)
+            //            for(int j = max(i - 1, 0); j < nn; ++j)
             //            {
             //                norm = norm + abs(H(i, j));
             //            }
@@ -787,7 +787,7 @@ namespace Kokkos
 
             //                    // Row modification
 
-            //                    for(int j = n - 1; j < nn; j++)
+            //                    for(int j = n - 1; j < nn; ++j)
             //                    {
             //                        z           = H(n - 1, j);
             //                        H(n - 1, j) = q * z + p * H(n, j);
@@ -796,7 +796,7 @@ namespace Kokkos
 
             //                    // Column modification
 
-            //                    for(int i = 0; i <= n; i++)
+            //                    for(int i = 0; i <= n; ++i)
             //                    {
             //                        z           = H(i, n - 1);
             //                        H(i, n - 1) = q * z + p * H(i, n);
@@ -805,7 +805,7 @@ namespace Kokkos
 
             //                    // Accumulate transformations
 
-            //                    for(int i = low; i <= high; i++)
+            //                    for(int i = low; i <= high; ++i)
             //                    {
             //                        z           = V(i, n - 1);
             //                        V(i, n - 1) = q * z + p * V(i, n);
@@ -844,7 +844,7 @@ namespace Kokkos
             //                if(iter == 10)
             //                {
             //                    exshift += x;
-            //                    for(int i = low; i <= n; i++)
+            //                    for(int i = low; i <= n; ++i)
             //                    {
             //                        H(i, i) -= x;
             //                    }
@@ -867,7 +867,7 @@ namespace Kokkos
             //                            s = -s;
             //                        }
             //                        s = x - w / ((y - x) / 2.0 + s);
-            //                        for(int i = low; i <= n; i++)
+            //                        for(int i = low; i <= n; ++i)
             //                        {
             //                            H(i, i) -= s;
             //                        }
@@ -904,7 +904,7 @@ namespace Kokkos
             //                    m--;
             //                }
 
-            //                for(int i = m + 2; i <= n; i++)
+            //                for(int i = m + 2; i <= n; ++i)
             //                {
             //                    H(i, i - 2) = DataType(0.0);
             //                    if(i > m + 2)
@@ -959,7 +959,7 @@ namespace Kokkos
 
             //                        // Row modification
 
-            //                        for(int j = k; j < nn; j++)
+            //                        for(int j = k; j < nn; ++j)
             //                        {
             //                            p = H(k, j) + q * H(k + 1, j);
             //                            if(notlast)
@@ -973,7 +973,7 @@ namespace Kokkos
 
             //                        // Column modification
 
-            //                        for(int i = 0; i <= min(n, k + 3); i++)
+            //                        for(int i = 0; i <= min(n, k + 3); ++i)
             //                        {
             //                            p = x * H(i, k) + y * H(i, k + 1);
             //                            if(notlast)
@@ -987,7 +987,7 @@ namespace Kokkos
 
             //                        // Accumulate transformations
 
-            //                        for(int i = low; i <= high; i++)
+            //                        for(int i = low; i <= high; ++i)
             //                        {
             //                            p = x * V(i, k) + y * V(i, k + 1);
             //                            if(notlast)
@@ -1025,7 +1025,7 @@ namespace Kokkos
             //                {
             //                    w = H(i, i) - p;
             //                    r = DataType(0.0);
-            //                    for(int j = l; j <= n; j++)
+            //                    for(int j = l; j <= n; ++j)
             //                    {
             //                        r = r + H(i, j) * H(j, n);
             //                    }
@@ -1072,7 +1072,7 @@ namespace Kokkos
             //                        t = abs(H(i, n));
             //                        if((eps * t) * t > 1)
             //                        {
-            //                            for(int j = i; j <= n; j++)
+            //                            for(int j = i; j <= n; ++j)
             //                            {
             //                                H(j, n) = H(j, n) / t;
             //                            }
@@ -1106,7 +1106,7 @@ namespace Kokkos
             //                    DataType ra, sa, vr, vi;
             //                    ra = DataType(0.0);
             //                    sa = DataType(0.0);
-            //                    for(int j = l; j <= n; j++)
+            //                    for(int j = l; j <= n; ++j)
             //                    {
             //                        ra = ra + H(i, j) * H(j, n - 1);
             //                        sa = sa + H(i, j) * H(j, n);
@@ -1161,7 +1161,7 @@ namespace Kokkos
             //                        t = max(abs(H(i, n - 1)), abs(H(i, n)));
             //                        if((eps * t) * t > 1)
             //                        {
-            //                            for(int j = i; j <= n; j++)
+            //                            for(int j = i; j <= n; ++j)
             //                            {
             //                                H(j, n - 1) = H(j, n - 1) / t;
             //                                H(j, n)     = H(j, n) / t;
@@ -1172,11 +1172,11 @@ namespace Kokkos
             //            }
             //        }
 
-            //        for(int i = 0; i < nn; i++)
+            //        for(int i = 0; i < nn; ++i)
             //        {
             //            if(i < low || i > high)
             //            {
-            //                for(int j = i; j < nn; j++)
+            //                for(int j = i; j < nn; ++j)
             //                {
             //                    V(i, j) = H(i, j);
             //                }
@@ -1185,7 +1185,7 @@ namespace Kokkos
 
             //        for(int j = nn - 1; j >= low; j--)
             //        {
-            //            for(int i = low; i <= high; i++)
+            //            for(int i = low; i <= high; ++i)
             //            {
             //                z = DataType(0.0);
             //                for(int k = low; k <= min(j, high); k++)
@@ -1206,9 +1206,9 @@ namespace Kokkos
             //        e = Vector(n);
 
             //        issymmetric = 1;
-            //        for(int j = 0; (j < n) && issymmetric; j++)
+            //        for(int j = 0; (j < n) && issymmetric; ++j)
             //        {
-            //            for(int i = 0; (i < n) && issymmetric; i++)
+            //            for(int i = 0; (i < n) && issymmetric; ++i)
             //            {
             //                issymmetric = (A(i, j) == A(j, i));
             //            }
@@ -1216,9 +1216,9 @@ namespace Kokkos
 
             //        if(issymmetric)
             //        {
-            //            for(int i = 0; i < n; i++)
+            //            for(int i = 0; i < n; ++i)
             //            {
-            //                for(int j = 0; j < n; j++)
+            //                for(int j = 0; j < n; ++j)
             //                {
             //                    V(i, j) = A(i, j);
             //                }
@@ -1235,9 +1235,9 @@ namespace Kokkos
             //            H   = Matrix(n, n);
             //            ort = Vector(n);
 
-            //            for(int j = 0; j < n; j++)
+            //            for(int j = 0; j < n; ++j)
             //            {
-            //                for(int i = 0; i < n; i++)
+            //                for(int i = 0; i < n; ++i)
             //                {
             //                    H(i, j) = A(i, j);
             //                }
@@ -1254,9 +1254,9 @@ namespace Kokkos
             //    void getD(Matrix& D)
             //    {
             //        D = Matrix(n, n);
-            //        for(int i = 0; i < n; i++)
+            //        for(int i = 0; i < n; ++i)
             //        {
-            //            for(int j = 0; j < n; j++)
+            //            for(int j = 0; j < n; ++j)
             //            {
             //                D(i, j) = DataType(0.0);
             //            }
@@ -1309,7 +1309,7 @@ namespace Kokkos
 
                     // Use a "left-looking", dot-product, Crout/Doolittle algorithm.
 
-                    for (size_type i = 0; i < _m; i++)
+                    for (size_type i = 0; i < _m; ++i)
                     {
                         _piv(i) = i;
                     }
@@ -1322,24 +1322,24 @@ namespace Kokkos
 
                     // Outer loop.
 
-                    for (size_type j = 0; j < _n; j++)
+                    for (size_type j = 0; j < _n; ++j)
                     {
                         // Make a copy of the j-th column to localize references.
 
-                        for (size_type i = 0; i < _m; i++)
+                        for (size_type i = 0; i < _m; ++i)
                         {
                             LUcolj(i) = _LU(i, j);
                         }
 
                         // Apply previous transformations.
 
-                        for (size_type i = 0; i < _m; i++)
+                        for (size_type i = 0; i < _m; ++i)
                         {
                             LUrowi = row(_LU, i);
 
                             // Most of the time is spent in the following dot product.
 
-                            const size_type kmax = min(i, j);
+                            const size_type kmax = std::min(i, j);
 
                             DataType s = DataType(0.0);
 
@@ -1355,7 +1355,7 @@ namespace Kokkos
 
                         size_type p = j;
 
-                        for (size_type i = j + 1; i < _m; i++)
+                        for (size_type i = j + 1; i < _m; ++i)
                         {
                             if (abs(LUcolj(i)) > abs(LUcolj(p)))
                             {
@@ -1384,7 +1384,7 @@ namespace Kokkos
 
                         if ((j < _m) && (_LU(j, j) != DataType(0.0)))
                         {
-                            for (size_type i = j + 1; i < _m; i++)
+                            for (size_type i = j + 1; i < _m; ++i)
                             {
                                 _LU(i, j) /= _LU(j, j);
                             }
@@ -1399,9 +1399,9 @@ namespace Kokkos
 
                     Matrix X("X", piv_length, j1 - j0 + 1);
 
-                    for (size_type i = 0; i < piv_length; i++)
+                    for (size_type i = 0; i < piv_length; ++i)
                     {
-                        for (size_type j = j0; j <= j1; j++)
+                        for (size_type j = j0; j <= j1; ++j)
                         {
                             X(i, j - j0) = A(piv(i), j);
                         }
@@ -1421,7 +1421,7 @@ namespace Kokkos
 
                     Vector x(piv_length);
 
-                    for (size_type i = 0; i < piv_length; i++)
+                    for (size_type i = 0; i < piv_length; ++i)
                     {
                         x(i) = A(piv(i));
                     }
@@ -1432,7 +1432,7 @@ namespace Kokkos
             public:
                 bool isNonsingular()
                 {
-                    for (size_type j = 0; j < _n; j++)
+                    for (size_type j = 0; j < _n; ++j)
                     {
                         if (_LU(j, j) == 0)
                         {
@@ -1446,9 +1446,9 @@ namespace Kokkos
                 {
                     Matrix L_("L", _m, _n);
 
-                    for (size_type i = 0; i < _m; i++)
+                    for (size_type i = 0; i < _m; ++i)
                     {
-                        for (size_type j = 0; j < _n; j++)
+                        for (size_type j = 0; j < _n; ++j)
                         {
                             if (i > j)
                             {
@@ -1471,9 +1471,9 @@ namespace Kokkos
                 {
                     Matrix U_("U", _n, _n);
 
-                    for (size_type i = 0; i < _n; i++)
+                    for (size_type i = 0; i < _n; ++i)
                     {
-                        for (size_type j = 0; j < _n; j++)
+                        for (size_type j = 0; j < _n; ++j)
                         {
                             if (i <= j)
                             {
@@ -1502,7 +1502,7 @@ namespace Kokkos
 
                     DataType d = DataType(_pivsign);
 
-                    for (size_type j = 0; j < _n; j++)
+                    for (size_type j = 0; j < _n; ++j)
                     {
                         d *= _LU(j, j);
                     }
@@ -1535,9 +1535,9 @@ namespace Kokkos
                     // Solve L*Y = B(piv,:)
                     for (size_type k = 0; k < _n; k++)
                     {
-                        for (size_type i = k + 1; i < _n; i++)
+                        for (size_type i = k + 1; i < _n; ++i)
                         {
-                            for (size_type j = 0; j < nx; j++)
+                            for (size_type j = 0; j < nx; ++j)
                             {
                                 X(i, j) -= X(k, j) * _LU(i, k);
                             }
@@ -1547,14 +1547,14 @@ namespace Kokkos
                     // Solve U*X = Y;
                     for (size_type k = _n - 1; k >= 0; k--)
                     {
-                        for (size_type j = 0; j < nx; j++)
+                        for (size_type j = 0; j < nx; ++j)
                         {
                             X(k, j) /= _LU(k, k);
                         }
 
-                        for (size_type i = 0; i < k; i++)
+                        for (size_type i = 0; i < k; ++i)
                         {
-                            for (size_type j = 0; j < nx; j++)
+                            for (size_type j = 0; j < nx; ++j)
                             {
                                 X(i, j) -= X(k, j) * _LU(i, k);
                             }
@@ -1587,7 +1587,7 @@ namespace Kokkos
                     // Solve L*Y = B(piv)
                     for (size_type k = 0; k < _n; k++)
                     {
-                        for (size_type i = k + 1; i < _n; i++)
+                        for (size_type i = k + 1; i < _n; ++i)
                         {
                             x(i) -= x(k) * _LU(i, k);
                         }
@@ -1598,7 +1598,7 @@ namespace Kokkos
                     {
                         x(k) /= _LU(k, k);
 
-                        for (size_type i = 0; i < k; i++)
+                        for (size_type i = 0; i < k; ++i)
                         {
                             x(i) -= x(k) * _LU(i, k);
                         }
@@ -1659,7 +1659,7 @@ namespace Kokkos
             //        {
             //            // Compute 2-norm of k-th column without under/overflow.
             //            DataType nrm = 0;
-            //            for(i = k; i < m; i++)
+            //            for(i = k; i < m; ++i)
             //            {
             //                nrm = hypot(nrm, QR_(i, k));
             //            }
@@ -1671,22 +1671,22 @@ namespace Kokkos
             //                {
             //                    nrm = -nrm;
             //                }
-            //                for(i = k; i < m; i++)
+            //                for(i = k; i < m; ++i)
             //                {
             //                    QR_(i, k) /= nrm;
             //                }
             //                QR_(k, k) += DataType(1.0);
 
             //                // Apply transformation to remaining columns.
-            //                for(j = k + 1; j < n; j++)
+            //                for(j = k + 1; j < n; ++j)
             //                {
             //                    DataType s = DataType(0.0);
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        s += QR_(i, k) * QR_(i, j);
             //                    }
             //                    s = -s / QR_(k, k);
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        QR_(i, j) += s * QR_(i, k);
             //                    }
@@ -1703,7 +1703,7 @@ namespace Kokkos
             //    */
             //    int isFullRank() const
             //    {
-            //        for(int j = 0; j < n; j++)
+            //        for(int j = 0; j < n; ++j)
             //        {
             //            if(Rdiag(j) == 0)
             //                return 0;
@@ -1724,9 +1724,9 @@ namespace Kokkos
             //        /* note: H is completely filled in by algorithm, so
             //           initializaiton of H is not necessary.
             //        */
-            //        for(int i = 0; i < m; i++)
+            //        for(int i = 0; i < m; ++i)
             //        {
-            //            for(int j = 0; j < n; j++)
+            //            for(int j = 0; j < n; ++j)
             //            {
             //                if(i >= j)
             //                {
@@ -1748,9 +1748,9 @@ namespace Kokkos
             //    Matrix getR() const
             //    {
             //        Matrix R(n, n);
-            //        for(int i = 0; i < n; i++)
+            //        for(int i = 0; i < n; ++i)
             //        {
-            //            for(int j = 0; j < n; j++)
+            //            for(int j = 0; j < n; ++j)
             //            {
             //                if(i < j)
             //                {
@@ -1780,22 +1780,22 @@ namespace Kokkos
             //        Matrix Q(m, n);
             //        for(k = n - 1; k >= 0; k--)
             //        {
-            //            for(i = 0; i < m; i++)
+            //            for(i = 0; i < m; ++i)
             //            {
             //                Q(i, k) = DataType(0.0);
             //            }
             //            Q(k, k) = DataType(1.0);
-            //            for(j = k; j < n; j++)
+            //            for(j = k; j < n; ++j)
             //            {
             //                if(QR_(k, k) != 0)
             //                {
             //                    DataType s = DataType(0.0);
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        s += QR_(i, k) * Q(i, j);
             //                    }
             //                    s = -s / QR_(k, k);
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        Q(i, j) += s * QR_(i, k);
             //                    }
@@ -1828,12 +1828,12 @@ namespace Kokkos
             //        for(int k = 0; k < n; k++)
             //        {
             //            DataType s = DataType(0.0);
-            //            for(int i = k; i < m; i++)
+            //            for(int i = k; i < m; ++i)
             //            {
             //                s += QR_(i, k) * x(i);
             //            }
             //            s = -s / QR_(k, k);
-            //            for(int i = k; i < m; i++)
+            //            for(int i = k; i < m; ++i)
             //            {
             //                x(i) += s * QR_(i, k);
             //            }
@@ -1842,7 +1842,7 @@ namespace Kokkos
             //        for(int k = n - 1; k >= 0; k--)
             //        {
             //            x(k) /= Rdiag(k);
-            //            for(int i = 0; i < k; i++)
+            //            for(int i = 0; i < k; ++i)
             //            {
             //                x(i) -= x(k) * QR_(i, k);
             //            }
@@ -1850,7 +1850,7 @@ namespace Kokkos
 
             //        /* return n x nx portion of X */
             //        Vector x_(n);
-            //        for(int i = 0; i < n; i++)
+            //        for(int i = 0; i < n; ++i)
             //            x_(i) = x(i);
 
             //        return x_;
@@ -1880,15 +1880,15 @@ namespace Kokkos
             //        // Compute Y = transpose(Q)*B
             //        for(k = 0; k < n; k++)
             //        {
-            //            for(j = 0; j < nx; j++)
+            //            for(j = 0; j < nx; ++j)
             //            {
             //                DataType s = DataType(0.0);
-            //                for(i = k; i < m; i++)
+            //                for(i = k; i < m; ++i)
             //                {
             //                    s += QR_(i, k) * X(i, j);
             //                }
             //                s = -s / QR_(k, k);
-            //                for(i = k; i < m; i++)
+            //                for(i = k; i < m; ++i)
             //                {
             //                    X(i, j) += s * QR_(i, k);
             //                }
@@ -1897,13 +1897,13 @@ namespace Kokkos
             //        // Solve R*X = Y;
             //        for(k = n - 1; k >= 0; k--)
             //        {
-            //            for(j = 0; j < nx; j++)
+            //            for(j = 0; j < nx; ++j)
             //            {
             //                X(k, j) /= Rdiag(k);
             //            }
-            //            for(i = 0; i < k; i++)
+            //            for(i = 0; i < k; ++i)
             //            {
-            //                for(j = 0; j < nx; j++)
+            //                for(j = 0; j < nx; ++j)
             //                {
             //                    X(i, j) -= X(k, j) * QR_(i, k);
             //                }
@@ -1912,8 +1912,8 @@ namespace Kokkos
 
             //        /* return n x nx portion of X */
             //        Matrix X_(n, nx);
-            //        for(i = 0; i < n; i++)
-            //            for(j = 0; j < nx; j++)
+            //        for(i = 0; i < n; ++i)
+            //            for(j = 0; j < nx; ++j)
             //                X_(i, j) = X(i, j);
 
             //        return X_;
@@ -1968,7 +1968,7 @@ namespace Kokkos
             //                // place the k-th diagonal in s(k).
             //                // Compute 2-norm of k-th column without under/overflow.
             //                s(k) = 0;
-            //                for(i = k; i < m; i++)
+            //                for(i = k; i < m; ++i)
             //                {
             //                    s(k) = hypot(s(k), A(i, k));
             //                }
@@ -1978,7 +1978,7 @@ namespace Kokkos
             //                    {
             //                        s(k) = -s(k);
             //                    }
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        A(i, k) /= s(k);
             //                    }
@@ -1986,19 +1986,19 @@ namespace Kokkos
             //                }
             //                s(k) = -s(k);
             //            }
-            //            for(j = k + 1; j < n; j++)
+            //            for(j = k + 1; j < n; ++j)
             //            {
             //                if((k < nct) && (s(k) != DataType(0.0)))
             //                {
             //                    // Apply the transformation.
 
             //                    double t = 0;
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        t += A(i, k) * A(i, j);
             //                    }
             //                    t = -t / A(k, k);
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        A(i, j) += t * A(i, k);
             //                    }
@@ -2014,7 +2014,7 @@ namespace Kokkos
             //                // Place the transformation in U for subsequent back
             //                // multiplication.
 
-            //                for(i = k; i < m; i++)
+            //                for(i = k; i < m; ++i)
             //                {
             //                    U(i, k) = A(i, k);
             //                }
@@ -2025,7 +2025,7 @@ namespace Kokkos
             //                // k-th super-diagonal in e(k).
             //                // Compute 2-norm without under/overflow.
             //                e(k) = 0;
-            //                for(i = k + 1; i < n; i++)
+            //                for(i = k + 1; i < n; ++i)
             //                {
             //                    e(k) = hypot(e(k), e(i));
             //                }
@@ -2035,7 +2035,7 @@ namespace Kokkos
             //                    {
             //                        e(k) = -e(k);
             //                    }
-            //                    for(i = k + 1; i < n; i++)
+            //                    for(i = k + 1; i < n; ++i)
             //                    {
             //                        e(i) /= e(k);
             //                    }
@@ -2046,21 +2046,21 @@ namespace Kokkos
             //                {
             //                    // Apply the transformation.
 
-            //                    for(i = k + 1; i < m; i++)
+            //                    for(i = k + 1; i < m; ++i)
             //                    {
             //                        work(i) = DataType(0.0);
             //                    }
-            //                    for(j = k + 1; j < n; j++)
+            //                    for(j = k + 1; j < n; ++j)
             //                    {
-            //                        for(i = k + 1; i < m; i++)
+            //                        for(i = k + 1; i < m; ++i)
             //                        {
             //                            work(i) += e(j) * A(i, j);
             //                        }
             //                    }
-            //                    for(j = k + 1; j < n; j++)
+            //                    for(j = k + 1; j < n; ++j)
             //                    {
             //                        double t = -e(j) / e(k + 1);
-            //                        for(i = k + 1; i < m; i++)
+            //                        for(i = k + 1; i < m; ++i)
             //                        {
             //                            A(i, j) += t * work(i);
             //                        }
@@ -2071,7 +2071,7 @@ namespace Kokkos
             //                    // Place the transformation in V for subsequent
             //                    // back multiplication.
 
-            //                    for(i = k + 1; i < n; i++)
+            //                    for(i = k + 1; i < n; ++i)
             //                    {
             //                        V(i, k) = e(i);
             //                    }
@@ -2100,9 +2100,9 @@ namespace Kokkos
 
             //        if(wantu)
             //        {
-            //            for(j = nct; j < nu; j++)
+            //            for(j = nct; j < nu; ++j)
             //            {
-            //                for(i = 0; i < m; i++)
+            //                for(i = 0; i < m; ++i)
             //                {
             //                    U(i, j) = DataType(0.0);
             //                }
@@ -2112,32 +2112,32 @@ namespace Kokkos
             //            {
             //                if(s(k) != DataType(0.0))
             //                {
-            //                    for(j = k + 1; j < nu; j++)
+            //                    for(j = k + 1; j < nu; ++j)
             //                    {
             //                        double t = 0;
-            //                        for(i = k; i < m; i++)
+            //                        for(i = k; i < m; ++i)
             //                        {
             //                            t += U(i, k) * U(i, j);
             //                        }
             //                        t = -t / U(k, k);
-            //                        for(i = k; i < m; i++)
+            //                        for(i = k; i < m; ++i)
             //                        {
             //                            U(i, j) += t * U(i, k);
             //                        }
             //                    }
-            //                    for(i = k; i < m; i++)
+            //                    for(i = k; i < m; ++i)
             //                    {
             //                        U(i, k) = -U(i, k);
             //                    }
             //                    U(k, k) = DataType(1.0) + U(k, k);
-            //                    for(i = 0; i < k - 1; i++)
+            //                    for(i = 0; i < k - 1; ++i)
             //                    {
             //                        U(i, k) = DataType(0.0);
             //                    }
             //                }
             //                else
             //                {
-            //                    for(i = 0; i < m; i++)
+            //                    for(i = 0; i < m; ++i)
             //                    {
             //                        U(i, k) = DataType(0.0);
             //                    }
@@ -2154,21 +2154,21 @@ namespace Kokkos
             //            {
             //                if((k < nrt) & (e(k) != DataType(0.0)))
             //                {
-            //                    for(j = k + 1; j < nu; j++)
+            //                    for(j = k + 1; j < nu; ++j)
             //                    {
             //                        double t = 0;
-            //                        for(i = k + 1; i < n; i++)
+            //                        for(i = k + 1; i < n; ++i)
             //                        {
             //                            t += V(i, k) * V(i, j);
             //                        }
             //                        t = -t / V(k + 1, k);
-            //                        for(i = k + 1; i < n; i++)
+            //                        for(i = k + 1; i < n; ++i)
             //                        {
             //                            V(i, j) += t * V(i, k);
             //                        }
             //                    }
             //                }
-            //                for(i = 0; i < n; i++)
+            //                for(i = 0; i < n; ++i)
             //                {
             //                    V(i, k) = DataType(0.0);
             //                }
@@ -2269,7 +2269,7 @@ namespace Kokkos
             //                        }
             //                        if(wantv)
             //                        {
-            //                            for(i = 0; i < n; i++)
+            //                            for(i = 0; i < n; ++i)
             //                            {
             //                                t           = cs * V(i, j) + sn * V(i, p - 1);
             //                                V(i, p - 1) = -sn * V(i, j) + cs * V(i, p - 1);
@@ -2286,7 +2286,7 @@ namespace Kokkos
             //                {
             //                    double f = e(k - 1);
             //                    e(k - 1) = DataType(0.0);
-            //                    for(j = k; j < p; j++)
+            //                    for(j = k; j < p; ++j)
             //                    {
             //                        double t  = hypot(s(j), f);
             //                        double cs = s(j) / t;
@@ -2296,7 +2296,7 @@ namespace Kokkos
             //                        e(j)      = cs * e(j);
             //                        if(wantu)
             //                        {
-            //                            for(i = 0; i < m; i++)
+            //                            for(i = 0; i < m; ++i)
             //                            {
             //                                t           = cs * U(i, j) + sn * U(i, k - 1);
             //                                U(i, k - 1) = -sn * U(i, j) + cs * U(i, k - 1);
@@ -2336,7 +2336,7 @@ namespace Kokkos
 
             //                    // Chase zeros.
 
-            //                    for(j = k; j < p - 1; j++)
+            //                    for(j = k; j < p - 1; ++j)
             //                    {
             //                        double t  = hypot(f, g);
             //                        double cs = f / t;
@@ -2351,7 +2351,7 @@ namespace Kokkos
             //                        s(j + 1) = cs * s(j + 1);
             //                        if(wantv)
             //                        {
-            //                            for(i = 0; i < n; i++)
+            //                            for(i = 0; i < n; ++i)
             //                            {
             //                                t           = cs * V(i, j) + sn * V(i, j + 1);
             //                                V(i, j + 1) = -sn * V(i, j) + cs * V(i, j + 1);
@@ -2368,7 +2368,7 @@ namespace Kokkos
             //                        e(j + 1) = cs * e(j + 1);
             //                        if(wantu && (j < m - 1))
             //                        {
-            //                            for(i = 0; i < m; i++)
+            //                            for(i = 0; i < m; ++i)
             //                            {
             //                                t           = cs * U(i, j) + sn * U(i, j + 1);
             //                                U(i, j + 1) = -sn * U(i, j) + cs * U(i, j + 1);
@@ -2392,7 +2392,7 @@ namespace Kokkos
             //                        s(k) = (s(k) < DataType(0.0) ? -s(k) : DataType(0.0));
             //                        if(wantv)
             //                        {
-            //                            for(i = 0; i <= pp; i++)
+            //                            for(i = 0; i <= pp; ++i)
             //                            {
             //                                V(i, k) = -V(i, k);
             //                            }
@@ -2412,7 +2412,7 @@ namespace Kokkos
             //                        s(k + 1) = t;
             //                        if(wantv && (k < n - 1))
             //                        {
-            //                            for(i = 0; i < n; i++)
+            //                            for(i = 0; i < n; ++i)
             //                            {
             //                                t           = V(i, k + 1);
             //                                V(i, k + 1) = V(i, k);
@@ -2421,7 +2421,7 @@ namespace Kokkos
             //                        }
             //                        if(wantu && (k < m - 1))
             //                        {
-            //                            for(i = 0; i < m; i++)
+            //                            for(i = 0; i < m; ++i)
             //                            {
             //                                t           = U(i, k + 1);
             //                                U(i, k + 1) = U(i, k);
@@ -2444,8 +2444,8 @@ namespace Kokkos
 
             //        A = Matrix(m, minm);
 
-            //        for(size_type i = 0; i < m; i++)
-            //            for(size_type j = 0; j < minm; j++)
+            //        for(size_type i = 0; i < m; ++i)
+            //            for(size_type j = 0; j < minm; ++j)
             //                A(i, j) = U(i, j);
             //    }
 
@@ -2464,9 +2464,9 @@ namespace Kokkos
             //    void getS(Matrix& A)
             //    {
             //        A = Matrix(n, n);
-            //        for(size_type i = 0; i < n; i++)
+            //        for(size_type i = 0; i < n; ++i)
             //        {
-            //            for(size_type j = 0; j < n; j++)
+            //            for(size_type j = 0; j < n; ++j)
             //            {
             //                A(i, j) = DataType(0.0);
             //            }
@@ -2491,7 +2491,7 @@ namespace Kokkos
             //        double    eps = ::pow(2.0, -52.0);
             //        double    tol = max(m, n) * s(0) * eps;
             //        size_type r   = 0;
-            //        for(size_type i = 0; i < s.dim(); i++)
+            //        for(size_type i = 0; i < s.dim(); ++i)
             //        {
             //            if(s(i) > tol)
             //            {
@@ -2675,7 +2675,7 @@ namespace Kokkos
         {
             int i;
 
-            for (i = 0; i < n; i++)
+            for (i = 0; i < n; ++i)
             {
                 y[i * 2 + 0] = x[i * 2 + 0];
                 y[i * 2 + 1] = x[i * 2 + 1];
@@ -2705,7 +2705,7 @@ namespace Kokkos
 
 #pragma omp for nowait
 
-            for (j = 0; j < lj; j++)
+            for (j = 0; j < lj; ++j)
             {
                 jw = j * mj;
                 ja = jw;
@@ -2733,8 +2733,7 @@ namespace Kokkos
                     d[(jd + k) * 2 + 1] = wjw[1] * ambr + wjw[0] * ambu;
                 }
             }
-
-            return;
+            
         }
 
         __inline static void cfft2(int n, double x[], double y[], double w[], double sgn)
@@ -2744,7 +2743,7 @@ namespace Kokkos
             int mj;
             int tgle;
 
-            m  = (int)(log((double)n) / log(1.99));
+            m  = (int)(std::log10((double)n) / std::log10(1.99));
             mj = 1;
             //
             //  Toggling switch for work array.
@@ -2757,7 +2756,7 @@ namespace Kokkos
                 return;
             }
 
-            for (j = 0; j < m - 2; j++)
+            for (j = 0; j < m - 2; ++j)
             {
                 mj = mj * 2;
                 if (tgle)
@@ -2800,7 +2799,7 @@ namespace Kokkos
 
 #pragma omp for nowait
 
-            for (i = 0; i < n2; i++)
+            for (i = 0; i < n2; ++i)
             {
                 arg          = aw * ((double)i);
                 w[i * 2 + 0] = cos(arg);
@@ -2860,7 +2859,7 @@ namespace Kokkos::Extension
             return 0;
         }
 
-        for (int i = 1; i <= max_iter; i++)
+        for (int i = 1; i <= max_iter; ++i)
         {
             z = M.solve(r);
 
@@ -2929,7 +2928,7 @@ namespace Kokkos::Extension
             return 0;
         }
 
-        for (int i = 1; i <= max_iter; i++)
+        for (int i = 1; i <= max_iter; ++i)
         {
             rho_1 = KokkosBlas::dot(rtilde, r);
 

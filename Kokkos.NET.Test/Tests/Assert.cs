@@ -29,7 +29,7 @@ namespace Kokkos.Tests
                                        T                         actual,
                                        [CallerMemberName] string? caller   = null,
                                        [CallerFilePath]   string __FILE__ = "",
-                                       [CallerLineNumber] int    __LINE__ = 0)
+                                       [CallerLineNumber] int    __LINE__ = 0) where  T:notnull
         {
             if(AreEqual(expected.Equals(actual),
                         caller,
@@ -42,7 +42,7 @@ namespace Kokkos.Tests
         }
 
         public static bool AreEqual(bool   condition,
-                                    string caller,
+                                    string? caller,
                                     string __FILE__,
                                     int    __LINE__)
         {
@@ -68,7 +68,7 @@ namespace Kokkos.Tests
                 do
                 {
                     sf = st.GetFrame(++frameIndex);
-                } while(sf != null && sf.GetMethod().Name.StartsWith("AreEqual") && frameIndex < st.FrameCount - 1);
+                } while(sf is not null && sf.GetMethod()!.Name.StartsWith("AreEqual") && frameIndex < st.FrameCount - 1);
 
                 st = new StackTrace(frameIndex);
 
@@ -98,7 +98,7 @@ namespace Kokkos.Tests
 
             StringBuilder b = new StringBuilder();
 
-            for(int i = 0; i < stackTrace.FrameCount; i++)
+            for(int i = 0; i < stackTrace.FrameCount; ++i)
             {
                 StackFrame? frame  = stackTrace.GetFrame(i);
                 MethodBase? method = frame?.GetMethod();
@@ -118,8 +118,8 @@ namespace Kokkos.Tests
 
                 if(declaringType != null)
                 {
-                    b.Append(declaringType.FullName.Replace('+',
-                                                            '.'));
+                    b.Append(declaringType.FullName?.Replace('+',
+                                                             '.'));
 
                     b.Append('.');
                 }
@@ -132,7 +132,7 @@ namespace Kokkos.Tests
                     Type[] genericArguments = ((MethodInfo)method).GetGenericArguments();
                     b.Append('[');
 
-                    for(int j = 0; j < genericArguments.Length; j++)
+                    for(int j = 0; j < genericArguments.Length; ++j)
                     {
                         if(j > 0)
                         {
@@ -149,7 +149,7 @@ namespace Kokkos.Tests
                 b.Append('(');
                 ParameterInfo[] parameters = method.GetParameters();
 
-                for(int j = 0; j < parameters.Length; j++)
+                for(int j = 0; j < parameters.Length; ++j)
                 {
                     if(j > 0)
                     {
@@ -181,7 +181,7 @@ namespace Kokkos.Tests
 
                     try
                     {
-                        string fullpath = frame.GetFileName();
+                        string? fullpath = frame.GetFileName();
 
                         if(fullpath != null)
                         {

@@ -65,12 +65,12 @@ namespace SPTAG
         ErrorCode Index<T>::SaveConfig(std::shared_ptr<Helper::DiskPriorityIO> p_configOut) const
         {
 #define DefineBKTParameter(VarName, VarType, DefaultValue, RepresentStr) \
-    IOSTRING(p_configOut, WriteString, (RepresentStr + std::string("=") + GetParameter(RepresentStr) + std::string("\n")).c_str());
+    IOSTRING(p_configOut, WriteString, (RepresentStr + std::string("=") + GetParameter(RepresentStr) + std::string(std::endl)).c_str());
 
 #include "inc/Core/BKT/ParameterDefinitionList.h"
 #undef DefineBKTParameter
 
-            IOSTRING(p_configOut, WriteString, "\n");
+            IOSTRING(p_configOut, WriteString, std::endl);
             return ErrorCode::Success;
         }
 
@@ -101,7 +101,7 @@ namespace SPTAG
             SizeType tmpNode = gnode.node; \
             const SizeType *node = m_pGraph[tmpNode]; \
             _mm_prefetch((const char *)node, _MM_HINT_T0); \
-            for (DimensionType i = 0; i <= checkPos; i++) { \
+            for (DimensionType i = 0; i <= checkPos; ++i) { \
                 _mm_prefetch((const char *)(m_pSamples)[node[i]], _MM_HINT_T0); \
             } \
             if (gnode.distance <= p_query.worstDist()) { \
@@ -131,7 +131,7 @@ namespace SPTAG
                     p_query.SortResult(); return; \
                 } \
             } \
-            for (DimensionType i = 0; i <= checkPos; i++) { \
+            for (DimensionType i = 0; i <= checkPos; ++i) { \
                 SizeType nn_index = node[i]; \
                 if (nn_index < 0) break; \
                 if (p_space.CheckAndSet(nn_index)) continue; \
@@ -155,7 +155,7 @@ namespace SPTAG
             SizeType tmpNode = gnode.node; \
             const SizeType *node = m_pGraph[tmpNode]; \
             _mm_prefetch((const char *)node, _MM_HINT_T0); \
-            for (DimensionType i = 0; i <= checkPos; i++) { \
+            for (DimensionType i = 0; i <= checkPos; ++i) { \
                 _mm_prefetch((const char *)(m_pSamples)[node[i]], _MM_HINT_T0); \
             } \
             if (gnode.distance <= p_query.worstDist()) { \
@@ -185,7 +185,7 @@ namespace SPTAG
                     } \
                 } \
             } \
-            for (DimensionType i = 0; i <= checkPos; i++) { \
+            for (DimensionType i = 0; i <= checkPos; ++i) { \
                 SizeType nn_index = node[i]; \
                 if (nn_index < 0) break; \
                 if (p_space.CheckAndSet(nn_index)) continue; \
@@ -274,7 +274,7 @@ namespace SPTAG
             m_pTrees.InitSearchTrees(m_pSamples, m_fComputeDistance, *p_results, *workSpace);
             m_pTrees.SearchTrees(m_pSamples, m_fComputeDistance, *p_results, *workSpace, m_iNumberOfInitialDynamicPivots);
             BasicResult * res = p_query.GetResults();
-            for (int i = 0; i < p_query.GetResultNum(); i++)
+            for (int i = 0; i < p_query.GetResultNum(); ++i)
             {
                 auto& cell = workSpace->m_NGQueue.pop();
                 res[i].VID = cell.node;
@@ -299,7 +299,7 @@ namespace SPTAG
             {
                 int base = COMMON::Utils::GetBase<T>();
 #pragma omp parallel for
-                for (SizeType i = 0; i < GetNumSamples(); i++) {
+                for (SizeType i = 0; i < GetNumSamples(); ++i) {
                     COMMON::Utils::Normalize(m_pSamples[i], GetFeatureDim(), base);
                 }
             }
@@ -340,7 +340,7 @@ namespace SPTAG
 
             std::vector<SizeType> indices;
             std::vector<SizeType> reverseIndices(newR);
-            for (SizeType i = 0; i < newR; i++) {
+            for (SizeType i = 0; i < newR; ++i) {
                 if (!m_deletedID.Contains(i)) {
                     indices.push_back(i);
                     reverseIndices[i] = i;
@@ -384,7 +384,7 @@ namespace SPTAG
 
             std::vector<SizeType> indices;
             std::vector<SizeType> reverseIndices(newR);
-            for (SizeType i = 0; i < newR; i++) {
+            for (SizeType i = 0; i < newR; ++i) {
                 if (!m_deletedID.Contains(i)) {
                     indices.push_back(i);
                     reverseIndices[i] = i;
@@ -428,11 +428,11 @@ namespace SPTAG
         ErrorCode Index<T>::DeleteIndex(const void* p_vectors, SizeType p_vectorNum) {
             const T* ptr_v = (const T*)p_vectors;
 #pragma omp parallel for schedule(dynamic)
-            for (SizeType i = 0; i < p_vectorNum; i++) {
+            for (SizeType i = 0; i < p_vectorNum; ++i) {
                 COMMON::QueryResultSet<T> query(ptr_v + i * GetFeatureDim(), m_pGraph.m_iCEF);
                 SearchIndex(query);
 
-                for (int i = 0; i < m_pGraph.m_iCEF; i++) {
+                for (int i = 0; i < m_pGraph.m_iCEF; ++i) {
                     if (query.GetResult(i)->Dist < 1e-6) {
                         DeleteIndex(query.GetResult(i)->VID);
                     }
@@ -485,7 +485,7 @@ namespace SPTAG
                 if (DistCalcMethod::Cosine == m_iDistCalcMethod)
                 {
                     int base = COMMON::Utils::GetBase<T>();
-                    for (SizeType i = begin; i < end; i++) {
+                    for (SizeType i = begin; i < end; ++i) {
                         COMMON::Utils::Normalize((T*)m_pSamples[i], GetFeatureDim(), base);
                     }
                 }
@@ -494,7 +494,7 @@ namespace SPTAG
                     m_pMetadata->AddBatch(*p_metadataSet);
 
                     if (HasMetaMapping()) {
-                        for (SizeType i = begin; i < end; i++) {
+                        for (SizeType i = begin; i < end; ++i) {
                             ByteArray meta = m_pMetadata->GetMetadata(i);
                             std::string metastr((char*)meta.Data(), meta.Length());
                             UpdateMetaMapping(metastr, i);

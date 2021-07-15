@@ -74,12 +74,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>E:\TFS_Sources\trmcnealy\Kokkos.NET\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>E:\TFS_Sources\trmcnealy\Kokkos.NET\bin\obj\$(MSBuildProjectName)\$(Configuration)\</IntDir>
+    <OutDir>D:\TFS_Sources\EngineeringTools\Kokkos\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>D:\TFS_Sources\EngineeringTools\Kokkos\bin\obj\$(MSBuildProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>E:\TFS_Sources\trmcnealy\Kokkos.NET\bin\$(Configuration)\$(Platform)\</OutDir>
-    <IntDir>E:\TFS_Sources\trmcnealy\Kokkos.NET\bin\obj\$(MSBuildProjectName)\$(Configuration)\</IntDir>
+    <OutDir>D:\TFS_Sources\EngineeringTools\Kokkos\bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntDir>D:\TFS_Sources\EngineeringTools\Kokkos\bin\obj\$(MSBuildProjectName)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -58,7 +58,7 @@ namespace Microsoft.Data.Analysis
 
         public IEnumerator<TDataType> GetEnumerator()
         {
-            for (long i = 0; i < Length; i++)
+            for (long i = 0; i < Length; ++i)
             {
                 yield return _dataBuffer[i];
             }

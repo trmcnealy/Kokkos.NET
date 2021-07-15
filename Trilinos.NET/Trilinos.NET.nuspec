@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Trilinos.NET</id>
+    <version>$KOKKOS$</version>
+    <authors>Timothy R. McNealy</authors>
+    <owners>Timothy R. McNealy</owners>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
+    <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET.git"/>
+    <icon>nindra.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Trilinos .NET</description>
+    <releaseNotes></releaseNotes>
+    <copyright>© Timothy R. McNealy</copyright>
+    <tags></tags>
+    <dependencies>
+      <group targetFramework="net5.0">
+          <dependency id="CudaRedis" version="11.3.0"/>
+          <dependency id="MSMPIDIST" version="10.1.12498.18" />
+          <dependency id="PlatformApi" version="2.1.0" />
+          <dependency id="Trilinos" version="13.0.0" />
+          <dependency id="UcrtRedis" version="10.0.19041" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
+          target=""/>
+
+     <!--<file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Trilinos.NET.dll"
+          target="lib\net5.0"/>
+
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Trilinos.NET.pdb"
+          target="lib\net5.0"/>-->
+
+   <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Trilinos.NET.dll"
+        target="lib\net5.0"/>
+
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Trilinos.NET.pdb"
+        target="lib\net5.0"/>
+
+  </files>
+</package>

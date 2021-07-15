@@ -2154,7 +2154,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselI0(const KokkosViewFloat<E
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselI0(arg[i]);
     }
@@ -2167,7 +2167,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselI1(const KokkosViewFloat<E
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselI1(arg[i]);
     }
@@ -2180,7 +2180,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselIN(const int nOrder, const
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIN(nOrder, arg[i]);
     }
@@ -2211,7 +2211,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselIE0(const KokkosViewFloat<
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIE0(arg[i]);
     }
@@ -2224,7 +2224,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselIE1(const KokkosViewFloat<
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIE1(arg[i]);
     }
@@ -2237,7 +2237,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselIEN(const int nOrder, cons
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIEN(nOrder, arg[i]);
     }
@@ -2270,7 +2270,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselI0(const KokkosViewDouble
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselI0(arg[i]);
     }
@@ -2283,7 +2283,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselI1(const KokkosViewDouble
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselI1(arg[i]);
     }
@@ -2296,7 +2296,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIN(const int nOrder, cons
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIN(nOrder, arg[i]);
     }
@@ -2327,7 +2327,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIE0(const KokkosViewDoubl
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIE0(arg[i]);
     }
@@ -2340,7 +2340,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIE1(const KokkosViewDoubl
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIE1(arg[i]);
     }
@@ -2353,7 +2353,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselIEN(nOrder, arg[i]);
     }
@@ -2387,7 +2387,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselI0(arg[i]);
 //        }
@@ -2402,7 +2402,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselI1(arg[i]);
 //        }
@@ -2417,7 +2417,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIN(nOrder, arg[i]);
 //        }
@@ -2449,7 +2449,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIE0(arg[i]);
 //        }
@@ -2464,7 +2464,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIE1(arg[i]);
 //        }
@@ -2479,7 +2479,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIEN(nOrder, arg[i]);
 //        }
@@ -2513,7 +2513,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselI0(arg[i]);
 //        }
@@ -2528,7 +2528,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselI1(arg[i]);
 //        }
@@ -2543,7 +2543,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIN(nOrder, arg[i]);
 //        }
@@ -2575,7 +2575,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIE0(arg[i]);
 //        }
@@ -2590,7 +2590,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIE1(arg[i]);
 //        }
@@ -2605,7 +2605,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselIEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselIEN(nOrder, arg[i]);
 //        }
@@ -2638,7 +2638,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselK0(const KokkosViewFloat<E
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselK0(arg[i]);
     }
@@ -2651,7 +2651,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselK1(const KokkosViewFloat<E
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselK1(arg[i]);
     }
@@ -2664,7 +2664,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselKN(const int nOrder, const
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKN(nOrder, arg[i]);
     }
@@ -2695,7 +2695,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselKE0(const KokkosViewFloat<
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKE0(arg[i]);
     }
@@ -2708,7 +2708,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselKE1(const KokkosViewFloat<
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKE1(arg[i]);
     }
@@ -2721,7 +2721,7 @@ KOKKOS_FUNCTION KokkosViewFloat<ExecutionSpace> BesselKEN(const int nOrder, cons
 {
     KokkosViewFloat<ExecutionSpace> array(new float[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKEN(nOrder, arg[i]);
     }
@@ -2754,7 +2754,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselK0(const KokkosViewDouble
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselK0(arg[i]);
     }
@@ -2767,7 +2767,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselK1(const KokkosViewDouble
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselK1(arg[i]);
     }
@@ -2780,7 +2780,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKN(const int nOrder, cons
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKN(nOrder, arg[i]);
     }
@@ -2811,7 +2811,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKE0(const KokkosViewDoubl
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKE0(arg[i]);
     }
@@ -2824,7 +2824,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKE1(const KokkosViewDoubl
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKE1(arg[i]);
     }
@@ -2837,7 +2837,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 {
     KokkosViewDouble<ExecutionSpace> array(new double[length], length);
 
-    for(int i = 0; i < length; i++)
+    for(int i = 0; i < length; ++i)
     {
         array[i] = BesselKEN(nOrder, arg[i]);
     }
@@ -2871,7 +2871,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselK0(arg[i]);
 //        }
@@ -2886,7 +2886,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselK1(arg[i]);
 //        }
@@ -2901,7 +2901,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKN(nOrder, arg[i]);
 //        }
@@ -2933,7 +2933,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKE0(arg[i]);
 //        }
@@ -2948,7 +2948,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKE1(arg[i]);
 //        }
@@ -2963,7 +2963,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexF>^ array = gcnew cli::array<ComplexF>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKEN(nOrder, arg[i]);
 //        }
@@ -2997,7 +2997,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselK0(arg[i]);
 //        }
@@ -3012,7 +3012,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselK1(arg[i]);
 //        }
@@ -3027,7 +3027,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKN(nOrder, arg[i]);
 //        }
@@ -3059,7 +3059,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKE0(arg[i]);
 //        }
@@ -3074,7 +3074,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKE1(arg[i]);
 //        }
@@ -3089,7 +3089,7 @@ KOKKOS_FUNCTION KokkosViewDouble<ExecutionSpace> BesselKEN(const int nOrder, con
 //
 //        cli::array<ComplexD>^ array = gcnew cli::array<ComplexD>(length];
 //
-//        for (int i = 0; i < length; i++)
+//        for (int i = 0; i < length; ++i)
 //        {
 //            array[i] = BesselKEN(nOrder, arg[i]);
 //        }

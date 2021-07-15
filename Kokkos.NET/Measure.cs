@@ -5,9 +5,8 @@ namespace Kokkos
 {
     public sealed class Measure : IDisposable
     {
-        private        Stopwatch time;
-        private        string?    name;
-        private static long      duration;
+        private readonly Stopwatch time;
+        private readonly string?   name;
 
         private Measure(string? name = null)
         {
@@ -18,13 +17,13 @@ namespace Kokkos
 
         public static Measure Execution(string? name = null)
         {
-            return new Measure(name);
+            return new(name);
         }
 
         public void Dispose()
         {
             time.Stop();
-            duration = time.ElapsedMilliseconds;
+            long duration = time.ElapsedMilliseconds;
 
             if(!string.IsNullOrEmpty(name))
             {

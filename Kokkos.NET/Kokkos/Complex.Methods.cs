@@ -1,16 +1,16 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Kokkos
 {
-    public sealed unsafe partial class Complex<T>
+    public sealed partial class Complex<T>
         where T : unmanaged
     {
         public static Complex<T> Zero = new Complex<T>(UnManaged.Math<T>.Default(0.0), UnManaged.Math<T>.Default(0.0));
-
-        public static Complex<T> One = new Complex<T>(UnManaged.Math<T>.Default(1.0), UnManaged.Math<T>.Default(0.0));
-        public static Complex<T> i   = new Complex<T>(UnManaged.Math<T>.Default(0.0), UnManaged.Math<T>.Default(1.0));
+        public static Complex<T> One  = new Complex<T>(UnManaged.Math<T>.Default(1.0), UnManaged.Math<T>.Default(0.0));
+        public static Complex<T> i    = new Complex<T>(UnManaged.Math<T>.Default(0.0), UnManaged.Math<T>.Default(1.0));
         //public static Complex<T> NaN      = new Complex<T>(T.NaN,                T.NaN);
         //public static Complex<T> Infinity = new Complex<T>(T.PositiveInfinity,   T.PositiveInfinity);
 

@@ -43,11 +43,11 @@ template<typename T>
 void getCandidates(SPTAG::VectorIndex* index, int numVectors, int candidatesPerVector, int* candidates) {
 
 #pragma omp parallel for schedule(dynamic)
-  for (SizeType i = 0; i < numVectors; i++)
+  for (SizeType i = 0; i < numVectors; ++i)
   {
     SPTAG::COMMON::QueryResultSet<T> query((const T*)index->GetSample(i), candidatesPerVector);
      index->SearchTree(query);
-     for (SPTAG::DimensionType j = 0; j < candidatesPerVector; j++) {
+     for (SPTAG::DimensionType j = 0; j < candidatesPerVector; ++j) {
        candidates[i*candidatesPerVector+j] = query.GetResult(j)->VID;
      }
   }
@@ -56,7 +56,7 @@ void getCandidates(SPTAG::VectorIndex* index, int numVectors, int candidatesPerV
 
 template<typename SUMTYPE, int NUM_REGS, int NUM_THREADS>
 __device__ void loadRegisters( ListElt<SUMTYPE>* regs,  ListElt<SUMTYPE>* listMem, int* listSize) {
-  for(int i=0; i<NUM_REGS; i++) {
+  for(int i=0; i<NUM_REGS; ++i) {
     if(i*NUM_THREADS + threadIdx.x < *listSize) {
       regs[i] = listMem[i*NUM_THREADS + threadIdx.x];
     }
@@ -69,7 +69,7 @@ __device__ void loadRegisters( ListElt<SUMTYPE>* regs,  ListElt<SUMTYPE>* listMe
 
 template<typename SUMTYPE, int NUM_REGS, int NUM_THREADS>
 __device__ void storeRegisters( ListElt<SUMTYPE>* regs,  ListElt<SUMTYPE>* listMem, int* listSize) {
-  for(int i=0; i<NUM_REGS; i++) {
+  for(int i=0; i<NUM_REGS; ++i) {
     if(i*NUM_THREADS + threadIdx.x < *listSize) {
       listMem[i*NUM_THREADS + threadIdx.x] = regs[i];
     }
@@ -92,7 +92,7 @@ __device__ void sortListById( ListElt<SUMTYPE>* listMem, int* listSize, void* te
   /* Load list into registers to sort */
   loadRegisters<SUMTYPE,LISTCAP/NUM_THREADS, NUM_THREADS>(sortMem, listMem, listSize);
 
-  for(int i=0; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=0; i<LISTCAP/NUM_THREADS; ++i) {
     sortKeys[i] = sortMem[i].id;
   }
   __syncthreads();
@@ -120,7 +120,7 @@ __device__ void sortListByDist( ListElt<SUMTYPE>* listMem, int* listSize, void* 
   /* Load list into registers to sort */
   loadRegisters<SUMTYPE,LISTCAP/NUM_THREADS, NUM_THREADS>(sortMem, listMem, listSize);
 
-  for(int i=0; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=0; i<LISTCAP/NUM_THREADS; ++i) {
     sortKeys[i] = sortMem[i].dist;
   }
 
@@ -142,7 +142,7 @@ __device__ void removeDuplicatesAndCompact( ListElt<SUMTYPE>* listMem, int* list
   int sortKeys[LISTCAP/NUM_THREADS];
 
   for(int i=threadIdx.x; i<*listSize-1 && listMem[i].id != INFTY<int>(); i+=NUM_THREADS) {
-    for(int j=i+1; j < *listSize && listMem[i].id == listMem[j].id; j++) {
+    for(int j=i+1; j < *listSize && listMem[i].id == listMem[j].id; ++j) {
       listMem[i].checkedFlag = (listMem[i].checkedFlag || listMem[j].checkedFlag);
     }
   }
@@ -150,7 +150,7 @@ __device__ void removeDuplicatesAndCompact( ListElt<SUMTYPE>* listMem, int* list
   __syncthreads();
   /* Copy weather is duplicate or not into registers */
 
-  for(int i=0; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=0; i<LISTCAP/NUM_THREADS; ++i) {
     sortMem[i] = listMem[threadIdx.x*(LISTCAP/NUM_THREADS) + i];
   }
 
@@ -160,7 +160,7 @@ __device__ void removeDuplicatesAndCompact( ListElt<SUMTYPE>* listMem, int* list
   else {
     sortKeys[0] = (sortMem[0].id != listMem[threadIdx.x*(LISTCAP/NUM_THREADS) - 1].id); 
   }
-  for(int i=1; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=1; i<LISTCAP/NUM_THREADS; ++i) {
     sortKeys[i] = (sortMem[i].id != sortMem[i-1].id);
   }
 
@@ -168,7 +168,7 @@ __device__ void removeDuplicatesAndCompact( ListElt<SUMTYPE>* listMem, int* list
   BlockScan(*(static_cast<typename BlockScan::TempStorage*>(temp_storage))).InclusiveSum(sortKeys, sortKeys);
 
   __syncthreads();
-  for(int i=0; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=0; i<LISTCAP/NUM_THREADS; ++i) {
     listMem[threadIdx.x*(LISTCAP/NUM_THREADS)+i] = sortMem[i];
   }
   /* Share boarders of prefix sums */
@@ -179,7 +179,7 @@ __device__ void removeDuplicatesAndCompact( ListElt<SUMTYPE>* listMem, int* list
   if(threadIdx.x==0 || borderVals[threadIdx.x-1] != sortKeys[0]) {
     listMem[sortKeys[0]] = sortMem[0];
   }
-  for(int i=1; i<LISTCAP/NUM_THREADS; i++) {
+  for(int i=1; i<LISTCAP/NUM_THREADS; ++i) {
     if(sortKeys[i] > sortKeys[i-1]) {
       listMem[sortKeys[i]] = sortMem[i];
     }
@@ -195,7 +195,7 @@ template<typename T, typename SUMTYPE, int MAX_DIM, int NUM_THREADS>
 __device__ void checkClosestNeighbors(Point<T,SUMTYPE,MAX_DIM>* d_points, int src, int* d_graph,  ListElt<SUMTYPE>* listMem, int* listSize, int KVAL, int metric) {
 
 /* Maximum number of vertices to check before list fills up*/
-//  int max_check = min(MAX_CHECK_COUNT, (LISTCAP-*listSize)/KVAL);
+//  int max_check = std::min(MAX_CHECK_COUNT, (LISTCAP-*listSize)/KVAL);
   int max_check = (LISTCAP-*listSize)/KVAL;
 
   int check_count=0;
@@ -236,7 +236,7 @@ __device__ void shrinkListRNG_sequential(Point<T,SUMTYPE,MAX_DIM>* d_points, int
   if(threadIdx.x==0) {
     int* nodes;
     int count=0;
-    for(int j=0; j<listSize && j < KVAL; j++) {
+    for(int j=0; j<listSize && j < KVAL; ++j) {
       nodes = &d_graph[src*KVAL];
       ListElt<SUMTYPE> item = listMem[j];
 
@@ -362,7 +362,7 @@ __global__ void refineBatch_kernel(Point<T,SUMTYPE,MAX_DIM>* d_points, int batch
 
 // Perform DFS refinement up to refineDepth distance
     for(int iter=0; iter < refineDepth; iter++) {
-      listSize = min(LISTSIZE, listSize);
+      listSize = std::min(LISTSIZE, listSize);
       __syncthreads();
       checkClosestNeighbors<T,SUMTYPE,MAX_DIM,NUM_THREADS>(d_points, src, d_graph, listMem, &listSize, KVAL, metric);
       sortListById<T,SUMTYPE,MAX_DIM,NUM_THREADS>(listMem, &listSize, &temp_storage);
@@ -423,7 +423,7 @@ void refineGraphGPU(SPTAG::VectorIndex* index, Point<T,SUMTYPE,MAX_DIM>* d_point
   t1 = std::chrono::high_resolution_clock::now();
   for(int iter=0; iter < refines; iter++) {
 
-    for(int i=0; i<NUM_BATCHES; i++) {
+    for(int i=0; i<NUM_BATCHES; ++i) {
 // Kernel that refines a batch of points' KNN neighbors into RNG neighbors
       refineBatch_kernel<T,SUMTYPE,MAX_DIM, REFINE_THREADS><<<REFINE_BLOCKS,REFINE_THREADS>>>(d_points, batch_size, i*batch_size, d_graph, d_candidates, listMem, candidatesPerVector, KVAL, refineDepth, metric);
       cudaError_t status = cudaDeviceSynchronize();

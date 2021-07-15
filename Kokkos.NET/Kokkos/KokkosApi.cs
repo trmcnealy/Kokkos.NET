@@ -10,6 +10,8 @@ namespace Kokkos
 
         public nint ReallocatePtr;
 
+        public nint CopyPtr;
+
         public nint FreePtr;
 
         public nint InitializePtr;
@@ -76,7 +78,7 @@ namespace Kokkos
 
         public nint SetValuePtr;
 
-        public /*delegate* unmanaged[Cdecl]<nint, ExecutionSpaceKind, LayoutKind, DataTypeKind, ushort, out NdArray, void>*/ nint RcpViewToNdArrayPtr;
+        public /*delegate*<nint, ExecutionSpaceKind, LayoutKind, DataTypeKind, ushort, out NdArray, void>*/ nint RcpViewToNdArrayPtr;
 
         public nint ViewToNdArrayPtr;
     }

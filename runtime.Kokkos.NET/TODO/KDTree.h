@@ -64,7 +64,7 @@ namespace SPTAG
                 std::vector<SizeType> localindices;
                 if (indices == nullptr) {
                     localindices.resize(data.R());
-                    for (SizeType i = 0; i < localindices.size(); i++) localindices[i] = i;
+                    for (SizeType i = 0; i < localindices.size(); ++i) localindices[i] = i;
                 }
                 else {
                     localindices.assign(indices->begin(), indices->end());
@@ -73,7 +73,7 @@ namespace SPTAG
                 m_pTreeRoots.resize(m_iTreeNumber * localindices.size());
                 m_pTreeStart.resize(m_iTreeNumber, 0);
 #pragma omp parallel for num_threads(numOfThreads)
-                for (int i = 0; i < m_iTreeNumber; i++)
+                for (int i = 0; i < m_iTreeNumber; ++i)
                 {
                     Sleep(i * 100); std::srand(clock());
 
@@ -156,7 +156,7 @@ namespace SPTAG
             template <typename T>
             void InitSearchTrees(const Dataset<T>& p_data, float(*fComputeDistance)(const T* pX, const T* pY, DimensionType length), const COMMON::QueryResultSet<T> &p_query, COMMON::WorkSpace &p_space) const
             {
-                for (int i = 0; i < m_iTreeNumber; i++) {
+                for (int i = 0; i < m_iTreeNumber; ++i) {
                     KDTSearch(p_data, fComputeDistance, p_query, p_space, m_pTreeStart[i], 0);
                 }
             }
@@ -246,10 +246,10 @@ namespace SPTAG
             {
                 std::vector<float> meanValues(data.C(), 0);
                 std::vector<float> varianceValues(data.C(), 0);
-                SizeType end = min(first + m_iSamples, last);
+                SizeType end = std::min(first + m_iSamples, last);
                 SizeType count = end - first + 1;
                 // calculate the mean of each dimension
-                for (SizeType j = first; j <= end; j++)
+                for (SizeType j = first; j <= end; ++j)
                 {
                     const T* v = (const T*)data[indices[j]];
                     for (DimensionType k = 0; k < data.C(); k++)
@@ -262,7 +262,7 @@ namespace SPTAG
                     meanValues[k] /= count;
                 }
                 // calculate the variance of each dimension
-                for (SizeType j = first; j <= end; j++)
+                for (SizeType j = first; j <= end; ++j)
                 {
                     const T* v = (const T*)data[indices[j]];
                     for (DimensionType k = 0; k < data.C(); k++)
@@ -283,7 +283,7 @@ namespace SPTAG
                 std::vector<DimensionType> topind(m_numTopDimensionKDTSplit);
                 int num = 0;
                 // order the variances
-                for (DimensionType i = 0; i < (DimensionType)varianceValues.size(); i++)
+                for (DimensionType i = 0; i < (DimensionType)varianceValues.size(); ++i)
                 {
                     if (num < m_numTopDimensionKDTSplit || varianceValues[i] > varianceValues[topind[num - 1]])
                     {
@@ -299,7 +299,7 @@ namespace SPTAG
                         // order the TOP_DIM variances
                         while (j > 0 && varianceValues[topind[j]] > varianceValues[topind[j - 1]])
                         {
-                            std::swap(topind[j], topind[j - 1]);
+                            Kokkos::swap(topind[j], topind[j - 1]);
                             j--;
                         }
                     }
@@ -325,7 +325,7 @@ namespace SPTAG
                     }
                     else
                     {
-                        std::swap(indices[i], indices[j]);
+                        Kokkos::swap(indices[i], indices[j]);
                         j--;
                     }
                 }

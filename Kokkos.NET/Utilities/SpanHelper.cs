@@ -132,7 +132,7 @@ namespace Kokkos.Utilities
                     offset += Vector<byte>.Count;
                 }
 
-                for(int j = 0; j < Vector<int>.Count; j++)
+                for(int j = 0; j < Vector<int>.Count; ++j)
                 {
                     hash = unchecked(((hash << 5) + hash) ^ vh[j]);
                 }

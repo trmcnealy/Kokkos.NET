@@ -5,7 +5,7 @@
     <PropertyGroup>
         <LangVersion>9.0</LangVersion>
         <Nullable>enable</Nullable>
-        
+
         <NuspecFile>Kokkos.NET.nuspec</NuspecFile>
 
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -51,6 +51,19 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="UnManagedCil" Version="$(UNMANAGED_VERSION)" />
+        <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
+        <PackageReference Include="PlatformApi" Version="$(PLATFORMAPI_VERSION)" />
+        <PackageReference Include="RuntimeGeneration" Version="$(RUNTIMEGENERATION_VERSION)" />
+        <PackageReference Include="Microsoft.Data.Analysis" Version="0.5.0" />
+        <PackageReference Include="Trilinos.NET" Version="1.0.0"/>
+        <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
+        <!--<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
+    <PackageReference Include="System.Text.Utf8String" Version="0.1.2-e200127-1" />-->
+    </ItemGroup>
+
+    <ItemGroup>
         <Compile Remove="Kokkos.NET.csprojobj\**" />
         <EmbeddedResource Remove="Kokkos.NET.csprojobj\**" />
         <None Remove="Kokkos.NET.csprojobj\**" />
@@ -68,11 +81,6 @@
 
     <ItemGroup>
         <None Remove="Kokkos.NET.csproj.DotSettings" />
-        <Compile Update="Kokkos\Complex.cs">
-          <DesignTime>True</DesignTime>
-          <AutoGen>True</AutoGen>
-          <DependentUpon>Complex.tt</DependentUpon>
-        </Compile>
         <None Include="CNMeM.cs" />
         <None Include="Kokkos.NET.nuspec" />
         <None Include="Kokkos.NET.props" />
@@ -85,19 +93,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="UnManagedCil" Version="$(UNMANAGED_VERSION)" />
-        <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
-        <PackageReference Include="PlatformApi" Version="$(PLATFORMAPI_VERSION)" />
-        <PackageReference Include="RuntimeGeneration" Version="$(RUNTIMEGENERATION_VERSION)" />
-        <PackageReference Include="Microsoft.Data.Analysis" Version="0.5.0" />
-        <PackageReference Include="MSMPIDIST" Version="10.1.12498.18" />
-        <PackageReference Include="NvAPIWrapper.Net" Version="0.8.0.98" />
-        <!--<PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
-    <PackageReference Include="System.Reflection.Emit.ILGeneration" Version="4.7.0" />
-    <PackageReference Include="System.Text.Utf8String" Version="0.1.2-e200127-1" />-->
-    </ItemGroup>
-
-    <ItemGroup>
         <None Include="MemoryMappedStream.cs" />
     </ItemGroup>
 
@@ -106,6 +101,11 @@
     </Target>
 
     <ItemGroup>
+        <Compile Update="Kokkos\Complex.cs">
+          <DesignTime>True</DesignTime>
+          <AutoGen>True</AutoGen>
+          <DependentUpon>Complex.tt</DependentUpon>
+        </Compile>
         <None Update="Kokkos\Complex.tt">
             <Generator>TextTemplatingFileGenerator</Generator>
             <LastGenOutput>Complex.cs</LastGenOutput>
@@ -113,7 +113,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+      <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

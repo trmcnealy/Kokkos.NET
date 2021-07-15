@@ -26,15 +26,7 @@ namespace System
                                           void* src,
                                           int   size);
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
-#endif
         public static void move<T>(ref T destination,
                                       ref T source,
                                       ulong elementCount)
@@ -264,27 +256,27 @@ namespace Kokkos
             {
                 //RuntimeCil.Generate(typeof(MemoryMapped).Assembly);
                 
-                Create = Marshal.GetDelegateForFunctionPointer<CreateDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Create"));
+                Create = Marshal.GetDelegateForFunctionPointer<CreateDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Create"));
 
-                CreateAndOpen = Marshal.GetDelegateForFunctionPointer<CreateAndOpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "CreateAndOpen"));
+                CreateAndOpen = Marshal.GetDelegateForFunctionPointer<CreateAndOpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "CreateAndOpen"));
 
-                Destory = Marshal.GetDelegateForFunctionPointer<DestoryDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Destory"));
+                Destory = Marshal.GetDelegateForFunctionPointer<DestoryDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Destory"));
 
-                Open = Marshal.GetDelegateForFunctionPointer<OpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Open"));
+                Open = Marshal.GetDelegateForFunctionPointer<OpenDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Open"));
 
-                Close = Marshal.GetDelegateForFunctionPointer<CloseDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Close"));
+                Close = Marshal.GetDelegateForFunctionPointer<CloseDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Close"));
 
-                At = Marshal.GetDelegateForFunctionPointer<AtDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "At"));
+                At = Marshal.GetDelegateForFunctionPointer<AtDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "At"));
 
-                GetData = Marshal.GetDelegateForFunctionPointer<GetDataDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "GetData"));
+                GetData = Marshal.GetDelegateForFunctionPointer<GetDataDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "GetData"));
 
-                IsValid = Marshal.GetDelegateForFunctionPointer<IsValidDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "IsValid"));
+                IsValid = Marshal.GetDelegateForFunctionPointer<IsValidDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "IsValid"));
 
-                Size = Marshal.GetDelegateForFunctionPointer<SizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Size"));
+                Size = Marshal.GetDelegateForFunctionPointer<SizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Size"));
 
-                MappedSize = Marshal.GetDelegateForFunctionPointer<MappedSizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "MappedSize"));
+                MappedSize = Marshal.GetDelegateForFunctionPointer<MappedSizeDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "MappedSize"));
 
-                Remap = Marshal.GetDelegateForFunctionPointer<RemapDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.ModuleHandle, "Remap"));
+                Remap = Marshal.GetDelegateForFunctionPointer<RemapDelegate>(PlatformApi.NativeLibrary.GetExport(KokkosLibrary.Handle, "Remap"));
             }
         }
     }

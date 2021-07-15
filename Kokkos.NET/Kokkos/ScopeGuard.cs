@@ -10,7 +10,7 @@ namespace Kokkos
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         static ScopeGuard()
         {
-            AppDomain.CurrentDomain.ProcessExit += RrcTexasDataAdapter_Dtor;
+            AppDomain.CurrentDomain.ProcessExit += Dtor;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -34,8 +34,8 @@ namespace Kokkos
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        private static void RrcTexasDataAdapter_Dtor(object?    sender,
-                                                     EventArgs e)
+        private static void Dtor(object?   sender,
+                                 EventArgs e)
         {
             if(KokkosLibrary.IsInitialized() || _initialized)
             {
@@ -48,7 +48,14 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                KokkosLibrary.Initialize(Environment.ProcessorCount, 0);
+                try
+                {
+                    KokkosLibrary.Initialize(Environment.ProcessorCount, 0);
+                }
+                catch(System.Exception ex)
+                {
+                    Console.WriteLine("Kokkos failed to initialize.\n"+ex.Message);
+                }
                 _initialized = true;
             }
 
@@ -60,7 +67,14 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                KokkosLibrary.Initialize(Environment.ProcessorCount, gpuDeviceId);
+                try
+                {
+                    KokkosLibrary.Initialize(Environment.ProcessorCount, gpuDeviceId);
+                }
+                catch(System.Exception ex)
+                {
+                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
+                }
                 _initialized = true;
             }
 
@@ -73,7 +87,14 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                KokkosLibrary.Initialize(numCpuThreads, gpuDeviceId);
+                try
+                {
+                    KokkosLibrary.Initialize(numCpuThreads, gpuDeviceId);
+                }
+                catch(System.Exception ex)
+                {
+                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
+                }
                 _initialized = true;
             }
 
@@ -85,7 +106,14 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                KokkosLibrary.Initialize(arguments);
+                try
+                {
+                    KokkosLibrary.Initialize(arguments);
+                }
+                catch(System.Exception ex)
+                {
+                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
+                }
                 _initialized = true;
             }
 

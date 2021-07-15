@@ -13,6 +13,12 @@ namespace Kokkos
 {
     internal class Program
     {
+        static Program()
+        {
+            Environment.SetEnvironmentVariable("KMP_DUPLICATE_LIB_OK", "TRUE");
+        }
+
+
         [STAThread]
         private static void Main(string[] args)
         {

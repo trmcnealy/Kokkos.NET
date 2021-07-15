@@ -178,7 +178,7 @@ namespace Geo
 
         if(1 < jobu)
         {
-            ncu = min(m, n);
+            ncu = std::min(m, n);
         }
         else
         {
@@ -198,8 +198,8 @@ namespace Geo
         //  Reduce A to bidiagonal form, storing the diagonal elements
         //  in S and the super-diagonal elements in E.
         //
-        nct = min(m - 1, n);
-        nrt = max(0, min(m, n - 2));
+        nct = std::min(m - 1, n);
+        nrt = max(0, std::min(m, n - 2));
         lu  = max(nct, nrt);
 
         for(l = 1; l <= lu; ++l)
@@ -305,7 +305,7 @@ namespace Geo
         //
         //  Set up the final bidiagonal matrix of order MN.
         //
-        mn    = min(m + 1, n);
+        mn    = std::min(m + 1, n);
         nctp1 = nct + 1;
         nrtp1 = nrt + 1;
 
@@ -821,11 +821,11 @@ namespace Geo
 
         if(info != 0)
         {
-            // cerr << "\n";
+            // cerr << std::endl;
             // cerr << "R8MAT_SOLVE_SVD - Fatal error!\n";
             // cerr << "  The SVD could not be calculated.\n";
             // cerr << "  LINPACK routine DSVDC returned a nonzero\n";
-            // cerr << "  value of the error flag, INFO = " << info << "\n";
+            // cerr << "  value of the error flag, INFO = " << info << std::endl;
             return;
         }
 
@@ -836,7 +836,7 @@ namespace Geo
                 s[i + j * m] = 0.0;
             }
         }
-        for(int i = 0; i < min(m, n); ++i)
+        for(int i = 0; i < std::min(m, n); ++i)
         {
             s[i + i * m] = sdiag[i];
         }
@@ -851,7 +851,7 @@ namespace Geo
                 sp[i + j * m] = 0.0;
             }
         }
-        for(int i = 0; i < min(m, n); ++i)
+        for(int i = 0; i < std::min(m, n); ++i)
         {
             if(s[i + i * m] != 0.0)
             {

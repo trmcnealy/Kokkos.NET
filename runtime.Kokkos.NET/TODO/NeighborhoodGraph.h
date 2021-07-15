@@ -61,7 +61,7 @@ namespace SPTAG
                 DimensionType* correct = new DimensionType[samples];
 
 #pragma omp parallel for schedule(dynamic)
-                for (SizeType i = 0; i < samples; i++)
+                for (SizeType i = 0; i < samples; ++i)
                 {
                     SizeType x = COMMON::Utils::rand(m_iGraphSize);
                     //int x = i;
@@ -77,7 +77,7 @@ namespace SPTAG
                     RebuildNeighbors(index, x, exact_rng, query.GetResults(), m_iCEF);
 
                     correct[i] = 0;
-                    for (DimensionType j = 0; j < m_iNeighborhoodSize; j++) {
+                    for (DimensionType j = 0; j < m_iNeighborhoodSize; ++j) {
                         if (exact_rng[j] == -1) {
                             correct[i] += m_iNeighborhoodSize - j;
                             break;
@@ -91,7 +91,7 @@ namespace SPTAG
                     delete[] exact_rng;
                 }
                 float acc = 0;
-                for (SizeType i = 0; i < samples; i++) acc += float(correct[i]);
+                for (SizeType i = 0; i < samples; ++i) acc += float(correct[i]);
                 acc = acc / samples / m_iNeighborhoodSize;
                 delete[] correct;
                 return acc;
@@ -109,8 +109,8 @@ namespace SPTAG
 
                 if (idmap != nullptr) {
                     std::unordered_map<SizeType, SizeType>::const_iterator iter;
-                    for (SizeType i = 0; i < m_iGraphSize; i++) {
-                        for (DimensionType j = 0; j < m_iNeighborhoodSize; j++) {
+                    for (SizeType i = 0; i < m_iGraphSize; ++i) {
+                        for (DimensionType j = 0; j < m_iNeighborhoodSize; ++j) {
                             if ((iter = idmap->find(m_pNeighborhoodGraph[i][j])) != idmap->end())
                                 m_pNeighborhoodGraph[i][j] = iter->second;
                         }
@@ -131,10 +131,10 @@ namespace SPTAG
                     std::vector<float> Mean(index->GetFeatureDim(), 0);
 
                     int iIteration = 100;
-                    SizeType end = min(first + m_iSamples, last);
+                    SizeType end = std::min(first + m_iSamples, last);
                     SizeType count = end - first + 1;
                     // calculate the mean of each dimension
-                    for (SizeType j = first; j <= end; j++)
+                    for (SizeType j = first; j <= end; ++j)
                     {
                         const T* v = (const T*)index->GetSample(indices[j]);
                         for (DimensionType k = 0; k < index->GetFeatureDim(); k++)
@@ -148,12 +148,12 @@ namespace SPTAG
                     }
                     std::vector<BasicResult> Variance;
                     Variance.reserve(index->GetFeatureDim());
-                    for (DimensionType j = 0; j < index->GetFeatureDim(); j++)
+                    for (DimensionType j = 0; j < index->GetFeatureDim(); ++j)
                     {
                         Variance.emplace_back(j, 0.0f);
                     }
                     // calculate the variance of each dimension
-                    for (SizeType j = first; j <= end; j++)
+                    for (SizeType j = first; j <= end; ++j)
                     {
                         const T* v = (const T*)index->GetSample(indices[j]);
                         for (DimensionType k = 0; k < index->GetFeatureDim(); k++)
@@ -166,7 +166,7 @@ namespace SPTAG
                     std::vector<SizeType> indexs(m_numTopDimensionTPTSplit);
                     std::vector<float> weight(m_numTopDimensionTPTSplit), bestweight(m_numTopDimensionTPTSplit);
                     float bestvariance = Variance[index->GetFeatureDim() - 1].Dist;
-                    for (int i = 0; i < m_numTopDimensionTPTSplit; i++)
+                    for (int i = 0; i < m_numTopDimensionTPTSplit; ++i)
                     {
                         indexs[i] = Variance[index->GetFeatureDim() - 1 - i].VID;
                         bestweight[i] = 0;
@@ -175,21 +175,21 @@ namespace SPTAG
                     float bestmean = Mean[indexs[0]];
 
                     std::vector<float> Val(count);
-                    for (int i = 0; i < iIteration; i++)
+                    for (int i = 0; i < iIteration; ++i)
                     {
                         float sumweight = 0;
-                        for (int j = 0; j < m_numTopDimensionTPTSplit; j++)
+                        for (int j = 0; j < m_numTopDimensionTPTSplit; ++j)
                         {
                             weight[j] = float(rand() % 10000) / 5000.0f - 1.0f;
                             sumweight += weight[j] * weight[j];
                         }
                         sumweight = sqrt(sumweight);
-                        for (int j = 0; j < m_numTopDimensionTPTSplit; j++)
+                        for (int j = 0; j < m_numTopDimensionTPTSplit; ++j)
                         {
                             weight[j] /= sumweight;
                         }
                         float mean = 0;
-                        for (SizeType j = 0; j < count; j++)
+                        for (SizeType j = 0; j < count; ++j)
                         {
                             Val[j] = 0;
                             const T* v = (const T*)index->GetSample(indices[first + j]);
@@ -201,7 +201,7 @@ namespace SPTAG
                         }
                         mean /= count;
                         float var = 0;
-                        for (SizeType j = 0; j < count; j++)
+                        for (SizeType j = 0; j < count; ++j)
                         {
                             float dist = Val[j] - mean;
                             var += dist * dist;
@@ -210,7 +210,7 @@ namespace SPTAG
                         {
                             bestvariance = var;
                             bestmean = mean;
-                            for (int j = 0; j < m_numTopDimensionTPTSplit; j++)
+                            for (int j = 0; j < m_numTopDimensionTPTSplit; ++j)
                             {
                                 bestweight[j] = weight[j];
                             }
@@ -233,7 +233,7 @@ namespace SPTAG
                         }
                         else
                         {
-                            std::swap(indices[i], indices[j]);
+                            Kokkos::swap(indices[i], indices[j]);
                             j--;
                         }
                     }
@@ -262,17 +262,17 @@ namespace SPTAG
                 std::vector<std::vector<SizeType>> TptreeDataIndices(m_iTPTNumber, std::vector<SizeType>(m_iGraphSize));
                 std::vector<std::vector<std::pair<SizeType, SizeType>>> TptreeLeafNodes(m_iTPTNumber, std::vector<std::pair<SizeType, SizeType>>());
 
-                for (SizeType i = 0; i < m_iGraphSize; i++)
-                    for (DimensionType j = 0; j < m_iNeighborhoodSize; j++)
+                for (SizeType i = 0; i < m_iGraphSize; ++i)
+                    for (DimensionType j = 0; j < m_iNeighborhoodSize; ++j)
                         (NeighborhoodDists)[i][j] = MaxDist;
 
                 auto t1 = std::chrono::high_resolution_clock::now();
                 LOG(Helper::LogLevel::LL_Info, "Parallel TpTree Partition begin\n");
 #pragma omp parallel for schedule(dynamic)
-                for (int i = 0; i < m_iTPTNumber; i++)
+                for (int i = 0; i < m_iTPTNumber; ++i)
                 {
                     Sleep(i * 100); std::srand(clock());
-                    for (SizeType j = 0; j < m_iGraphSize; j++) TptreeDataIndices[i][j] = j;
+                    for (SizeType j = 0; j < m_iGraphSize; ++j) TptreeDataIndices[i][j] = j;
                     std::random_shuffle(TptreeDataIndices[i].begin(), TptreeDataIndices[i].end());
                     PartitionByTptree<T>(index, TptreeDataIndices[i], 0, m_iGraphSize - 1, TptreeLeafNodes[i]);
                     LOG(Helper::LogLevel::LL_Info, "Finish Getting Leaves for Tree %d\n", i);
@@ -281,10 +281,10 @@ namespace SPTAG
                 auto t2 = std::chrono::high_resolution_clock::now();
                 LOG(Helper::LogLevel::LL_Info, "Build TPTree time (s): %lld\n", std::chrono::duration_cast<std::chrono::seconds>(t2 - t1).count());
 
-                for (int i = 0; i < m_iTPTNumber; i++)
+                for (int i = 0; i < m_iTPTNumber; ++i)
                 {
 #pragma omp parallel for schedule(dynamic)
-                    for (SizeType j = 0; j < (SizeType)TptreeLeafNodes[i].size(); j++)
+                    for (SizeType j = 0; j < (SizeType)TptreeLeafNodes[i].size(); ++j)
                     {
                         SizeType start_index = TptreeLeafNodes[i][j].first;
                         SizeType end_index = TptreeLeafNodes[i][j].second;
@@ -357,7 +357,7 @@ namespace SPTAG
                 {
                     auto t1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for schedule(dynamic)
-                    for (SizeType i = 0; i < m_iGraphSize; i++)
+                    for (SizeType i = 0; i < m_iGraphSize; ++i)
                     {
                         RefineNode<T>(index, i, false, false, m_iCEF * m_iCEFScale);
                         if ((i * 5) % m_iGraphSize == 0) LOG(Helper::LogLevel::LL_Info, "Refine %d %d%%\n", iter, static_cast<int>(i * 1.0 / m_iGraphSize * 100));
@@ -371,7 +371,7 @@ namespace SPTAG
                 if (m_iRefineIter > 0) {
                     auto t1 = std::chrono::high_resolution_clock::now();
 #pragma omp parallel for schedule(dynamic)
-                    for (SizeType i = 0; i < m_iGraphSize; i++)
+                    for (SizeType i = 0; i < m_iGraphSize; ++i)
                     {
                         RefineNode<T>(index, i, false, false, m_iCEF);
                         if ((i * 5) % m_iGraphSize == 0) LOG(Helper::LogLevel::LL_Info, "Refine %d %d%%\n", m_iRefineIter - 1, static_cast<int>(i * 1.0 / m_iGraphSize * 100));
@@ -397,7 +397,7 @@ namespace SPTAG
                 newGraph->m_iNeighborhoodSize = m_iNeighborhoodSize;
 
 #pragma omp parallel for schedule(dynamic)
-                for (SizeType i = 0; i < R; i++)
+                for (SizeType i = 0; i < R; ++i)
                 {
                     if ((i * 5) % R == 0) LOG(Helper::LogLevel::LL_Info, "Refine %d%%\n", static_cast<int>(i * 1.0 / R * 100));
 
@@ -408,7 +408,7 @@ namespace SPTAG
                     RebuildNeighbors(index, indices[i], outnodes, query.GetResults(), m_iCEF + 1);
 
                     std::unordered_map<SizeType, SizeType>::const_iterator iter;
-                    for (DimensionType j = 0; j < m_iNeighborhoodSize; j++)
+                    for (DimensionType j = 0; j < m_iNeighborhoodSize; ++j)
                     {
                         if (outnodes[j] >= 0 && outnodes[j] < reverseIndices.size()) outnodes[j] = reverseIndices[outnodes[j]];
                         if (idmap != nullptr && (iter = idmap->find(outnodes[j])) != idmap->end()) outnodes[j] = iter->second;
@@ -430,7 +430,7 @@ namespace SPTAG
 
                 if (updateNeighbors) {
                     // update neighbors
-                    for (int j = 0; j <= CEF; j++)
+                    for (int j = 0; j <= CEF; ++j)
                     {
                         BasicResult* item = query.GetResult(j);
                         if (item->VID < 0) break;
@@ -489,7 +489,7 @@ namespace SPTAG
                 IOBINARY(output, WriteBinary, sizeof(SizeType), (char*)&m_iGraphSize);
                 IOBINARY(output, WriteBinary, sizeof(DimensionType), (char*)&m_iNeighborhoodSize);
 
-                for (int i = 0; i < m_iGraphSize; i++)
+                for (int i = 0; i < m_iGraphSize; ++i)
                     IOBINARY(output, WriteBinary, sizeof(SizeType) * m_iNeighborhoodSize, (char*)m_pNeighborhoodGraph[i]);
                 LOG(Helper::LogLevel::LL_Info, "Save %s (%d,%d) Finish!\n", m_pNeighborhoodGraph.Name().c_str(), m_iGraphSize, m_iNeighborhoodSize);
                 return ErrorCode::Success;

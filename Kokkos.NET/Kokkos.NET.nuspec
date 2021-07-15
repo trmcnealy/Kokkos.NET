@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Kokkos.NET</id>
     <version>$KOKKOS$</version>
@@ -7,7 +7,7 @@
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
     <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
-      <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET" commit="57a32ada206125f9ffdc0bbc758f45f0604bf700" />
+    <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET.git"/>
     <icon>nindra.png</icon>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Kokkos .NET</description>
@@ -21,7 +21,7 @@
           <dependency id="RuntimeGeneration" version="$RUNTIMEGENERATION$"/>
           <dependency id="UnManagedCil" version="$UNMANAGED$"/>
           <dependency id="Microsoft.Data.Analysis" version="0.5.0"/>
-          <dependency id="MSMPIDIST" version="10.1.12498.18"/>
+          <dependency id="Trilinos.NET" version="1.0.0"/>
           <dependency id="NvAPIWrapper.Net" version="0.8.0.98"/>
           <dependency id="System.Diagnostics.PerformanceCounter" version="5.0.0" />
       </group>
@@ -42,39 +42,41 @@
     <!--</platforms>-->
   </metadata>
   <files>
-    <file src="..\..\trmcnealy.github.io\Assets\nindra.png"
+    <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
           target=""/>
 
+     <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
+        target="lib\net5.0"/>
 
-    <!--<file src="..\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
-          target="lib\ref\net5.0"/>-->
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
+        target="lib\net5.0"/>
 
-    <file src="..\bin\$Configuration$\AnyCPU\net5.0\Kokkos.NET.pdb"
-          target="lib\net5.0"/>
+   <!--<file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Kokkos.NET.pdb"
+      target="lib\net5.0"/>
 
-    <file src="..\bin\$Configuration$\AnyCPU\net5.0\Kokkos.NET.dll"
-          target="lib\net5.0"/>
-
-
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Kokkos.NET.dll"
+      target="lib\net5.0"/>-->
 
 
-          
+
+
+
     <!--<file src="Kokkos.NET.props"
           target="build"/>
 
     <file src="Kokkos.NET.targets"
           target="build"/>
-          
-    <file src="..\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
+
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
           target="ref\net5.0"/>
 
-    <file src="..\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
           target="lib\net5.0"/>
-          
-    <file src="..\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
+
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
           target="lib\net5.0\Debug"/>
 
-    <file src="..\bin\Release\AnyCPU\net5.0\Kokkos.NET.dll"
+    <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\AnyCPU\net5.0\Kokkos.NET.dll"
           target="lib\net5.0\Release"/>-->
   </files>
 </package>

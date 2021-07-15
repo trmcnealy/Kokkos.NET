@@ -12,12 +12,7 @@ __inline static NdArray* ViewToNdArrayRank0(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   0,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 0, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -49,12 +44,7 @@ __inline static NdArray* ViewToNdArrayRank1(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   1,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 1, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -86,12 +76,7 @@ __inline static NdArray* ViewToNdArrayRank2(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   2,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 2, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -123,12 +108,7 @@ __inline static NdArray* ViewToNdArrayRank3(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   3,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 3, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -160,12 +140,7 @@ __inline static NdArray* ViewToNdArrayRank4(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   4,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 4, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -197,12 +172,7 @@ __inline static NdArray* ViewToNdArrayRank5(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   5,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 5, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -234,12 +204,7 @@ __inline static NdArray* ViewToNdArrayRank6(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   6,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 6, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -271,12 +236,7 @@ __inline static NdArray* ViewToNdArrayRank7(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   7,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 7, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -308,12 +268,7 @@ __inline static NdArray* ViewToNdArrayRank8(void* instance) noexcept
 
     view_type* view = reinterpret_cast<view_type*>(instance);
 
-    NdArray* ndArray = new NdArray(ndarray_traits::data_type,
-                                   8,
-                                   ndarray_traits::layout,
-                                   ndarray_traits::execution_space,
-                                   view->data(),
-                                   NativeString(view->label().size(), view->label().c_str()));
+    NdArray* ndArray = new NdArray(ndarray_traits::data_type, 8, ndarray_traits::layout, ndarray_traits::execution_space, view->data(), NativeString(view->label().size(), view->label().c_str()));
 
     ndArray->dims[0] = view->extent(0);
     ndArray->dims[1] = view->extent(1);
@@ -336,34 +291,39 @@ __inline static NdArray* ViewToNdArrayRank8(void* instance) noexcept
     return ndArray;
 }
 
-#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE, RANK)                                                                                                                       \
-    case DataTypeKind::TYPE_NAME:                                                                                                                                                  \
-    {                                                                                                                                                                              \
-        switch (layout)                                                                                                                                                            \
-        {                                                                                                                                                                          \
-            case LayoutKind::Right:                                                                                                                                                \
-            {                                                                                                                                                                      \
-                return ViewToNdArrayRank##RANK<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::LayoutRight>(instance);                                                                      \
-            }                                                                                                                                                                      \
-            case LayoutKind::Left:                                                                                                                                                 \
-            {                                                                                                                                                                      \
-                return ViewToNdArrayRank##RANK<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::LayoutLeft>(instance);                                                                       \
-            }                                                                                                                                                                      \
-        }                                                                                                                                                                          \
+#define DEF_TEMPLATE(TYPE_NAME, TYPE, EXECUTION_SPACE, RANK)                                                                                                                                           \
+    case DataTypeKind::TYPE_NAME:                                                                                                                                                                      \
+    {                                                                                                                                                                                                  \
+        switch (layout)                                                                                                                                                                                \
+        {                                                                                                                                                                                              \
+            case LayoutKind::Right:                                                                                                                                                                    \
+            {                                                                                                                                                                                          \
+                return ViewToNdArrayRank##RANK<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::LayoutRight>(instance);                                                                                          \
+            }                                                                                                                                                                                          \
+            case LayoutKind::Left:                                                                                                                                                                     \
+            {                                                                                                                                                                                          \
+                return ViewToNdArrayRank##RANK<TYPE, Kokkos::EXECUTION_SPACE, Kokkos::LayoutLeft>(instance);                                                                                           \
+            }                                                                                                                                                                                          \
+            case LayoutKind::Stride:                                                                                                                                                                   \
+            case LayoutKind::Unknown:                                                                                                                                                                  \
+            {                                                                                                                                                                                          \
+                break;                                                                                                                                                                                 \
+            }                                                                                                                                                                                          \
+        }                                                                                                                                                                                              \
     }
 
-#define TEMPLATE_RANK(DEF, EXECUTION_SPACE, RANK)                                                                                                                                  \
-    DEF(Single, float, EXECUTION_SPACE, RANK)                                                                                                                                      \
-    DEF(Double, double, EXECUTION_SPACE, RANK)                                                                                                                                     \
-    DEF(Bool, bool, EXECUTION_SPACE, RANK)                                                                                                                                         \
-    DEF(Int8, int8, EXECUTION_SPACE, RANK)                                                                                                                                         \
-    DEF(UInt8, uint8, EXECUTION_SPACE, RANK)                                                                                                                                       \
-    DEF(Int16, int16, EXECUTION_SPACE, RANK)                                                                                                                                       \
-    DEF(UInt16, uint16, EXECUTION_SPACE, RANK)                                                                                                                                     \
-    DEF(Int32, int32, EXECUTION_SPACE, RANK)                                                                                                                                       \
-    DEF(UInt32, uint32, EXECUTION_SPACE, RANK)                                                                                                                                     \
-    DEF(Int64, int64, EXECUTION_SPACE, RANK)                                                                                                                                       \
-    DEF(UInt64, uint64, EXECUTION_SPACE, RANK)                                                                                                                                     \
+#define TEMPLATE_RANK(DEF, EXECUTION_SPACE, RANK)                                                                                                                                                      \
+    DEF(Single, float, EXECUTION_SPACE, RANK)                                                                                                                                                          \
+    DEF(Double, double, EXECUTION_SPACE, RANK)                                                                                                                                                         \
+    DEF(Bool, bool, EXECUTION_SPACE, RANK)                                                                                                                                                             \
+    DEF(Int8, int8, EXECUTION_SPACE, RANK)                                                                                                                                                             \
+    DEF(UInt8, uint8, EXECUTION_SPACE, RANK)                                                                                                                                                           \
+    DEF(Int16, int16, EXECUTION_SPACE, RANK)                                                                                                                                                           \
+    DEF(UInt16, uint16, EXECUTION_SPACE, RANK)                                                                                                                                                         \
+    DEF(Int32, int32, EXECUTION_SPACE, RANK)                                                                                                                                                           \
+    DEF(UInt32, uint32, EXECUTION_SPACE, RANK)                                                                                                                                                         \
+    DEF(Int64, int64, EXECUTION_SPACE, RANK)                                                                                                                                                           \
+    DEF(UInt64, uint64, EXECUTION_SPACE, RANK)                                                                                                                                                         \
     DEF(Char, wchar_t, EXECUTION_SPACE, RANK)
 
 NdArray* ViewToNdArray(void* instance, const ExecutionSpaceKind execution_space, const LayoutKind layout, const DataTypeKind data_type, const uint16 rank) noexcept
@@ -732,7 +692,6 @@ NdArray* ViewToNdArray(void* instance, const ExecutionSpaceKind execution_space,
             return new NdArray(data_type, ~uint16(0), LayoutKind::Unknown, execution_space, nullptr, NativeString(0, nullptr));
     }
 }
-
 
 #undef TEMPLATE_RANK
 #undef DEF_TEMPLATE

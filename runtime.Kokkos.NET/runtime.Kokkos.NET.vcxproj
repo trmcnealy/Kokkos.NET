@@ -29,10 +29,7 @@
   <ItemGroup>
     <ClCompile Include="Analyzes\InterpolationMethods.cpp" />
     <ClCompile Include="Analyzes\SpatialMethods.cpp" />
-    <ClCompile Include="Analyzes\SpecialMethods.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">-ffp-model=strict %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">-ffp-model=strict %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
+    <ClCompile Include="Analyzes\SpecialMethods.cpp" />
     <ClCompile Include="dllmain.cpp">
       <EnableClangCuda Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Disable</EnableClangCuda>
     </ClCompile>
@@ -40,7 +37,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp" />
+    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
+      <FileType>Document</FileType>
+      <RuntimeTypeInfo Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </RuntimeTypeInfo>
+      <CppLanguageStandard Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c++20</CppLanguageStandard>
+      <MSExtensions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</MSExtensions>
+    </ClCompile>
     <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosHwloc.cpp" />
     <ClCompile Include="runtime.Kokkos\KokkosViews.cpp" />
@@ -93,7 +96,6 @@
     <ClInclude Include="Analyzes\Kriging.hpp" />
     <ClInclude Include="Analyzes\Linq.hpp" />
     <ClInclude Include="Analyzes\minpack.hpp" />
-    <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp" />
     <ClInclude Include="Analyzes\RadialBasisFunctionInterp1D.hpp" />
     <ClInclude Include="Analyzes\RadialBasisFunctionInterp2D.hpp" />
     <ClInclude Include="Analyzes\RadialBasisFunctionInterpNd.hpp" />
@@ -111,9 +113,6 @@
     <ClInclude Include="Geometry\Sphere.hpp" />
     <ClInclude Include="Geometry\Vector.hpp" />
     <ClInclude Include="KokkosAPI.hpp" />
-    <ClInclude Include="KokkosLapack\gelq2.hpp" />
-    <ClInclude Include="KokkosLapack\KokkosLapack.config.h" />
-    <ClInclude Include="KokkosLapack\KokkosLapack.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="runtime.Kokkos\Extensions.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\Atomics.hpp" />
@@ -121,6 +120,7 @@
     <ClInclude Include="runtime.Kokkos\Extensions\MatrixOps.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\Solvers.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\SparseOps.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\TensorOps.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\VectorOps.hpp" />
     <ClInclude Include="runtime.Kokkos\KokkosApi.h" />
     <ClInclude Include="runtime.Kokkos\KokkosIVector.hpp" />
@@ -200,12 +200,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </MIDL>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Kokkos.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <NuspecFile>runtime.Kokkos.NET.nuspec</NuspecFile>
     <ProjectGuid>{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}</ProjectGuid>
-    <RootSolutionDir>..\..\Kokkos.NET\</RootSolutionDir>
     <UseMultiToolTask>true</UseMultiToolTask>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -221,18 +223,18 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared">
-    <Import Project="..\..\Native\Core\Core.vcxitems" Label="Shared" />
-    <Import Project="..\..\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\Native\Core\Core.vcxitems" Label="Shared" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\WinMD.targets" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\WinMD.targets" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
-    <Import Project="$(RootSolutionDir)..\BuildTools\WinMD.targets" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\WinMD.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -256,7 +258,7 @@
       <CompileAs />
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -301,8 +303,7 @@
       <StrictAliasing />
       <CLanguageStandard>
       </CLanguageStandard>
-      <CppLanguageStandard>
-      </CppLanguageStandard>
+      <CppLanguageStandard>c++20</CppLanguageStandard>
       <MSCompatibility>
       </MSCompatibility>
       <MSExtensions>true</MSExtensions>
@@ -314,24 +315,23 @@
       <DataLevelLinking />
       <PositionIndependentCode />
       <PrecompiledHeaderOutputFileDirectory />
-      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
-      <LanguageStandard>stdcpplatest</LanguageStandard>
       <SupportJustMyCode />
       <StructMemberAlignment />
       <RemoveUnreferencedCodeData />
       <OpenMPSupport />
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard />
+      <LanguageStandard_C />
     </ClCompile>
     <Link>
-      <GenerateDebugInformation>
-      </GenerateDebugInformation>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <GenerateDebugInformation />
       <LinkErrorReporting />
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions />
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -339,8 +339,7 @@
       <UACUIAccess />
       <ProgramDatabaseFile />
       <OptimizeReferences />
-      <EnableCOMDATFolding>
-      </EnableCOMDATFolding>
+      <EnableCOMDATFolding />
       <ProfileGuidedDatabase />
       <RandomizedBaseAddress />
       <DataExecutionPrevention />
@@ -348,11 +347,9 @@
       <CLRUnmanagedCodeCheck />
       <CLRSupportLastError />
       <TypeLibraryResourceID />
-      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
-      <MergedIDLBaseFileName>
-      </MergedIDLBaseFileName>
+      <MergedIDLBaseFileName />
       <ImportLibrary />
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <Lib>
       <SubSystem>
@@ -426,7 +423,7 @@
       <CompileAs />
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -471,8 +468,7 @@
       <StrictAliasing />
       <CLanguageStandard>
       </CLanguageStandard>
-      <CppLanguageStandard>
-      </CppLanguageStandard>
+      <CppLanguageStandard>c++20</CppLanguageStandard>
       <MSCompatibility>
       </MSCompatibility>
       <MSExtensions>true</MSExtensions>
@@ -484,15 +480,16 @@
       <DataLevelLinking />
       <PositionIndependentCode />
       <PrecompiledHeaderOutputFileDirectory />
-      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>
+      </LanguageStandard>
       <SupportJustMyCode />
       <StructMemberAlignment />
       <RemoveUnreferencedCodeData />
       <OpenMPSupport />
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard_C>
+      </LanguageStandard_C>
       <BasicRuntimeChecks />
       <EnableClangCuda>Enabled</EnableClangCuda>
     </ClCompile>
@@ -503,7 +500,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -520,11 +517,12 @@
       <CLRUnmanagedCodeCheck />
       <CLRSupportLastError />
       <TypeLibraryResourceID />
-      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <MergedIDLBaseFileName>
       </MergedIDLBaseFileName>
       <ImportLibrary />
+      <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <CustomBuildStep />
     <ProjectReference />
@@ -580,9 +578,7 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(RootSolutionDir)..\BuildTools\Clang.targets" />
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.props))\Nuget.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.props))' != '' " />
-  <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.targets))\Nuget.targets" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Nuget.targets))' != '' " />
+  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" />
   <Target Name="Link">
     <CallTarget Targets="ClangLink" />
   </Target>

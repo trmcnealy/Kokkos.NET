@@ -4,69 +4,1952 @@
 
 #include <MathExtensions.hpp>
 #include <StdExtensions.hpp>
+#include <Print.hpp>
+#include <Exceptions.h>
 #include <Constants.hpp>
+#include <Concepts.hpp>
 #include <Complex.hpp>
 
-#include <Kokkos_Cuda.hpp>
+#include <Kokkos_Core.hpp>
 #include <Kokkos_ScatterView.hpp>
 #include <Kokkos_UnorderedMap.hpp>
 
+#include <KokkosBlas.hpp>
+
 #include <type_traits>
 
-template<typename T>
-concept FloatingPoint = std::is_floating_point<T>::value;
+#include <cuda.h>
+#include <mutex>
 
-template<typename T>
-concept Integer = std::is_integral<T>::value;
+/// KokkosBlas::abs(y,x):		            y[i] = |x[i]|
+/// KokkosBlas::axpy(alpha,x,y):		    y[i] += alpha * x[i]
+/// KokkosBlas::axpby(alpha,x,beta,y):		y[i] = beta * y + alpha * x[i]
+/// KokkosBlas::dot(x,y):		            dot = SUM_i ( x[i] * y[i] )
+/// KokkosBlas::fill(x,alpha):		        x[i] = alpha
+/// KokkosBlas::iamax(x):		            i= min{i of MAX_i(x[i]) }
+/// KokkosBlas::mult(gamma,y,alpha,A,x):    y[i] = gamma * y[i] + alpha * A[i] * x[i]
+/// KokkosBlas::nrm1(x):		            nrm1 = SUM_i( |x[i]| )
+/// KokkosBlas::nrm2(x):		            nrm2 = sqrt ( SUM_i( |x[i]| * |x[i]| ))
+/// KokkosBlas::nrm2_squared:               nrm2 = SUM_i( |x[i]| * |x[i]| )
+/// KokkosBlas::nrm2w(x,w):		            nrm2w = sqrt ( SUM_i( (|x[i]|/|w[i]|)^2 ))
+/// KokkosBlas::nrm2w_squared:              nrm2 = SUM_i( |x[i]| / |w[i]| * |x[i]| / |w[i]| )
+/// KokkosBlas::nrminf(x):		            nrminf = MAX_i( |x[i]| )
+/// KokkosBlas::reciprocal(r,x):		    r[i] = 1 / x[i]
+/// KokkosBlas::scal(y,alpha,x):		    y[i] = alpha * x[i]
+/// KokkosBlas::sum(x):		                sum = SUM_i( x[i] )
+/// KokkosBlas::update(a,x,b,y,g,z):        y[i] = g * z[i] + b * y[i] + a * x[i]
+///
+/// KokkosBlas::gemv(t,alph,A,x,bet,y):     y[i] = bet*y[i] + alph*SUM_j(A[i,j]*x[j])
+/// KokkosBlas::gemm(tA,tB,alph,A,B,bet,C): C[i,j]=bet*C[i,j]+alph*SUM_k(A[i,k]*B[k,j])
+///
+/// KokkosBlas::trmm(s,uplo,t,d,alpha,A,B): B = alpha*op(A)*B or alpha*B*op(A)
+/// KokkosBlas::trsm(s,uplo,t,d,alpha,A,B): X = op(A)\alpha*B or alpha*B/op(A)
 
-template<typename T>
-concept Number = std::is_arithmetic<T>::value;
+namespace Kokkos
+{
+    namespace Extension
+    {
+        namespace Internal
+        {
+
+            template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+            __inline static void NestedHybridLoop(View<DataType**, Layout, ExecutionSpace> view)
+            {
+                const size_type nCpu = view.extent(0);
+                const size_type nGpu = view.extent(1);
+
+                typedef Kokkos::RangePolicy<Kokkos::OpenMP, Kokkos::IndexType<size_type>, Kokkos::Schedule<Kokkos::Static>> OpenMPPolicy;
+                typedef Kokkos::RangePolicy<Kokkos::Cuda, Kokkos::IndexType<size_type>, Kokkos::Schedule<Kokkos::Static>>   CudaPolicy;
+
+                Kokkos::parallel_for(OpenMPPolicy(0, nCpu),
+                                     [=](const size_type i)
+                                     {
+                                         cudaStream_t stream;
+                                         cudaStreamCreate(&stream);
+                                         const Kokkos::Cuda space0(stream);
+
+                                         Kokkos::parallel_for(CudaPolicy(space0, 0, nGpu), [=] __host__ __device__(const size_type i0) { view(i, i0) = 1.0 * i0; });
+
+                                         space0.fence();
+                                     });
+            }
+        }
+
+        template<class ExecutionSpace>
+        class SpaceInstance;
+
+        // template<class ExecutionSpace>
+        // class SpaceInstance
+        //{
+        //    static SpaceInstance  _instance;
+        //    static std::once_flag _flag;
+        //
+        //    ExecutionSpace execution_space;
+        //
+        //    __inline SpaceInstance() : execution_space() {}
+        //    __inline ~SpaceInstance() = default;
+        //
+        // public:
+        //    __inline static SpaceInstance& GetInstance()
+        //    {
+        //        std::call_once(_flag, []() { _instance = SpaceInstance{}; });
+        //        return _instance;
+        //    }
+        //
+        //    __inline static ExecutionSpace& GetExecutionSpace() { return GetInstance().execution_space; }
+        //};
+
+        template<>
+        class SpaceInstance<Kokkos::Cuda>
+        {
+            Kokkos::Cuda execution_space;
+
+            __inline SpaceInstance()
+            {
+                cudaStream_t stream;
+                cudaStreamCreate(&stream);
+
+                execution_space = Kokkos::Cuda(stream);
+            }
+
+            __inline ~SpaceInstance()
+            {
+                cudaStream_t stream = execution_space.cuda_stream();
+                cudaStreamDestroy(stream);
+            }
+
+        public:
+            __inline static SpaceInstance<Kokkos::Cuda>& GetInstance()
+            {
+                static SpaceInstance<Kokkos::Cuda> instance;
+                return instance;
+            }
+
+            __inline static Kokkos::Cuda& GetExecutionSpace()
+            {
+                return GetInstance().execution_space;
+            }
+        };
+
+        template<>
+        class SpaceInstance<Kokkos::OpenMP>
+        {
+            Kokkos::OpenMP execution_space;
+
+            __inline SpaceInstance() {}
+
+            __inline ~SpaceInstance() {}
+
+        public:
+            __inline static SpaceInstance<Kokkos::OpenMP>& GetInstance()
+            {
+                static SpaceInstance<Kokkos::OpenMP> instance;
+                return instance;
+            }
+
+            __inline static Kokkos::OpenMP& GetExecutionSpace()
+            {
+                return GetInstance().execution_space;
+            }
+        };
+
+        template<>
+        class SpaceInstance<Kokkos::Serial>
+        {
+            Kokkos::Serial execution_space;
+
+            __inline SpaceInstance() {}
+
+            __inline ~SpaceInstance() {}
+
+        public:
+            __inline static SpaceInstance<Kokkos::Serial>& GetInstance()
+            {
+                static SpaceInstance<Kokkos::Serial> instance;
+                return instance;
+            }
+
+            __inline static Kokkos::Serial& GetExecutionSpace()
+            {
+                return GetInstance().execution_space;
+            }
+        };
+
+    }
+}
+
+namespace Kokkos
+{
+    struct VOID_TYPE
+    {
+    };
+
+    namespace Extension
+    {
+        template<typename DataType, class ExecutionSpace>
+        using Scalar = View<DataType, ExecutionSpace>;
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        using Vector = View<DataType*, Layout, ExecutionSpace>;
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        class Matrix
+        {
+        public:
+            using ThisType = Matrix<DataType, ExecutionSpace, Layout>;
+            typedef Layout                                   LayoutType;
+            typedef View<DataType**, Layout, ExecutionSpace> ViewType;
+            typedef typename ViewType::traits                traits;
+
+            typedef typename ViewType::size_type                    size_type;
+            typedef typename ViewType::const_value_type             const_value_type;
+            typedef typename ViewType::traits::non_const_value_type non_const_value_type;
+
+            using const_type     = Matrix<const DataType, ExecutionSpace, Layout>;
+            using non_const_type = Matrix<DataType, ExecutionSpace, Layout>;
+
+            inline static constexpr size_type row_index    = std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? 1 : 0;
+            inline static constexpr size_type column_index = std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? 0 : 1;
+            inline static constexpr size_type Rank         = 2;
+
+        private:
+            ViewType _view;
+
+        public:
+            template<Integer NRows, Integer NColumns>
+            __inline explicit Matrix(std::string label, NRows nRows, NColumns nColumns) :
+                _view(label, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? nColumns : nRows, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? nRows : nColumns)
+            {
+            }
+
+            template<Integer NRows, Integer NColumns>
+            KOKKOS_INLINE_FUNCTION explicit Matrix(non_const_value_type* ptr, NRows nRows, NColumns nColumns) :
+                _view(ptr, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? nColumns : nRows, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? nRows : nColumns)
+            {
+            }
+
+            template<typename OtherDataType>
+            __inline Matrix(const Vector<OtherDataType, ExecutionSpace>& vector) : Matrix(vector.label(), vector.extent(0), vector.extent(0))
+            {
+                for (size_type i0 = 0; i0 < _view.extent(0); ++i0)
+                {
+                    for (size_type i1 = 0; i1 < _view.extent(1); ++i1)
+                    {
+                        if (i0 == i1)
+                        {
+                            _view(i0, i1) = vector(i0);
+                        }
+                        else
+                        {
+                            _view(i0, i1) = 0.0;
+                        }
+                    }
+                }
+            }
+
+            __inline Matrix()  = default;
+            __inline ~Matrix() = default;
+            KOKKOS_INLINE_FUNCTION Matrix(const Matrix& other) : _view(other.View()) {}
+            __inline Matrix(Matrix&&)              = default;
+            KOKKOS_INLINE_FUNCTION Matrix& operator=(const Matrix& other)
+            {
+                if (this == &other)
+                {
+                    return *this;
+                }
+                _view = other.View();
+                return *this;
+            }
+            __inline Matrix& operator=(Matrix&&) = default;
+
+            template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+            KOKKOS_INLINE_FUNCTION Matrix(const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other) : _view(other.View())
+            {
+            }
+
+            template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+            KOKKOS_INLINE_FUNCTION Matrix& operator=(const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other)
+            {
+                if (this == &other)
+                {
+                    return *this;
+                }
+                _view = other.View();
+                return *this;
+            }
+
+#pragma region Indexers
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            {
+                return _view(column, row);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, const typename ViewType::reference_type>::type
+            {
+                return _view(column, row);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            {
+                return _view(row, column);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const typename ViewType::reference_type>::type
+            {
+                return _view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            {
+                return view(column, row);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            {
+                return view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutStride>::value, typename ViewType::reference_type>::type
+            {
+                return view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) -> typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
+            {
+                return view(row);
+            }
+
+#pragma endregion
+
+#pragma region Member Functions
+            __inline operator ViewType()
+            {
+                return _view;
+            }
+
+            __inline operator const ViewType() const
+            {
+                return _view;
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION ViewType& View()
+            {
+                return _view;
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION const ViewType& View() const
+            {
+                return _view;
+            }
+
+            KOKKOS_INLINE_FUNCTION constexpr typename ViewType::pointer_type data() const
+            {
+                return _view.data();
+            }
+
+            __inline const std::string label() const
+            {
+                return _view.label();
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION constexpr const size_type nrows() const
+            {
+                return _view.extent(row_index);
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION constexpr const size_type ncolumns() const
+            {
+                return _view.extent(column_index);
+            }
+
+            KOKKOS_INLINE_FUNCTION constexpr const size_type size() const
+            {
+                return nrows() * ncolumns();
+            }
+#pragma endregion
+
+#pragma region Row& Column operator() SubViews
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_range_idx);
+            }
+
+            template<Integer TRow, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TRow, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, row_idx, column_range_idx);
+            }
+
+            template<Integer TRow, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, TRow>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, row_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const TColumn& column_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, TColumn>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, column_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const TColumn& column_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, column_idx, row_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, column_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, row_range_idx);
+            }
+#pragma endregion
+
+#pragma region Row SubViews
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TRow>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_idx);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) const -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TRow>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_idx);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, TRow, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) const -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, TRow, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const TRowStart& row_start_idx, const TRowEnd& row_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, Kokkos::make_pair(row_start_idx, row_end_idx));
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const TRowStart& row_start_idx, const TRowEnd& row_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::make_pair(row_start_idx, row_end_idx), Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, Kokkos::ALL);
+            }
+#pragma endregion
+
+#pragma region Column SubViews
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) const ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TColumn>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_idx);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) const ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TColumn>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_idx);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const TColumnStart& column_start_idx, const TColumnEnd& column_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::make_pair(column_start_idx, column_end_idx), Kokkos::ALL);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const TColumnStart& column_start_idx, const TColumnEnd& column_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, Kokkos::make_pair(column_start_idx, column_end_idx));
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_range_idx);
+            }
+#pragma endregion
+        };
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        class Matrix3x3
+        {
+        public:
+            using ThisType = Matrix3x3<DataType, ExecutionSpace, Layout>;
+
+            inline static constexpr size_type NRows    = 3;
+            inline static constexpr size_type NColumns = 3;
+
+            typedef Layout                                                  LayoutType;
+            typedef View<DataType[NRows][NColumns], Layout, ExecutionSpace> ViewType;
+            typedef typename ViewType::traits                               traits;
+
+            typedef typename ViewType::size_type                    size_type;
+            typedef typename ViewType::const_value_type             const_value_type;
+            typedef typename ViewType::traits::non_const_value_type non_const_value_type;
+
+            using const_type     = Matrix3x3<const DataType, ExecutionSpace, Layout>;
+            using non_const_type = Matrix3x3<DataType, ExecutionSpace, Layout>;
+
+            inline static constexpr size_type row_index    = std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? 1 : 0;
+            inline static constexpr size_type column_index = std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? 0 : 1;
+            inline static constexpr size_type Rank         = 2;
+
+        private:
+            ViewType _view;
+
+        public:
+            __inline explicit Matrix3x3(std::string label) : _view(label, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? NColumns : NRows, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? NRows : NColumns) {}
+
+            KOKKOS_INLINE_FUNCTION explicit Matrix3x3(non_const_value_type* ptr) :
+                _view(ptr, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? NColumns : NRows, std::is_same<LayoutType, Kokkos::LayoutLeft>::value ? NRows : NColumns)
+            {
+            }
+
+            template<typename OtherDataType>
+            __inline Matrix3x3(const Vector<OtherDataType, ExecutionSpace>& vector) : Matrix3x3(vector.label(), vector.extent(0), vector.extent(0))
+            {
+                for (size_type i0 = 0; i0 < _view.extent(0); ++i0)
+                {
+                    for (size_type i1 = 0; i1 < _view.extent(1); ++i1)
+                    {
+                        if (i0 == i1)
+                        {
+                            _view(i0, i1) = vector(i0);
+                        }
+                        else
+                        {
+                            _view(i0, i1) = 0.0;
+                        }
+                    }
+                }
+            }
+
+            __inline Matrix3x3()  = default;
+            __inline ~Matrix3x3() = default;
+            KOKKOS_INLINE_FUNCTION Matrix3x3(const Matrix3x3& other) : _view(other.View()) {}
+            __inline Matrix3x3(Matrix3x3&&)           = default;
+            KOKKOS_INLINE_FUNCTION Matrix3x3& operator=(const Matrix3x3& other)
+            {
+                if (this == &other)
+                {
+                    return *this;
+                }
+                _view = other.View();
+                return *this;
+            }
+            __inline Matrix3x3& operator=(Matrix3x3&&) = default;
+
+            template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+            KOKKOS_INLINE_FUNCTION Matrix3x3(const Matrix3x3<OtherDataType, OtherExecutionSpace, OtherLayout>& other) : _view(other.View())
+            {
+            }
+
+            template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+            KOKKOS_INLINE_FUNCTION Matrix3x3& operator=(const Matrix3x3<OtherDataType, OtherExecutionSpace, OtherLayout>& other)
+            {
+                if (this == &other)
+                {
+                    return *this;
+                }
+                _view = other.View();
+                return *this;
+            }
+
+#pragma region Indexers
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            {
+                return _view(column, row);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, const typename ViewType::reference_type>::type
+            {
+                return _view(column, row);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            {
+                return _view(row, column);
+            }
+
+            template<Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const typename ViewType::reference_type>::type
+            {
+                return _view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            {
+                return view(column, row);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            {
+                return view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 2 && Integer<TRow> && std::is_same<typename MatrixViewType::traits::array_layout, Kokkos::LayoutStride>::value, typename ViewType::reference_type>::type
+            {
+                return view(row, column);
+            }
+
+            template<typename MatrixViewType, Integer TRow, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) -> typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
+            {
+                return view(row);
+            }
+
+#pragma endregion
+
+#pragma region Member Functions
+            __inline operator ViewType()
+            {
+                return _view;
+            }
+
+            __inline operator const ViewType() const
+            {
+                return _view;
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION ViewType& View()
+            {
+                return _view;
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION const ViewType& View() const
+            {
+                return _view;
+            }
+
+            KOKKOS_INLINE_FUNCTION constexpr typename ViewType::pointer_type data() const
+            {
+                return _view.data();
+            }
+
+            __inline const std::string label() const
+            {
+                return _view.label();
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION constexpr const size_type nrows() const
+            {
+                return NRows;
+            }
+
+            KOKKOS_FORCEINLINE_FUNCTION constexpr const size_type ncolumns() const
+            {
+                return NColumns;
+            }
+
+            KOKKOS_INLINE_FUNCTION constexpr const size_type size() const
+            {
+                return nrows() * ncolumns();
+            }
+#pragma endregion
+
+#pragma region Row& Column operator() SubViews
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_range_idx);
+            }
+
+            template<Integer TRow, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TRow, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, row_idx, column_range_idx);
+            }
+
+            template<Integer TRow, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, TRow>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, row_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const TColumn& column_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, TColumn>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, column_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const TColumn& column_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, column_idx, row_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, column_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd, Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx, const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, row_range_idx);
+            }
+#pragma endregion
+
+#pragma region Row SubViews
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TRow>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_idx);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) const -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TRow>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_idx);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, TRow, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRow>
+            KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) const -> typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, TRow, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_idx, Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const TRowStart& row_start_idx, const TRowEnd& row_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, Kokkos::make_pair(row_start_idx, row_end_idx));
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const TRowStart& row_start_idx, const TRowEnd& row_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::make_pair(row_start_idx, row_end_idx), Kokkos::ALL);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TRowStart, TRowEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, row_range_idx);
+            }
+
+            template<Integer TRowStart, Integer TRowEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Rows(const Kokkos::pair<TRowStart, TRowEnd>& row_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::pair<TRowStart, TRowEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, row_range_idx, Kokkos::ALL);
+            }
+#pragma endregion
+
+#pragma region Column SubViews
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) const ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, TColumn, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TColumn>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_idx);
+            }
+
+            template<Integer TColumn>
+            KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) const ->
+                typename std::enable_if<Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, const Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, TColumn>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_idx);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const TColumnStart& column_start_idx, const TColumnEnd& column_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::make_pair(column_start_idx, column_end_idx), Kokkos::ALL);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const TColumnStart& column_start_idx, const TColumnEnd& column_end_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, Kokkos::make_pair(column_start_idx, column_end_idx));
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutLeft>::value, Kokkos::Subview<ViewType, Kokkos::pair<TColumnStart, TColumnEnd>, Kokkos::Impl::ALL_t>>::type
+            {
+                return Kokkos::subview(_view, column_range_idx, Kokkos::ALL);
+            }
+
+            template<Integer TColumnStart, Integer TColumnEnd>
+            KOKKOS_FORCEINLINE_FUNCTION auto Columns(const Kokkos::pair<TColumnStart, TColumnEnd>& column_range_idx) ->
+                typename std::enable_if<std::is_same<LayoutType, Kokkos::LayoutRight>::value, Kokkos::Subview<ViewType, Kokkos::Impl::ALL_t, Kokkos::pair<TColumnStart, TColumnEnd>>>::type
+            {
+                return Kokkos::subview(_view, Kokkos::ALL, column_range_idx);
+            }
+#pragma endregion
+        };
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        using Tensor = View<DataType***, Layout, ExecutionSpace>;
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        using Tesseract = View<DataType****, Layout, ExecutionSpace>;
+
+        // template<class DataType>
+        // class SparseVectorElement
+        //{
+        //    size_type _index;
+        //    DataType  _value;
+        //
+        // public:
+        //    SparseVectorElement(const size_type& i, const DataType& a) : _index(i), _value(a) {}
+        //
+        //    __inline ~SparseVectorElement()                          = default;
+        //    __inline SparseVectorElement(const SparseVectorElement&) = default;
+        //    __inline SparseVectorElement(SparseVectorElement&&)      = default;
+        //    __inline SparseVectorElement& operator=(const SparseVectorElement&) = default;
+        //    __inline SparseVectorElement& operator=(SparseVectorElement&&) = default;
+        //
+        //    KOKKOS_INLINE_FUNCTION constexpr size_type& Index()
+        //    {
+        //        return _index;
+        //    }
+        //    KOKKOS_INLINE_FUNCTION constexpr const size_type& Index() const
+        //    {
+        //        return _index;
+        //    }
+        //
+        //    KOKKOS_INLINE_FUNCTION constexpr DataType& Value()
+        //    {
+        //        return _value;
+        //    }
+        //    KOKKOS_INLINE_FUNCTION constexpr const DataType& Value() const
+        //    {
+        //        return _value;
+        //    }
+        //
+        //    KOKKOS_INLINE_FUNCTION friend constexpr int compare(const SparseVectorElement& lhs, const SparseVectorElement& rhs)
+        //    {
+        //        if (lhs.Index() < rhs.Index())
+        //        {
+        //            return -1;
+        //        }
+        //
+        //        if (lhs.Index() > rhs.Index())
+        //        {
+        //            return 1;
+        //        }
+        //
+        //        return 0;
+        //    }
+        //};
+        //
+        // template<typename DataType, class ExecutionSpace>
+        // using SparseVector = View<SparseVectorElement<DataType>*, typename ExecutionSpace::array_layout, ExecutionSpace>;
+        //
+        // template<typename DataType, typename IndexType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        // class SparseMatrix
+        //{
+        // public:
+        //    typedef Layout                                   LayoutType;
+        //    typedef View<IndexType*, Layout, ExecutionSpace> RowIndexViewType;
+        //    typedef View<IndexType*, Layout, ExecutionSpace> ColumnPtrViewType;
+        //    typedef View<DataType*, Layout, ExecutionSpace>  ValueViewType;
+        //
+        //    using const_type     = SparseMatrix<const DataType, ExecutionSpace, Layout>;
+        //    using non_const_type = SparseMatrix<DataType, ExecutionSpace, Layout>;
+        //
+        //    inline static constexpr size_type Rank = 2;
+        //
+        // private:
+        //    IndexType _nRows;
+        //    IndexType _nColumns;
+        //
+        //    RowIndexViewType  _rowIndex;
+        //    ColumnPtrViewType _columnPtr;
+        //    ValueViewType     _values;
+        //
+        // public:
+        //    template<Integer NRows, Integer NColumns, Integer NValues>
+        //    __inline explicit SparseMatrix(std::string label, NRows nRows, NColumns nColumns, NValues nValues) :
+        //        _nRows(nRows),
+        //        _nColumns(nColumns),
+        //        _rowIndex(nValues + 1, 0),
+        //        _columnPtr(nValues, 0),
+        //        _values(nValues)
+        //    {
+        //    }
+        //
+        //    __inline SparseMatrix()                    = default;
+        //    __inline ~SparseMatrix()                   = default;
+        //    __inline SparseMatrix(const SparseMatrix&) = default;
+        //    __inline SparseMatrix(SparseMatrix&&)      = default;
+        //    __inline SparseMatrix& operator=(const SparseMatrix&) = default;
+        //    __inline SparseMatrix& operator=(SparseMatrix&&) = default;
+        //
+        //    // template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+        //    //__inline SparseMatrix(const SparseMatrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other) : _view(other.View())
+        //    //{
+        //    //}
+        //
+        //    // template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
+        //    //__inline SparseMatrix& operator=(const SparseMatrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other)
+        //    //{
+        //    //    if (this == &other)
+        //    //    {
+        //    //        return *this;
+        //    //    }
+        //    //    _view = other.View();
+        //    //    return *this;
+        //    //}
+        //
+        //    // template<typename TRow, typename TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value,
+        //    //                            typename ViewType::reference_type>::type
+        //    //{
+        //    //    return _view(column, row);
+        //    //}
+        //
+        //    // template<typename TRow, typename TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value,
+        //    //                            const typename ViewType::reference_type>::type
+        //    //{
+        //    //    return _view(column, row);
+        //    //}
+        //
+        //    // template<Integer TRow, Integer TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value,
+        //    //                            typename ViewType::reference_type>::type
+        //    //{
+        //    //    return _view(row, column);
+        //    //}
+        //
+        //    // template<Integer TRow, Integer TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) const ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value,
+        //    //                            const typename ViewType::reference_type>::type
+        //    //{
+        //    //    return _view(row, column);
+        //    //}
+        //
+        //    __inline RowIndexViewType& RowIndex()
+        //    {
+        //        return _rowIndex;
+        //    }
+        //
+        //    __inline const RowIndexViewType& RowIndex() const
+        //    {
+        //        return _rowIndex;
+        //    }
+        //
+        //    __inline ColumnPtrViewType& ColumnPtr()
+        //    {
+        //        return _columnPtr;
+        //    }
+        //
+        //    __inline const ColumnPtrViewType& ColumnPtr() const
+        //    {
+        //        return _columnPtr;
+        //    }
+        //
+        //    __inline ValueViewType& Values()
+        //    {
+        //        return _values;
+        //    }
+        //
+        //    __inline const ValueViewType& Values() const
+        //    {
+        //        return _values;
+        //    }
+        //
+        //    //__inline const std::string label() const
+        //    //{
+        //    //    return _view.label();
+        //    //}
+        //
+        //    KOKKOS_FORCEINLINE_FUNCTION constexpr IndexType nrows() const
+        //    {
+        //        return _nRows;
+        //    }
+        //
+        //    KOKKOS_FORCEINLINE_FUNCTION constexpr IndexType ncolumns() const
+        //    {
+        //        return _nColumns;
+        //    }
+        //
+        //    KOKKOS_FORCEINLINE_FUNCTION constexpr IndexType nvalues() const
+        //    {
+        //        return _values.extent(0);
+        //    }
+        //
+        //    // template<typename TRow, typename TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value,
+        //    //                            typename ViewType::reference_type>::type
+        //    //{
+        //    //    return Kokkos::subview(_view, row_idx, Kokkos::ALL);
+        //    //}
+        //
+        //    // template<typename TRow, typename TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto Row(const TRow& row_idx) const ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value,
+        //    //                            const typename ViewType::reference_type>::type
+        //    //{
+        //    //    return Kokkos::subview(_view, Kokkos::ALL, row_idx);
+        //    //}
+        //
+        //    // template<Integer TRow, Integer TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value,
+        //    //                            typename ViewType::reference_type>::type
+        //    //{
+        //    //    return Kokkos::subview(_view, Kokkos::ALL, column_idx);
+        //    //}
+        //
+        //    // template<Integer TRow, Integer TColumn>
+        //    // KOKKOS_FORCEINLINE_FUNCTION auto Column(const TColumn& column_idx) const ->
+        //    //    typename std::enable_if<Integer<TRow>::value && Integer<TColumn> && std::is_same<LayoutType, Kokkos::LayoutRight>::value,
+        //    //                            const typename ViewType::reference_type>::type
+        //    //{
+        //    //    return Kokkos::subview(_view, column_idx, Kokkos::ALL);
+        //    //}
+        //};
+
+        template<typename DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> JoinByColumn(const Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)
+        {
+            Assert(lhs.nrows() == rhs.nrows());
+
+            Matrix<DataType, ExecutionSpace> matrix(lhs.label() + rhs.label(), lhs.nrows(), lhs.ncolumns() + rhs.ncolumns());
+
+            auto first_half = matrix.Columns(0ULL, lhs.ncolumns());
+
+            Kokkos::deep_copy(first_half, lhs.View());
+
+            auto second_half = matrix.Columns(lhs.ncolumns(), lhs.ncolumns() + rhs.ncolumns());
+
+            Kokkos::deep_copy(second_half, rhs.View());
+
+            return matrix;
+        }
+
+        template<typename DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> JoinByColumn(const Vector<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)
+        {
+            Assert(lhs.extent(0) == rhs.nrows());
+
+            Matrix<DataType, ExecutionSpace> matrix(lhs.label() + rhs.label(), rhs.nrows(), 1 + rhs.ncolumns());
+
+            for (size_type i = 0; i < rhs.nrows(); i++)
+            {
+                matrix(i, 0ULL) = lhs(i);
+            }
+
+            auto second_half = matrix.Columns(1ULL, 1ULL + rhs.ncolumns());
+
+            Kokkos::deep_copy(second_half, rhs.View());
+
+            return matrix;
+        }
+
+        template<typename DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> JoinByColumn(const Matrix<DataType, ExecutionSpace>& lhs, const Vector<DataType, ExecutionSpace>& rhs)
+        {
+            Assert(lhs.nrows() == rhs.extent(0));
+
+            Matrix<DataType, ExecutionSpace> matrix(lhs.label() + rhs.label(), lhs.nrows(), lhs.ncolumns() + 1);
+
+            auto first_half = matrix.Columns(0ULL, lhs.ncolumns());
+
+            Kokkos::deep_copy(first_half, lhs.View());
+
+            const size_type last_column = lhs.ncolumns();
+
+            for (size_type i = 0; i < lhs.nrows(); i++)
+            {
+                matrix(i, last_column) = rhs(i);
+            }
+
+            return matrix;
+        }
+
+    }
+
+    namespace Extension
+    {
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 1, Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(src);
+
+            Kokkos::deep_copy(dest, src);
+#else
+            Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.extent(0)], src.extent(0));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 2, Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(src.label(), src.nrows(), src.ncolumns());
+
+            Kokkos::deep_copy(dest.View(), src.View());
+#else
+            Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.size()], src.nrows(), src.ncolumns());
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 3, View<typename ViewType::traits::non_const_value_type***, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type***, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(src.label(), src.extent(0), src.extent(1), src.extent(2));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type***, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.size()],
+                                                                                                                                                               src.extent(0),
+                                                                                                                                                               src.extent(1),
+                                                                                                                                                               src.extent(2));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(src.label(), src.extent(0), src.extent(1), src.extent(2), src.extent(3));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.size()],
+                                                                                                                                                                src.extent(0),
+                                                                                                                                                                src.extent(1),
+                                                                                                                                                                src.extent(2),
+                                                                                                                                                                src.extent(3));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
+            /*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type*****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type*****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(src.label(),
+                                                                                                                                                                 src.extent(0),
+                                                                                                                                                                 src.extent(1),
+                                                                                                                                                                 src.extent(2),
+                                                                                                                                                                 src.extent(3),
+                                                                                                                                                                 src.extent(4));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type*****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.size()],
+                                                                                                                                                                 src.extent(0),
+                                                                                                                                                                 src.extent(1),
+                                                                                                                                                                 src.extent(2),
+                                                                                                                                                                 src.extent(3),
+                                                                                                                                                                 src.extent(4));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
+            /*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(src.label(), src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(new typename ViewType::traits::non_const_value_type[src.size()], src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
+            /*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type*******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type*******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(src.label(), src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5), src.extent(6));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type*******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(new typename ViewType::traits::non_const_value_type[src.size()], src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5), src.extent(6));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+        template<typename ViewType>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
+            /*const std::string& label,*/ ViewType src)
+            -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type********, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
+        {
+#if !defined(__CUDA_ARCH__)
+            View<typename ViewType::traits::non_const_value_type********, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(src.label(), src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5), src.extent(6), src.extent(7));
+
+            Kokkos::deep_copy(dest, src);
+#else
+            View<typename ViewType::traits::non_const_value_type********, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>
+                dest(new typename ViewType::traits::non_const_value_type[src.size()], src.extent(0), src.extent(1), src.extent(2), src.extent(3), src.extent(4), src.extent(5), src.extent(6), src.extent(7));
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
+    }
+}
+
+//#include <utility>
 
 namespace Kokkos
 {
     namespace Extension
     {
 
-        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
-        using Vector = View<DataType*, Layout, ExecutionSpace>;
+        // template<typename T>
+        // using array = T[];
 
-        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
-        using Matrix = View<DataType**, Layout, ExecutionSpace>;
-
-        template<class DataType>
-        class SparseVectorElement
+        template<typename T>
+        KOKKOS_INLINE_FUNCTION static void swap(volatile T& a, volatile T& b) noexcept
         {
-            DataType  _value;
-            size_type _index;
+            const T tmp = Kokkos::atomic_exchange(&a, b);
+            Kokkos::atomic_exchange(&b, tmp);
+            // a     = std::move(b);
+            // b     = std::move(tmp);
+        }
 
-        public:
-            SparseVectorElement(const DataType& a, const size_type& i) : _value(a), _index(i) {}
+        // template<FloatingPoint DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout, typename int_type = size_int<DataType>>
+        // static void quick_sort(View<DataType*, Layout, ExecutionSpace>& x, int_type left, int_type right)
+        //{
+        //    int_type i     = left;
+        //    int_type j     = right;
+        //    DataType pivot = x[((DataType)(left + right)) / 2.0];
+        //
+        //    do
+        //    {
+        //        while ((x[i] < pivot) && (i < right))
+        //        {
+        //            ++i;
+        //        }
+        //        while ((pivot < x[j]) && (j > left))
+        //        {
+        //            --j;
+        //        }
+        //
+        //        if (i <= j)
+        //        {
+        //            Kokkos::swap<DataType>(x[i], x[j]);
+        //            ++i;
+        //            --j;
+        //        }
+        //    } while (i <= j);
+        //
+        //    if (left < j)
+        //    {
+        //        quick_sort(x, left, j);
+        //    }
+        //
+        //    if (i < right)
+        //    {
+        //        quick_sort(x, i, right);
+        //    }
+        //}
+        //
+        // template<FloatingPoint DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout, typename int_type = size_int<DataType>>
+        // static void QuickSort(View<DataType*, Layout, ExecutionSpace>& x)
+        //{
+        //    quick_sort(x, int_type(0), x.extent(0) - 1);
+        //}
+    }
 
-            KOKKOS_INLINE_FUNCTION constexpr DataType& value()
-            {
-                return _value;
-            }
-            KOKKOS_INLINE_FUNCTION constexpr const DataType& value() const
-            {
-                return _value;
-            }
+    using Extension::swap;
+}
 
-            KOKKOS_INLINE_FUNCTION constexpr size_type& index()
+namespace Kokkos
+{
+    namespace Extension
+    {
+        template<FloatingPoint DataType, class ExecutionSpace>
+        struct ColumnSums
+        {
+            typedef DataType value_type[];
+
+            const size_type value_count;
+
+            Matrix<DataType, ExecutionSpace> X_;
+
+            ColumnSums(const Matrix<DataType, ExecutionSpace>& X) : value_count(X.ncolumns()), X_(X) {}
+
+            KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j, value_type sum) const
             {
-                return _index;
-            }
-            KOKKOS_INLINE_FUNCTION constexpr const size_type& index() const
-            {
-                return _index;
+                sum[j] += X_(i, j);
             }
         };
 
-        template<typename DataType, class ExecutionSpace>
-        using SparseVector = View<SparseVectorElement<DataType>*, typename ExecutionSpace::array_layout, ExecutionSpace>;
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> SumByColumn(const Matrix<DataType, ExecutionSpace>& view)
+        {
+            using MDRangeType = Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<size_type>>;
+            using PointType   = typename MDRangeType::point_type;
 
-        template<typename DataType, class ExecutionSpace>
-        using SparseMatrix = View<SparseVectorElement<DataType>**, typename ExecutionSpace::array_layout, ExecutionSpace>;
+            const size_type nRows    = view.nrows();
+            const size_type nColumns = view.ncolumns();
 
+            ColumnSums cs(view);
+
+            Vector<DataType, ExecutionSpace> sums("sums", nColumns);
+            Kokkos::deep_copy(sums, 0.0);
+
+            MDRangeType policy(PointType{{0, 0}}, PointType{{nRows, nColumns}});
+
+            parallel_reduce(policy, cs, sums);
+
+            return sums;
+        }
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        struct RowSums
+        {
+            typedef DataType value_type[];
+
+            const size_type value_count;
+
+            Matrix<DataType, ExecutionSpace> X_;
+
+            RowSums(const Matrix<DataType, ExecutionSpace>& X) : value_count(X.nrows()), X_(X) {}
+
+            KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j, value_type sum) const
+            {
+                sum[j] += X_(i, j);
+            }
+        };
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> SumByRow(const Matrix<DataType, ExecutionSpace>& view)
+        {
+            using MDRangeType = Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<size_type>>;
+            using PointType   = typename MDRangeType::point_type;
+
+            const size_type nRows    = view.nrows();
+            const size_type nColumns = view.ncolumns();
+
+            RowSums rs(view);
+
+            Vector<DataType, ExecutionSpace> sums("sums", nRows);
+            Kokkos::deep_copy(sums, 0.0);
+
+            MDRangeType policy(PointType{{0, 0}}, PointType{{nRows, nColumns}});
+
+            parallel_reduce(policy, rs, sums);
+
+            return sums;
+        }
+
+        template<class ViewType>
+        __inline static ViewType Zeros(const size_type arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                       const size_type arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG)
+        {
+            ViewType v("", arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
+
+            Kokkos::deep_copy(v, 0.0);
+
+            return v;
+        }
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> Range(const DataType& min, const DataType& max, const DataType& step = 1.0)
+        {
+            const int32 n = (int32)(std::abs(max - min) / step) + 1;
+
+            Vector<DataType, ExecutionSpace> range("", n);
+
+            DataType curr = min;
+
+            for (int32 i = 0; i < n; ++i)
+            {
+                range[i] = curr;
+                curr += step;
+            }
+
+            return range;
+        }
+    }
+
+    namespace Extension
+    {
+        template<class ViewType, typename DataType = typename ViewType::traits::non_const_value_type>
+        struct CumulativeSumFunctor
+        {
+            using value_type = DataType;
+
+            ViewType _v;
+            ViewType _r;
+
+            CumulativeSumFunctor(const ViewType& v, ViewType& r) : _v(v), _r(r) {}
+
+            KOKKOS_INLINE_FUNCTION void operator()(const int idx, value_type& val, const bool& final) const
+            {
+                val += _v(idx);
+
+                if (final)
+                {
+                    _r(idx) = val;
+                }
+            }
+        };
+    }
+}
+
+namespace Kokkos
+{
+    using Kokkos::Extension::Range;
+    using Kokkos::Extension::Zeros;
+}
+
+namespace Kokkos
+{
+    namespace Extension
+    {
+#if 0
+        class MMAPAllocation
+        {
+            size_type                    sz;
+            CUmemGenericAllocationHandle hdl;
+            CUmemAccessDesc              accessDescriptor;
+            CUdeviceptr                  ptr;
+
+        public:
+            MMAPAllocation(const size_type size, const int dev = 0)
+            {
+                CUmemAllocationProp prop = {};
+                prop.type                = CU_MEM_ALLOCATION_TYPE_PINNED;
+                prop.location.type       = CU_MEM_LOCATION_TYPE_DEVICE;
+                prop.location.id         = dev;
+
+                accessDescriptor.location = prop.location;
+                accessDescriptor.flags    = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
+
+                size_type aligned_sz;
+
+                ThrowIfFailed(cuMemGetAllocationGranularity(&aligned_sz, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED));
+
+                sz = ((size + aligned_sz - 1) / aligned_sz) * aligned_sz;
+
+                ThrowIfFailed(cuMemAddressReserve(&ptr, sz, 0ULL, 0ULL, 0ULL));
+                ThrowIfFailed(cuMemCreate(&hdl, sz, &prop, 0));
+                ThrowIfFailed(cuMemMap(ptr, sz, 0ULL, hdl, 0ULL));
+                ThrowIfFailed(cuMemSetAccess(ptr, sz, &accessDescriptor, 1ULL));
+            }
+
+            ~MMAPAllocation()
+            {
+                ThrowIfFailed(cuMemUnmap(ptr, sz));
+                ThrowIfFailed(cuMemAddressFree(ptr, sz));
+                ThrowIfFailed(cuMemRelease(hdl));
+            }
+        };
+
+        /// <summary>
+        ///
+        /// vector<CUdevice> mappingDevices;
+        /// mappingDevices.push_back(cuDevice);
+        ///
+        /// vector<CUdevice> backingDevices = getBackingDevices(cuDevice);
+        ///
+        /// checkCudaErrors(simpleMallocMultiDeviceMmap(&d_A, &allocationSize, size, backingDevices, mappingDevices));
+        /// checkCudaErrors(simpleMallocMultiDeviceMmap(&d_B, NULL, size, backingDevices, mappingDevices));
+        /// checkCudaErrors(simpleMallocMultiDeviceMmap(&d_C, NULL, size, backingDevices, mappingDevices));
+        ///
+        ///
+        ///
+        /// </summary>
+        class MultiDeviceMMAP
+        {
+            size_type                                 sz;
+            std::vector<CUmemGenericAllocationHandle> memHandles;
+            std::vector<CUmemAccessDesc>              accessDescriptors;
+
+            CUdeviceptr ptr;
+
+        public:
+            MultiDeviceMMAP(const int dev, const std::vector<CUdevice>& residentDevices, const std::vector<CUdevice>& mappingDevices, const size_type size, const size_type align)
+            {
+                memHandles.resize(residentDevices.size());
+                accessDescriptors.resize(mappingDevices.size());
+
+                size_type min_granularity = 0;
+                size_type granularity;
+
+                CUmemAllocationProp prop = {};
+                prop.type                = CU_MEM_ALLOCATION_TYPE_PINNED;
+                prop.location.type       = CU_MEM_LOCATION_TYPE_DEVICE;
+
+                for (int idx = 0; idx < residentDevices.size(); idx++)
+                {
+                    granularity = 0;
+
+                    prop.location.id = residentDevices[idx];
+
+                    ThrowIfFailed(cuMemGetAllocationGranularity(&granularity, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED));
+
+                    if (min_granularity < granularity)
+                    {
+                        min_granularity = granularity;
+                    }
+                }
+
+                for (size_type idx = 0; idx < mappingDevices.size(); idx++)
+                {
+                    prop.location.id = mappingDevices[idx];
+
+                    ThrowIfFailed(cuMemGetAllocationGranularity(&granularity, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED));
+
+                    if (min_granularity < granularity)
+                    {
+                        min_granularity = granularity;
+                    }
+                }
+
+                sz = round_up(size, residentDevices.size() * min_granularity);
+
+                size_type stripeSize = sz / residentDevices.size();
+
+                ThrowIfFailed(cuMemAddressReserve(&ptr, sz, align, 0ULL, 0ULL));
+
+                for (size_type idx = 0; idx < residentDevices.size(); idx++)
+                {
+                    prop.location.id = residentDevices[idx];
+
+                    ThrowIfFailed(cuMemCreate(&memHandles[idx], stripeSize, &prop, 0ULL));
+                    ThrowIfFailed(cuMemMap(ptr + (stripeSize * idx), stripeSize, 0ULL, &memHandles[idx], 0ULL));
+                }
+
+                for (size_type idx = 0; idx < mappingDevices.size(); idx++)
+                {
+                    accessDescriptors[idx].location.type = CU_MEM_LOCATION_TYPE_DEVICE;
+                    accessDescriptors[idx].location.id   = mappingDevices[idx];
+                    accessDescriptors[idx].flags         = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
+                }
+
+                ThrowIfFailed(cuMemSetAccess(ptr, sz, &accessDescriptors[0], accessDescriptors.size()));
+            }
+
+            ~MultiDeviceMMAP()
+            {
+                ThrowIfFailed(cuMemUnmap(ptr, sz));
+                ThrowIfFailed(cuMemAddressFree(ptr, sz));
+
+                for (size_type idx = 0; idx < memHandles.size(); idx++)
+                {
+                    ThrowIfFailed(cuMemRelease(memHandles[idx]));
+                }
+            }
+
+            static vector<CUdevice> getBackingDevices(const CUdevice cuDevice)
+            {
+                int num_devices;
+
+                ThrowIfFailed(cuDeviceGetCount(&num_devices));
+
+                vector<CUdevice> backingDevices;
+                backingDevices.push_back(cuDevice);
+                for (int dev = 0; dev < num_devices; dev++)
+                {
+                    int capable      = 0;
+                    int attributeVal = 0;
+
+                    // The mapping device is already in the backingDevices vector
+                    if (dev == cuDevice)
+                    {
+                        continue;
+                    }
+
+                    // Only peer capable devices can map each others memory
+                    ThrowIfFailed(cuDeviceCanAccessPeer(&capable, cuDevice, dev));
+                    if (!capable)
+                    {
+                        continue;
+                    }
+
+                    // The device needs to support virtual address management for the required apis to work
+                    ThrowIfFailed(cuDeviceGetAttribute(&attributeVal, CU_DEVICE_ATTRIBUTE_VIRTUAL_ADDRESS_MANAGEMENT_SUPPORTED, cuDevice));
+                    if (attributeVal == 0)
+                    {
+                        continue;
+                    }
+
+                    backingDevices.push_back(dev);
+                }
+                return backingDevices;
+            }
+
+            static CUresult MallocMultiDeviceMmap(CUdeviceptr*                 dptr,
+                                                  size_type*                   allocationSize,
+                                                  size_type                    size,
+                                                  const std::vector<CUdevice>& residentDevices,
+                                                  const std::vector<CUdevice>& mappingDevices,
+                                                  size_type                    align)
+            {
+                CUresult  status          = CUDA_SUCCESS;
+                size_type min_granularity = 0;
+                size_type stripeSize;
+
+                // Setup the properties common for all the chunks
+                // The allocations will be device pinned memory.
+                // This property structure describes the physical location where the memory will be allocated via cuMemCreate allong with additional properties
+                // In this case, the allocation will be pinnded device memory local to a given device.
+                CUmemAllocationProp prop = {};
+                prop.type                = CU_MEM_ALLOCATION_TYPE_PINNED;
+                prop.location.type       = CU_MEM_LOCATION_TYPE_DEVICE;
+
+                // Get the minimum granularity needed for the resident devices
+                // (the max of the minimum granularity of each participating device)
+                for (int idx = 0; idx < residentDevices.size(); idx++)
+                {
+                    size_type granularity = 0;
+
+                    // get the minnimum granularity for residentDevices[idx]
+                    prop.location.id = residentDevices[idx];
+                    status           = cuMemGetAllocationGranularity(&granularity, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED);
+                    if (status != CUDA_SUCCESS)
+                    {
+                        goto done;
+                    }
+                    if (min_granularity < granularity)
+                    {
+                        min_granularity = granularity;
+                    }
+                }
+
+                // Get the minimum granularity needed for the accessing devices
+                // (the max of the minimum granularity of each participating device)
+                for (size_type idx = 0; idx < mappingDevices.size(); idx++)
+                {
+                    size_type granularity = 0;
+
+                    // get the minnimum granularity for mappingDevices[idx]
+                    prop.location.id = mappingDevices[idx];
+                    status           = cuMemGetAllocationGranularity(&granularity, &prop, CU_MEM_ALLOC_GRANULARITY_RECOMMENDED);
+                    if (status != CUDA_SUCCESS)
+                    {
+                        goto done;
+                    }
+                    if (min_granularity < granularity)
+                    {
+                        min_granularity = granularity;
+                    }
+                }
+
+                // Round up the size such that we can evenly split it into a stripe size tha meets the granularity requirements
+                // Essentially size = N * residentDevices.size() * min_granularity is the requirement,
+                // since each piece of the allocation will be stripeSize = N * min_granularity
+                // and the min_granularity requirement applies to each stripeSize piece of the allocation.
+                size       = round_up(size, residentDevices.size() * min_granularity);
+                stripeSize = size / residentDevices.size();
+
+                // Return the rounded up size to the caller for use in the free
+                if (allocationSize)
+                {
+                    *allocationSize = size;
+                }
+
+                // Reserve the required contiguous VA space for the allocations
+                status = cuMemAddressReserve(dptr, size, align, 0, 0);
+                if (status != CUDA_SUCCESS)
+                {
+                    goto done;
+                }
+
+                // Create and map the backings on each gpu
+                // note: reusing CUmemAllocationProp prop from earlier with prop.type & prop.location.type already specified.
+                for (size_type idx = 0; idx < residentDevices.size(); idx++)
+                {
+                    CUresult status2 = CUDA_SUCCESS;
+
+                    // Set the location for this chunk to this device
+                    prop.location.id = residentDevices[idx];
+
+                    // Create the allocation as a pinned allocation on this device
+                    CUmemGenericAllocationHandle allocationHandle;
+                    status = cuMemCreate(&allocationHandle, stripeSize, &prop, 0);
+                    if (status != CUDA_SUCCESS)
+                    {
+                        goto done;
+                    }
+
+                    // Assign the chunk to the appropriate VA range and release the handle.
+                    // After mapping the memory, it can be referenced by virtual address.
+                    // Since we do not need to make any other mappings of this memory or export it,
+                    // we no longer need and can release the allocationHandle.
+                    // The allocation will be kept live until it is unmapped.
+                    status = cuMemMap(*dptr + (stripeSize * idx), stripeSize, 0, allocationHandle, 0);
+
+                    // the handle needs to be released even if the mapping failed.
+                    status2 = cuMemRelease(allocationHandle);
+                    if (status == CUDA_SUCCESS)
+                    {
+                        // cuMemRelease should not have failed here
+                        // as the handle was just allocated successfully
+                        // however return an error if it does.
+                        status = status2;
+                    }
+
+                    // Cleanup in case of any mapping failures.
+                    if (status != CUDA_SUCCESS)
+                    {
+                        goto done;
+                    }
+                }
+
+                {
+                    // Each accessDescriptor will describe the mapping requirement for a single device
+                    std::vector<CUmemAccessDesc> accessDescriptors;
+                    accessDescriptors.resize(mappingDevices.size());
+
+                    // Prepare the access descriptor array indicating where and how the backings should be visible.
+                    for (size_type idx = 0; idx < mappingDevices.size(); idx++)
+                    {
+                        // Specify which device we are adding mappings for.
+                        accessDescriptors[idx].location.type = CU_MEM_LOCATION_TYPE_DEVICE;
+                        accessDescriptors[idx].location.id   = mappingDevices[idx];
+
+                        // Specify both read and write access.
+                        accessDescriptors[idx].flags = CU_MEM_ACCESS_FLAGS_PROT_READWRITE;
+                    }
+
+                    // Apply the access descriptors to the whole VA range.
+                    status = cuMemSetAccess(*dptr, size, &accessDescriptors[0], accessDescriptors.size());
+                    if (status != CUDA_SUCCESS)
+                    {
+                        goto done;
+                    }
+                }
+
+            done:
+                if (status != CUDA_SUCCESS)
+                {
+                    if (*dptr)
+                    {
+                        simpleFreeMultiDeviceMmap(*dptr, size);
+                    }
+                }
+
+                return status;
+            }
+
+            static CUresult FreeMultiDeviceMmap(CUdeviceptr dptr, size_type size)
+            {
+                CUresult status = CUDA_SUCCESS;
+
+                // Unmap the mapped virtual memory region
+                // Since the handles to the mapped backing stores have already been released
+                // by cuMemRelease, and these are the only/last mappings referencing them,
+                // The backing stores will be freed.
+                // Since the memory has been unmapped after this call, accessing the specified
+                // va range will result in a fault (unitll it is remapped).
+                status = cuMemUnmap(dptr, size);
+                if (status != CUDA_SUCCESS)
+                {
+                    return status;
+                }
+                // Free the virtual address region.  This allows the virtual address region
+                // to be reused by future cuMemAddressReserve calls.  This also allows the
+                // virtual address region to be used by other allocation made through
+                // opperating system calls like malloc & mmap.
+                status = cuMemAddressFree(dptr, size);
+                if (status != CUDA_SUCCESS)
+                {
+                    return status;
+                }
+
+                return status;
+            }
+        };
+
+#endif
     }
 }
 
@@ -77,33 +1960,41 @@ namespace Kokkos
 #include <runtime.Kokkos/Extensions/VectorOps.hpp>
 #include <runtime.Kokkos/Extensions/MatrixOps.hpp>
 #include <runtime.Kokkos/Extensions/SparseOps.hpp>
-#include <runtime.Kokkos/Extensions/Solvers.hpp>
-
-
-
-
-template<class ExecutionSpace>
-KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<std::is_same_v<typename ExecutionSpace::memory_space, Kokkos::CudaUVMSpace>, void>
-{
-}
-
-template<class ExecutionSpace>
-KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!std::is_same_v<typename ExecutionSpace::memory_space, Kokkos::CudaUVMSpace>, void>
-{
-    Kokkos::fence();
-}
-
-
-
+#include <runtime.Kokkos/Extensions/TensorOps.hpp>
+//#include <runtime.Kokkos/Extensions/Solvers.hpp>
 
 #undef KOKKOS_EXTENSIONS
+
+namespace Kokkos
+{
+    namespace Extension
+    {
+        using namespace Kokkos::Extension::VectorOperators;
+        using namespace Kokkos::Extension::MatrixOperators;
+    }
+}
+
+namespace Kokkos
+{
+    namespace Extension
+    {
+        template<Integer OrdinalType, class ExecutionSpace>
+        using Policy = Kokkos::RangePolicy<ExecutionSpace, Kokkos::Schedule<Kokkos::Static>, Kokkos::IndexType<OrdinalType>>;
+
+        template<Integer OrdinalType, class ExecutionSpace>
+        __forceinline__ Policy<OrdinalType, ExecutionSpace> policy(OrdinalType n)
+        {
+            return Policy<OrdinalType, ExecutionSpace>(0, n);
+        }
+    }
+}
 
 // template<typename DataType, class TFunction>
 // KOKKOS_INLINE_FUNCTION static DataType fold(DataType arr[], const int len, TFunction binop, DataType initialValue = DataType(0))
 //{
 //    DataType ans = initialValue;
 //
-//    for (int i = 0; i < len; i++)
+//    for (int i = 0; i < len; ++i)
 //    {
 //        ans = binop(ans, arr[i]);
 //    }
@@ -353,7 +2244,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //
 //    /* -------------- the node type ----------------- */
 //
-//    using size_type        = std::size_t;
+//    using size_type        = std::size_type;
 //    using field_index_type = uint8_t;
 //    using lock_type        = OptimisticReadWriteLock;
 //
@@ -424,12 +2315,12 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //        /**
 //         * The number of keys/node desired by the user.
 //         */
-//        static constexpr size_t desiredNumKeys = ((blockSize > sizeof(base)) ? blockSize - sizeof(base) : 0) / sizeof(Key);
+//        static constexpr size_type desiredNumKeys = ((blockSize > sizeof(base)) ? blockSize - sizeof(base) : 0) / sizeof(Key);
 //
 //        /**
 //         * The actual number of keys/node corrected by functional requirements.
 //         */
-//        static constexpr size_t maxKeys = (desiredNumKeys > 3) ? desiredNumKeys : 3;
+//        static constexpr size_type maxKeys = (desiredNumKeys > 3) ? desiredNumKeys : 3;
 //
 //        // the keys stored in this node
 //        Key keys[maxKeys];
@@ -920,7 +2811,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            out << prefix << "@" << this << "[" << ((int)(this->position)) << "] - " << (this->inner ? "i" : "") << "node : " << this->numElements << "/" << maxKeys << " [";
 //
 //            // print the keys
-//            for (unsigned i = 0; i < this->numElements; i++)
+//            for (unsigned i = 0; i < this->numElements; ++i)
 //            {
 //                out << keys[i];
 //                if (i != this->numElements - 1)
@@ -934,7 +2825,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            if (this->inner)
 //            {
 //                out << " - [";
-//                for (unsigned i = 0; i <= this->numElements; i++)
+//                for (unsigned i = 0; i <= this->numElements; ++i)
 //                {
 //                    out << getChildren()[i];
 //                    if (i != this->numElements)
@@ -953,7 +2844,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            }
 //
 //
-//            out << "\n";
+//            out << std::endl;
 //
 //            // print the children recursively
 //            if (this->inner)
@@ -1031,7 +2922,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            auto part = num / (this->numElements + 1);
 //            assert(part > 0);
 //            getChild(0)->collectChunks(res, part, begin, iterator(this, 0));
-//            for (size_type i = 1; i < this->numElements; i++)
+//            for (size_type i = 1; i < this->numElements; ++i)
 //            {
 //                getChild(i)->collectChunks(res, part, iterator(this, static_cast<field_index_type>(i - 1)), iterator(this, static_cast<field_index_type>(i)));
 //            }
@@ -1081,9 +2972,9 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //                    if (this->parent->getChildren()[this->position] != this)
 //                    {
 //                        std::cout << "Parent reference invalid!\n";
-//                        std::cout << "   Node:     " << this << "\n";
-//                        std::cout << "   Parent:   " << this->parent << "\n";
-//                        std::cout << "   Position: " << ((int)this->position) << "\n";
+//                        std::cout << "   Node:     " << this << std::endl;
+//                        std::cout << "   Parent:   " << this->parent << std::endl;
+//                        std::cout << "   Position: " << ((int)this->position) << std::endl;
 //                        valid = false;
 //                    }
 //
@@ -1091,11 +2982,11 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //                    if (valid && this->position != 0 && !(comp(this->parent->keys[this->position - 1], keys[0]) < ((isSet) ? 0 : 1)))
 //                    {
 //                        std::cout << "Left parent key not lower bound!\n";
-//                        std::cout << "   Node:     " << this << "\n";
-//                        std::cout << "   Parent:   " << this->parent << "\n";
-//                        std::cout << "   Position: " << ((int)this->position) << "\n";
-//                        std::cout << "   Key:   " << (this->parent->keys[this->position]) << "\n";
-//                        std::cout << "   Lower: " << (keys[0]) << "\n";
+//                        std::cout << "   Node:     " << this << std::endl;
+//                        std::cout << "   Parent:   " << this->parent << std::endl;
+//                        std::cout << "   Position: " << ((int)this->position) << std::endl;
+//                        std::cout << "   Key:   " << (this->parent->keys[this->position]) << std::endl;
+//                        std::cout << "   Lower: " << (keys[0]) << std::endl;
 //                        valid = false;
 //                    }
 //
@@ -1103,11 +2994,11 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //                    if (valid && this->position != this->parent->numElements && !(comp(keys[this->numElements - 1], this->parent->keys[this->position]) < ((isSet) ? 0 : 1)))
 //                    {
 //                        std::cout << "Right parent key not lower bound!\n";
-//                        std::cout << "   Node:     " << this << "\n";
-//                        std::cout << "   Parent:   " << this->parent << "\n";
-//                        std::cout << "   Position: " << ((int)this->position) << "\n";
-//                        std::cout << "   Key:   " << (this->parent->keys[this->position]) << "\n";
-//                        std::cout << "   Upper: " << (keys[0]) << "\n";
+//                        std::cout << "   Node:     " << this << std::endl;
+//                        std::cout << "   Parent:   " << this->parent << std::endl;
+//                        std::cout << "   Position: " << ((int)this->position) << std::endl;
+//                        std::cout << "   Key:   " << (this->parent->keys[this->position]) << std::endl;
+//                        std::cout << "   Upper: " << (keys[0]) << std::endl;
 //                        valid = false;
 //                    }
 //                }
@@ -1116,12 +3007,12 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            // check element order
 //            if (this->numElements > 0)
 //            {
-//                for (unsigned i = 0; i < this->numElements - 1; i++)
+//                for (unsigned i = 0; i < this->numElements - 1; ++i)
 //                {
 //                    if (valid && !(comp(keys[i], keys[i + 1]) < ((isSet) ? 0 : 1)))
 //                    {
 //                        std::cout << "Element order invalid!\n";
-//                        std::cout << " @" << this << " key " << i << " is " << keys[i] << " vs " << keys[i + 1] << "\n";
+//                        std::cout << " @" << this << " key " << i << " is " << keys[i] << " vs " << keys[i + 1] << std::endl;
 //                        valid = false;
 //                    }
 //                }
@@ -1130,7 +3021,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //            // check state of sub-nodes
 //            if (this->inner)
 //            {
-//                for (unsigned i = 0; i <= this->numElements; i++)
+//                for (unsigned i = 0; i <= this->numElements; ++i)
 //                {
 //                    valid &= getChildren()[i]->check(comp, root);
 //                }
@@ -1356,7 +3247,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //
 // public:
 //    // the maximum number of keys stored per node
-//    static constexpr size_t max_keys_per_node = node::maxKeys;
+//    static constexpr size_type max_keys_per_node = node::maxKeys;
 //
 //    // -- ctors / dtors --
 //
@@ -2045,8 +3936,8 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //    void swap(btree& other)
 //    {
 //        // swap the content
-//        std::swap(root, other.root);
-//        std::swap(leftmost, other.leftmost);
+//        Kokkos::swap(root, other.root);
+//        Kokkos::swap(leftmost, other.leftmost);
 //    }
 //
 //    // Implementation of the assignment operation for trees.
@@ -2161,25 +4052,25 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //    {
 //        auto nodes = getNumNodes();
 //        out << " ---------------------------------\n";
-//        out << "  Elements: " << size() << "\n";
-//        out << "  Depth:    " << (empty() ? 0 : root->getDepth()) << "\n";
-//        out << "  Nodes:    " << nodes << "\n";
+//        out << "  Elements: " << size() << std::endl;
+//        out << "  Depth:    " << (empty() ? 0 : root->getDepth()) << std::endl;
+//        out << "  Nodes:    " << nodes << std::endl;
 //        out << " ---------------------------------\n";
-//        out << "  Size of inner node: " << sizeof(inner_node) << "\n";
-//        out << "  Size of leaf node:  " << sizeof(leaf_node) << "\n";
-//        out << "  Size of Key:        " << sizeof(Key) << "\n";
-//        out << "  max keys / node:  " << node::maxKeys << "\n";
-//        out << "  avg keys / node:  " << (size() / (double)nodes) << "\n";
-//        out << "  avg filling rate: " << ((size() / (double)nodes) / node::maxKeys) << "\n";
+//        out << "  Size of inner node: " << sizeof(inner_node) << std::endl;
+//        out << "  Size of leaf node:  " << sizeof(leaf_node) << std::endl;
+//        out << "  Size of Key:        " << sizeof(Key) << std::endl;
+//        out << "  max keys / node:  " << node::maxKeys << std::endl;
+//        out << "  avg keys / node:  " << (size() / (double)nodes) << std::endl;
+//        out << "  avg filling rate: " << ((size() / (double)nodes) / node::maxKeys) << std::endl;
 //        out << " ---------------------------------\n";
 //        out << "  insert-hint (hits/misses/total): " << hint_stats.inserts.getHits() << "/" << hint_stats.inserts.getMisses() << "/" << hint_stats.inserts.getAccesses()
-//            << "\n";
+//            << std::endl;
 //        out << "  contains-hint(hits/misses/total):" << hint_stats.contains.getHits() << "/" << hint_stats.contains.getMisses() << "/" << hint_stats.contains.getAccesses()
-//            << "\n";
+//            << std::endl;
 //        out << "  lower-bound-hint (hits/misses/total):" << hint_stats.lower_bound.getHits() << "/" << hint_stats.lower_bound.getMisses() << "/"
-//            << hint_stats.lower_bound.getAccesses() << "\n";
+//            << hint_stats.lower_bound.getAccesses() << std::endl;
 //        out << "  upper-bound-hint (hits/misses/total):" << hint_stats.upper_bound.getHits() << "/" << hint_stats.upper_bound.getMisses() << "/"
-//            << hint_stats.upper_bound.getAccesses() << "\n";
+//            << hint_stats.upper_bound.getAccesses() << std::endl;
 //        out << " ---------------------------------\n";
 //    }
 //
@@ -2309,7 +4200,7 @@ KOKKOS_INLINE_FUNCTION static constexpr auto KokkosFence() -> std::enable_if_t<!
 //        res->numElements = numKeys;
 //
 //        Iter c = a;
-//        for (int i = 0; i < numKeys; i++)
+//        for (int i = 0; i < numKeys; ++i)
 //        {
 //            // get dividing key
 //            res->keys[i] = c[step];

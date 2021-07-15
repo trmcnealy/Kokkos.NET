@@ -187,10 +187,6 @@ namespace Kokkos
 
             NdArray = ndArray;
         }
-        
-        ~View()
-        {
-        }
 
         public void Dispose()
         {
@@ -1602,11 +1598,7 @@ namespace Kokkos
 
     //    public TDataType this[ulong i0]
     //    {
-    //#if NETSTANDARD
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //#else
     //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1620,11 +1612,7 @@ namespace Kokkos
     //    public TDataType this[ulong i0,
     //                          ulong i1]
     //    {
-    //#if NETSTANDARD
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //#else
     //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,
@@ -1640,11 +1628,7 @@ namespace Kokkos
     //                          ulong i1,
     //                          ulong i2]
     //    {
-    //#if NETSTANDARD
-    //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    //#else
     //        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-    //#endif
     //        get
     //        {
     //            ValueType valuePtr = KokkosLibrary.GetValue(Pointer,

@@ -98,7 +98,7 @@ namespace Spatial
     //    {
     //        case Sphere:
     //        {
-    //            return Ellipsoid<DataType>("Sphere", 180.0 * 60.0 / Constants<DataType>::PI(), Constants<DataType>::Infinity());
+    //            return Ellipsoid<DataType>("Sphere", 180.0 * 60.0 / Constants<DataType>::PI(), Constants<DataType>::PositiveInfinity());
     //        }
     //        case NAD27:
     //        {
@@ -253,14 +253,9 @@ namespace Spatial
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType DistanceBetweenPointAndLines(REF(DataType) x0,
-                                                                        REF(DataType) y0,
-                                                                        REF(DataType) Px1,
-                                                                        REF(DataType) Py1,
-                                                                        REF(DataType) Px2,
-                                                                        REF(DataType) Py2)
+    KOKKOS_INLINE_FUNCTION static DataType DistanceBetweenPointAndLines(REF(DataType) x0, REF(DataType) y0, REF(DataType) Px1, REF(DataType) Py1, REF(DataType) Px2, REF(DataType) Py2)
     {
-        if(((Py2 - Py1) <= Constants<DataType>::Epsilon()) && ((Px2 - Px1) <= Constants<DataType>::Epsilon()))
+        if (((Py2 - Py1) <= Constants<DataType>::Epsilon()) && ((Px2 - Px1) <= Constants<DataType>::Epsilon()))
         {
             return sqrt(pow(Py1 - y0, 2) + pow(Px1 - x0, 2));
         }
@@ -326,7 +321,7 @@ namespace Spatial
 
         KOKKOS_INLINE_FUNCTION void operator()(REF(Distance), const size_type& i, const size_type& j) const
         {
-            if(i == j)
+            if (i == j)
             {
                 Distances(i, j) = 0.0;
                 return;
@@ -338,18 +333,17 @@ namespace Spatial
             //    return;
             //}
 
-            const DataType wellbore = DistanceBetweenPointAndLines(Cartesian(j, SurfaceIdx, XIdx),
-                                                                   Cartesian(j, SurfaceIdx, YIdx),
-                                                                   Cartesian(i, SurfaceIdx, XIdx),
-                                                                   Cartesian(i, SurfaceIdx, YIdx),
-                                                                   Cartesian(i, BottomIdx, XIdx),
-                                                                   Cartesian(i, BottomIdx, YIdx));
+            const DataType wellbore = DistanceBetweenPointAndLines<DataType>(Cartesian(j, SurfaceIdx, XIdx),
+                                                                             Cartesian(j, SurfaceIdx, YIdx),
+                                                                             Cartesian(i, SurfaceIdx, XIdx),
+                                                                             Cartesian(i, SurfaceIdx, YIdx),
+                                                                             Cartesian(i, BottomIdx, XIdx),
+                                                                             Cartesian(i, BottomIdx, YIdx));
 
             const DataType surface = sqrt(pow(Cartesian(i, SurfaceIdx, YIdx) - Cartesian(j, SurfaceIdx, YIdx), 2) +
                                           pow(Cartesian(i, SurfaceIdx, XIdx) - Cartesian(j, SurfaceIdx, XIdx), 2));
 
-            const DataType bottom = sqrt(pow(Cartesian(i, BottomIdx, YIdx) - Cartesian(j, BottomIdx, YIdx), 2) +
-                                         pow(Cartesian(i, BottomIdx, XIdx) - Cartesian(j, BottomIdx, XIdx), 2));
+            const DataType bottom = sqrt(pow(Cartesian(i, BottomIdx, YIdx) - Cartesian(j, BottomIdx, YIdx), 2) + pow(Cartesian(i, BottomIdx, XIdx) - Cartesian(j, BottomIdx, XIdx), 2));
 
             Distances(i, j) = max(surface, max(wellbore, bottom));
         }
@@ -358,14 +352,14 @@ namespace Spatial
         {
             DataType neighbor = Constants<DataType>::Max();
 
-            for(size_type j = 0; j < N; j++)
+            for (size_type j = 0; j < N; ++j)
             {
-                if(Distances(i, j) < 1.0)
+                if (Distances(i, j) < 1.0)
                 {
                     continue;
                 }
 
-                if(Distances(i, j) < neighbor)
+                if (Distances(i, j) < neighbor)
                 {
                     neighbor = Distances(i, j);
                 }
@@ -395,7 +389,7 @@ namespace Spatial
 
         using point_type = typename mdrange_type::point_type;
 
-        mdrange_type policy(point_type {{0, 0}}, point_type {{length, length}});
+        mdrange_type policy(point_type{{0, 0}}, point_type{{length, length}});
 
         Kokkos::parallel_for(policy, functor);
         Kokkos::fence();

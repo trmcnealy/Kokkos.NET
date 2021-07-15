@@ -35,7 +35,8 @@
 #include <cmath>
 #include <stdexcept>
 #include <cstdio>
-#include <crt/host_defines.h>
+
+//#include <crt/host_defines.h>
 
 /// do nothing, must use open()
 MemoryMapped::MemoryMapped() :
@@ -360,7 +361,7 @@ KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const u
 //
 //    for(uint64 i = 0; i < data.Size(); i += 11)
 //    { // length of date(10) + '\n'(1) = 11
-//        for(int j = 0; j < 10; j++)
+//        for(int j = 0; j < 10; ++j)
 //            date_h[index].words[j] = buffer[i + j];
 //
 //        date_h[index].words[10] = '\0';
@@ -387,13 +388,13 @@ KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const u
 //    int  start    = 0;
 //    char temp[15] = {};
 //
-//    for(uint64_t i = 0; i < data.Size(); i++)
+//    for(uint64_t i = 0; i < data.Size(); ++i)
 //    {
 //        if(buffer[i] == '\n')
 //        {
 //            const int length = i - start;
 //
-//            for(int j = 0; j < length; j++)
+//            for(int j = 0; j < length; ++j)
 //                temp[j] = buffer[start + j];
 //
 //            temp[length] = '\0';
@@ -633,7 +634,7 @@ KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const u
 //    cudaEventCreate(&stop1);
 //    cudaEventRecord(start1, nullptr);
 //
-//    for(int i = 0; i < 2 * num_blocks; i++)
+//    for(int i = 0; i < 2 * num_blocks; ++i)
 //    {
 //        total_revenue = total_revenue + block_sum_h[i];
 //    }
@@ -644,7 +645,7 @@ KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const u
 //    cudaEventElapsedTime(&cpuTime, start1, stop1);
 //
 //    // Output query result
-//    printf("\n");
+//    printf(std::endl);
 //    printf("+----------+\n");
 //    printf("| revenue  |\n");
 //    printf("+----------+\n");

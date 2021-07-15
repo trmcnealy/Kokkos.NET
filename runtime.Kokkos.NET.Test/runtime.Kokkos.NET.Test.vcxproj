@@ -17,41 +17,48 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="test_hgrad.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="test_functors.hpp" />
+    <ClInclude Include="test_hgrad.hpp" />
+    <ClInclude Include="test_util.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A3C531B-04B1-4B9C-AF93-063241A89847}</ProjectGuid>
-    <RootSolutionDir>..\..\Kokkos.NET\</RootSolutionDir>
     <UseMultiToolTask>true</UseMultiToolTask>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>clang</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
-    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="$(RootSolutionDir)..\BuildTools\Clang.props" />
+  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared">
-    <Import Project="..\..\Native\Core\Core.vcxitems" Label="Shared" />
-    <Import Project="..\..\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\Native\Core\Core.vcxitems" Label="Shared" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
+    <Import Project="D:\TFS_Sources\EngineeringTools\Native\Statistics\Statistics.vcxitems" Label="Shared" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
@@ -64,24 +71,33 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <TargetName>$(TargetName)</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <TargetName>$(TargetName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
-    <TargetName>$(TargetName)</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <TargetName>$(TargetName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <TargetName>$(TargetName)</TargetName>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <EnableClangTidyCodeAnalysis>true</EnableClangTidyCodeAnalysis>
+    <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+    <TargetName>$(TargetName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <CompileAs />
+      <CompileAs>
+      </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -126,8 +142,7 @@
       <StrictAliasing />
       <CLanguageStandard>
       </CLanguageStandard>
-      <CppLanguageStandard>
-      </CppLanguageStandard>
+      <CppLanguageStandard>c++20</CppLanguageStandard>
       <MSCompatibility>
       </MSCompatibility>
       <MSExtensions>true</MSExtensions>
@@ -139,19 +154,18 @@
       <DataLevelLinking />
       <PositionIndependentCode />
       <PrecompiledHeaderOutputFileDirectory />
-      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard />
+      <LanguageStandard_C />
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <LinkErrorReporting />
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -168,7 +182,8 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -184,8 +199,7 @@
       </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling>
       </ExceptionHandling>
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
@@ -263,8 +277,7 @@
       </StrictAliasing>
       <CLanguageStandard>
       </CLanguageStandard>
-      <CppLanguageStandard>
-      </CppLanguageStandard>
+      <CppLanguageStandard>c++20</CppLanguageStandard>
       <MSCompatibility>
       </MSCompatibility>
       <MSExtensions>true</MSExtensions>
@@ -284,23 +297,22 @@
       </PositionIndependentCode>
       <PrecompiledHeaderOutputFileDirectory>
       </PrecompiledHeaderOutputFileDirectory>
-      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary>
       </RuntimeLibrary>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <LanguageStandard />
+      <LanguageStandard_C />
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <LinkErrorReporting>
       </LinkErrorReporting>
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <ManifestFile>
@@ -332,7 +344,8 @@
       <TypeLibraryResourceID>
       </TypeLibraryResourceID>
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -416,11 +429,11 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <CompileAs />
+      <CompileAs>
+      </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);E:/TFS_Sources/trmcnealy/Kokkos.NET/runtime.Kokkos.NET</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -465,8 +478,7 @@
       <StrictAliasing />
       <CLanguageStandard>
       </CLanguageStandard>
-      <CppLanguageStandard>
-      </CppLanguageStandard>
+      <CppLanguageStandard>c++20</CppLanguageStandard>
       <MSCompatibility>
       </MSCompatibility>
       <MSExtensions>true</MSExtensions>
@@ -478,19 +490,18 @@
       <DataLevelLinking />
       <PositionIndependentCode />
       <PrecompiledHeaderOutputFileDirectory />
-      <ObjectFileName>$(IntPosixDir)%(filename).obj</ObjectFileName>
       <RuntimeLibrary />
       <PrecompiledHeader />
-      <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <LanguageStandard />
+      <LanguageStandard_C />
     </ClCompile>
     <Link>
       <GenerateDebugInformation>
       </GenerateDebugInformation>
       <LinkErrorReporting />
-      <AdditionalOptions>
-      </AdditionalOptions>
+      <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../kokkos/lib/libkokkoscontainers.dll.a,-Bstatic,$(PACKAGE_CACHE)../kokkos/lib/libkokkoskernels.a,-lteuchoscore</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -507,7 +518,8 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
     <Lib>
@@ -518,7 +530,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="$(RootSolutionDir)..\BuildTools\Clang.targets" />
+  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" />
   <Target Name="Link">
     <CallTarget Targets="ClangLink" />
   </Target>

@@ -237,7 +237,7 @@ class TPtree {
         for(int j=0; j<pow(2,i); ++j) {
           printf("(%d) %0.2f, ", node_sizes[(int)pow(2,i)+j-1], split_keys[(int)pow(2,i)+j-1]);
         }
-        printf("\n");
+        printf(std::endl);
       }
     }
 };

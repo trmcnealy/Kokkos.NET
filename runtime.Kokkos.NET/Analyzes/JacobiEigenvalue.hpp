@@ -50,7 +50,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
     Kokkos::Extension::Vector<DataType, ExecutionSpace> bw(new double[n], n);
     Kokkos::Extension::Vector<DataType, ExecutionSpace> zw(new double[n], n);
 
-    for(i = 0; i < n; i++)
+    for(i = 0; i < n; ++i)
     {
         bw[i] = d[i];
         zw[i] = 0.0;
@@ -66,9 +66,9 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
         //  the strict upper triangle of the matrix.
         //
         thresh = 0.0;
-        for(j = 0; j < n; j++)
+        for(j = 0; j < n; ++j)
         {
-            for(i = 0; i < j; i++)
+            for(i = 0; i < j; ++i)
             {
                 thresh = thresh + a[i + j * n] * a[i + j * n];
             }
@@ -132,7 +132,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
                     //
                     //  Rotate, using information from the upper triangle of A only.
                     //
-                    for(j = 0; j < p; j++)
+                    for(j = 0; j < p; ++j)
                     {
                         g            = a[j + p * n];
                         h            = a[j + q * n];
@@ -140,7 +140,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
                         a[j + q * n] = h + s * (g - h * tau);
                     }
 
-                    for(j = p + 1; j < q; j++)
+                    for(j = p + 1; j < q; ++j)
                     {
                         g            = a[p + j * n];
                         h            = a[j + q * n];
@@ -148,7 +148,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
                         a[j + q * n] = h + s * (g - h * tau);
                     }
 
-                    for(j = q + 1; j < n; j++)
+                    for(j = q + 1; j < n; ++j)
                     {
                         g            = a[p + j * n];
                         h            = a[q + j * n];
@@ -158,7 +158,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
                     //
                     //  Accumulate information in the eigenvector matrix.
                     //
-                    for(j = 0; j < n; j++)
+                    for(j = 0; j < n; ++j)
                     {
                         g            = v[j + p * n];
                         h            = v[j + q * n];
@@ -170,7 +170,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
             }
         }
 
-        for(i = 0; i < n; i++)
+        for(i = 0; i < n; ++i)
         {
             bw[i] = bw[i] + zw[i];
             d[i]  = bw[i];
@@ -180,9 +180,9 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
     //
     //  Restore upper triangle of input matrix.
     //
-    for(j = 0; j < n; j++)
+    for(j = 0; j < n; ++j)
     {
-        for(i = 0; i < j; i++)
+        for(i = 0; i < j; ++i)
         {
             a[i + j * n] = a[j + i * n];
         }
@@ -206,7 +206,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
             t    = d[m];
             d[m] = d[k];
             d[k] = t;
-            for(i = 0; i < n; i++)
+            for(i = 0; i < n; ++i)
             {
                 w            = v[i + m * n];
                 v[i + m * n] = v[i + k * n];
@@ -223,7 +223,7 @@ static void JacobiEigenvalue(Kokkos::Extension::Matrix<DataType, ExecutionSpace>
 
 void r8mat_diag_get_vector(int n, double a[], double v[])
 {
-    for(int i = 0; i < n; i++)
+    for(int i = 0; i < n; ++i)
     {
         v[i] = a[i + i * n];
     }
@@ -234,9 +234,9 @@ void r8mat_diag_get_vector(int n, double a[], double v[])
 void r8mat_identity(int n, double a[])
 {
     int k = 0;
-    for(int j = 0; j < n; j++)
+    for(int j = 0; j < n; ++j)
     {
-        for(int i = 0; i < n; i++)
+        for(int i = 0; i < n; ++i)
         {
             if(i == j)
             {
@@ -260,9 +260,9 @@ double r8mat_is_eigen_right(int n, int k, double a[], double x[], double lambda[
 
     double* c = new double[n * k];
 
-    for(j = 0; j < k; j++)
+    for(j = 0; j < k; ++j)
     {
-        for(i = 0; i < n; i++)
+        for(i = 0; i < n; ++i)
         {
             c[i + j * n] = 0.0;
             for(int l = 0; l < n; l++)
@@ -272,9 +272,9 @@ double r8mat_is_eigen_right(int n, int k, double a[], double x[], double lambda[
         }
     }
 
-    for(j = 0; j < k; j++)
+    for(j = 0; j < k; ++j)
     {
-        for(i = 0; i < n; i++)
+        for(i = 0; i < n; ++i)
         {
             c[i + j * n] = c[i + j * n] - lambda[j] * x[i + j * n];
         }
@@ -290,9 +290,9 @@ double r8mat_is_eigen_right(int n, int k, double a[], double x[], double lambda[
 double r8mat_norm_fro(int m, int n, double a[])
 {
     double value = 0.0;
-    for(int j = 0; j < n; j++)
+    for(int j = 0; j < n; ++j)
     {
-        for(int i = 0; i < m; i++)
+        for(int i = 0; i < m; ++i)
         {
             value = value + pow(a[i + j * m], 2);
         }
@@ -319,12 +319,12 @@ void r8mat_print_some(int m, int n, double a[], int ilo, int jlo, int ihi, int j
     int j;
     int j2hi;
 
-    std::cout << "\n";
-    std::cout << title << "\n";
+    std::cout << std::endl;
+    std::cout << title << std::endl;
 
     if(m <= 0 || n <= 0)
     {
-        std::cout << "\n";
+        std::cout << std::endl;
         std::cout << "  (None)\n";
         return;
     }
@@ -342,20 +342,20 @@ void r8mat_print_some(int m, int n, double a[], int ilo, int jlo, int ihi, int j
         {
             j2hi = jhi;
         }
-        std::cout << "\n";
+        std::cout << std::endl;
         //
         //  For each column J in the current range...
         //
         //  Write the header.
         //
         std::cout << "  Col:    ";
-        for(j = j2lo; j <= j2hi; j++)
+        for(j = j2lo; j <= j2hi; ++j)
         {
             std::cout << setw(7) << j - 1 << "       ";
         }
-        std::cout << "\n";
+        std::cout << std::endl;
         std::cout << "  Row\n";
-        std::cout << "\n";
+        std::cout << std::endl;
         //
         //  Determine the range of the rows in this strip.
         //
@@ -376,17 +376,17 @@ void r8mat_print_some(int m, int n, double a[], int ilo, int jlo, int ihi, int j
             i2hi = m;
         }
 
-        for(i = i2lo; i <= i2hi; i++)
+        for(i = i2lo; i <= i2hi; ++i)
         {
             //
             //  Print out (up to) 5 entries in row I, that lie in the current strip.
             //
             std::cout << std::setw(5) << i - 1 << ": ";
-            for(j = j2lo; j <= j2hi; j++)
+            for(j = j2lo; j <= j2hi; ++j)
             {
                 std::cout << std::setw(12) << a[i - 1 + (j - 1) * m] << "  ";
             }
-            std::cout << "\n";
+            std::cout << std::endl;
         }
     }
 
@@ -396,12 +396,12 @@ void r8mat_print_some(int m, int n, double a[], int ilo, int jlo, int ihi, int j
 
 void r8vec_print(int n, double a[], std::string title)
 {
-    std::cout << "\n";
-    std::cout << title << "\n";
-    std::cout << "\n";
-    for(int i = 0; i < n; i++)
+    std::cout << std::endl;
+    std::cout << title << std::endl;
+    std::cout << std::endl;
+    for(int i = 0; i < n; ++i)
     {
-        std::cout << "  " << std::setw(8) << i << ": " << std::setw(14) << a[i] << "\n";
+        std::cout << "  " << std::setw(8) << i << ": " << std::setw(14) << a[i] << std::endl;
     }
 
     return;

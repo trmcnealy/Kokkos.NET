@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
     <metadata>
         <id>native.Kokkos.NET</id>
         <version>$RUNTIME_KOKKOS$</version>
@@ -7,75 +7,34 @@
         <owners>Timothy R. McNealy</owners>
         <license type="expression">MIT</license>
         <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
+    <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET.git"/>
         <icon>nindra.png</icon>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Kokkos .NET</description>
         <releaseNotes></releaseNotes>
         <copyright>© Timothy R. McNealy</copyright>
         <tags></tags>
-        <dependencies></dependencies>
+        <dependencies>
+            <dependency id="Trilinos" version="13.0.0"/>
+        </dependencies>
     </metadata>
     <files>
-        <file src="..\..\trmcnealy.github.io\Assets\nindra.png"
+        <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
               target=""/>
 
-        <!--<file src="runtime.Kokkos.NET.targets"
-              target="build"/>-->
 
-        <!--<file src="runtime.Kokkos.NET.targets"
-              target="include"/>-->
-
-        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll.a"
+        <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll.a"
               target="runtimes\win-x64\native"/>
 
-        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll"
+        <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll"
               target="runtimes\win-x64\native"/>
 
-        <file src="..\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.pdb"
-              target="runtimes\win-x64\native"/>
-
-
-
-        <file src="C:\PROGRA~1\NVIDIA~2\CUDA\v10.2\bin\cudart64_102.dll"
-              target="runtimes\win-x64\native"/>
-
-        <file src="C:\PROGRA~1\NVIDIA~2\CUDA\v10.2\bin\cublas64_10.dll"
-              target="runtimes\win-x64\native"/>
-
-        <file src="C:\PROGRA~1\NVIDIA~2\CUDA\v10.2\bin\cublasLt64_10.dll"
-              target="runtimes\win-x64\native"/>
-
-        <file src="C:\PROGRA~1\NVIDIA~2\CUDA\v10.2\bin\cusparse64_10.dll"
-              target="runtimes\win-x64\native"/>
-
-        <file src="E:\AssemblyCache\LLVM\bin\libomp.dll"
-              target="runtimes\win-x64\native"/>
-
-        <file src="E:\AssemblyCache\MSMPIdist\x64\mpi.dll"
-              target="runtimes\win-x64\native"/>
-
-              
-        <file src="E:\AssemblyCache\kokkos\lib\libkokkoscore.dll.a"
-              target="runtimes\win-x64\native"/>
-              
-        <!--<file src="E:\AssemblyCache\kokkos\bin\libkokkoscore.pdb"
+        <!--<file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.pdb"
               target="runtimes\win-x64\native"/>-->
 
-        <file src="E:\AssemblyCache\kokkos\bin\libkokkoscore.dll"
-              target="runtimes\win-x64\native"/>
 
 
-        <file src="E:\AssemblyCache\kokkos\lib\libkokkoscontainers.dll.a"
-              target="runtimes\win-x64\native"/>
-
-        <!--<file src="E:\AssemblyCache\kokkos\bin\libkokkoscontainers.pdb"
-              target="runtimes\win-x64\native"/>-->
-
-        <file src="E:\AssemblyCache\kokkos\bin\libkokkoscontainers.dll"
-              target="runtimes\win-x64\native"/>
 
 
-        <file src="E:\AssemblyCache\kokkos\lib\libkokkoskernels.a"
-              target="runtimes\win-x64\native"/>
     </files>
 </package>

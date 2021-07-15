@@ -20,11 +20,7 @@ namespace Kokkos
 
         private long _position;
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public MemoryMappedStream(nint content,
                                   long   length)
         {
@@ -34,65 +30,37 @@ namespace Kokkos
 
         public override bool CanRead
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return true; }
         }
 
         public override bool CanSeek
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return true; }
         }
 
         public override bool CanWrite
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return false; }
         }
 
         public override long Length
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return _length; }
         }
 
         public override long Position
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             get { return _position; }
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             set { _position = value; }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override long Seek(long       offset,
                                   SeekOrigin origin)
         {
@@ -115,22 +83,14 @@ namespace Kokkos
             return _position;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public unsafe T* GetPointer<T>()
             where T : unmanaged
         {
             return (T*)_content.ToPointer();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public Span<byte> Slice(long start)
         {
             unsafe
@@ -139,11 +99,7 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public Span<byte> Slice(long start,
                                 int  length)
         {
@@ -153,11 +109,7 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override int ReadByte()
         {
             unsafe
@@ -168,11 +120,7 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override int Read(byte[] buffer,
                                  int    offset,
                                  int    count)
@@ -180,11 +128,7 @@ namespace Kokkos
             return Read(new Span<byte>(buffer, offset, count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override int Read(Span<byte> buffer)
         {
             long remaining = _length - _position;
@@ -210,11 +154,7 @@ namespace Kokkos
             return buffer.Length;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override Task<int> ReadAsync(byte[]            buffer,
                                             int               offset,
                                             int               count,
@@ -223,22 +163,14 @@ namespace Kokkos
             return cancellationToken.IsCancellationRequested ? Task.FromCanceled<int>(cancellationToken) : Task.FromResult(Read(new Span<byte>(buffer, offset, count)));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override ValueTask<int> ReadAsync(Memory<byte>      buffer,
                                                  CancellationToken cancellationToken = default(CancellationToken))
         {
             return cancellationToken.IsCancellationRequested ? new ValueTask<int>(Task.FromCanceled<int>(cancellationToken)) : new ValueTask<int>(Read(buffer.Span));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override IAsyncResult BeginRead(byte[]         buffer,
                                                int            offset,
                                                int            count,
@@ -248,11 +180,7 @@ namespace Kokkos
             return Task.FromResult(ReadAsync(buffer, offset, count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override int EndRead(IAsyncResult asyncResult)
         {
             if(asyncResult is Task twar && twar is Task<int> task)
@@ -263,11 +191,7 @@ namespace Kokkos
             throw new ArgumentNullException(nameof(asyncResult));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override void CopyTo(Stream destination,
                                     int    bufferSize)
         {
@@ -277,11 +201,7 @@ namespace Kokkos
             }
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override Task CopyToAsync(Stream            destination,
                                          int               bufferSize,
                                          CancellationToken cancellationToken)
@@ -289,40 +209,24 @@ namespace Kokkos
             return _length > _position ? destination.WriteAsync(new ReadOnlyMemory<byte>(Slice(_position).ToArray()), cancellationToken).AsTask() : Task.CompletedTask;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override void Flush()
         {
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override Task FlushAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override void SetLength(long value)
         {
             throw new NotSupportedException();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public override void Write(byte[] buffer,
                                    int    offset,
                                    int    count)
@@ -330,11 +234,7 @@ namespace Kokkos
             throw new NotSupportedException();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         private byte InternalReadByte()
         {
             int b = ReadByte();
@@ -367,11 +267,7 @@ namespace Kokkos
         //    return span;
         //}
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         private unsafe byte[] InternalRead(int numBytes)
         {
             //return InternalReadSpan(numBytes);
@@ -400,131 +296,79 @@ namespace Kokkos
             return span;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public byte ReadAsByte()
         {
             return InternalReadByte();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public sbyte ReadAsSByte()
         {
             return (sbyte)InternalReadByte();
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public bool ReadAsBoolean()
         {
             return InternalReadByte() != 0;
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public char ReadAsChar(int count = 2)
         {
             return Converter.ToChar(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public short ReadAsInt16(int count = 2)
         {
             return Converter.ToInt16(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public ushort ReadAsUInt16(int count = 2)
         {
             return Converter.ToUInt16(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public int ReadAsInt32(int count = 4)
         {
             return Converter.ToInt32(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public uint ReadAsUInt32(int count = 4)
         {
             return Converter.ToUInt32(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public long ReadAsInt64(int count = 8)
         {
             return Converter.ToInt64(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public ulong ReadAsUInt64(int count = 8)
         {
             return Converter.ToUInt64(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public float ReadAsSingle(int count = 4)
         {
             return Converter.ToSingle(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public double ReadAsDouble(int count = 8)
         {
             return Converter.ToDouble(InternalRead(count));
         }
 
-#if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
         public string ReadAsString(int count)
         {
             char[] chars = new char[count];
@@ -543,221 +387,137 @@ namespace Kokkos
 
         internal static class Converter
         {
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static char ToChar(byte[] value,
                                       int    startIndex)
             {
                 return unchecked((char)ToInt16(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static char ToChar(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<char>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static short ToInt16(byte[] value,
                                         int    startIndex)
             {
                 return Unsafe.ReadUnaligned<short>(ref value[startIndex]);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static short ToInt16(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<short>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static int ToInt32(byte[] value,
                                       int    startIndex)
             {
                 return Unsafe.ReadUnaligned<int>(ref value[startIndex]);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static int ToInt32(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<int>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static long ToInt64(byte[] value,
                                        int    startIndex)
             {
                 return Unsafe.ReadUnaligned<long>(ref value[startIndex]);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static long ToInt64(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<long>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static ushort ToUInt16(byte[] value,
                                           int    startIndex)
             {
                 return unchecked((ushort)ToInt16(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static ushort ToUInt16(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<ushort>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static uint ToUInt32(byte[] value,
                                         int    startIndex)
             {
                 return unchecked((uint)ToInt32(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static uint ToUInt32(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<uint>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static ulong ToUInt64(byte[] value,
                                          int    startIndex)
             {
                 return unchecked((ulong)ToInt64(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static ulong ToUInt64(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<ulong>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static float ToSingle(byte[] value,
                                          int    startIndex)
             {
                 return Int32BitsToSingle(ToInt32(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static float ToSingle(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<float>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static double ToDouble(byte[] value,
                                           int    startIndex)
             {
                 return Int64BitsToDouble(ToInt64(value, startIndex));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static double ToDouble(ReadOnlySpan<byte> value)
             {
                 return Unsafe.ReadUnaligned<double>(ref MemoryMarshal.GetReference(value));
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static string ToString(byte[] value)
             {
                 return ToString(value, 0, value.Length);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static string ToString(byte[] value,
                                           int    startIndex)
             {
                 return ToString(value, startIndex, value.Length - startIndex);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static string ToString(byte[] value,
                                           int    startIndex,
                                           int    length)
@@ -765,41 +525,25 @@ namespace Kokkos
                 return Encoding.UTF8.GetString(value, startIndex, length);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static unsafe long DoubleToInt64Bits(double value)
             {
                 return *((long*)&value);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static unsafe double Int64BitsToDouble(long value)
             {
                 return *((double*)&value);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static unsafe int SingleToInt32Bits(float value)
             {
                 return *((int*)&value);
             }
 
-    #if NETSTANDARD
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#else
-        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-#endif
+            [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
             public static unsafe float Int32BitsToSingle(int value)
             {
                 return *((float*)&value);

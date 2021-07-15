@@ -5,7 +5,7 @@
             Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Global.props))' != '' " />
 
     <PropertyGroup>
-        <RootSolutionDir>$(MSBuildThisFileDirectory)</RootSolutionDir>
+        <RootTfsProjectDir>$(MSBuildThisFileDirectory)</RootTfsProjectDir>
     </PropertyGroup>
     
     <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Build.props))\Build.props"

@@ -81,9 +81,6 @@
     <ClCompile Include="Utilities\InterprocessMemory.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
-      <Filter>runtime.Kokkos\Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="runtime.Kokkos\KokkosFunctions.cpp">
       <Filter>runtime.Kokkos\Source Files</Filter>
     </ClCompile>
@@ -120,12 +117,12 @@
     <ClCompile Include="runtime.Kokkos\KokkosHwloc.cpp">
       <Filter>runtime.Kokkos\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
+      <Filter>runtime.Kokkos\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KokkosAPI.hpp" />
-    <ClInclude Include="Analyzes\PrincipalComponentAnalysis.hpp">
-      <Filter>Analyzes</Filter>
-    </ClInclude>
     <ClInclude Include="Analyzes\Linq.hpp">
       <Filter>Analyzes</Filter>
     </ClInclude>
@@ -143,15 +140,6 @@
     </ClInclude>
     <ClInclude Include="Utilities\GpuMemoryMap.h">
       <Filter>Utilities</Filter>
-    </ClInclude>
-    <ClInclude Include="KokkosLapack\gelq2.hpp">
-      <Filter>KokkosLapack</Filter>
-    </ClInclude>
-    <ClInclude Include="KokkosLapack\KokkosLapack.hpp">
-      <Filter>KokkosLapack</Filter>
-    </ClInclude>
-    <ClInclude Include="KokkosLapack\KokkosLapack.config.h">
-      <Filter>KokkosLapack</Filter>
     </ClInclude>
     <ClInclude Include="Analyzes\kNearestNeighbor.hpp">
       <Filter>Analyzes</Filter>
@@ -318,6 +306,9 @@
     <ClInclude Include="runtime.Kokkos\Extensions\Atomics.hpp">
       <Filter>runtime.Kokkos\Extensions</Filter>
     </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\TensorOps.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -331,7 +322,6 @@
     </None>
     <None Include="cpp.hint" />
     <None Include="runtime.Kokkos.NET.targets" />
-    <None Include="E:\TFS_Sources\trmcnealy\trmcnealy.github.io\assets\nindra.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="runtime.Kokkos.NET.manifest">
@@ -347,5 +337,8 @@
     <MIDL Include="Interop\Interfaces.idl">
       <Filter>Interop</Filter>
     </MIDL>
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Kokkos.natvis" />
   </ItemGroup>
 </Project>

@@ -8,7 +8,7 @@ namespace Kokkos.Tests
     {
         public void Run()
         {
-            int  num_threads      = 4;
+            int  num_threads      = Environment.ProcessorCount;
             int  num_numa         = -1;
             int  device_id        = 0;
             int  ndevices         = 1;

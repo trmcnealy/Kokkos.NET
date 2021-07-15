@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+    <Type Name="Kokkos::View&lt;$TDataType&gt;">
+        <DisplayString Condition="Size == 0">empty</DisplayString>
+        <DisplayString Condition="Size != 0">{{ size={Length} }}</DisplayString>
+        <Expand>
+            <Item Name="[size]">Size</Item>
+            <ArrayItems>
+                <Size Condition="m_impl_offset.m_dim.N0">m_impl_offset.m_dim.N0</Size>
+                <Size Condition="m_impl_offset.m_dim.N1">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1</Size>
+                <Size Condition="m_impl_offset.m_dim.N2">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2</Size>
+                <Size Condition="m_impl_offset.m_dim.N3">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3</Size>
+                <Size Condition="m_impl_offset.m_dim.N4">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4</Size>
+                <Size Condition="m_impl_offset.m_dim.N5">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5</Size>
+                <Size Condition="m_impl_offset.m_dim.N6">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6</Size>
+                <Size Condition="m_impl_offset.m_dim.N7">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6*m_impl_offset.m_dim.N7</Size>
+                <ValuePointer>m_map.m_impl_handle</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="Kokkos::View&lt;$TDataType,$TSpace&gt;">
+        <DisplayString Condition="Size == 0">empty</DisplayString>
+        <DisplayString Condition="Size != 0">{{ size={Length} }}</DisplayString>
+        <Expand>
+            <Item Name="[size]">Size</Item>
+            <ArrayItems>
+                <Size Condition="m_impl_offset.m_dim.N0">m_impl_offset.m_dim.N0</Size>
+                <Size Condition="m_impl_offset.m_dim.N1">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1</Size>
+                <Size Condition="m_impl_offset.m_dim.N2">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2</Size>
+                <Size Condition="m_impl_offset.m_dim.N3">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3</Size>
+                <Size Condition="m_impl_offset.m_dim.N4">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4</Size>
+                <Size Condition="m_impl_offset.m_dim.N5">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5</Size>
+                <Size Condition="m_impl_offset.m_dim.N6">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6</Size>
+                <Size Condition="m_impl_offset.m_dim.N7">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6*m_impl_offset.m_dim.N7</Size>
+                <ValuePointer>m_map.m_impl_handle</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="Kokkos::View&lt;$TDataType,$TLayout,$TSpace&gt;">
+        <DisplayString Condition="Size == 0">empty</DisplayString>
+        <DisplayString Condition="Size != 0">{{ size={Length} }}</DisplayString>
+        <Expand>
+            <Item Name="[size]">Size</Item>
+            <ArrayItems>
+                <Size Condition="m_impl_offset.m_dim.N0">m_impl_offset.m_dim.N0</Size>
+                <Size Condition="m_impl_offset.m_dim.N1">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1</Size>
+                <Size Condition="m_impl_offset.m_dim.N2">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2</Size>
+                <Size Condition="m_impl_offset.m_dim.N3">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3</Size>
+                <Size Condition="m_impl_offset.m_dim.N4">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4</Size>
+                <Size Condition="m_impl_offset.m_dim.N5">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5</Size>
+                <Size Condition="m_impl_offset.m_dim.N6">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6</Size>
+                <Size Condition="m_impl_offset.m_dim.N7">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6*m_impl_offset.m_dim.N7</Size>
+                <ValuePointer>m_map.m_impl_handle</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+    <Type Name="Kokkos::View&lt;$TDataType,$TLayout,$TSpace,$TMemoryTraits&gt;">
+        <DisplayString Condition="Size == 0">empty</DisplayString>
+        <DisplayString Condition="Size != 0">{{ size={Size} }}</DisplayString>
+        <Expand>
+            <Item Name="[size]">Size</Item>
+            <ArrayItems>
+                <Size Condition="m_impl_offset.m_dim.N0">m_impl_offset.m_dim.N0</Size>
+                <Size Condition="m_impl_offset.m_dim.N1">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1</Size>
+                <Size Condition="m_impl_offset.m_dim.N2">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2</Size>
+                <Size Condition="m_impl_offset.m_dim.N3">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3</Size>
+                <Size Condition="m_impl_offset.m_dim.N4">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4</Size>
+                <Size Condition="m_impl_offset.m_dim.N5">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5</Size>
+                <Size Condition="m_impl_offset.m_dim.N6">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6</Size>
+                <Size Condition="m_impl_offset.m_dim.N7">m_impl_offset.m_dim.N0*m_impl_offset.m_dim.N1*m_impl_offset.m_dim.N2*m_impl_offset.m_dim.N3*m_impl_offset.m_dim.N4*m_impl_offset.m_dim.N5*m_impl_offset.m_dim.N6*m_impl_offset.m_dim.N7</Size>
+                <ValuePointer>m_map.m_impl_handle</ValuePointer>
+            </ArrayItems>
+        </Expand>
+    </Type>
+
+</AutoVisualizer>

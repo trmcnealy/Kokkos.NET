@@ -30,7 +30,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -42,7 +42,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -57,7 +57,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -73,7 +73,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -90,7 +90,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -108,7 +108,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -127,7 +127,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -147,7 +147,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -168,7 +168,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -190,7 +190,7 @@ namespace NearestNeighbor
         {
             _distances(i, j) = 0.0;
 
-            if(i == j)
+            if (i == j)
             {
                 return;
             }
@@ -221,7 +221,7 @@ __inline static Kokkos::View<DataType**, typename ExecutionSpace::array_layout, 
 
     using point_type = typename mdrange_type::point_type;
 
-    mdrange_type policy(point_type {{0, 0}}, point_type {{dataset.extent(0), dataset.extent(0)}});
+    mdrange_type policy(point_type{{0, 0}}, point_type{{dataset.extent(0), dataset.extent(0)}});
 
     using DistanceFunctor = NearestNeighbor::DistanceFunctor<DataType, ExecutionSpace, Dimensions>;
     DistanceFunctor f(dataset);
@@ -231,7 +231,7 @@ __inline static Kokkos::View<DataType**, typename ExecutionSpace::array_layout, 
     Kokkos::View<DataType**, typename ExecutionSpace::array_layout, ExecutionSpace> distances("distances", dataset.extent(0), dataset.extent(0));
     Kokkos::deep_copy(distances, f._distances);
 
-    for(size_type i = 0; i < dataset.extent(0); i++)
+    for (size_type i = 0; i < dataset.extent(0); ++i)
     {
         auto _row = Kokkos::Extension::row(distances, i);
 
@@ -243,7 +243,7 @@ __inline static Kokkos::View<DataType**, typename ExecutionSpace::array_layout, 
     // const Kokkos::Random_XorShift1024_Pool<ExecutionSpace> pool(Kokkos::Impl::clock_tic());
     // Kokkos::fill_random(classification, pool, k);
 
-    // for (int i = 0; i < k; i++)
+    // for (int i = 0; i < k; ++i)
     //{
     //    if (arr[i].val == 0)
     //        freq1++;
