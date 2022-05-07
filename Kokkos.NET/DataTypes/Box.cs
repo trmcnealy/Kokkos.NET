@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace Kokkos.Utilities
+namespace Kokkos
 {
     [DebuggerDisplay("{ToString(),raw}")]
     public sealed class Box<T>

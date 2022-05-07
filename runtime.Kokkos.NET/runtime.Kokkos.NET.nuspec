@@ -15,7 +15,7 @@
         <copyright>© Timothy R. McNealy</copyright>
         <tags></tags>
         <dependencies>
-            <dependency id="Trilinos" version="13.0.0"/>
+            <dependency id="Trilinos" version="13.1.1"/>
         </dependencies>
     </metadata>
     <files>
@@ -23,10 +23,10 @@
               target=""/>
 
 
-        <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll.a"
+        <file src="D:\TFS_Sources\EngineeringTools\bin\Release\x64\runtime.Kokkos.NET.x64.dll.a"
               target="runtimes\win-x64\native"/>
 
-        <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.dll"
+        <file src="D:\TFS_Sources\EngineeringTools\bin\Release\x64\runtime.Kokkos.NET.x64.dll"
               target="runtimes\win-x64\native"/>
 
         <!--<file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\x64\runtime.Kokkos.NET.x64.pdb"

@@ -8,34 +8,37 @@
         <EffectivePlatform Condition="'$(Platform)' == 'AnyCPU' AND '$(Prefer32Bit)'=='true'">x86</EffectivePlatform>
         <EffectivePlatform Condition="'$(Platform)' == 'Any CPU' AND '$(Prefer32Bit)'=='false'">x64</EffectivePlatform>
         <EffectivePlatform Condition="'$(Platform)' == 'AnyCPU' AND '$(Prefer32Bit)'=='false'">x64</EffectivePlatform>
+        
+        <RuntimeIdentifier Condition="'$(Platform)'=='x86'">win10-x86</RuntimeIdentifier>
+        <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win10-x64</RuntimeIdentifier>
     </PropertyGroup>
 
-    <Choose>
-        <When Condition="$([MSBuild]::IsOsPlatform('Windows'))">
-            <PropertyGroup>
-                <RuntimeIdentifier Condition="'$(Platform)'=='x86'">win10-x86</RuntimeIdentifier>
-                <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win10-x64</RuntimeIdentifier>
-            </PropertyGroup>
-        </When>
-        <When Condition="$([MSBuild]::IsOsPlatform('Linux'))">
-            <PropertyGroup>
-                <RuntimeIdentifier Condition="'$(Platform)'=='x86'">linux-x86</RuntimeIdentifier>
-                <RuntimeIdentifier Condition="'$(Platform)'=='x64'">linux-x64</RuntimeIdentifier>
-            </PropertyGroup>
-        </When>
-        <When Condition="$([MSBuild]::IsOsPlatform('OSX'))">
-            <PropertyGroup>
-                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">osx-x86</RuntimeIdentifier>
-                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">osx-x64</RuntimeIdentifier>
-            </PropertyGroup>
-        </When>
-        <When Condition="$([MSBuild]::IsOsPlatform('FreeBSD'))">
-            <PropertyGroup>
-                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">freebsd-x86</RuntimeIdentifier>
-                <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">freebsd-x64</RuntimeIdentifier>
-            </PropertyGroup>
-        </When>
-    </Choose>
+    <!-- <Choose> -->
+        <!-- <When Condition="$([MSBuild]::IsOsPlatform('Windows'))"> -->
+            <!-- <PropertyGroup> -->
+                <!-- <RuntimeIdentifier Condition="'$(Platform)'=='x86'">win10-x86</RuntimeIdentifier> -->
+                <!-- <RuntimeIdentifier Condition="'$(Platform)'=='x64'">win10-x64</RuntimeIdentifier> -->
+            <!-- </PropertyGroup> -->
+        <!-- </When> -->
+        <!-- <When Condition="$([MSBuild]::IsOsPlatform('Linux'))"> -->
+            <!-- <PropertyGroup> -->
+                <!-- <RuntimeIdentifier Condition="'$(Platform)'=='x86'">linux-x86</RuntimeIdentifier> -->
+                <!-- <RuntimeIdentifier Condition="'$(Platform)'=='x64'">linux-x64</RuntimeIdentifier> -->
+            <!-- </PropertyGroup> -->
+        <!-- </When> -->
+        <!-- <When Condition="$([MSBuild]::IsOsPlatform('OSX'))"> -->
+            <!-- <PropertyGroup> -->
+                <!-- <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">osx-x86</RuntimeIdentifier> -->
+                <!-- <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">osx-x64</RuntimeIdentifier> -->
+            <!-- </PropertyGroup> -->
+        <!-- </When> -->
+        <!-- <When Condition="$([MSBuild]::IsOsPlatform('FreeBSD'))"> -->
+            <!-- <PropertyGroup> -->
+                <!-- <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x86'">freebsd-x86</RuntimeIdentifier> -->
+                <!-- <RuntimeIdentifier Condition="'$(EffectivePlatform)'=='x64'">freebsd-x64</RuntimeIdentifier> -->
+            <!-- </PropertyGroup> -->
+        <!-- </When> -->
+    <!-- </Choose> -->
 
     <PropertyGroup>
         <LibraryRelativePath>runtimes\$(RuntimeIdentifier)\native\</LibraryRelativePath>

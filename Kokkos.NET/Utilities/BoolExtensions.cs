@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace Kokkos.Utilities
+namespace Kokkos
 {
     public static class BoolExtensions
     {

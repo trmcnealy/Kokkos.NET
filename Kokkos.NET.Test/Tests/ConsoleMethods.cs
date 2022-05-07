@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 
-[System.Runtime.Versioning.NonVersionable]
 public static class ConsoleMethods
 {
     public static void WriteLine(this TextWriter textWriter,

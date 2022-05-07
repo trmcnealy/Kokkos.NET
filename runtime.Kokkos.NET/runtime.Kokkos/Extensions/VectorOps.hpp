@@ -4,6 +4,10 @@
 #    error "Do not include directly. Include Extensions.hpp"
 #endif
 
+#if !defined(MATH_EXTENSIONS)
+#    include <MathExtensions.hpp>
+#endif
+
 #include <Kokkos_Sort.hpp>
 
 namespace Kokkos
@@ -23,7 +27,10 @@ namespace Kokkos
 
             KOKKOS_INLINE_FUNCTION void operator()(const uint32& i, ValueType& value) const
             {
-                Kokkos::atomic_fetch_min(&value, Values(i));
+                if (Values(i) < value)
+                {
+                    value = Values(i);
+                }
             }
         };
 
@@ -58,7 +65,10 @@ namespace Kokkos
 
             KOKKOS_INLINE_FUNCTION void operator()(const uint32& i, ValueType& value) const
             {
-                Kokkos::atomic_fetch_max(&value, Values(i));
+                if (Values(i) > value)
+                {
+                    value = Values(i);
+                }
             }
         };
 
@@ -248,256 +258,243 @@ namespace Kokkos
 
         namespace VectorOperators
         {
-            // template<class RVector, class XVector, class YVector, int scalar_x, int scalar_y>
-            // struct V_AddVectorFunctor
-            //{
-            //    typedef typename RVector::size_type  size_type;
-            //    typedef typename XVector::value_type value_type;
-            //
-            //    RVector                      _r;
-            //    typename XVector::const_type _x;
-            //    typename YVector::const_type _y;
-            //    const value_type             _a;
-            //    const value_type             _b;
-            //
-            //    V_AddVectorFunctor(const RVector& r, const value_type& a, const XVector& x, const value_type& b, const YVector& y) : _r(r), _x(x), _y(y), _a(a), _b(b) {}
-            //
-            //    KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const
-            //    {
-            //        if((scalar_x == 1.0) && (scalar_y == 1.0))
-            //        {
-            //            _r(i) = _x(i) + _y(i);
-            //        }
-            //
-            //        if((scalar_x == 1.0) && (scalar_y == -1.0))
-            //        {
-            //            _r(i) = _x(i) - _y(i);
-            //        }
-            //
-            //        if((scalar_x == -1.0) && (scalar_y == -1.0))
-            //        {
-            //            _r(i) = -_x(i) - _y(i);
-            //        }
-            //
-            //        if((scalar_x == -1.0) && (scalar_y == 1.0))
-            //        {
-            //            _r(i) = -_x(i) + _y(i);
-            //        }
-            //
-            //        if((scalar_x == 2.0) && (scalar_y == 1.0))
-            //        {
-            //            _r(i) = _a * _x(i) + _y(i);
-            //        }
-            //
-            //        if((scalar_x == 2.0) && (scalar_y == -1.0))
-            //        {
-            //            _r(i) = _a * _x(i) - _y(i);
-            //        }
-            //
-            //        if((scalar_x == 1.0) && (scalar_y == 2.0))
-            //        {
-            //            _r(i) = _x(i) + _b * _y(i);
-            //        }
-            //
-            //        if((scalar_x == -1.0) && (scalar_y == 2.0))
-            //        {
-            //            _r(i) = -_x(i) + _b * _y(i);
-            //        }
-            //
-            //        if((scalar_x == 2.0) && (scalar_y == 2.0))
-            //        {
-            //            _r(i) = _a * _x(i) + _b * _y(i);
-            //        }
-            //    }
-            //};
+            template<class RVector, class RhsVector>
+            struct VectorNegateFunctor
+            {
+                static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");
+                static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");
 
-#define VECTOR_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                    \
-    template<class RVector, class LhsVector, class RhsVector>                                                                                                                                          \
-    struct VectorVector##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                    \
-        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                              \
-        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                              \
-                                                                                                                                                                                                       \
-        typedef typename RVector::size_type    size_type;                                                                                                                                              \
-        typedef typename LhsVector::value_type value_type;                                                                                                                                             \
-                                                                                                                                                                                                       \
-        RVector                        _r;                                                                                                                                                             \
-        typename LhsVector::const_type _lhs;                                                                                                                                                           \
-        typename RhsVector::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        VectorVector##OP_NAME##Functor(const RVector& r, const LhsVector& lhs, const RhsVector& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                  \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                \
-        {                                                                                                                                                                                              \
-            _r(i) = _lhs(i) OP _rhs(i);                                                                                                                                                                \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class RVector, class LhsVector>                                                                                                                                                           \
-    struct VectorScalar##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                    \
-        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                              \
-                                                                                                                                                                                                       \
-        typedef typename RVector::size_type              size_type;                                                                                                                                    \
-        typedef typename LhsVector::non_const_value_type value_type;                                                                                                                                   \
-                                                                                                                                                                                                       \
-        RVector                        _r;                                                                                                                                                             \
-        typename LhsVector::const_type _lhs;                                                                                                                                                           \
-        value_type                     _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        VectorScalar##OP_NAME##Functor(const RVector& r, const LhsVector& lhs, const value_type& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                 \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                \
-        {                                                                                                                                                                                              \
-            _r(i) = _lhs(i) OP _rhs;                                                                                                                                                                   \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class RVector, class RhsVector>                                                                                                                                                           \
-    struct ScalarVector##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                    \
-        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                              \
-                                                                                                                                                                                                       \
-        typedef typename RVector::size_type              size_type;                                                                                                                                    \
-        typedef typename RhsVector::non_const_value_type value_type;                                                                                                                                   \
-                                                                                                                                                                                                       \
-        RVector                        _r;                                                                                                                                                             \
-        value_type                     _lhs;                                                                                                                                                           \
-        typename RhsVector::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        ScalarVector##OP_NAME##Functor(const RVector& r, const value_type& lhs, const RhsVector& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                 \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                \
-        {                                                                                                                                                                                              \
-            _r(i) = _lhs OP _rhs(i);                                                                                                                                                                   \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class LhsVector, class RhsVector>                                                                                                                                                         \
-    struct VectorVector##OP_NAME##AssignFunctor                                                                                                                                                        \
-    {                                                                                                                                                                                                  \
-        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                              \
-        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                              \
-                                                                                                                                                                                                       \
-        typedef typename LhsVector::size_type  size_type;                                                                                                                                              \
-        typedef typename LhsVector::value_type value_type;                                                                                                                                             \
-                                                                                                                                                                                                       \
-        LhsVector                      _lhs;                                                                                                                                                           \
-        typename RhsVector::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        VectorVector##OP_NAME##AssignFunctor(const LhsVector& lhs, const RhsVector& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                     \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                \
-        {                                                                                                                                                                                              \
-            _lhs(i) ASSIGN_OP _rhs(i);                                                                                                                                                                 \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class LhsVector>                                                                                                                                                                          \
-    struct VectorScalar##OP_NAME##AssignFunctor                                                                                                                                                        \
-    {                                                                                                                                                                                                  \
-        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                              \
-                                                                                                                                                                                                       \
-        typedef typename LhsVector::size_type            size_type;                                                                                                                                    \
-        typedef typename LhsVector::non_const_value_type value_type;                                                                                                                                   \
-                                                                                                                                                                                                       \
-        LhsVector  _lhs;                                                                                                                                                                               \
-        value_type _rhs;                                                                                                                                                                               \
-                                                                                                                                                                                                       \
-        VectorScalar##OP_NAME##AssignFunctor(const LhsVector& lhs, const value_type& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                    \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                \
-        {                                                                                                                                                                                              \
-            _lhs(i) ASSIGN_OP _rhs;                                                                                                                                                                    \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<typename LhsVectorType,                                                                                                                                                                   \
-             typename RhsVectorType,                                                                                                                                                                   \
-             typename ReturnDataType   = decltype(std::declval<typename LhsVectorType::non_const_value_type>() OP std::declval<typename RhsVectorType::non_const_value_type>()),                       \
-             typename ReturnVectorType = Vector<ReturnDataType, typename LhsVectorType::execution_space, typename LhsVectorType::execution_space::array_layout>>                                       \
-    __inline static ReturnVectorType operator OP(const LhsVectorType& lhs, const RhsVectorType& rhs)                                                                                                   \
-    {                                                                                                                                                                                                  \
-        const size_type n = lhs.extent(0);                                                                                                                                                             \
-                                                                                                                                                                                                       \
-        Assert(n == rhs.extent(0));                                                                                                                                                                    \
-                                                                                                                                                                                                       \
-        ReturnVectorType r(lhs.label() + #OP + rhs.label(), n);                                                                                                                                        \
-                                                                                                                                                                                                       \
-        VectorOperators::VectorVector##OP_NAME##Functor<ReturnVectorType, LhsVectorType, RhsVectorType> f(r, lhs, rhs);                                                                                \
-                                                                                                                                                                                                       \
-        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                     \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename RhsVectorType, FloatingPoint LhsScalarType = std::enable_if_t<Kokkos::is_view<RhsVectorType>::value, typename RhsVectorType::non_const_value_type>>                              \
-    __inline static RhsVectorType operator OP(const LhsScalarType& lhs, const RhsVectorType& rhs)                                                                                                      \
-    {                                                                                                                                                                                                  \
-        const size_type n = rhs.extent(0);                                                                                                                                                             \
-                                                                                                                                                                                                       \
-        Assert(n == rhs.extent(0));                                                                                                                                                                    \
-                                                                                                                                                                                                       \
-        RhsVectorType r(std::to_string(lhs) + #OP + rhs.label(), n);                                                                                                                                   \
-                                                                                                                                                                                                       \
-        VectorOperators::ScalarVector##OP_NAME##Functor<RhsVectorType, RhsVectorType> f(r, lhs, rhs);                                                                                                  \
-                                                                                                                                                                                                       \
-        Kokkos::RangePolicy<typename RhsVectorType::execution_space> policy(0, n);                                                                                                                     \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename LhsVectorType, FloatingPoint RhsScalarType = std::enable_if_t<Kokkos::is_view<LhsVectorType>::value, typename LhsVectorType::non_const_value_type>>                              \
-    __inline static LhsVectorType operator OP(const LhsVectorType& lhs, const RhsScalarType& rhs)                                                                                                      \
-    {                                                                                                                                                                                                  \
-        const size_type n = lhs.extent(0);                                                                                                                                                             \
-                                                                                                                                                                                                       \
-        LhsVectorType r(lhs.label() + #OP + std::to_string(rhs), n);                                                                                                                                   \
-                                                                                                                                                                                                       \
-        VectorOperators::VectorScalar##OP_NAME##Functor<LhsVectorType, LhsVectorType> f(r, lhs, rhs);                                                                                                  \
-                                                                                                                                                                                                       \
-        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                     \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename LhsVectorType, typename RhsVectorType>                                                                                                                                           \
-    __inline static LhsVectorType operator ASSIGN_OP(LhsVectorType& lhs, const RhsVectorType& rhs)                                                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type n = lhs.extent(0);                                                                                                                                                             \
-                                                                                                                                                                                                       \
-        Assert(n == lhs.extent(0));                                                                                                                                                                    \
-                                                                                                                                                                                                       \
-        VectorOperators::VectorVector##OP_NAME##AssignFunctor<LhsVectorType, RhsVectorType> f(lhs, rhs);                                                                                               \
-                                                                                                                                                                                                       \
-        Kokkos::RangePolicy<typename RhsVectorType::execution_space> policy(0, n);                                                                                                                     \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME "Assign", policy, f);                                                                                                                                       \
-                                                                                                                                                                                                       \
-        return lhs;                                                                                                                                                                                    \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename LhsVectorType, FloatingPoint RhsScalarType = std::enable_if_t<Kokkos::is_view<LhsVectorType>::value, typename LhsVectorType::non_const_value_type>>                              \
-    __inline static LhsVectorType operator ASSIGN_OP(LhsVectorType& lhs, const RhsScalarType& rhs)                                                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type n = lhs.extent(0);                                                                                                                                                             \
-                                                                                                                                                                                                       \
-        VectorOperators::VectorScalar##OP_NAME##AssignFunctor<LhsVectorType> f(lhs, rhs);                                                                                                              \
-                                                                                                                                                                                                       \
-        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                     \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                       \
-                                                                                                                                                                                                       \
-        return lhs;                                                                                                                                                                                    \
+                typedef typename RVector::size_type size_type;
+
+                RVector                        _r;
+                typename RhsVector::const_type _rhs;
+
+                VectorNegateFunctor(const RVector& r, const RhsVector& rhs) : _r(r), _rhs(rhs) {}
+
+                KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const
+                {
+                    _r(i) = -_rhs(i);
+                }
+            };
+
+            template<typename RhsVectorType,
+                     typename ReturnDataType   = decltype(-std::declval<typename RhsVectorType::non_const_value_type>()),
+                     typename ReturnVectorType = Vector<ReturnDataType, typename RhsVectorType::execution_space, typename RhsVectorType::execution_space::array_layout>>
+            __inline static auto operator-(const RhsVectorType& rhs) -> std::enable_if_t<Kokkos::is_view<RhsVectorType>::value, ReturnVectorType>
+            {
+                const size_type n = rhs.extent(0);
+
+                Assert(n == rhs.extent(0));
+
+                ReturnVectorType r("-" + rhs.label(), n);
+
+                VectorNegateFunctor<ReturnVectorType, RhsVectorType> f(r, rhs);
+
+                Kokkos::RangePolicy<typename RhsVectorType::execution_space> policy(0, n);
+
+                Kokkos::parallel_for("VectorNegateFunctor", policy, f);
+                Kokkos::fence();
+
+                return r;
+            }
+
+#define VECTOR_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                                                  \
+    template<class RVector, class LhsVector, class RhsVector>                                                                                                                                                                        \
+    struct VectorVector##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                                                  \
+        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                                                            \
+        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        typedef typename RVector::size_type    size_type;                                                                                                                                                                            \
+        typedef typename LhsVector::value_type value_type;                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        RVector                        _r;                                                                                                                                                                                           \
+        typename LhsVector::const_type _lhs;                                                                                                                                                                                         \
+        typename RhsVector::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        VectorVector##OP_NAME##Functor(const RVector& r, const LhsVector& lhs, const RhsVector& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                                              \
+        {                                                                                                                                                                                                                            \
+            _r(i) = _lhs(i) OP _rhs(i);                                                                                                                                                                                              \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class RVector, class LhsVector>                                                                                                                                                                                         \
+    struct VectorScalar##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                                                  \
+        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        typedef typename RVector::size_type              size_type;                                                                                                                                                                  \
+        typedef typename LhsVector::non_const_value_type value_type;                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        RVector                        _r;                                                                                                                                                                                           \
+        typename LhsVector::const_type _lhs;                                                                                                                                                                                         \
+        value_type                     _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        VectorScalar##OP_NAME##Functor(const RVector& r, const LhsVector& lhs, const value_type rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                                              \
+        {                                                                                                                                                                                                                            \
+            _r(i) = _lhs(i) OP _rhs;                                                                                                                                                                                                 \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class RVector, class RhsVector>                                                                                                                                                                                         \
+    struct ScalarVector##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(Kokkos::is_view<RVector>::value && RVector::Rank == 1, "RVector::Rank != 1");                                                                                                                                  \
+        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        typedef typename RVector::size_type              size_type;                                                                                                                                                                  \
+        typedef typename RhsVector::non_const_value_type value_type;                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        RVector                        _r;                                                                                                                                                                                           \
+        value_type                     _lhs;                                                                                                                                                                                         \
+        typename RhsVector::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        ScalarVector##OP_NAME##Functor(const RVector& r, const value_type lhs, const RhsVector& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                                              \
+        {                                                                                                                                                                                                                            \
+            _r(i) = _lhs OP _rhs(i);                                                                                                                                                                                                 \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class LhsVector, class RhsVector>                                                                                                                                                                                       \
+    struct VectorVector##OP_NAME##AssignFunctor                                                                                                                                                                                      \
+    {                                                                                                                                                                                                                                \
+        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                                                            \
+        static_assert(Kokkos::is_view<RhsVector>::value && RhsVector::Rank == 1, "RhsVector::Rank != 1");                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        typedef typename LhsVector::size_type  size_type;                                                                                                                                                                            \
+        typedef typename LhsVector::value_type value_type;                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        LhsVector                      _lhs;                                                                                                                                                                                         \
+        typename RhsVector::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        VectorVector##OP_NAME##AssignFunctor(const LhsVector& lhs, const RhsVector& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                                              \
+        {                                                                                                                                                                                                                            \
+            _lhs(i) ASSIGN_OP _rhs(i);                                                                                                                                                                                               \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class LhsVector>                                                                                                                                                                                                        \
+    struct VectorScalar##OP_NAME##AssignFunctor                                                                                                                                                                                      \
+    {                                                                                                                                                                                                                                \
+        static_assert(Kokkos::is_view<LhsVector>::value && LhsVector::Rank == 1, "LhsVector::Rank != 1");                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        typedef typename LhsVector::size_type            size_type;                                                                                                                                                                  \
+        typedef typename LhsVector::non_const_value_type value_type;                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        LhsVector  _lhs;                                                                                                                                                                                                             \
+        value_type _rhs;                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        VectorScalar##OP_NAME##AssignFunctor(const LhsVector& lhs, const value_type rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i) const                                                                                                                                                              \
+        {                                                                                                                                                                                                                            \
+            _lhs(i) ASSIGN_OP _rhs;                                                                                                                                                                                                  \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<typename LhsVectorType,                                                                                                                                                                                                 \
+             typename RhsVectorType,                                                                                                                                                                                                 \
+             typename ReturnDataType   = decltype(std::declval<typename LhsVectorType::non_const_value_type>() OP std::declval<typename RhsVectorType::non_const_value_type>()),                                                     \
+             typename ReturnVectorType = Vector<ReturnDataType, typename LhsVectorType::execution_space, typename LhsVectorType::execution_space::array_layout>>                                                                     \
+    __inline static auto operator OP(const LhsVectorType& lhs, const RhsVectorType& rhs)->std::enable_if_t<Kokkos::is_view<LhsVectorType>::value && Kokkos::is_view<RhsVectorType>::value, ReturnVectorType>                         \
+    {                                                                                                                                                                                                                                \
+        const size_type n = lhs.extent(0);                                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        Assert(n == lhs.extent(0));                                                                                                                                                                                                  \
+                                                                                                                                                                                                                                     \
+        ReturnVectorType r(lhs.label() + #OP + rhs.label(), n);                                                                                                                                                                      \
+                                                                                                                                                                                                                                     \
+        VectorOperators::VectorVector##OP_NAME##Functor<ReturnVectorType, LhsVectorType, RhsVectorType> f(r, lhs, rhs);                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint LhsScalarType, typename RhsVectorType>                                                                                                                                                                    \
+    __inline static auto operator OP(const LhsScalarType& lhs, const RhsVectorType& rhs)->std::enable_if_t<Kokkos::is_view<RhsVectorType>::value, RhsVectorType>                                                                     \
+    {                                                                                                                                                                                                                                \
+        const size_type n = rhs.extent(0);                                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        Assert(n == rhs.extent(0));                                                                                                                                                                                                  \
+                                                                                                                                                                                                                                     \
+        RhsVectorType r(std::to_string(lhs) + #OP + rhs.label(), n);                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        VectorOperators::ScalarVector##OP_NAME##Functor<RhsVectorType, RhsVectorType> f(r, lhs, rhs);                                                                                                                                \
+                                                                                                                                                                                                                                     \
+        Kokkos::RangePolicy<typename RhsVectorType::execution_space> policy(0, n);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<typename LhsVectorType, FloatingPoint RhsScalarType>                                                                                                                                                                    \
+    __inline static auto operator OP(const LhsVectorType& lhs, const RhsScalarType rhs)->std::enable_if_t<Kokkos::is_view<LhsVectorType>::value, LhsVectorType>                                                                      \
+    {                                                                                                                                                                                                                                \
+        const size_type n = lhs.extent(0);                                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        LhsVectorType r(lhs.label() + #OP + std::to_string(rhs), n);                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        VectorOperators::VectorScalar##OP_NAME##Functor<LhsVectorType, LhsVectorType> f(r, lhs, rhs);                                                                                                                                \
+                                                                                                                                                                                                                                     \
+        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<typename LhsVectorType, typename RhsVectorType>                                                                                                                                                                         \
+    __inline static auto operator ASSIGN_OP(LhsVectorType& lhs, const RhsVectorType& rhs)->typename std::enable_if<Kokkos::is_view<LhsVectorType>::value && Kokkos::is_view<RhsVectorType>::value, LhsVectorType>::type              \
+    {                                                                                                                                                                                                                                \
+        const size_type n = lhs.extent(0);                                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        Assert(n == lhs.extent(0));                                                                                                                                                                                                  \
+                                                                                                                                                                                                                                     \
+        VectorOperators::VectorVector##OP_NAME##AssignFunctor<LhsVectorType, RhsVectorType> f(lhs, rhs);                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        Kokkos::RangePolicy<typename RhsVectorType::execution_space> policy(0, n);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME "Assign", policy, f);                                                                                                                                                                     \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return lhs;                                                                                                                                                                                                                  \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<typename LhsVectorType, FloatingPoint RhsScalarType>                                                                                                                                                                    \
+    __inline static auto operator ASSIGN_OP(LhsVectorType& lhs, const RhsScalarType rhs)->typename std::enable_if<Kokkos::is_view<LhsVectorType>::value, LhsVectorType>::type                                                        \
+    {                                                                                                                                                                                                                                \
+        const size_type n = lhs.extent(0);                                                                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        VectorOperators::VectorScalar##OP_NAME##AssignFunctor<LhsVectorType> f(lhs, rhs);                                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        Kokkos::RangePolicy<typename LhsVectorType::execution_space> policy(0, n);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                                                     \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return lhs;                                                                                                                                                                                                                  \
     }
 
             VECTOR_OPS_FUNCTORS(Plus, +, +=)
@@ -567,11 +564,29 @@ namespace Kokkos
                 }
             };
         }
+
+        using VectorOperators::operator+;
+        using VectorOperators::operator-;
+        using VectorOperators::operator*;
+        using VectorOperators::operator/;
+        using VectorOperators::operator+=;
+        using VectorOperators::operator-=;
+        using VectorOperators::operator*=;
+        using VectorOperators::operator/=;
     }
 }
 
 namespace Kokkos
 {
+    using Extension::operator+;
+    using Extension::operator-;
+    using Extension::operator*;
+    using Extension::operator/;
+    using Extension::operator+=;
+    using Extension::operator-=;
+    using Extension::operator*=;
+    using Extension::operator/=;
+
     using Kokkos::Extension::operator<<;
     using Kokkos::Extension::operator>>;
 }
@@ -634,21 +649,280 @@ namespace Kokkos
 {
     namespace Extension
     {
+        // clang-format off
+#define UNARY_FUNCTION(NAME)                                                                                                                                                                                                         \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Vector<DataType, ExecutionSpace> NAME(const Vector<DataType, ExecutionSpace>& view)                                                                                                                              \
+    {                                                                                                                                                                                                                                \
+        const uint32                     N = view.extent(0);                                                                                                                                                                         \
+        Vector<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view.label() + ")", N);                                                                                                                                       \
+        Kokkos::parallel_for(STRINGIZER(NAME), N, KOKKOS_LAMBDA(const uint32 i)                                                                                                                                                      \
+        {                                                                                                                                                                                                                            \
+            result(i) = System::NAME(view(i));                                                                                                                                                                                          \
+        });                                                                                                                                                                                                                          \
+        Kokkos::fence();                                                                                                                                                                                                             \
+        return result;                                                                                                                                                                                                               \
+    }
+        
+        UNARY_FUNCTION(abs)
+        UNARY_FUNCTION(cos)
+        UNARY_FUNCTION(acos)
+        UNARY_FUNCTION(cosh)
+        UNARY_FUNCTION(acosh)
+        UNARY_FUNCTION(sin)
+        UNARY_FUNCTION(asin)
+        UNARY_FUNCTION(sinh)
+        UNARY_FUNCTION(asinh)
+        UNARY_FUNCTION(tan)
+        UNARY_FUNCTION(atan)
+        UNARY_FUNCTION(tanh)
+        UNARY_FUNCTION(atanh)
+        UNARY_FUNCTION(cot)
+        UNARY_FUNCTION(coth)
+        UNARY_FUNCTION(acot)
+        UNARY_FUNCTION(acoth)
+        UNARY_FUNCTION(sec)
+        UNARY_FUNCTION(sech)
+        UNARY_FUNCTION(asec)
+        UNARY_FUNCTION(asech)
+        UNARY_FUNCTION(csc)
+        UNARY_FUNCTION(csch)
+        UNARY_FUNCTION(acsc)
+        UNARY_FUNCTION(acsch)
+        UNARY_FUNCTION(exp)
+        UNARY_FUNCTION(exp2)
+        UNARY_FUNCTION(expm1)
+        UNARY_FUNCTION(log)
+        UNARY_FUNCTION(log10)
+        UNARY_FUNCTION(log1p)
+        UNARY_FUNCTION(logb)
+        UNARY_FUNCTION(log2)
+        UNARY_FUNCTION(round)
+        UNARY_FUNCTION(ceil)
+        UNARY_FUNCTION(floor)
+        UNARY_FUNCTION(trunc)
+        UNARY_FUNCTION(lgamma)
+        UNARY_FUNCTION(tgamma)
+        UNARY_FUNCTION(erf)
+        UNARY_FUNCTION(erfc)
+        UNARY_FUNCTION(inv)
+        UNARY_FUNCTION(sqr)
+        UNARY_FUNCTION(sqrt)
+        UNARY_FUNCTION(sign)
 
-        // template<typename DataType, class ExecutionSpace>
-        // static Vector<DataType, ExecutionSpace> Intersect(const Vector<DataType, ExecutionSpace>& first, const Vector<DataType, ExecutionSpace>& second, System::IEqualityComparer<DataType>*
-        // comparer)
-        //{
-        //    var set = new HashSet<TSource>(second, comparer);
+#undef UNARY_FUNCTION
 
-        //    for(DataType element : first)
-        //    {
-        //        if (set.Remove(element))
-        //        {
-        //            yield return element;
-        //        }
-        //    }
-        //}
+#define BINARY_FUNCTION(NAME)                                                                                                                                                                                                         \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Vector<DataType, ExecutionSpace> NAME(const DataType x, const Vector<DataType, ExecutionSpace>& view_y)                                                                                                           \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_y.extent(0);                                                                                                                                                                        \
+        Vector<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + std::to_string(x) + "," + view_y.label() + ")", N);                                                                                                            \
+        Kokkos::parallel_for(STRINGIZER(NAME), N, KOKKOS_LAMBDA(const uint32 i)                                                                                                                                                       \
+        {                                                                                                                                                                                                                             \
+            result(i) = System::NAME(x, view_y(i));                                                                                                                                                                                      \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }                                                                                                                                                                                                                                 \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Vector<DataType, ExecutionSpace> NAME(const Vector<DataType, ExecutionSpace>& view_x, const DataType y)                                                                                                           \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_x.extent(0);                                                                                                                                                                        \
+        Vector<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view_x.label() + "," + std::to_string(y) + ")", N);                                                                                                            \
+        Kokkos::parallel_for(STRINGIZER(NAME), N, KOKKOS_LAMBDA(const uint32 i)                                                                                                                                                       \
+        {                                                                                                                                                                                                                             \
+            result(i) = System::NAME(view_x(i), y);                                                                                                                                                                                      \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }                                                                                                                                                                                                                                 \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Vector<DataType, ExecutionSpace> NAME(const Vector<DataType, ExecutionSpace>& view_x, const Vector<DataType, ExecutionSpace>& view_y)                                                                             \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_x.extent(0);                                                                                                                                                                        \
+        Vector<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view_x.label() + "," + view_y.label() + ")", N);                                                                                                               \
+        Kokkos::parallel_for(STRINGIZER(NAME), N, KOKKOS_LAMBDA(const uint32 i)                                                                                                                                                       \
+        {                                                                                                                                                                                                                             \
+            result(i) = System::NAME(view_x(i), view_y(i));                                                                                                                                                                              \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }
+
+        BINARY_FUNCTION(copysign)
+        BINARY_FUNCTION(sign)
+        BINARY_FUNCTION(fmin)
+        BINARY_FUNCTION(fmax)
+        BINARY_FUNCTION(fmod)
+        BINARY_FUNCTION(hypot)
+        BINARY_FUNCTION(pow)
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> pow(const Vector<DataType, ExecutionSpace>& view_x, const int32 y)
+        {
+            const uint32 N = view_x.extent(0);
+            Vector<DataType, ExecutionSpace> result(STRINGIZER(pow) "(" + view_x.label() + "," + std::to_string(y) + ")", N);
+            Kokkos::parallel_for(STRINGIZER(pow), N, KOKKOS_LAMBDA(const uint32 i)
+            {
+                result(i) = System::pow(view_x(i), y);
+            });
+            Kokkos::fence();
+            return result;
+        }
+    
+#undef BINARY_FUNCTION
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> atan2(const DataType y, const Vector<DataType, ExecutionSpace>& view_x)
+        {
+            const uint32                     N = view_x.extent(0);
+            Vector<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + std::to_string(y) + "," + view_x.label() + ")", N);
+            Kokkos::parallel_for(STRINGIZER(atan2), N, KOKKOS_LAMBDA(const uint32 i)
+            {
+                result(i) = System::atan2(y, view_x(i));
+            });
+            Kokkos::fence();
+            return result;
+        }
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> atan2(const Vector<DataType, ExecutionSpace>& view_y, const DataType x)
+        {
+            const uint32                     N = view_y.extent(0);
+            Vector<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + view_y.label() + "," + std::to_string(x) + ")", N);
+            Kokkos::parallel_for(STRINGIZER(atan2), N, KOKKOS_LAMBDA(const uint32 i)
+            {
+                result(i) = System::atan2(view_y(i), x);
+            });
+            Kokkos::fence();
+            return result;
+        }
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> atan2(const Vector<DataType, ExecutionSpace>& view_y, const Vector<DataType, ExecutionSpace>& view_x)
+        {
+            const uint32                     N = view_y.extent(0);
+            Vector<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + view_y.label() + "," + view_x.label() + ")", N);
+            Kokkos::parallel_for(STRINGIZER(atan2), N, KOKKOS_LAMBDA(const uint32 i)
+            {
+                result(i) = System::atan2(view_y(i), view_x(i));
+            });
+            Kokkos::fence();
+            return result;
+        }
+
+
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> fma(const Vector<DataType, ExecutionSpace>& view_x, const Vector<DataType, ExecutionSpace>& view_y, const Vector<DataType, ExecutionSpace>& view_z)
+        {
+            const uint32                     N = view_x.extent(0);
+            Vector<DataType, ExecutionSpace> result(STRINGIZER(fma) "(" + view_x.label() + "," + view_y.label() + "," + view_z.label() + ")", N);
+            Kokkos::parallel_for(STRINGIZER(fma), N, KOKKOS_LAMBDA(const uint32 i)
+            {
+                result(i) = System::fma(view_x(i), view_y(i), view_z(i));
+            });
+            Kokkos::fence();
+            return result;
+        }
+
+        // clang-format on
+
+        // void sincos (double __x, double *p_sin, double *p_cos)
+
+    }
+}
+
+//namespace std
+//{
+//    using Kokkos::Extension::acos;
+//    using Kokkos::Extension::acosh;
+//    using Kokkos::Extension::acot;
+//    using Kokkos::Extension::acoth;
+//    using Kokkos::Extension::acsc;
+//    using Kokkos::Extension::acsch;
+//    using Kokkos::Extension::asec;
+//    using Kokkos::Extension::asech;
+//    using Kokkos::Extension::asin;
+//    using Kokkos::Extension::asinh;
+//    using Kokkos::Extension::atan;
+//    using Kokkos::Extension::atanh;
+//    using Kokkos::Extension::ceil;
+//    using Kokkos::Extension::cos;
+//    using Kokkos::Extension::cosh;
+//    using Kokkos::Extension::cot;
+//    using Kokkos::Extension::coth;
+//    using Kokkos::Extension::csc;
+//    using Kokkos::Extension::csch;
+//    using Kokkos::Extension::erf;
+//    using Kokkos::Extension::erfc;
+//    using Kokkos::Extension::exp;
+//    using Kokkos::Extension::exp2;
+//    using Kokkos::Extension::expm1;
+//    using Kokkos::Extension::floor;
+//    using Kokkos::Extension::inv;
+//    using Kokkos::Extension::lgamma;
+//    using Kokkos::Extension::log;
+//    using Kokkos::Extension::log10;
+//    using Kokkos::Extension::log1p;
+//    using Kokkos::Extension::log2;
+//    using Kokkos::Extension::logb;
+//    using Kokkos::Extension::round;
+//    using Kokkos::Extension::sec;
+//    using Kokkos::Extension::sech;
+//    using Kokkos::Extension::sign;
+//    using Kokkos::Extension::sin;
+//    using Kokkos::Extension::sinh;
+//    using Kokkos::Extension::sqr;
+//    using Kokkos::Extension::sqrt;
+//    using Kokkos::Extension::tan;
+//    using Kokkos::Extension::tanh;
+//    using Kokkos::Extension::tgamma;
+//    using Kokkos::Extension::trunc;
+//
+//    using Kokkos::Extension::copysign;
+//    using Kokkos::Extension::fmax;
+//    using Kokkos::Extension::fmod;
+//    using Kokkos::Extension::hypot;
+//    using Kokkos::Extension::pow;
+//    using Kokkos::Extension::sign;
+//
+//    using Kokkos::Extension::atan2;
+//
+//    using Kokkos::Extension::fma;
+//}
+
+namespace Kokkos
+{
+    namespace Extension
+    {
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> head(const Vector<DataType, ExecutionSpace>& view, const uint32 n)
+        {
+            const uint32 N = n;
+
+            Vector<DataType, ExecutionSpace> result(view.label(), N);
+
+            Kokkos::parallel_for(Kokkos::RangePolicy<ExecutionSpace>(0, N), [=] __host__ __device__(const uint32 i) { result(i) = view(i); });
+
+            Kokkos::fence();
+
+            return result;
+        }
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> tail(const Vector<DataType, ExecutionSpace>& view, const uint32 n)
+        {
+            const uint32 N = n;
+
+            Vector<DataType, ExecutionSpace> result(view.label(), N);
+
+            Kokkos::parallel_for(Kokkos::RangePolicy<ExecutionSpace>(view.extent(0) - N, view.extent(0)), [=] __host__ __device__(const uint32 i) { result(i) = view(i); });
+
+            Kokkos::fence();
+
+            return result;
+        }
 
     }
 }

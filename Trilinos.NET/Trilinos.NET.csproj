@@ -3,14 +3,14 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
     <PropertyGroup>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>10.0</LangVersion>
         <Nullable>enable</Nullable>
 
         <NuspecFile>Trilinos.NET.nuspec</NuspecFile>
 
         <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-        <Version>$(KOKKOS_VERSION)</Version>
-        <TargetFramework>net5.0</TargetFramework>
+        <Version>13.1.0</Version>
+        <TargetFramework>net6.0</TargetFramework>
         <RuntimeIdentifiers>any;win-x64</RuntimeIdentifiers>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <RootNamespace>Trilinos</RootNamespace>
@@ -24,11 +24,14 @@
         <RepositoryUrl>https://github.com/trmcnealy/Kokkos.NET</RepositoryUrl>
         <Copyright>© Timothy R. McNealy</Copyright>
         <PublishTrimmed>true</PublishTrimmed>
-        <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-        <TieredCompilation>false</TieredCompilation>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
         <Configurations>Debug;Release;Mixed</Configurations>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <IncludeMicrosoftAttributes>true</IncludeMicrosoftAttributes>
+        <IncludeNativeTypeNameAttribute>true</IncludeNativeTypeNameAttribute>
     </PropertyGroup>
 
     <Import Project="$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))\Artifacts.props" Condition="'$([MSBuild]::GetDirectoryNameOfFileAbove($(MSBuildThisFileDirectory), Artifacts.props))' != '' " />
@@ -42,7 +45,7 @@
         <PackageReference Include="MSMPIDIST" Version="10.1.12498.18" />
         <PackageReference Include="CudaRedis" Version="11.3" />
         <PackageReference Include="UcrtRedis" Version="10.0.19041" />
-        <PackageReference Include="Trilinos" Version="13.0.0" />
+        <PackageReference Include="Trilinos" Version="13.1.0" />
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">

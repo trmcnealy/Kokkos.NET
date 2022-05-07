@@ -48,14 +48,8 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                try
-                {
-                    KokkosLibrary.Initialize(Environment.ProcessorCount, 0);
-                }
-                catch(System.Exception ex)
-                {
-                    Console.WriteLine("Kokkos failed to initialize.\n"+ex.Message);
-                }
+                KokkosLibrary.Initialize(Environment.ProcessorCount, 0);
+
                 _initialized = true;
             }
 
@@ -67,14 +61,8 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                try
-                {
-                    KokkosLibrary.Initialize(Environment.ProcessorCount, gpuDeviceId);
-                }
-                catch(System.Exception ex)
-                {
-                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
-                }
+                KokkosLibrary.Initialize(Environment.ProcessorCount, gpuDeviceId);
+
                 _initialized = true;
             }
 
@@ -87,14 +75,8 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                try
-                {
-                    KokkosLibrary.Initialize(numCpuThreads, gpuDeviceId);
-                }
-                catch(System.Exception ex)
-                {
-                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
-                }
+                KokkosLibrary.Initialize(numCpuThreads, gpuDeviceId);
+
                 _initialized = true;
             }
 
@@ -106,14 +88,8 @@ namespace Kokkos
         {
             if(!_initialized)
             {
-                try
-                {
-                    KokkosLibrary.Initialize(arguments);
-                }
-                catch(System.Exception ex)
-                {
-                    Console.WriteLine("Kokkos failed to initialize.\n" +ex.Message);
-                }
+                KokkosLibrary.Initialize(arguments);
+
                 _initialized = true;
             }
 

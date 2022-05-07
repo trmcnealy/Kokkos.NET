@@ -368,7 +368,7 @@ namespace Kokkos
     namespace Extension
     {
         template<typename DataType>
-        static int CompareTo(REF(DataType) lhs, REF(DataType) rhs)
+        static int CompareTo(CONST(DataType) lhs, CONST(DataType) rhs)
         {
             if (lhs == nullptr)
             {
@@ -393,7 +393,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace>& view, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType*, typename ExecutionSpace::array_layout, ExecutionSpace>& view, CONST(DataType) comparable)
         {
             const int length = view.extent(0);
 
@@ -427,7 +427,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType**, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType**, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 
@@ -472,7 +472,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType***, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 
@@ -521,7 +521,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType****, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType****, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 
@@ -574,7 +574,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType*****, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType*****, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 
@@ -631,7 +631,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType******, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType******, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 
@@ -692,7 +692,7 @@ namespace Kokkos
         }
 
         template<typename DataType, class ExecutionSpace>
-        static int BinarySearch(const View<DataType*******, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, REF(DataType) comparable)
+        static int BinarySearch(const View<DataType*******, typename ExecutionSpace::array_layout, ExecutionSpace>& data, uint8 dimensionToSearch, CONST(DataType) comparable)
         {
             const int length = data.extent(dimensionToSearch);
 

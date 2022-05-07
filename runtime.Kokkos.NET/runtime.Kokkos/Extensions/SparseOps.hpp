@@ -6,6 +6,70 @@
 
 #include <KokkosSparse_CrsMatrix.hpp>
 
+
+//proc COO_to_CSC
+//input: N, n_cols (integer scalars)
+//input: values, rows, columns (COO arrays)
+//allocate array col_offsets with length n_cols + 1
+//forall j ∈ [0, n_cols]: col_offsets[j] ← 0
+//forall i ∈ [0, N):
+//j ← columns[i] + 1
+//col_offsets[j] ← col_offsets[j] + 1
+//forall j ∈ [1, n_cols]:
+//col_offsets[j] ← col_offsets[j] + col_offsets[j-1]
+//output: values, rows, col_offsets (CSC arrays)
+//
+//proc CSC_to_COO
+//input: N, n_cols (integer scalars)
+//input: values, rows, col_offsets (CSC arrays)
+//allocate array columns with length N
+//k ← 0
+//forall j ∈ [0, n_cols):
+//M ← col_offsets[j+1] − col_offsets[j]
+//forall l ∈ [0, M):
+//columns[k+l] ← j
+//k ← k + M
+//output: values, rows, columns (COO arrays)
+//
+//proc CSC_to_RBT
+//input: N, n_rows, n_cols (integer scalars)
+//input: values, rows, col_offsets (CSC arrays)
+//declare red-black tree T
+//forall j ∈ [0, n_cols):
+//start ← col_offsets[j]
+//end ← col_offsets[j+1]
+//forall k ∈ [start,end):
+//index ← row_indices[k] + j ∗ n_rows
+//l ← (index, values[k])
+//insert node l into T
+//output: T (red-black tree)
+//
+//proc RBT_to_CSC
+//input: N, n_rows, n_cols (integer scalars)
+//input: T (red-black tree)
+//allocate array values with length N
+//allocate array row_indices with length N
+//allocate array col_offsets with length n_cols + 1
+//forall j ∈ [0, n_cols]: col_offsets[j] ← 0
+//k ← 0
+//foreach node l ∈ T, where l = (index,value):
+//values[k] ← value
+//row_indices[k] ← index mod n_rows
+//j ← bindex/n_rowsc
+//col_offsets[j+1] ← col_offsets[j+1] + 1
+//k ← k + 1
+//forall j ∈ [1, n_cols]:
+//col_offsets[j] ← col_offsets[j] + col_offsets[j-1]
+//output: values, rows, col_offsets (CSC arrays)
+
+
+
+
+
+
+
+
+
 namespace KokkosSparse
 {
     namespace Extension

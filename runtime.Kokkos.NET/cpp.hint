@@ -1,0 +1,5 @@
+
+#if __cplusplus < 202002L
+#    undef __cplusplus
+#    define __cplusplus 202002L
+#endif

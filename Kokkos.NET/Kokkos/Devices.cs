@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-
-using Kokkos;
+using System.Security;
 
 using NvAPIWrapper.GPU;
-using NvAPIWrapper.Native.GPU.Structures;
-
-using PlatformApi.Win32;
-
-using static Kokkos.Devices;
 
 namespace Kokkos
 {
@@ -41,16 +36,6 @@ namespace Kokkos
 
     public abstract class Device
     {
-        public int Id { get; protected set; }
-
-        public string Platform { get; protected set; }
-
-        public int CoreCount { get; protected set; }
-
-        public int ThreadCount { get; protected set; }
-
-        public DeviceArch Architecture { get; protected set; }
-
         protected Device(int        id,
                          string     platform,
                          int        coreCount,
@@ -64,16 +49,21 @@ namespace Kokkos
             Architecture = architecture;
         }
 
+        public int Id { get; protected set; }
+
+        public string Platform { get; protected set; }
+
+        public int CoreCount { get; protected set; }
+
+        public int ThreadCount { get; protected set; }
+
+        public DeviceArch Architecture { get; protected set; }
+
         public abstract int GetUsage();
     }
 
     public sealed class CpuDevice : Device
     {
-
-        static CpuDevice()
-        {
-        }
-
         public CpuDevice(int        id,
                          string     platform,
                          int        coreCount,
@@ -83,9 +73,43 @@ namespace Kokkos
         {
         }
 
+        [SuppressGCTransition]
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        internal static extern nint GetCurrentProcess();
+
+        [SuppressGCTransition]
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        internal static extern int GetProcessTimes(nint         hProcess,
+                                                   out FILETIME lpCreationTime,
+                                                   out FILETIME lpExitTime,
+                                                   out FILETIME lpKernelTime,
+                                                   out FILETIME lpUserTime);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        internal static double filetime_to_double(FILETIME ft)
+        {
+            ulong t = ft.dwLowDateTime + ((ulong)ft.dwHighDateTime << 32);
+
+            return t / 1e7;
+        }
+
         public override int GetUsage()
         {
-            return 0;
+            GetProcessTimes(GetCurrentProcess(), out FILETIME creation_time, out FILETIME exit_time, out FILETIME kernel_time, out FILETIME user_time);
+
+            double user   = filetime_to_double(user_time);
+            double system = filetime_to_double(kernel_time);
+
+            return (int)(user + system);
+        }
+
+        [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        internal struct FILETIME
+        {
+            internal uint dwLowDateTime;
+            internal uint dwHighDateTime;
         }
     }
 
@@ -108,8 +132,6 @@ namespace Kokkos
 
     public sealed class CudaGpuDevice : GpuDevice
     {
-        public GPUUsageInformation UsageInformation { get; }
-
         public CudaGpuDevice(int                 id,
                              string              platform,
                              int                 coreCount,
@@ -121,6 +143,8 @@ namespace Kokkos
             UsageInformation = usageInformation;
         }
 
+        public GPUUsageInformation UsageInformation { get; }
+
         public override int GetUsage()
         {
             return UsageInformation.UtilizationDomainsStatus.Sum(gpu => gpu.Percentage);
@@ -129,57 +153,6 @@ namespace Kokkos
 
     public sealed class Devices
     {
-
-        [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-        internal unsafe struct SYSTEM_INFO
-        {
-            [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
-            public struct SYSTEM_INFOunion
-            {
-                [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
-                public struct SYSTEM_INFOunionstruct
-                {
-                    public ushort wProcessorArchitecture;
-                    
-                    public ushort wReserved;
-                }
-                
-                [FieldOffset(0)]
-                public uint dwOemId;
-
-                [FieldOffset(0)]
-                public SYSTEM_INFOunionstruct DUMMYSTRUCTNAME;
-            }
-
-            public SYSTEM_INFOunion DUMMYUNIONNAME;
-
-            public uint dwPageSize;
-            
-            public void* lpMinimumApplicationAddress;
-            
-            public void* lpMaximumApplicationAddress;
-            
-            public uint* dwActiveProcessorMask;
-            
-            public uint dwNumberOfProcessors;
-            
-            public uint dwProcessorType;
-            
-            public uint dwAllocationGranularity;
-            
-            public ushort wProcessorLevel;
-            
-            public ushort wProcessorRevision;
-        }
-
-        [DllImport("kernel32.dll", ExactSpelling = true)]
-        internal static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
-
-
-        public List<CpuDevice> Cpus { get; }
-
-        public List<GpuDevice> Gpus { get; }
-
         public Devices()
         {
             Cpus = new List<CpuDevice>((int)KokkosLibrary.GetNumaCount());
@@ -217,15 +190,24 @@ namespace Kokkos
                 uint gpuVersion = KokkosLibrary.GetComputeCapability(gpuId);
 
                 Gpus.Add(new CudaGpuDevice((int)gpuId,
-                                          "Cuda",
-                                          physicalGpu.ArchitectInformation.NumberOfCores,
-                                          physicalGpu.ArchitectInformation.NumberOfCores,
-                                          new DeviceArch(GetCudaDeviceName(gpuVersion), (int)gpuVersion),
-                                          physicalGpu.UsageInformation));
+                                           "Cuda",
+                                           physicalGpu.ArchitectInformation.NumberOfCores,
+                                           physicalGpu.ArchitectInformation.NumberOfCores,
+                                           new DeviceArch(GetCudaDeviceName(gpuVersion), (int)gpuVersion),
+                                           physicalGpu.UsageInformation));
 
                 ++gpuId;
             }
         }
+
+        public List<CpuDevice> Cpus { get; }
+
+        public List<GpuDevice> Gpus { get; }
+
+        [SuppressGCTransition]
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        internal static extern void GetSystemInfo(out SYSTEM_INFO lpSystemInfo);
 
         private static string GetCudaDeviceName(uint version)
         {
@@ -294,6 +276,48 @@ namespace Kokkos
             }
 
             return "Unknown";
+        }
+
+        [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+        internal unsafe struct SYSTEM_INFO
+        {
+            [StructLayout(System.Runtime.InteropServices.LayoutKind.Explicit)]
+            public struct SYSTEM_INFOunion
+            {
+                [StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential)]
+                public struct SYSTEM_INFOunionstruct
+                {
+                    public ushort wProcessorArchitecture;
+
+                    public ushort wReserved;
+                }
+
+                [FieldOffset(0)]
+                public uint dwOemId;
+
+                [FieldOffset(0)]
+                public SYSTEM_INFOunionstruct DUMMYSTRUCTNAME;
+            }
+
+            public SYSTEM_INFOunion DUMMYUNIONNAME;
+
+            public uint dwPageSize;
+
+            public void* lpMinimumApplicationAddress;
+
+            public void* lpMaximumApplicationAddress;
+
+            public uint* dwActiveProcessorMask;
+
+            public uint dwNumberOfProcessors;
+
+            public uint dwProcessorType;
+
+            public uint dwAllocationGranularity;
+
+            public ushort wProcessorLevel;
+
+            public ushort wProcessorRevision;
         }
     }
 }

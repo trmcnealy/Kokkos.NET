@@ -57,7 +57,7 @@ namespace Spatial
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType DegreeToRadian(REF(DataType) degree)
+    KOKKOS_INLINE_FUNCTION static DataType DegreeToRadian(CONST(DataType) degree)
     {
         return (Constants<DataType>::PI() / 180.0) * degree;
     }
@@ -88,11 +88,11 @@ namespace Spatial
     //    DataType    a;
     //    DataType    invf;
     //
-    //    Ellipsoid(const char* const name, REF(DataType) a, REF(DataType) invf) : name(name), a(a), invf(invf) {}
+    //    Ellipsoid(const char* const name, CONST(DataType) a, CONST(DataType) invf) : name(name), a(a), invf(invf) {}
     //};
     //
     // template<typename DataType>
-    // KOKKOS_INLINE_FUNCTION static DataType GetEllipsoid(REF(EllipsoidKind) kind)
+    // KOKKOS_INLINE_FUNCTION static DataType GetEllipsoid(CONST(EllipsoidKind) kind)
     //{
     //    switch(kind)
     //    {
@@ -137,13 +137,13 @@ namespace Spatial
     //}
     //
     // template<typename DataType>
-    // KOKKOS_INLINE_FUNCTION static DataType CrsDistance(REF(DataType) lat1, REF(DataType) lon1, REF(DataType) lat2, REF(DataType) lon2)
+    // KOKKOS_INLINE_FUNCTION static DataType CrsDistance(CONST(DataType) lat1, CONST(DataType) lon1, CONST(DataType) lat2, CONST(DataType) lon2)
     //{
     //    return acos(sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon1 - lon2));
     //}
     //
     // template<typename DataType>
-    // KOKKOS_INLINE_FUNCTION static DataType CrsDistance(REF(DataType) lat1, REF(DataType) lon1, REF(DataType) lat2, REF(DataType) lon2, REF(Ellipsoid<DataType>) ellipse)
+    // KOKKOS_INLINE_FUNCTION static DataType CrsDistance(CONST(DataType) lat1, CONST(DataType) lon1, CONST(DataType) lat2, CONST(DataType) lon2, CONST(Ellipsoid<DataType>) ellipse)
     //{
     //    const DataType EPS     = 0.00000000005;
     //    const uint32   MAXITER = 100;
@@ -229,31 +229,31 @@ namespace Spatial
     };
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType MidPoint(REF(DataType) a, REF(DataType) b)
+    KOKKOS_INLINE_FUNCTION static DataType MidPoint(CONST(DataType) a, CONST(DataType) b)
     {
         return (a + b) / 2.0;
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType LongitudeToX(REF(DataType) lat, REF(DataType) lon)
+    KOKKOS_INLINE_FUNCTION static DataType LongitudeToX(CONST(DataType) lat, CONST(DataType) lon)
     {
         return lon * EarthCircumferencePerDegree<DataType>() * cos(DegreeToRadian<DataType>(lat));
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType LatitudeToY(REF(DataType) lat)
+    KOKKOS_INLINE_FUNCTION static DataType LatitudeToY(CONST(DataType) lat)
     {
         return lat * EarthCircumferencePerDegree<DataType>();
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType AreaFromPoints(REF(DataType) x0, REF(DataType) y0, REF(DataType) x1, REF(DataType) y1, REF(DataType) x2, REF(DataType) y2)
+    KOKKOS_INLINE_FUNCTION static DataType AreaFromPoints(CONST(DataType) x0, CONST(DataType) y0, CONST(DataType) x1, CONST(DataType) y1, CONST(DataType) x2, CONST(DataType) y2)
     {
         return 0.5 * abs(((x0 - x2) * (y1 - y0)) - ((x0 - x1) * (y2 - y0)));
     }
 
     template<typename DataType>
-    KOKKOS_INLINE_FUNCTION static DataType DistanceBetweenPointAndLines(REF(DataType) x0, REF(DataType) y0, REF(DataType) Px1, REF(DataType) Py1, REF(DataType) Px2, REF(DataType) Py2)
+    KOKKOS_INLINE_FUNCTION static DataType DistanceBetweenPointAndLines(CONST(DataType) x0, CONST(DataType) y0, CONST(DataType) Px1, CONST(DataType) Py1, CONST(DataType) Px2, CONST(DataType) Py2)
     {
         if (((Py2 - Py1) <= Constants<DataType>::Epsilon()) && ((Px2 - Px1) <= Constants<DataType>::Epsilon()))
         {
@@ -268,7 +268,7 @@ namespace Spatial
     }
 
     // template<typename DataType>
-    // KOKKOS_INLINE_FUNCTION static DataType LineNormal(REF(DataType) x0, REF(DataType) y0, REF(DataType) x1, REF(DataType) y1)
+    // KOKKOS_INLINE_FUNCTION static DataType LineNormal(CONST(DataType) x0, CONST(DataType) y0, CONST(DataType) x1, CONST(DataType) y1)
     //{
     //    const DataType dx=x1-x0;
     //    const DataType dy=y1-y0;
@@ -307,7 +307,7 @@ namespace Spatial
             Neighbors = Kokkos::Extension::Vector<DataType, ExecutionSpace>("Neighbors", N);
         }
 
-        KOKKOS_INLINE_FUNCTION void operator()(REF(Length), const size_type& i) const
+        KOKKOS_INLINE_FUNCTION void operator()(CONST(Length), const size_type& i) const
         {
             Cartesian(i, SurfaceIdx, XIdx) = LongitudeToX<DataType>(latlongdegrees(i, SurfaceIdx, LatitudeIdx), latlongdegrees(i, SurfaceIdx, LongitudeIdx));
 
@@ -319,7 +319,7 @@ namespace Spatial
             Lengths(i) = sqrt(pow(Cartesian(i, BottomIdx, XIdx) - Cartesian(i, SurfaceIdx, XIdx), 2) + pow(Cartesian(i, BottomIdx, YIdx) - Cartesian(i, SurfaceIdx, YIdx), 2));
         }
 
-        KOKKOS_INLINE_FUNCTION void operator()(REF(Distance), const size_type& i, const size_type& j) const
+        KOKKOS_INLINE_FUNCTION void operator()(CONST(Distance), const size_type& i, const size_type& j) const
         {
             if (i == j)
             {
@@ -345,10 +345,10 @@ namespace Spatial
 
             const DataType bottom = sqrt(pow(Cartesian(i, BottomIdx, YIdx) - Cartesian(j, BottomIdx, YIdx), 2) + pow(Cartesian(i, BottomIdx, XIdx) - Cartesian(j, BottomIdx, XIdx), 2));
 
-            Distances(i, j) = max(surface, max(wellbore, bottom));
+            Distances(i, j) = System::max<DataType>(surface, System::max<DataType>(wellbore, bottom));
         }
 
-        KOKKOS_INLINE_FUNCTION void operator()(REF(Neighbor), const size_type& i) const
+        KOKKOS_INLINE_FUNCTION void operator()(CONST(Neighbor), const size_type& i) const
         {
             DataType neighbor = Constants<DataType>::Max();
 

@@ -15,6 +15,7 @@
     <None Include=".clang-format" />
     <None Include="ClassDiagram.cd" />
     <None Include="cpp.hint" />
+    <None Include="runtime.Kokkos.NET.Debug.nuspec" />
     <None Include="runtime.Kokkos.NET.rgs">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -82,6 +83,11 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Utilities\MemoryMapped.cpp" />
+    <ClCompile Include="Utilities\SharedDataTable.cpp" />
+    <ClCompile Include="Utilities\SharedMemory.cpp">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Analyzes\BesselMethods.hpp" />
@@ -117,6 +123,7 @@
     <ClInclude Include="runtime.Kokkos\Extensions.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\Atomics.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\IndexOf.hpp" />
+    <ClInclude Include="runtime.Kokkos\Extensions\Linq.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\MatrixOps.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\Solvers.hpp" />
     <ClInclude Include="runtime.Kokkos\Extensions\SparseOps.hpp" />
@@ -180,6 +187,8 @@
     <ClInclude Include="Utilities\InMemoryLibraryLoader.hpp" />
     <ClInclude Include="Utilities\InterprocessMemory.h" />
     <ClInclude Include="Utilities\MemoryMapped.h" />
+    <ClInclude Include="Utilities\SharedDataTable.h" />
+    <ClInclude Include="Utilities\SharedMemory.h" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="runtime.Kokkos.NET.manifest" />
@@ -203,11 +212,18 @@
   <ItemGroup>
     <Natvis Include="Kokkos.natvis" />
   </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="Utilities\SharedDataTableSchema.xsd">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </Xsd>
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <NuspecFile>runtime.Kokkos.NET.nuspec</NuspecFile>
+    <NuspecFile Condition="'$(Configuration)'=='Debug'">runtime.Kokkos.NET.Debug.nuspec</NuspecFile>
+    <NuspecFile Condition="'$(Configuration)'=='Release'">runtime.Kokkos.NET.nuspec</NuspecFile>
     <ProjectGuid>{FD57B2DB-F3DD-4AC5-9EAA-D49C73C02890}</ProjectGuid>
     <UseMultiToolTask>true</UseMultiToolTask>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -226,15 +242,8 @@
     <Import Project="D:\TFS_Sources\EngineeringTools\Native\Core\Core.vcxitems" Label="Shared" />
     <Import Project="D:\TFS_Sources\EngineeringTools\Native\NumericalMethods\NumericalMethods.vcxitems" Label="Shared" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+  <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
-    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\WinMD.targets" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
-    <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\WinMD.targets" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -258,7 +267,7 @@
       <CompileAs />
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Native/Core/include;D:/TFS_Sources/EngineeringTools/Native/NumericalMethods;D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -325,7 +334,7 @@
       <LanguageStandard_C />
     </ClCompile>
     <Link>
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libteuchoscore.dll.a,-Bstatic,-ldetours</AdditionalDependencies>
       <AdditionalLibraryDirectories>
       </AdditionalLibraryDirectories>
       <GenerateDebugInformation />
@@ -358,8 +367,7 @@
       <SuppressStartupBanner />
     </Lib>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>rd /s /q C:\Users\trmcnealy\.nuget\packages\native.kokkos.net</Command>
     </PostBuildEvent>
     <ProjectReference />
     <Midl>
@@ -367,7 +375,7 @@
       <HeaderFileName />
     </Midl>
     <CustomBuildStep Condition="'$(Configuration)'=='Release'">
-      <Command>$(PACKAGE_CACHE)..\bin\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)</Command>
+      <Command>$(PACKAGE_CACHE)\..\bin\nuget.exe pack "$(ProjectDir)runtime.Kokkos.NET.nuspec" -Properties $(NUGET_PROPERTIES) -OutputDirectory $(PACKAGE_CACHE)</Command>
       <Outputs>$(PACKAGE_CACHE)native.Kokkos.NET.nupkg</Outputs>
       <TreatOutputAsContent>false</TreatOutputAsContent>
     </CustomBuildStep>
@@ -384,7 +392,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -406,7 +414,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -423,7 +431,7 @@
       <CompileAs />
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>KOKKOS_NET_EXPORTS;$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Native/Core/include;D:/TFS_Sources/EngineeringTools/Native/NumericalMethods;D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
       <ExceptionHandling />
       <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
@@ -500,7 +508,7 @@
       <AdditionalOptions>
       </AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libteuchoscore.dll.a,-Bstatic,-ldetours</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -533,8 +541,7 @@
       <SuppressStartupBanner />
     </Lib>
     <PostBuildEvent>
-      <Command>
-      </Command>
+      <Command>rd /s /q C:\Users\trmcnealy\.nuget\packages\native.kokkos.net</Command>
     </PostBuildEvent>
     <CustomBuild>
       <Command>
@@ -578,10 +585,6 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" />
-  <Target Name="Link">
-    <CallTarget Targets="ClangLink" />
-  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

@@ -267,34 +267,34 @@ namespace Geometry
     template<typename TDataType1, typename TDataType2>
     KOKKOS_INLINE_FUNCTION static constexpr void add_to_box(Box<TDataType1>& box, const Box<TDataType2>& addBox)
     {
-        box.set_box(std::min(box.get_x_min(), static_cast<TDataType1>(addBox.get_x_min())),
-                    std::min(box.get_y_min(), static_cast<TDataType1>(addBox.get_y_min())),
-                    std::min(box.get_z_min(), static_cast<TDataType1>(addBox.get_z_min())),
-                    std::max(box.get_x_max(), static_cast<TDataType1>(addBox.get_x_max())),
-                    std::max(box.get_y_max(), static_cast<TDataType1>(addBox.get_y_max())),
-                    std::max(box.get_z_max(), static_cast<TDataType1>(addBox.get_z_max())));
+        box.set_box(System::min(box.get_x_min(), static_cast<TDataType1>(addBox.get_x_min())),
+                    System::min(box.get_y_min(), static_cast<TDataType1>(addBox.get_y_min())),
+                    System::min(box.get_z_min(), static_cast<TDataType1>(addBox.get_z_min())),
+                    System::max(box.get_x_max(), static_cast<TDataType1>(addBox.get_x_max())),
+                    System::max(box.get_y_max(), static_cast<TDataType1>(addBox.get_y_max())),
+                    System::max(box.get_z_max(), static_cast<TDataType1>(addBox.get_z_max())));
     }
 
     template<typename TDataType1, typename TDataType2>
     KOKKOS_INLINE_FUNCTION static constexpr void add_to_box(Box<TDataType1>& box, const Sphere<TDataType2>& addBox)
     {
-        box.set_box(std::min(box.get_x_min(), addBox.get_x_min()),
-                    std::min(box.get_y_min(), addBox.get_y_min()),
-                    std::min(box.get_z_min(), addBox.get_z_min()),
-                    std::max(box.get_x_max(), addBox.get_x_max()),
-                    std::max(box.get_y_max(), addBox.get_y_max()),
-                    std::max(box.get_z_max(), addBox.get_z_max()));
+        box.set_box(System::min(box.get_x_min(), addBox.get_x_min()),
+                    System::min(box.get_y_min(), addBox.get_y_min()),
+                    System::min(box.get_z_min(), addBox.get_z_min()),
+                    System::max(box.get_x_max(), addBox.get_x_max()),
+                    System::max(box.get_y_max(), addBox.get_y_max()),
+                    System::max(box.get_z_max(), addBox.get_z_max()));
     }
 
     template<typename TDataType1, typename TDataType2>
     KOKKOS_INLINE_FUNCTION static constexpr void add_to_box(Box<TDataType1>& box, const Point<TDataType2>& addBox)
     {
-        box.set_box(std::min(box.get_x_min(), addBox.get_x_min()),
-                    std::min(box.get_y_min(), addBox.get_y_min()),
-                    std::min(box.get_z_min(), addBox.get_z_min()),
-                    std::max(box.get_x_max(), addBox.get_x_max()),
-                    std::max(box.get_y_max(), addBox.get_y_max()),
-                    std::max(box.get_z_max(), addBox.get_z_max()));
+        box.set_box(System::min(box.get_x_min(), addBox.get_x_min()),
+                    System::min(box.get_y_min(), addBox.get_y_min()),
+                    System::min(box.get_z_min(), addBox.get_z_min()),
+                    System::max(box.get_x_max(), addBox.get_x_max()),
+                    System::max(box.get_y_max(), addBox.get_y_max()),
+                    System::max(box.get_z_max(), addBox.get_z_max()));
     }
 
     // This algorithm is based off the minimum circle for a triangle blog post

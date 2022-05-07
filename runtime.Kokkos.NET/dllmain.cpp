@@ -3,13 +3,14 @@
 #include <Types.hpp>
 #include <Kokkos_Core.hpp>
 
+#define ENABLE_DETOUR_ABORT
 #include <ErrorFuncs.hpp>
+#undef ENABLE_DETOUR_ABORT
 
 #include <exception>
 #include <string>
 
 #include <windows.h>
-
 
 BOOL WINAPI DllMain(HANDLE hModule, const DWORD ul_reason_for_call, LPVOID lpReserved)
 {
@@ -19,7 +20,11 @@ BOOL WINAPI DllMain(HANDLE hModule, const DWORD ul_reason_for_call, LPVOID lpRes
         {
             DisableThreadLibraryCalls(static_cast<HINSTANCE>(hModule));
 
-            std::set_terminate(&onTerminate);   
+            if (std::get_terminate() == nullptr)
+            {
+                _set_abort_behavior(0, _WRITE_ABORT_MSG);
+                std::set_terminate(onTerminate);
+            }
             break;
         }
         case DLL_PROCESS_DETACH:
@@ -33,19 +38,6 @@ BOOL WINAPI DllMain(HANDLE hModule, const DWORD ul_reason_for_call, LPVOID lpRes
     }
     return TRUE;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //.def
 // LIBRARY

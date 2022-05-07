@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Kokkos.Utilities
+namespace Kokkos
 {
     public struct HashCode<T>
         where T : notnull

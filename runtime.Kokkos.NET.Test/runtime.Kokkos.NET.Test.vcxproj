@@ -17,7 +17,114 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="test_hgrad.cpp">
+    <ClCompile Include="MultiPorosityModel.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\cudaDeviceProperties.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\CgalTests.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\SharedDataTable.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCombinations.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCombinations2.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCumulativeSum.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestFractions.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestGaussNewton.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestGramSchmidt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestHardware.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestKolmogorovZurbenko.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestLU.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNelderMead.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNestedHybridLoop.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNonLinearLeastSquares.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestPCA.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestPInv.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestQR.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestSVD.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TestTrapezoid.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\test_hgrad.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Tests\TriangulationTests.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
@@ -27,14 +134,16 @@
     <PackageReference Include="native.Kokkos.NET" Version="$(RUNTIME_KOKKOS_VERSION)" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test_functors.hpp" />
-    <ClInclude Include="test_hgrad.hpp" />
-    <ClInclude Include="test_util.hpp" />
+    <ClInclude Include="Tests\Tests.hpp" />
+    <ClInclude Include="Tests\TestTpetra.hpp" />
+    <ClInclude Include="Tests\test_functors.hpp" />
+    <ClInclude Include="Tests\test_hgrad.hpp" />
+    <ClInclude Include="Tests\test_util.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5A3C531B-04B1-4B9C-AF93-063241A89847}</ProjectGuid>
     <UseMultiToolTask>true</UseMultiToolTask>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -53,7 +162,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
+  <!-- <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" /> -->
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared">
     <Import Project="D:\TFS_Sources\EngineeringTools\Native\Core\Core.vcxitems" Label="Shared" />
@@ -76,6 +185,7 @@
     <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
     <TargetName>$(TargetName)</TargetName>
+    <EnableClangCuda>true</EnableClangCuda>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|x64'">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -83,6 +193,7 @@
     <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
     <TargetName>$(TargetName)</TargetName>
+    <EnableClangCuda>true</EnableClangCuda>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
@@ -90,6 +201,7 @@
     <ClangTidyChecks>-*,readability-braces-around-statements*</ClangTidyChecks>
     <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
     <TargetName>$(TargetName)</TargetName>
+    <EnableClangCuda>true</EnableClangCuda>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -97,9 +209,8 @@
       </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Native/Core/include;D:/TFS_Sources/EngineeringTools/Native/NumericalMethods;D:/TFS_Sources/EngineeringTools/Native/Statistics;D:/AssemblyCache/Trilinos/include;D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/TFS_Sources/EngineeringTools/OilAndGas/MultiPorosityModel/runtime.MultiPorosity;D:/TFS_Sources/EngineeringTools/Physics/PVT/runtime.PVT</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -165,7 +276,7 @@
       <LinkErrorReporting />
       <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,-lruntime.Kokkos.NET.$(Platform),$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libteuchoscore.dll.a,-Bstatic,-ldetours</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -182,8 +293,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-LD:/TFS_Sources/EngineeringTools/bin/$(Configuration)/$(Platform),-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -199,10 +309,9 @@
       </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Native/Core/include;D:/TFS_Sources/EngineeringTools/Native/NumericalMethods;D:/TFS_Sources/EngineeringTools/Native/Statistics;D:/AssemblyCache/Trilinos/include;D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/TFS_Sources/EngineeringTools/OilAndGas/MultiPorosityModel/runtime.MultiPorosity;D:/TFS_Sources/EngineeringTools/Physics/PVT/runtime.PVT</AdditionalIncludeDirectories>
       <ExceptionHandling>
       </ExceptionHandling>
-      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat>
@@ -312,7 +421,7 @@
       <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner>
       </SuppressStartupBanner>
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,-lruntime.Kokkos.NET.$(Platform),$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libteuchoscore.dll.a,-Bstatic,-ldetours</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <ManifestFile>
@@ -344,8 +453,7 @@
       <TypeLibraryResourceID>
       </TypeLibraryResourceID>
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-LD:/TFS_Sources/EngineeringTools/bin/$(Configuration)/$(Platform),-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -368,7 +476,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -391,7 +499,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory>
       </PrecompiledHeaderOutputFileDirectory>
@@ -415,7 +523,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -433,9 +541,8 @@
       </CompileAs>
       <UndefinePreprocessorDefinitions>$(CPP_UNDEFINES)</UndefinePreprocessorDefinitions>
       <PreprocessorDefinitions>$(CPP_DEFINES)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/AssemblyCache/Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(CPP_INCLUDES);D:/TFS_Sources/EngineeringTools/Native/Core/include;D:/TFS_Sources/EngineeringTools/Native/NumericalMethods;D:/TFS_Sources/EngineeringTools/Native/Statistics;D:/AssemblyCache/Trilinos/include;D:/TFS_Sources/EngineeringTools/Kokkos/runtime.Kokkos.NET;D:/TFS_Sources/EngineeringTools/OilAndGas/MultiPorosityModel/runtime.MultiPorosity;D:/TFS_Sources/EngineeringTools/Physics/PVT/runtime.PVT</AdditionalIncludeDirectories>
       <ExceptionHandling />
-      <AdditionalOptions>$(CPP_FLAGS)</AdditionalOptions>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <DiagnosticsFormat />
@@ -501,7 +608,7 @@
       <LinkErrorReporting />
       <AdditionalOptions>-v</AdditionalOptions>
       <SuppressStartupBanner />
-      <AdditionalDependencies>-Bdynamic,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)../Trilinos/lib/libteuchoscore.dll.a</AdditionalDependencies>
+      <AdditionalDependencies>-Bdynamic,-lruntime.Kokkos.NET.$(Platform),$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscore.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkoscontainers.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libkokkosalgorithms.dll.a,$(PACKAGE_CACHE)/../Trilinos/lib/libteuchoscore.dll.a,-Bstatic,-ldetours</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries />
       <ManifestFile />
       <EnableUAC />
@@ -518,8 +625,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>
-      </AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-LD:/TFS_Sources/EngineeringTools/bin/$(Configuration)/$(Platform),-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
     <Lib>
@@ -530,10 +636,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" />
-  <Target Name="Link">
-    <CallTarget Targets="ClangLink" />
-  </Target>
+  <!-- <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" /> -->
+  <!-- <Target Name="Link"> -->
+  <!-- <CallTarget Targets="ClangLink" /> -->
+  <!-- </Target> -->
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

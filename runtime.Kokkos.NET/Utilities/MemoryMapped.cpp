@@ -6,37 +6,30 @@
 
 #include "MemoryMapped.h"
 
-
-// // OS-specific
-// #ifdef _WINDOWS
-// // Windows
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
+#ifdef _WINDOWS
+#    ifndef WIN32_LEAN_AND_MEAN
+#        define WIN32_LEAN_AND_MEAN
+#    endif
 #    include <windows.h>
-// #else
+#else
 // // Linux
-// // enable large file support on 32 bit systems
-// #    ifndef _LARGEFILE64_SOURCE
-// #        define _LARGEFILE64_SOURCE
-// #    endif
-// #    ifdef _FILE_OFFSET_BITS
-// #        undef _FILE_OFFSET_BITS
-// #    endif
-// #    define _FILE_OFFSET_BITS 64
-// // and include needed headers
-// #    include <sys/stat.h>
-// #    include <sys/mman.h>
-// #    include <fcntl.h>
-// #    include <errno.h>
-// #    include <unistd.h>
-// #endif
+#    ifndef _LARGEFILE64_SOURCE
+#        define _LARGEFILE64_SOURCE
+#    endif
+#    ifdef _FILE_OFFSET_BITS
+#        undef _FILE_OFFSET_BITS
+#    endif
+#    define _FILE_OFFSET_BITS 64
+
+#    include <sys/stat.h>
+#    include <sys/mman.h>
+#    include <fcntl.h>
+#    include <errno.h>
+#    include <unistd.h>
+#endif
 
 #include <cmath>
 #include <stdexcept>
-#include <cstdio>
-
-//#include <crt/host_defines.h>
 
 /// do nothing, must use open()
 MemoryMapped::MemoryMapped() :
@@ -44,10 +37,10 @@ MemoryMapped::MemoryMapped() :
     _filesize(0),
     _hint(Normal),
     _mappedBytes(0),
-    _file(nullptr),
 #ifdef _WINDOWS
     _mappedFile(nullptr),
 #endif
+    _file(nullptr),
     _mappedView(nullptr)
 {
 }
@@ -58,24 +51,29 @@ MemoryMapped::MemoryMapped(const std::string& filename, const unsigned __int64 m
     _filesize(0),
     _hint(hint),
     _mappedBytes(mappedBytes),
-    _file(nullptr),
 #ifdef _WINDOWS
     _mappedFile(nullptr),
 #endif
+    _file(nullptr),
     _mappedView(nullptr)
 {
     Open(filename, mappedBytes, hint);
 }
 
 /// close file (see close() )
-MemoryMapped::~MemoryMapped() { Close(); }
+MemoryMapped::~MemoryMapped()
+{
+    Close();
+}
 
 /// open file
 bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mappedBytes, const CacheHint hint)
 {
     // already open ?
-    if(IsValid())
+    if (IsValid())
+    {
         return false;
+    }
 
     _file     = nullptr;
     _filesize = 0;
@@ -89,33 +87,54 @@ bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mapp
     // Windows
 
     DWORD winHint = 0;
-    switch(_hint)
+    switch (_hint)
     {
-        case Normal: winHint = FILE_ATTRIBUTE_NORMAL; break;
-        case SequentialScan: winHint = FILE_FLAG_SEQUENTIAL_SCAN; break;
-        case RandomAccess: winHint = FILE_FLAG_RANDOM_ACCESS; break;
-        default: break;
+        case Normal:
+        {
+            winHint = FILE_ATTRIBUTE_NORMAL;
+            break;
+        }
+        case SequentialScan:
+        {
+            winHint = FILE_FLAG_SEQUENTIAL_SCAN;
+            break;
+        }
+        case RandomAccess:
+        {
+            winHint = FILE_FLAG_RANDOM_ACCESS;
+            break;
+        }
+        default:
+        {
+            break;
+        }
     }
 
     // open file
-    _file = ::CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, winHint, nullptr);
+    _file = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, winHint, nullptr);
 
-    if(!_file)
+    if (!_file)
+    {
         return false;
+    }
 
     // file size
     LARGE_INTEGER result;
 
-    if(!GetFileSizeEx(_file, &result))
+    if (!GetFileSizeEx(_file, &result))
+    {
         return false;
+    }
 
     _filesize = static_cast<uint64>(result.QuadPart);
 
     // convert to mapped mode
-    _mappedFile = ::CreateFileMapping(_file, nullptr, PAGE_READONLY, 0, 0, nullptr);
+    _mappedFile = ::CreateFileMappingA(_file, nullptr, PAGE_READONLY, 0, 0, nullptr);
 
-    if(!_mappedFile)
+    if (!_mappedFile)
+    {
         return false;
+    }
 
 #else
 
@@ -123,7 +142,7 @@ bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mapp
 
     // open file
     _file = ::open(filename.c_str(), O_RDONLY | O_LARGEFILE);
-    if(_file == -1)
+    if (_file == -1)
     {
         _file = nullptr;
         return false;
@@ -131,7 +150,7 @@ bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mapp
 
     // file size
     struct stat64 statInfo;
-    if(fstat64(_file, &statInfo) < 0)
+    if (fstat64(_file, &statInfo) < 0)
         return false;
 
     _filesize = statInfo.st_size;
@@ -140,8 +159,10 @@ bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mapp
     // initial mapping
     Remap(0, mappedBytes);
 
-    if(!_mappedView)
+    if (!_mappedView)
+    {
         return false;
+    }
 
     // everything's fine
     return true;
@@ -151,10 +172,10 @@ bool MemoryMapped::Open(const std::string& filename, const unsigned __int64 mapp
 void MemoryMapped::Close()
 {
     // kill pointer
-    if(_mappedView)
+    if (_mappedView)
     {
 #ifdef _WINDOWS
-        ::UnmapViewOfFile(_mappedView);
+        UnmapViewOfFile(_mappedView);
 #else
         ::munmap(_mappedView, _filesize);
 #endif
@@ -162,18 +183,18 @@ void MemoryMapped::Close()
     }
 
 #ifdef _WINDOWS
-    if(_mappedFile)
+    if (_mappedFile)
     {
-        ::CloseHandle(_mappedFile);
+        CloseHandle(_mappedFile);
         _mappedFile = nullptr;
     }
 #endif
 
     // close underlying file
-    if(_file)
+    if (_file)
     {
 #ifdef _WINDOWS
-        ::CloseHandle(_file);
+        CloseHandle(_file);
 #else
         ::close(_file);
 #endif
@@ -184,47 +205,70 @@ void MemoryMapped::Close()
 }
 
 /// access position, no range checking (faster)
-unsigned char MemoryMapped::operator[](const unsigned __int64 offset) const { return ((unsigned char*)_mappedView)[offset]; }
+unsigned char MemoryMapped::operator[](const unsigned __int64 offset) const
+{
+    return static_cast<unsigned char*>(_mappedView)[offset];
+}
 
 /// access position, including range checking
 unsigned char MemoryMapped::At(const unsigned __int64 offset) const
 {
     // checks
-    if(!_mappedView)
+    if (!_mappedView)
+    {
         throw std::invalid_argument("No view mapped");
+    }
 
-    if(offset >= _filesize)
+    if (offset >= _filesize)
+    {
         throw std::out_of_range("View is not large enough");
+    }
 
     return operator[](offset);
 }
 
 /// raw access
-const unsigned char* MemoryMapped::GetData() const { return (const unsigned char*)_mappedView; }
+const unsigned char* MemoryMapped::GetData() const
+{
+    return static_cast<const unsigned char*>(_mappedView);
+}
 
 /// true, if file successfully opened
-bool MemoryMapped::IsValid() const { return _mappedView != nullptr; }
+bool MemoryMapped::IsValid() const
+{
+    return _mappedView != nullptr;
+}
 
 /// get file size
-uint64 MemoryMapped::Size() const { return _filesize; }
+uint64 MemoryMapped::Size() const
+{
+    return _filesize;
+}
 
 /// get number of actually mapped bytes
-unsigned __int64 MemoryMapped::MappedSize() const { return _mappedBytes; }
+unsigned __int64 MemoryMapped::MappedSize() const
+{
+    return _mappedBytes;
+}
 
 /// replace mapping by a new one of the same file, offset MUST be a multiple of the page size
 bool MemoryMapped::Remap(const uint64 offset, unsigned __int64 mappedBytes)
 {
-    if(!_file)
+    if (!_file)
+    {
         return false;
+    }
 
-    if(mappedBytes == WholeFile)
+    if (mappedBytes == WholeFile)
+    {
         mappedBytes = _filesize;
+    }
 
     // close old mapping
-    if(_mappedView)
+    if (_mappedView)
     {
 #ifdef _WINDOWS
-        ::UnmapViewOfFile(_mappedView);
+        UnmapViewOfFile(_mappedView);
 #else
         ::munmap(_mappedView, _mappedBytes);
 #endif
@@ -232,22 +276,26 @@ bool MemoryMapped::Remap(const uint64 offset, unsigned __int64 mappedBytes)
     }
 
     // don't go further than end of file
-    if(offset > _filesize)
+    if (offset > _filesize)
+    {
         return false;
-    if(offset + mappedBytes > _filesize)
-        mappedBytes = static_cast<unsigned __int64>(_filesize - offset);
+    }
+    if (offset + mappedBytes > _filesize)
+    {
+        mappedBytes = _filesize - offset;
+    }
 
 #ifdef _WINDOWS
     // Windows
 
-    const DWORD offsetLow  = DWORD(offset & 0xFFFFFFFF);
-    const DWORD offsetHigh = DWORD(offset >> 32);
+    const DWORD offsetLow  = static_cast<DWORD>(offset & 0xFFFFFFFF);
+    const DWORD offsetHigh = static_cast<DWORD>(offset >> 32);
     _mappedBytes           = mappedBytes;
 
     // get memory address
-    _mappedView = ::MapViewOfFile(_mappedFile, FILE_MAP_READ, offsetHigh, offsetLow, mappedBytes);
+    _mappedView = MapViewOfFile(_mappedFile, FILE_MAP_READ, offsetHigh, offsetLow, mappedBytes);
 
-    if(_mappedView == nullptr)
+    if (_mappedView == nullptr)
     {
         _mappedBytes = 0;
         _mappedView  = nullptr;
@@ -261,7 +309,7 @@ bool MemoryMapped::Remap(const uint64 offset, unsigned __int64 mappedBytes)
     // Linux
     // new mapping
     _mappedView = ::mmap64(NULL, mappedBytes, PROT_READ, MAP_SHARED, _file, offset);
-    if(_mappedView == MAP_FAILED)
+    if (_mappedView == MAP_FAILED)
     {
         _mappedBytes = 0;
         _mappedView  = nullptr;
@@ -272,12 +320,19 @@ bool MemoryMapped::Remap(const uint64 offset, unsigned __int64 mappedBytes)
 
     // tweak performance
     int linuxHint = 0;
-    switch(_hint)
+    switch (_hint)
     {
-        case Normal: linuxHint = MADV_NORMAL; break;
-        case SequentialScan: linuxHint = MADV_SEQUENTIAL; break;
-        case RandomAccess: linuxHint = MADV_RANDOM; break;
-        default: break;
+        case Normal:
+            linuxHint = MADV_NORMAL;
+            break;
+        case SequentialScan:
+            linuxHint = MADV_SEQUENTIAL;
+            break;
+        case RandomAccess:
+            linuxHint = MADV_RANDOM;
+            break;
+        default:
+            break;
     }
     // assume that file will be accessed soon
     // linuxHint |= MADV_WILLNEED;
@@ -302,35 +357,62 @@ int MemoryMapped::getpagesize()
 #endif
 }
 
-KOKKOS_NET_API_EXTERNC MemoryMapped* Create() noexcept { return new MemoryMapped(); }
+KOKKOS_NET_API_EXTERNC MemoryMapped* Create() noexcept
+{
+    return new MemoryMapped();
+}
 
 KOKKOS_NET_API_EXTERNC MemoryMapped* CreateAndOpen(const char* filename, const unsigned __int64 mappedBytes, const MemoryMapped::CacheHint hint) noexcept
 {
     return new MemoryMapped(std::string(filename), mappedBytes, hint);
 }
 
-KOKKOS_NET_API_EXTERNC void Destory(MemoryMapped* mm) noexcept { delete mm; }
+KOKKOS_NET_API_EXTERNC void Destory(MemoryMapped* mm) noexcept
+{
+    delete mm;
+}
 
 KOKKOS_NET_API_EXTERNC bool Open(MemoryMapped* mm, const char* filename, const unsigned __int64 mappedBytes, const MemoryMapped::CacheHint hint) noexcept
 {
     return mm->Open(std::string(filename), mappedBytes, hint);
 }
 
-KOKKOS_NET_API_EXTERNC void Close(MemoryMapped* mm) { mm->Close(); }
+KOKKOS_NET_API_EXTERNC void Close(MemoryMapped* mm)
+{
+    mm->Close();
+}
 
 // KOKKOS_NET_API_EXTERN unsigned char operator[](unsigned __int64 offset) noexcept;
 
-KOKKOS_NET_API_EXTERNC unsigned char At(MemoryMapped* mm, const unsigned __int64 offset) noexcept { return mm->At(offset); }
+KOKKOS_NET_API_EXTERNC unsigned char At(MemoryMapped* mm, const unsigned __int64 offset) noexcept
+{
+    return mm->At(offset);
+}
 
-KOKKOS_NET_API_EXTERNC const unsigned char* GetData(MemoryMapped* mm) noexcept { return mm->GetData(); }
+KOKKOS_NET_API_EXTERNC const unsigned char* GetData(MemoryMapped* mm) noexcept
+{
+    return mm->GetData();
+}
 
-KOKKOS_NET_API_EXTERNC bool IsValid(MemoryMapped* mm) noexcept { return mm->IsValid(); }
+KOKKOS_NET_API_EXTERNC bool IsValid(MemoryMapped* mm) noexcept
+{
+    return mm->IsValid();
+}
 
-KOKKOS_NET_API_EXTERNC uint64 Size(MemoryMapped* mm) noexcept { return mm->Size(); }
+KOKKOS_NET_API_EXTERNC uint64 Size(MemoryMapped* mm) noexcept
+{
+    return mm->Size();
+}
 
-KOKKOS_NET_API_EXTERNC unsigned __int64 MappedSize(MemoryMapped* mm) noexcept { return mm->MappedSize(); }
+KOKKOS_NET_API_EXTERNC unsigned __int64 MappedSize(MemoryMapped* mm) noexcept
+{
+    return mm->MappedSize();
+}
 
-KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const unsigned __int64 mappedBytes) { return mm->Remap(offset, mappedBytes); }
+KOKKOS_NET_API_EXTERNC bool Remap(MemoryMapped* mm, const uint64 offset, const unsigned __int64 mappedBytes)
+{
+    return mm->Remap(offset, mappedBytes);
+}
 
 //#include "KokkosAPI.hpp"
 //

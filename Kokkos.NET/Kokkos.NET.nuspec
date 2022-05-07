@@ -15,24 +15,24 @@
     <copyright>© Timothy R. McNealy</copyright>
     <tags></tags>
     <dependencies>
-      <group targetFramework="net5.0">
+      <group targetFramework="net6.0">
           <dependency id="native.Kokkos.NET" version="$RUNTIME_KOKKOS$"/>
           <dependency id="PlatformApi" version="$PLATFORMAPI$"/>
           <dependency id="RuntimeGeneration" version="$RUNTIMEGENERATION$"/>
           <dependency id="UnManagedCil" version="$UNMANAGED$"/>
-          <dependency id="Microsoft.Data.Analysis" version="0.5.0"/>
-          <dependency id="Trilinos.NET" version="1.0.0"/>
+          <dependency id="Microsoft.Data.Analysis" version="0.19.0"/>
+          <dependency id="Trilinos.NET" version="13.1.1"/>
           <dependency id="NvAPIWrapper.Net" version="0.8.0.98"/>
           <dependency id="System.Diagnostics.PerformanceCounter" version="5.0.0" />
       </group>
     </dependencies>
 
     <!--<platforms>-->
-      <!--<platform targetFramework="net5.0-windows"
+      <!--<platform targetFramework="net6.0-windows"
                 platformVersion="10.0.19042.508"
                 platformMinimumVersion="10.0.19042.508" />-->
 
-      <!--<platform targetFramework="net5.0-wasm"
+      <!--<platform targetFramework="net6.0-wasm"
                 platformVersion="14.0"
                 platformMinimumVersion="14.0" />-->
 
@@ -45,17 +45,17 @@
     <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
           target=""/>
 
-     <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
-        target="lib\net5.0"/>
+    <!-- <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Kokkos.NET.pdb"
+        target="lib\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
-        target="lib\net5.0"/>
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Kokkos.NET.dll"
+        target="lib\net6.0"/>-->
 
-   <!--<file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Kokkos.NET.pdb"
-      target="lib\net5.0"/>
+   <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net6.0\Kokkos.NET.pdb"
+      target="lib\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Kokkos.NET.dll"
-      target="lib\net5.0"/>-->
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net6.0\Kokkos.NET.dll"
+      target="lib\net6.0"/>
 
 
 
@@ -67,16 +67,16 @@
     <file src="Kokkos.NET.targets"
           target="build"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\ref\Kokkos.NET.dll"
-          target="ref\net5.0"/>
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\ref\Kokkos.NET.dll"
+          target="ref\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.pdb"
-          target="lib\net5.0"/>
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Kokkos.NET.pdb"
+          target="lib\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Kokkos.NET.dll"
-          target="lib\net5.0\Debug"/>
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Kokkos.NET.dll"
+          target="lib\net6.0\Debug"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\AnyCPU\net5.0\Kokkos.NET.dll"
-          target="lib\net5.0\Release"/>-->
+    <file src="D:\TFS_Sources\EngineeringTools\bin\$Configuration$\AnyCPU\net6.0\Kokkos.NET.dll"
+          target="lib\net6.0\Release"/>-->
   </files>
 </package>

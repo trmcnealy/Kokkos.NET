@@ -25,9 +25,9 @@ public:
     /// tweak performance
     enum CacheHint
     {
-        Normal, ///< good overall performance
+        Normal,         ///< good overall performance
         SequentialScan, ///< read file only once with few seeks
-        RandomAccess ///< jump around
+        RandomAccess    ///< jump around
     };
 
     /// how much should be mappend
@@ -36,6 +36,32 @@ public:
         WholeFile = 0 ///< everything ... be careful when file is larger than memory
     };
 
+private:
+    /// file name
+    std::string _filename;
+
+    /// file size
+    uint64 _filesize;
+
+    /// caching strategy
+    CacheHint _hint;
+
+    /// mapped size
+    unsigned __int64 _mappedBytes;
+
+    /// define handle
+#ifdef _WINDOWS
+    typedef void* FileHandle;
+    void*         _mappedFile;
+#else
+    typedef int FileHandle;
+#endif
+
+    /// file handle
+    FileHandle _file;
+    void*      _mappedView;
+
+public:
     /// do nothing, must use open()
     MemoryMapped();
     /// open file, mappedBytes = 0 maps the whole file
@@ -70,50 +96,19 @@ public:
 private:
     /// don't copy object
     MemoryMapped(const MemoryMapped&) = default;
+
     /// don't copy object
     MemoryMapped& operator=(const MemoryMapped&) = default;
 
     /// get OS page size (for remap)
     static int getpagesize();
-
-    /// file name
-    std::string _filename;
-
-    /// file size
-    uint64 _filesize;
-
-    /// caching strategy
-    CacheHint _hint;
-
-    /// mapped size
-    unsigned __int64 _mappedBytes;
-
-    /// define handle
-#ifdef _WINDOWS
-    typedef void* FileHandle;
-
-    /// Windows handle to memory mapping of _file
-    void* _mappedFile;
-#else
-    typedef int FileHandle;
-#endif
-
-    /// file handle
-    FileHandle _file;
-    /// pointer to the file contents mapped into memory
-    void* _mappedView;
 };
 
 KOKKOS_NET_API_EXTERNC MemoryMapped* Create() noexcept;
-KOKKOS_NET_API_EXTERNC MemoryMapped* CreateAndOpen(const char*             filename,
-                                                   unsigned __int64        mappedBytes = MemoryMapped::WholeFile,
-                                                   MemoryMapped::CacheHint hint        = MemoryMapped::CacheHint::Normal) noexcept;
+KOKKOS_NET_API_EXTERNC MemoryMapped* CreateAndOpen(const char* filename, unsigned __int64 mappedBytes = MemoryMapped::WholeFile, MemoryMapped::CacheHint hint = MemoryMapped::CacheHint::Normal) noexcept;
 KOKKOS_NET_API_EXTERNC void          Destory(MemoryMapped* mm) noexcept;
 
-KOKKOS_NET_API_EXTERNC bool Open(MemoryMapped*           mm,
-                                 const char*             filename,
-                                 unsigned __int64        mappedBytes = MemoryMapped::WholeFile,
-                                 MemoryMapped::CacheHint hint        = MemoryMapped::CacheHint::Normal) noexcept;
+KOKKOS_NET_API_EXTERNC bool Open(MemoryMapped* mm, const char* filename, unsigned __int64 mappedBytes = MemoryMapped::WholeFile, MemoryMapped::CacheHint hint = MemoryMapped::CacheHint::Normal) noexcept;
 KOKKOS_NET_API_EXTERNC void Close(MemoryMapped* mm);
 
 // KOKKOS_NET_API_EXTERN unsigned char operator[](unsigned __int64 offset) noexcept;

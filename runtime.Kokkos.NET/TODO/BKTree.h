@@ -170,7 +170,7 @@ namespace SPTAG
             for (int tid = 0; tid < args._T; tid++)
             {
                 SizeType istart = first + tid * subsize;
-                SizeType iend = std::min(first + (tid + 1) * subsize, last);
+                SizeType iend = System::min(first + (tid + 1) * subsize, last);
                 SizeType *inewCounts = args.newCounts + tid * args._K;
                 float *inewCenters = args.newCenters + tid * args._K * args._D;
                 SizeType * iclusterIdx = args.clusterIdx + tid * args._K;
@@ -242,7 +242,7 @@ namespace SPTAG
         inline void InitCenters(const Dataset<T>& data, 
             std::vector<SizeType>& indices, const SizeType first, const SizeType last, 
             KmeansArgs<T>& args, int samples, int tryIters) {
-            SizeType batchEnd = std::min(first + samples, last);
+            SizeType batchEnd = System::min(first + samples, last);
             float currDist, minClusterDist = MaxDist;
             for (int numKmeans = 0; numKmeans < tryIters; numKmeans++) {
                 for (int k = 0; k < args._DK; k++) {
@@ -267,7 +267,7 @@ namespace SPTAG
             
             InitCenters(data, indices, first, last, args, samples, 3);
             
-            SizeType batchEnd = std::min(first + samples, last);
+            SizeType batchEnd = System::min(first + samples, last);
             float currDiff, currDist, minClusterDist = MaxDist;
             int noImprovement = 0;
             for (int iter = 0; iter < 100; iter++) {
@@ -384,13 +384,13 @@ namespace SPTAG
                         }
                         else { // clustering the data into BKTKmeansK clusters
                             if (dynamicK) {
-                                args._DK = std::std::min<int>((item.last - item.first) / m_iBKTLeafSize + 1, m_iBKTKmeansK);
-                                args._DK = std::max<int>(args._DK, 2);
+                                args._DK = std::System::min<int>((item.last - item.first) / m_iBKTLeafSize + 1, m_iBKTKmeansK);
+                                args._DK = System::max<int>(args._DK, 2);
                             }
 
                             int numClusters = KmeansClustering(data, localindices, item.first, item.last, args, m_iSamples);
                             if (numClusters <= 1) {
-                                SizeType end = std::min(item.last + 1, (SizeType)localindices.size());
+                                SizeType end = System::min(item.last + 1, (SizeType)localindices.size());
                                 std::sort(localindices.begin() + item.first, localindices.begin() + end);
                                 m_pTreeRoots[item.index].centerid = (reverseIndices == nullptr) ? localindices[item.first] : reverseIndices->at(localindices[item.first]);
                                 m_pTreeRoots[item.index].childStart = -m_pTreeRoots[item.index].childStart;

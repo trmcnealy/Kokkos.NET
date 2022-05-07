@@ -59,6 +59,8 @@ namespace Trilinos
 
         public const string CusparseLibraryName = "cusparse64_11.dll";
 
+        public const string CusolverLibraryName = "cusolver64_11.dll";
+
         
         public static readonly nint OpenMPHandle;
 
@@ -73,6 +75,8 @@ namespace Trilinos
         public static readonly nint CublasHandle;
 
         public static readonly nint CusparseHandle;
+
+        public static readonly nint CusolverHandle;
 
         public static volatile bool IsLoaded;
 
@@ -161,6 +165,11 @@ namespace Trilinos
 #if DEBUG
             Console.WriteLine($"CusparseHandle: 0x{CusparseHandle.ToString("X")}");
 #endif
+            CusolverHandle = PlatformApi.NativeLibrary.LoadLibrary(CusolverLibraryName);
+#if DEBUG
+            Console.WriteLine($"CusolverHandle: 0x{CusolverHandle.ToString("X")}");
+#endif
+
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

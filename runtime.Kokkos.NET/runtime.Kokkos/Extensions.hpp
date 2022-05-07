@@ -72,6 +72,7 @@ namespace Kokkos
 
                                          space0.fence();
                                      });
+                Kokkos::fence();
             }
         }
 
@@ -186,11 +187,17 @@ namespace Kokkos
 
     namespace Extension
     {
+        template<typename DataTypes, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        using ScratchView = View<DataTypes, Layout, typename ExecutionSpace::scratch_memory_space, Kokkos::MemoryUnmanaged>;
+
         template<typename DataType, class ExecutionSpace>
         using Scalar = View<DataType, ExecutionSpace>;
 
         template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
         using Vector = View<DataType*, Layout, ExecutionSpace>;
+
+        template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
+        using ConstVector = View<const DataType*, Layout, ExecutionSpace>;
 
         template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
         class Matrix
@@ -215,6 +222,8 @@ namespace Kokkos
         private:
             ViewType _view;
 
+            KOKKOS_FORCEINLINE_FUNCTION static auto clone(const Matrix& src);
+
         public:
             template<Integer NRows, Integer NColumns>
             __inline explicit Matrix(std::string label, NRows nRows, NColumns nColumns) :
@@ -231,11 +240,11 @@ namespace Kokkos
             template<typename OtherDataType>
             __inline Matrix(const Vector<OtherDataType, ExecutionSpace>& vector) : Matrix(vector.label(), vector.extent(0), vector.extent(0))
             {
-                for (size_type i0 = 0; i0 < _view.extent(0); ++i0)
+                for(size_type i0 = 0; i0 < _view.extent(0); ++i0)
                 {
-                    for (size_type i1 = 0; i1 < _view.extent(1); ++i1)
+                    for(size_type i1 = 0; i1 < _view.extent(1); ++i1)
                     {
-                        if (i0 == i1)
+                        if(i0 == i1)
                         {
                             _view(i0, i1) = vector(i0);
                         }
@@ -253,7 +262,7 @@ namespace Kokkos
             __inline Matrix(Matrix&&)              = default;
             KOKKOS_INLINE_FUNCTION Matrix& operator=(const Matrix& other)
             {
-                if (this == &other)
+                if(this == &other)
                 {
                     return *this;
                 }
@@ -263,14 +272,17 @@ namespace Kokkos
             __inline Matrix& operator=(Matrix&&) = default;
 
             template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
-            KOKKOS_INLINE_FUNCTION Matrix(const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other) : _view(other.View())
+            KOKKOS_INLINE_FUNCTION Matrix(std::enable_if_t<!std::is_same<DataType, OtherDataType>::value || !std::is_same<ExecutionSpace, OtherExecutionSpace>::value || !std::is_same<Layout, OtherLayout>::value,
+                                                           const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>&> other) :
+                _view(other.View())
             {
             }
 
             template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
-            KOKKOS_INLINE_FUNCTION Matrix& operator=(const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>& other)
+            KOKKOS_INLINE_FUNCTION Matrix& operator=(std::enable_if_t<!std::is_same<DataType, OtherDataType>::value || !std::is_same<ExecutionSpace, OtherExecutionSpace>::value || !std::is_same<Layout, OtherLayout>::value,
+                                                                      const Matrix<OtherDataType, OtherExecutionSpace, OtherLayout>&> other)
             {
-                if (this == &other)
+                if(this == &other)
                 {
                     return *this;
                 }
@@ -280,7 +292,8 @@ namespace Kokkos
 
 #pragma region Indexers
             template<Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
             {
                 return _view(column, row);
             }
@@ -293,7 +306,8 @@ namespace Kokkos
             }
 
             template<Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
             {
                 return _view(row, column);
             }
@@ -327,7 +341,8 @@ namespace Kokkos
             }
 
             template<typename MatrixViewType, Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) -> typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
             {
                 return view(row);
             }
@@ -552,6 +567,23 @@ namespace Kokkos
 #pragma endregion
         };
 
+        template<typename DataType, class ExecutionSpace, class Layout>
+        KOKKOS_FORCEINLINE_FUNCTION auto Matrix<DataType, ExecutionSpace, Layout>::clone(const Matrix<DataType, ExecutionSpace, Layout>& src)
+        {
+#if !defined(__CUDA_ARCH__)
+            Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(src.label(), src.nrows(), src.ncolumns());
+
+            Kokkos::deep_copy(dest.View(), src.View());
+#else
+            Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(new typename ViewType::traits::non_const_value_type[src.size()], src.nrows(), src.ncolumns());
+
+            memcpy(dest.data(), src.data(), src.size() * sizeof(typename ViewType::traits::non_const_value_type));
+#endif
+            Kokkos::fence();
+
+            return dest;
+        }
+
         template<typename DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout>
         class Matrix3x3
         {
@@ -590,11 +622,11 @@ namespace Kokkos
             template<typename OtherDataType>
             __inline Matrix3x3(const Vector<OtherDataType, ExecutionSpace>& vector) : Matrix3x3(vector.label(), vector.extent(0), vector.extent(0))
             {
-                for (size_type i0 = 0; i0 < _view.extent(0); ++i0)
+                for(size_type i0 = 0; i0 < _view.extent(0); ++i0)
                 {
-                    for (size_type i1 = 0; i1 < _view.extent(1); ++i1)
+                    for(size_type i1 = 0; i1 < _view.extent(1); ++i1)
                     {
-                        if (i0 == i1)
+                        if(i0 == i1)
                         {
                             _view(i0, i1) = vector(i0);
                         }
@@ -612,7 +644,7 @@ namespace Kokkos
             __inline Matrix3x3(Matrix3x3&&)           = default;
             KOKKOS_INLINE_FUNCTION Matrix3x3& operator=(const Matrix3x3& other)
             {
-                if (this == &other)
+                if(this == &other)
                 {
                     return *this;
                 }
@@ -629,7 +661,7 @@ namespace Kokkos
             template<typename OtherDataType, class OtherExecutionSpace, class OtherLayout = typename OtherExecutionSpace::array_layout>
             KOKKOS_INLINE_FUNCTION Matrix3x3& operator=(const Matrix3x3<OtherDataType, OtherExecutionSpace, OtherLayout>& other)
             {
-                if (this == &other)
+                if(this == &other)
                 {
                     return *this;
                 }
@@ -639,7 +671,8 @@ namespace Kokkos
 
 #pragma region Indexers
             template<Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutLeft>::value, typename ViewType::reference_type>::type
             {
                 return _view(column, row);
             }
@@ -652,7 +685,8 @@ namespace Kokkos
             }
 
             template<Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) -> typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION auto operator()(const TRow& row, const TColumn& column) ->
+                typename std::enable_if<Integer<TRow> && std::is_same<LayoutType, Kokkos::LayoutRight>::value, typename ViewType::reference_type>::type
             {
                 return _view(row, column);
             }
@@ -686,7 +720,8 @@ namespace Kokkos
             }
 
             template<typename MatrixViewType, Integer TRow, Integer TColumn>
-            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) -> typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
+            KOKKOS_FORCEINLINE_FUNCTION static auto Indexer(MatrixViewType& view, const TRow& row, const TColumn& column) ->
+                typename std::enable_if<MatrixViewType::Rank == 1 && Integer<TRow>, typename ViewType::reference_type>::type
             {
                 return view(row);
             }
@@ -1165,7 +1200,7 @@ namespace Kokkos
 
             Matrix<DataType, ExecutionSpace> matrix(lhs.label() + rhs.label(), rhs.nrows(), 1 + rhs.ncolumns());
 
-            for (size_type i = 0; i < rhs.nrows(); i++)
+            for(size_type i = 0; i < rhs.nrows(); i++)
             {
                 matrix(i, 0ULL) = lhs(i);
             }
@@ -1190,7 +1225,7 @@ namespace Kokkos
 
             const size_type last_column = lhs.ncolumns();
 
-            for (size_type i = 0; i < lhs.nrows(); i++)
+            for(size_type i = 0; i < lhs.nrows(); i++)
             {
                 matrix(i, last_column) = rhs(i);
             }
@@ -1203,8 +1238,7 @@ namespace Kokkos
     namespace Extension
     {
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
-            -> std::enable_if_t<ViewType::Rank == 1, Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src) -> std::enable_if_t<ViewType::Rank == 1, Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
             Vector<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(src);
@@ -1221,8 +1255,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
-            -> std::enable_if_t<ViewType::Rank == 2, Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src) -> std::enable_if_t<ViewType::Rank == 2, Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
             Matrix<typename ViewType::traits::non_const_value_type, typename ViewType::traits::execution_space> dest(src.label(), src.nrows(), src.ncolumns());
@@ -1239,7 +1272,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 3, View<typename ViewType::traits::non_const_value_type***, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
@@ -1260,11 +1293,15 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(/*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
-            View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(src.label(), src.extent(0), src.extent(1), src.extent(2), src.extent(3));
+            View<typename ViewType::traits::non_const_value_type****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space> dest(src.label(),
+                                                                                                                                                                src.extent(0),
+                                                                                                                                                                src.extent(1),
+                                                                                                                                                                src.extent(2),
+                                                                                                                                                                src.extent(3));
 
             Kokkos::deep_copy(dest, src);
 #else
@@ -1282,8 +1319,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
-            /*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type*****, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
@@ -1311,8 +1347,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
-            /*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
@@ -1332,8 +1367,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
-            /*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type*******, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
@@ -1353,8 +1387,7 @@ namespace Kokkos
         }
 
         template<typename ViewType>
-        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(
-            /*const std::string& label,*/ ViewType src)
+        KOKKOS_FORCEINLINE_FUNCTION static auto Clone(ViewType src)
             -> std::enable_if_t<ViewType::Rank == 4, View<typename ViewType::traits::non_const_value_type********, typename ViewType::traits::array_layout, typename ViewType::traits::execution_space>>
         {
 #if !defined(__CUDA_ARCH__)
@@ -1386,6 +1419,9 @@ namespace Kokkos
         // template<typename T>
         // using array = T[];
 
+        //#if __has_builtin(__sync_swap)
+        //        using swap = __sync_swap;
+        //#else
         template<typename T>
         KOKKOS_INLINE_FUNCTION static void swap(volatile T& a, volatile T& b) noexcept
         {
@@ -1394,6 +1430,7 @@ namespace Kokkos
             // a     = std::move(b);
             // b     = std::move(tmp);
         }
+        //#endif
 
         // template<FloatingPoint DataType, class ExecutionSpace, class Layout = typename ExecutionSpace::array_layout, typename int_type = size_int<DataType>>
         // static void quick_sort(View<DataType*, Layout, ExecutionSpace>& x, int_type left, int_type right)
@@ -1479,13 +1516,14 @@ namespace Kokkos
 
             MDRangeType policy(PointType{{0, 0}}, PointType{{nRows, nColumns}});
 
-            parallel_reduce(policy, cs, sums);
+            Kokkos::parallel_reduce(policy, cs, sums);
+            Kokkos::fence();
 
             return sums;
         }
 
         template<FloatingPoint DataType, class ExecutionSpace>
-        struct RowSums
+        struct MatrixRowSums
         {
             typedef DataType value_type[];
 
@@ -1493,11 +1531,11 @@ namespace Kokkos
 
             Matrix<DataType, ExecutionSpace> X_;
 
-            RowSums(const Matrix<DataType, ExecutionSpace>& X) : value_count(X.nrows()), X_(X) {}
+            MatrixRowSums(const Matrix<DataType, ExecutionSpace>& X) : value_count(X.nrows()), X_(X) {}
 
             KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j, value_type sum) const
             {
-                sum[j] += X_(i, j);
+                sum[i] += X_(i, j);
             }
         };
 
@@ -1510,14 +1548,55 @@ namespace Kokkos
             const size_type nRows    = view.nrows();
             const size_type nColumns = view.ncolumns();
 
-            RowSums rs(view);
+            MatrixRowSums rs(view);
 
             Vector<DataType, ExecutionSpace> sums("sums", nRows);
             Kokkos::deep_copy(sums, 0.0);
 
             MDRangeType policy(PointType{{0, 0}}, PointType{{nRows, nColumns}});
 
-            parallel_reduce(policy, rs, sums);
+            Kokkos::parallel_reduce(policy, rs, sums);
+            Kokkos::fence();
+
+            return sums;
+        }
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        struct TensorRowSums
+        {
+            typedef DataType value_type[];
+
+            const size_type value_count;
+
+            Tensor<DataType, ExecutionSpace> X_;
+
+            TensorRowSums(const Tensor<DataType, ExecutionSpace>& X) : value_count(X.extent(0)), X_(X) {}
+
+            KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j, const size_type k, value_type sum) const
+            {
+                sum[i] += X_(i, j, k);
+            }
+        };
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Vector<DataType, ExecutionSpace> SumByRow(const Tensor<DataType, ExecutionSpace>& view)
+        {
+            using MDRangeType = Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<3>, Kokkos::IndexType<size_type>>;
+            using PointType   = typename MDRangeType::point_type;
+
+            const size_type nRows    = view.extent(0);
+            const size_type nColumns = view.extent(0);
+            const size_type nPages   = view.extent(0);
+
+            TensorRowSums rs(view);
+
+            Vector<DataType, ExecutionSpace> sums("sums", nRows);
+            Kokkos::deep_copy(sums, 0.0);
+
+            MDRangeType policy(PointType{{0, 0, 0}}, PointType{{nRows, nColumns, nPages}});
+
+            Kokkos::parallel_reduce(policy, rs, sums);
+            Kokkos::fence();
 
             return sums;
         }
@@ -1548,7 +1627,7 @@ namespace Kokkos
 
             DataType curr = min;
 
-            for (int32 i = 0; i < n; ++i)
+            for(int32 i = 0; i < n; ++i)
             {
                 range[i] = curr;
                 curr += step;
@@ -1560,31 +1639,48 @@ namespace Kokkos
 
     namespace Extension
     {
-        template<class ViewType, typename DataType = typename ViewType::traits::non_const_value_type>
+        template<class ReturnViewType, class ViewType, typename DataType = typename ViewType::traits::non_const_value_type>
         struct CumulativeSumFunctor
         {
             using value_type = DataType;
 
-            ViewType _v;
-            ViewType _r;
+            ViewType       _v;
+            ReturnViewType _r;
 
-            CumulativeSumFunctor(const ViewType& v, ViewType& r) : _v(v), _r(r) {}
+            CumulativeSumFunctor(const ViewType& v, ReturnViewType& r) : _v(v), _r(r) {}
 
-            KOKKOS_INLINE_FUNCTION void operator()(const int idx, value_type& val, const bool& final) const
+            KOKKOS_INLINE_FUNCTION void operator()(const size_type idx, value_type& value, const bool& final) const
             {
-                val += _v(idx);
+                value += _v(idx);
 
-                if (final)
+                if(final)
                 {
-                    _r(idx) = val;
+                    _r(idx) = value;
                 }
             }
         };
+
+        template<class ViewType, typename DataType = typename ViewType::traits::non_const_value_type, typename ExecutionSpace = typename ViewType::traits::execution_space>
+        KOKKOS_INLINE_FUNCTION static Vector<DataType, ExecutionSpace> CumulativeSum(const ViewType& values)
+        {
+            const size_t N = values.extent(0);
+
+            const Kokkos::RangePolicy<ExecutionSpace, Kokkos::IndexType<size_type>> range(0, N);
+
+            Vector<DataType, ExecutionSpace> result("Cumulative" + values.label(), N);
+
+            CumulativeSumFunctor<Vector<DataType, ExecutionSpace>, ViewType> functor(values, result);
+
+            Kokkos::parallel_scan(range, functor);
+
+            return result;
+        }
     }
 }
 
 namespace Kokkos
 {
+    using Kokkos::Extension::CumulativeSum;
     using Kokkos::Extension::Range;
     using Kokkos::Extension::Zeros;
 }
@@ -1962,6 +2058,8 @@ namespace Kokkos
 #include <runtime.Kokkos/Extensions/SparseOps.hpp>
 #include <runtime.Kokkos/Extensions/TensorOps.hpp>
 //#include <runtime.Kokkos/Extensions/Solvers.hpp>
+
+#include <runtime.Kokkos/Extensions/Linq.hpp>
 
 #undef KOKKOS_EXTENSIONS
 

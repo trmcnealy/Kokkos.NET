@@ -53,6 +53,8 @@ namespace Kokkos
             {
                 Bytes[i] = (sbyte)bytes[i];
             }
+
+            GC.KeepAlive(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -131,6 +133,8 @@ namespace Kokkos
             _size           = size;
             _mustDeallocate = mustDeallocate;
             _executionSpace = executionSpace;
+
+            GC.KeepAlive(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -143,6 +147,8 @@ namespace Kokkos
             _size           = (int)size;
             _mustDeallocate = mustDeallocate;
             _executionSpace = executionSpace;
+
+            GC.KeepAlive(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -155,6 +161,8 @@ namespace Kokkos
             _size           = (int)size;
             _mustDeallocate = mustDeallocate;
             _executionSpace = executionSpace;
+
+            GC.KeepAlive(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
@@ -167,6 +175,8 @@ namespace Kokkos
             _size           = (int)size;
             _mustDeallocate = mustDeallocate;
             _executionSpace = executionSpace;
+
+            GC.KeepAlive(this);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]

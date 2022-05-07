@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
   <metadata>
     <id>Trilinos.NET</id>
-    <version>$KOKKOS$</version>
+    <version>13.1.1</version>
     <authors>Timothy R. McNealy</authors>
     <owners>Timothy R. McNealy</owners>
     <license type="expression">MIT</license>
@@ -15,12 +15,12 @@
     <copyright>© Timothy R. McNealy</copyright>
     <tags></tags>
     <dependencies>
-      <group targetFramework="net5.0">
+      <group targetFramework="net6.0">
           <dependency id="CudaRedis" version="11.3.0"/>
           <dependency id="MSMPIDIST" version="10.1.12498.18" />
-          <dependency id="PlatformApi" version="2.1.0" />
-          <dependency id="Trilinos" version="13.0.0" />
+          <dependency id="PlatformApi" version="3.0.0" />
           <dependency id="UcrtRedis" version="10.0.19041" />
+          <dependency id="Trilinos" version="13.1.1" />
       </group>
     </dependencies>
   </metadata>
@@ -28,17 +28,17 @@
     <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
           target=""/>
 
-     <!--<file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Trilinos.NET.dll"
-          target="lib\net5.0"/>
+     <!--<file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Trilinos.NET.dll"
+          target="lib\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net5.0\Trilinos.NET.pdb"
-          target="lib\net5.0"/>-->
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\AnyCPU\net6.0\Trilinos.NET.pdb"
+          target="lib\net6.0"/>-->
 
-   <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Trilinos.NET.dll"
-        target="lib\net5.0"/>
+   <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net6.0\Trilinos.NET.dll"
+        target="lib\net6.0"/>
 
-    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net5.0\Trilinos.NET.pdb"
-        target="lib\net5.0"/>
+    <file src="D:\TFS_Sources\EngineeringTools\bin\Release\AnyCPU\net6.0\Trilinos.NET.pdb"
+        target="lib\net6.0"/>
 
   </files>
 </package>

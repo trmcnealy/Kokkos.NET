@@ -3,8 +3,8 @@
     <Import Project="$([MSBuild]::GetPathOfFileAbove(GlobalVersioning.props))" />
 
     <PropertyGroup>
-        <LangVersion>9.0</LangVersion>
-        <TargetFramework>net5.0-windows7.0</TargetFramework>
+        <LangVersion>10.0</LangVersion>
+        <TargetFramework>net6.0-$(TargetFrameworkOSPlatform)</TargetFramework>
         <!--<RuntimeIdentifiers>win-x64</RuntimeIdentifiers>-->
         <IsPackable>false</IsPackable>
         <Platforms>AnyCPU;x86;x64</Platforms>
@@ -13,8 +13,6 @@
         <StartupObject>Kokkos.Program</StartupObject>
         <RootNamespace>Kokkos</RootNamespace>
         <PublishTrimmed>true</PublishTrimmed>
-        <TieredCompilationQuickJit>false</TieredCompilationQuickJit>
-        <TieredCompilation>false</TieredCompilation>
         <PublishReadyToRun>true</PublishReadyToRun>
         <PublishReadyToRunEmitSymbols>true</PublishReadyToRunEmitSymbols>
         <Configurations>Debug;Release;Mixed</Configurations>

@@ -3,6 +3,11 @@
 #if !defined(KOKKOS_EXTENSIONS)
 #    error "Do not include directly. Include Extensions.hpp"
 #endif
+
+#if !defined(MATH_EXTENSIONS)
+#    include <MathExtensions.hpp>
+#endif
+
 #include <Algebra/SVD.hpp>
 
 namespace Kokkos
@@ -55,7 +60,7 @@ namespace Kokkos
             ValueType min0 = min<VectorType, 0>(values);
             ValueType min1 = min<VectorType, 1>(values);
 
-            return std::min(min0, min1);
+            return System::min(min0, min1);
         }
 
         template<typename VectorType, uint32 column>
@@ -103,9 +108,274 @@ namespace Kokkos
             ValueType max0 = max<VectorType, 0>(values);
             ValueType max1 = max<VectorType, 1>(values);
 
-            return std::max(max0, max1);
+            return System::max(max0, max1);
         }
     }
+}
+
+namespace Kokkos
+{
+    namespace Extension
+    {
+
+        // clang-format off
+#define UNARY_FUNCTION(NAME)                                                                                                                                                                                                         \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> NAME(const Matrix<DataType, ExecutionSpace>& view)                                                                                                                              \
+    {                                                                                                                                                                                                                                \
+        const uint32                     N = view.nrows();                                                                                                                                                                           \
+        const uint32                     M = view.ncolumns();                                                                                                                                                                        \
+        Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});                                                                                \
+        Matrix<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view.label() + ")", N, M);                                                                                                                                    \
+        Kokkos::parallel_for(STRINGIZER(NAME), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)                                                                                                                                  \
+        {                                                                                                                                                                                                                            \
+            result(i, j) = System::NAME(view(i, j));                                                                                                                                                                                    \
+        });                                                                                                                                                                                                                          \
+        Kokkos::fence();                                                                                                                                                                                                             \
+        return result;                                                                                                                                                                                                               \
+    }
+
+        UNARY_FUNCTION(abs)
+        UNARY_FUNCTION(cos)
+        UNARY_FUNCTION(acos)
+        UNARY_FUNCTION(cosh)
+        UNARY_FUNCTION(acosh)
+        UNARY_FUNCTION(sin)
+        UNARY_FUNCTION(asin)
+        UNARY_FUNCTION(sinh)
+        UNARY_FUNCTION(asinh)
+        UNARY_FUNCTION(tan)
+        UNARY_FUNCTION(atan)
+        UNARY_FUNCTION(tanh)
+        UNARY_FUNCTION(atanh)
+        UNARY_FUNCTION(cot)
+        UNARY_FUNCTION(coth)
+        UNARY_FUNCTION(acot)
+        UNARY_FUNCTION(acoth)
+        UNARY_FUNCTION(sec)
+        UNARY_FUNCTION(sech)
+        UNARY_FUNCTION(asec)
+        UNARY_FUNCTION(asech)
+        UNARY_FUNCTION(csc)
+        UNARY_FUNCTION(csch)
+        UNARY_FUNCTION(acsc)
+        UNARY_FUNCTION(acsch)
+        UNARY_FUNCTION(exp)
+        UNARY_FUNCTION(exp2)
+        UNARY_FUNCTION(expm1)
+        UNARY_FUNCTION(log)
+        UNARY_FUNCTION(log10)
+        UNARY_FUNCTION(log1p)
+        UNARY_FUNCTION(logb)
+        UNARY_FUNCTION(log2)
+        UNARY_FUNCTION(round)
+        UNARY_FUNCTION(ceil)
+        UNARY_FUNCTION(floor)
+        UNARY_FUNCTION(trunc)
+        UNARY_FUNCTION(lgamma)
+        UNARY_FUNCTION(tgamma)
+        UNARY_FUNCTION(erf)
+        UNARY_FUNCTION(erfc)
+        UNARY_FUNCTION(inv)
+        UNARY_FUNCTION(sqr)
+        UNARY_FUNCTION(sqrt)
+        UNARY_FUNCTION(sign)
+
+#undef UNARY_FUNCTION
+
+#define BINARY_FUNCTION(NAME)                                                                                                                                                                                                         \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Matrix<DataType, ExecutionSpace> NAME(const DataType x, const Matrix<DataType, ExecutionSpace>& view_y)                                                                                                           \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_y.nrows();                                                                                                                                                                          \
+        const uint32                     M = view_y.ncolumns();                                                                                                                                                                       \
+        Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});                                                                                 \
+        Matrix<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + std::to_string(x) + "," + view_y.label() + ")", N, M);                                                                                                         \
+        Kokkos::parallel_for(STRINGIZER(NAME), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)                                                                                                                                   \
+        {                                                                                                                                                                                                                             \
+            result(i, j) = System::NAME(x, view_y(i, j));                                                                                                                                                                                \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }                                                                                                                                                                                                                                 \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Matrix<DataType, ExecutionSpace> NAME(const Matrix<DataType, ExecutionSpace>& view_x, const DataType y)                                                                                                           \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_x.nrows();                                                                                                                                                                          \
+        const uint32                     M = view_x.ncolumns();                                                                                                                                                                       \
+        Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});                                                                                 \
+        Matrix<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view_x.label() + "," + std::to_string(y) + ")", N, M);                                                                                                         \
+        Kokkos::parallel_for(STRINGIZER(NAME), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)                                                                                                                                   \
+        {                                                                                                                                                                                                                             \
+            result(i, j) = System::NAME(view_x(i, j), y);                                                                                                                                                                                \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }                                                                                                                                                                                                                                 \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                            \
+    __inline static Matrix<DataType, ExecutionSpace> NAME(const Matrix<DataType, ExecutionSpace>& view_x, const Matrix<DataType, ExecutionSpace>& view_y)                                                                             \
+    {                                                                                                                                                                                                                                 \
+        const uint32                     N = view_x.nrows();                                                                                                                                                                          \
+        const uint32                     M = view_x.ncolumns();                                                                                                                                                                       \
+        Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});                                                                                 \
+        Matrix<DataType, ExecutionSpace> result(STRINGIZER(NAME) "(" + view_x.label() + "," + view_y.label() + ")", N, M);                                                                                                            \
+        Kokkos::parallel_for(STRINGIZER(NAME), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)                                                                                                                                   \
+        {                                                                                                                                                                                                                             \
+            result(i, j) = System::NAME(view_x(i, j), view_y(i, j));                                                                                                                                                                     \
+        });                                                                                                                                                                                                                           \
+        Kokkos::fence();                                                                                                                                                                                                              \
+        return result;                                                                                                                                                                                                                \
+    }
+
+        BINARY_FUNCTION(copysign)
+        BINARY_FUNCTION(sign)
+        BINARY_FUNCTION(fmin)
+        BINARY_FUNCTION(fmax)
+        BINARY_FUNCTION(fmod)
+        BINARY_FUNCTION(hypot)
+        BINARY_FUNCTION(pow)
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> pow(const Matrix<DataType, ExecutionSpace>& view_x, const int32 y)
+        {
+            const uint32                     N = view_x.nrows();
+            const uint32                     M = view_x.ncolumns();
+            Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});
+            Matrix<DataType, ExecutionSpace> result(STRINGIZER(pow) "(" + view_x.label() + "," + std::to_string(y) + ")", N, M);
+            Kokkos::parallel_for(STRINGIZER(pow), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)
+            {
+                result(i, j) = System::pow(view_x(i, j), y);
+            });
+            Kokkos::fence();
+            return result;
+        }
+    
+#undef BINARY_FUNCTION
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> atan2(const DataType y, const Matrix<DataType, ExecutionSpace>& view_x)
+        {
+            const uint32                     N = view_x.nrows();
+            const uint32                     M = view_x.ncolumns();
+            Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});
+            Matrix<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + std::to_string(y) + "," + view_x.label() + ")", N, M);
+            Kokkos::parallel_for(STRINGIZER(atan2), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)
+            {
+                result(i, j) = System::atan2(y, view_x(i, j));
+            });
+            Kokkos::fence();
+            return result;
+        }
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> atan2(const Matrix<DataType, ExecutionSpace>& view_y, const DataType x)
+        {
+            const uint32                     N = view_y.nrows();
+            const uint32                     M = view_y.ncolumns();
+            Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});
+            Matrix<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + view_y.label() + "," + std::to_string(x) + ")", N, M);
+            Kokkos::parallel_for(STRINGIZER(atan2), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)
+            {
+                result(i, j) = System::atan2(view_y(i, j), x);
+            });
+            Kokkos::fence();
+            return result;
+        }
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> atan2(const Matrix<DataType, ExecutionSpace>& view_y, const Matrix<DataType, ExecutionSpace>& view_x)
+        {
+            const uint32                     N = view_x.nrows();
+            const uint32                     M = view_x.ncolumns();
+            Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});
+            Matrix<DataType, ExecutionSpace> result(STRINGIZER(atan2) "(" + view_y.label() + "," + view_x.label() + ")", N, M);
+            Kokkos::parallel_for(STRINGIZER(atan2), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)
+            {
+                result(i, j) = System::atan2(view_y(i, j), view_x(i, j));
+            });
+            Kokkos::fence();
+            return result;
+        }
+
+
+
+        template<FloatingPoint DataType, class ExecutionSpace>
+        __inline static Matrix<DataType, ExecutionSpace> fma(const Matrix<DataType, ExecutionSpace>& view_x, const Matrix<DataType, ExecutionSpace>& view_y, const Matrix<DataType, ExecutionSpace>& view_z)
+        {
+            const uint32                     N = view_x.nrows();
+            const uint32                     M = view_x.ncolumns();
+            Kokkos::MDRangePolicy<ExecutionSpace, Kokkos::Rank<2>, Kokkos::IndexType<uint32>, Kokkos::Schedule<Kokkos::Static>> range({{0, 0}},{{N, M}});
+            Matrix<DataType, ExecutionSpace> result(STRINGIZER(fma) "(" + view_x.label() + "," + view_y.label() + "," + view_z.label() + ")", N, M);
+            Kokkos::parallel_for(STRINGIZER(fma), range, KOKKOS_LAMBDA(const uint32 i, const uint32 j)
+            {
+                result(i, j) = System::fma(view_x(i, j), view_y(i, j), view_z(i, j));
+            });
+            Kokkos::fence();
+            return result;
+        }
+
+        // clang-format on
+
+        // void sincos (double __x, double *p_sin, double *p_cos)
+
+    }
+}
+
+namespace std
+{
+    using Kokkos::Extension::acos;
+    using Kokkos::Extension::acosh;
+    using Kokkos::Extension::acot;
+    using Kokkos::Extension::acoth;
+    using Kokkos::Extension::acsc;
+    using Kokkos::Extension::acsch;
+    using Kokkos::Extension::asec;
+    using Kokkos::Extension::asech;
+    using Kokkos::Extension::asin;
+    using Kokkos::Extension::asinh;
+    using Kokkos::Extension::atan;
+    using Kokkos::Extension::atanh;
+    using Kokkos::Extension::ceil;
+    using Kokkos::Extension::cos;
+    using Kokkos::Extension::cosh;
+    using Kokkos::Extension::cot;
+    using Kokkos::Extension::coth;
+    using Kokkos::Extension::csc;
+    using Kokkos::Extension::csch;
+    using Kokkos::Extension::erf;
+    using Kokkos::Extension::erfc;
+    using Kokkos::Extension::exp;
+    using Kokkos::Extension::exp2;
+    using Kokkos::Extension::expm1;
+    using Kokkos::Extension::floor;
+    using Kokkos::Extension::inv;
+    using Kokkos::Extension::lgamma;
+    using Kokkos::Extension::log;
+    using Kokkos::Extension::log10;
+    using Kokkos::Extension::log1p;
+    using Kokkos::Extension::log2;
+    using Kokkos::Extension::logb;
+    using Kokkos::Extension::round;
+    using Kokkos::Extension::sec;
+    using Kokkos::Extension::sech;
+    using Kokkos::Extension::sign;
+    using Kokkos::Extension::sin;
+    using Kokkos::Extension::sinh;
+    using Kokkos::Extension::sqr;
+    using Kokkos::Extension::sqrt;
+    using Kokkos::Extension::tan;
+    using Kokkos::Extension::tanh;
+    using Kokkos::Extension::tgamma;
+    using Kokkos::Extension::trunc;
+
+    using Kokkos::Extension::copysign;
+    using Kokkos::Extension::fmax;
+    using Kokkos::Extension::fmod;
+    using Kokkos::Extension::hypot;
+    using Kokkos::Extension::pow;
+    using Kokkos::Extension::sign;
+
+    using Kokkos::Extension::atan2;
+
+    using Kokkos::Extension::fma;
 }
 
 namespace Kokkos
@@ -159,6 +429,7 @@ namespace Kokkos
             Kokkos::RangePolicy<ExecutionSpace> policy(0, n);
 
             Kokkos::parallel_reduce("V_Norm", policy, f, sum);
+            Kokkos::fence();
 
             return sqrt(sum);
         }
@@ -173,7 +444,7 @@ namespace Kokkos
             DataType sum;
 
 #if defined(__CUDA_ARCH__)
-            for (size_type i = 0; i < n; ++i)
+            for(size_type i = 0; i < n; ++i)
             {
                 sum += lhs(i) * rhs(i);
             }
@@ -183,6 +454,7 @@ namespace Kokkos
             Kokkos::RangePolicy<ExecutionSpace> policy(0, n);
 
             Kokkos::parallel_reduce("V_InnerProduct", policy, f, sum);
+            Kokkos::fence();
 #endif
 
             return sum;
@@ -207,6 +479,7 @@ namespace Kokkos
             mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{n, m}});
 
             Kokkos::parallel_for("V_OuterProduct", policy, f);
+            Kokkos::fence();
 
             return r;
         }
@@ -260,9 +533,9 @@ namespace Kokkos
             s << A.label() << " [" << m << "x" << n << "]";
             s << std::endl;
 
-            for (size_type i = 0; i < m; ++i)
+            for(size_type i = 0; i < m; ++i)
             {
-                for (size_type j = 0; j < n; ++j)
+                for(size_type j = 0; j < n; ++j)
                 {
                     s << A(i, j) << " ";
                 }
@@ -284,9 +557,9 @@ namespace Kokkos
 #endif
             s << " [" << m << "x" << n << "]" << System::endl;
 
-            for (size_type i = 0; i < m; ++i)
+            for(size_type i = 0; i < m; ++i)
             {
-                for (size_type j = 0; j < n; ++j)
+                for(size_type j = 0; j < n; ++j)
                 {
                     s << A(i, j) << " ";
                 }
@@ -303,14 +576,14 @@ namespace Kokkos
 
             s >> m >> n;
 
-            if (!(m == A.nrows() && n == A.ncolumns()))
+            if(!(m == A.nrows() && n == A.ncolumns()))
             {
                 Kokkos::resize(A, m, n);
             }
 
-            for (size_type i = 0; i < m; ++i)
+            for(size_type i = 0; i < m; ++i)
             {
-                for (size_type j = 0; j < n; ++j)
+                for(size_type j = 0; j < n; ++j)
                 {
                     s >> A(i, j);
                 }
@@ -335,199 +608,209 @@ namespace Kokkos
 
         namespace MatrixOperators
         {
-#define MATRIX_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                    \
-    template<class RMatrix, class LhsMatrix, class RhsMatrix>                                                                                                                                          \
-    struct MatrixMatrix##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                       \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename RMatrix::size_type                      size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        RMatrix                        _r;                                                                                                                                                             \
-        typename LhsMatrix::const_type _lhs;                                                                                                                                                           \
-        typename RhsMatrix::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        MatrixMatrix##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                        \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _r(i, j) = _lhs(i, j) OP _rhs(i, j);                                                                                                                                                       \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class RMatrix, class LhsMatrix>                                                                                                                                                           \
-    struct MatrixScalar##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                       \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename RMatrix::size_type                      size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        RMatrix                        _r;                                                                                                                                                             \
-        typename LhsMatrix::const_type _lhs;                                                                                                                                                           \
-        value_type                     _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        MatrixScalar##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const value_type& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                       \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _r(i, j) = _lhs(i, j) OP _rhs;                                                                                                                                                             \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class RMatrix, class RhsMatrix>                                                                                                                                                           \
-    struct ScalarMatrix##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                       \
-        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename RMatrix::size_type                      size_type;                                                                                                                            \
-        typedef typename RhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        RMatrix                        _r;                                                                                                                                                             \
-        value_type                     _lhs;                                                                                                                                                           \
-        typename RhsMatrix::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        ScalarMatrix##OP_NAME##Functor(RMatrix& r, const value_type& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                       \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _r(i, j) = _lhs OP _rhs(i, j);                                                                                                                                                             \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class LhsMatrix, class RhsMatrix>                                                                                                                                                         \
-    struct MatrixMatrix##OP_NAME##AssignFunctor                                                                                                                                                        \
-    {                                                                                                                                                                                                  \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        LhsMatrix                      _lhs;                                                                                                                                                           \
-        typename RhsMatrix::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        MatrixMatrix##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const RhsMatrix& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                     \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _lhs(i, j) ASSIGN_OP _rhs(i, j);                                                                                                                                                           \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class LhsMatrix>                                                                                                                                                                          \
-    struct MatrixScalar##OP_NAME##AssignFunctor                                                                                                                                                        \
-    {                                                                                                                                                                                                  \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        LhsMatrix  _lhs;                                                                                                                                                                               \
-        value_type _rhs;                                                                                                                                                                               \
-                                                                                                                                                                                                       \
-        MatrixScalar##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const value_type& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                    \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _lhs(i, j) ASSIGN_OP _rhs;                                                                                                                                                                 \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                             \
-    {                                                                                                                                                                                                  \
-        const size_type m = lhs.nrows();                                                                                                                                                               \
-        const size_type n = lhs.ncolumns();                                                                                                                                                            \
-        const size_type k = rhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Assert(n == rhs.nrows());                                                                                                                                                                      \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + rhs.label(), m, k);                                                                                                                     \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                          \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, k}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator OP(const DataType& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type m = rhs.nrows();                                                                                                                                                               \
-        const size_type n = rhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(std::to_string(lhs) + #OP + rhs.label(), m, n);                                                                                                             \
-                                                                                                                                                                                                       \
-        MatrixOperators::ScalarMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                            \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type m = lhs.nrows();                                                                                                                                                               \
-        const size_type n = lhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + std::to_string(rhs), m, n);                                                                                                             \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixScalar##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                            \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                            \
-    {                                                                                                                                                                                                  \
-        const size_type m = lhs.nrows();                                                                                                                                                               \
-        const size_type n = lhs.ncolumns();                                                                                                                                                            \
-        const size_type k = rhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Assert(n == rhs.nrows());                                                                                                                                                                      \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + rhs.label(), m, k);                                                                                                              \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixMatrix##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                         \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, k}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME "Assign", policy, f);                                                                                                                                       \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                    \
-    {                                                                                                                                                                                                  \
-        const size_type m = rhs.nrows();                                                                                                                                                               \
-        const size_type n = rhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + std::to_string(rhs), n);                                                                                                         \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixScalar##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                                                           \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                       \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
+#define MATRIX_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                                                  \
+    template<class RMatrix, class LhsMatrix, class RhsMatrix>                                                                                                                                                                        \
+    struct MatrixMatrix##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                                                     \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename RMatrix::size_type                      size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        RMatrix                        _r;                                                                                                                                                                                           \
+        typename LhsMatrix::const_type _lhs;                                                                                                                                                                                         \
+        typename RhsMatrix::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        MatrixMatrix##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                      \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _r(i, j) = _lhs(i, j) OP _rhs(i, j);                                                                                                                                                                                     \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class RMatrix, class LhsMatrix>                                                                                                                                                                                         \
+    struct MatrixScalar##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                                                     \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename RMatrix::size_type                      size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        RMatrix                        _r;                                                                                                                                                                                           \
+        typename LhsMatrix::const_type _lhs;                                                                                                                                                                                         \
+        value_type                     _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        MatrixScalar##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const value_type& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                     \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _r(i, j) = _lhs(i, j) OP _rhs;                                                                                                                                                                                           \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class RMatrix, class RhsMatrix>                                                                                                                                                                                         \
+    struct ScalarMatrix##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                                                     \
+        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename RMatrix::size_type                      size_type;                                                                                                                                                          \
+        typedef typename RhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        RMatrix                        _r;                                                                                                                                                                                           \
+        value_type                     _lhs;                                                                                                                                                                                         \
+        typename RhsMatrix::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        ScalarMatrix##OP_NAME##Functor(RMatrix& r, const value_type& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                     \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _r(i, j) = _lhs OP _rhs(i, j);                                                                                                                                                                                           \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class LhsMatrix, class RhsMatrix>                                                                                                                                                                                       \
+    struct MatrixMatrix##OP_NAME##AssignFunctor                                                                                                                                                                                      \
+    {                                                                                                                                                                                                                                \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        LhsMatrix                      _lhs;                                                                                                                                                                                         \
+        typename RhsMatrix::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        MatrixMatrix##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const RhsMatrix& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _lhs(i, j) ASSIGN_OP _rhs(i, j);                                                                                                                                                                                         \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class LhsMatrix>                                                                                                                                                                                                        \
+    struct MatrixScalar##OP_NAME##AssignFunctor                                                                                                                                                                                      \
+    {                                                                                                                                                                                                                                \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        LhsMatrix  _lhs;                                                                                                                                                                                                             \
+        value_type _rhs;                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        MatrixScalar##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const value_type& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                                                  \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _lhs(i, j) ASSIGN_OP _rhs;                                                                                                                                                                                               \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                           \
+    {                                                                                                                                                                                                                                \
+        const size_type m = lhs.nrows();                                                                                                                                                                                             \
+        const size_type n = lhs.ncolumns();                                                                                                                                                                                          \
+        const size_type k = rhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Assert(n == rhs.nrows());                                                                                                                                                                                                    \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + rhs.label(), m, k);                                                                                                                                                   \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                        \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, k}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator OP(const DataType& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                                                   \
+    {                                                                                                                                                                                                                                \
+        const size_type m = rhs.nrows();                                                                                                                                                                                             \
+        const size_type n = rhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(std::to_string(lhs) + #OP + rhs.label(), m, n);                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::ScalarMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                                                          \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                                                   \
+    {                                                                                                                                                                                                                                \
+        const size_type m = lhs.nrows();                                                                                                                                                                                             \
+        const size_type n = lhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + std::to_string(rhs), m, n);                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixScalar##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                                                          \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                          \
+    {                                                                                                                                                                                                                                \
+        const size_type m = lhs.nrows();                                                                                                                                                                                             \
+        const size_type n = lhs.ncolumns();                                                                                                                                                                                          \
+        const size_type k = rhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Assert(n == rhs.nrows());                                                                                                                                                                                                    \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + rhs.label(), m, k);                                                                                                                                            \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixMatrix##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                                                       \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, k}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME "Assign", policy, f);                                                                                                                                                                     \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                                                  \
+    {                                                                                                                                                                                                                                \
+        const size_type m = rhs.nrows();                                                                                                                                                                                             \
+        const size_type n = rhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + std::to_string(rhs), n);                                                                                                                                       \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixScalar##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                                                     \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
     }
 
             MATRIX_OPS_FUNCTORS(Plus, +, +=)
@@ -535,117 +818,123 @@ namespace Kokkos
 
 #undef MATRIX_OPS_FUNCTORS
 
-#define MATRIX_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                    \
-    template<class RMatrix, class LhsMatrix>                                                                                                                                                           \
-    struct MatrixScalar##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                       \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename RMatrix::size_type                      size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        RMatrix                        _r;                                                                                                                                                             \
-        typename LhsMatrix::const_type _lhs;                                                                                                                                                           \
-        value_type                     _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        MatrixScalar##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const value_type& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                       \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _r(i, j) = _lhs(i, j) OP _rhs;                                                                                                                                                             \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class RMatrix, class RhsMatrix>                                                                                                                                                           \
-    struct ScalarMatrix##OP_NAME##Functor                                                                                                                                                              \
-    {                                                                                                                                                                                                  \
-        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                       \
-        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename RMatrix::size_type                      size_type;                                                                                                                            \
-        typedef typename RhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        RMatrix                        _r;                                                                                                                                                             \
-        value_type                     _lhs;                                                                                                                                                           \
-        typename RhsMatrix::const_type _rhs;                                                                                                                                                           \
-                                                                                                                                                                                                       \
-        ScalarMatrix##OP_NAME##Functor(RMatrix& r, const value_type& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                       \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _r(i, j) = _lhs OP _rhs(i, j);                                                                                                                                                             \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<class LhsMatrix>                                                                                                                                                                          \
-    struct MatrixScalar##OP_NAME##AssignFunctor                                                                                                                                                        \
-    {                                                                                                                                                                                                  \
-        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                   \
-                                                                                                                                                                                                       \
-        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                            \
-        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                           \
-                                                                                                                                                                                                       \
-        LhsMatrix  _lhs;                                                                                                                                                                               \
-        value_type _rhs;                                                                                                                                                                               \
-                                                                                                                                                                                                       \
-        MatrixScalar##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const value_type& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                    \
-                                                                                                                                                                                                       \
-        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                             \
-        {                                                                                                                                                                                              \
-            _lhs(i, j) ASSIGN_OP _rhs;                                                                                                                                                                 \
-        }                                                                                                                                                                                              \
-    };                                                                                                                                                                                                 \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator OP(const DataType& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type m = rhs.nrows();                                                                                                                                                               \
-        const size_type n = rhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(std::to_string(lhs) + #OP + rhs.label(), m, n);                                                                                                             \
-                                                                                                                                                                                                       \
-        MatrixOperators::ScalarMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                            \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                     \
-    {                                                                                                                                                                                                  \
-        const size_type m = lhs.nrows();                                                                                                                                                               \
-        const size_type n = lhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + std::to_string(rhs), m, n);                                                                                                             \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixScalar##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                            \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
-    }                                                                                                                                                                                                  \
-                                                                                                                                                                                                       \
-    template<typename DataType, class ExecutionSpace>                                                                                                                                                  \
-    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                    \
-    {                                                                                                                                                                                                  \
-        const size_type m = lhs.nrows();                                                                                                                                                               \
-        const size_type n = lhs.ncolumns();                                                                                                                                                            \
-                                                                                                                                                                                                       \
-        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + std::to_string(rhs), m, n);                                                                                                      \
-                                                                                                                                                                                                       \
-        MatrixOperators::MatrixScalar##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                                                           \
-                                                                                                                                                                                                       \
-        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                   \
-                                                                                                                                                                                                       \
-        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                       \
-                                                                                                                                                                                                       \
-        return r;                                                                                                                                                                                      \
+#define MATRIX_OPS_FUNCTORS(OP_NAME, OP, ASSIGN_OP)                                                                                                                                                                                  \
+    template<class RMatrix, class LhsMatrix>                                                                                                                                                                                         \
+    struct MatrixScalar##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                                                     \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename RMatrix::size_type                      size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        RMatrix                        _r;                                                                                                                                                                                           \
+        typename LhsMatrix::const_type _lhs;                                                                                                                                                                                         \
+        value_type                     _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        MatrixScalar##OP_NAME##Functor(RMatrix& r, const LhsMatrix& lhs, const value_type& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                     \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _r(i, j) = _lhs(i, j) OP _rhs;                                                                                                                                                                                           \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class RMatrix, class RhsMatrix>                                                                                                                                                                                         \
+    struct ScalarMatrix##OP_NAME##Functor                                                                                                                                                                                            \
+    {                                                                                                                                                                                                                                \
+        static_assert(RMatrix::Rank == 2, "RMatrix::Rank != 2");                                                                                                                                                                     \
+        static_assert(RhsMatrix::Rank == 2, "RhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename RMatrix::size_type                      size_type;                                                                                                                                                          \
+        typedef typename RhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        RMatrix                        _r;                                                                                                                                                                                           \
+        value_type                     _lhs;                                                                                                                                                                                         \
+        typename RhsMatrix::const_type _rhs;                                                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        ScalarMatrix##OP_NAME##Functor(RMatrix& r, const value_type& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs) {}                                                                                                     \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _r(i, j) = _lhs OP _rhs(i, j);                                                                                                                                                                                           \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<class LhsMatrix>                                                                                                                                                                                                        \
+    struct MatrixScalar##OP_NAME##AssignFunctor                                                                                                                                                                                      \
+    {                                                                                                                                                                                                                                \
+        static_assert(LhsMatrix::Rank == 2, "LhsMatrix::Rank != 2");                                                                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        typedef typename LhsMatrix::size_type                    size_type;                                                                                                                                                          \
+        typedef typename LhsMatrix::traits::non_const_value_type value_type;                                                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        LhsMatrix  _lhs;                                                                                                                                                                                                             \
+        value_type _rhs;                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        MatrixScalar##OP_NAME##AssignFunctor(const LhsMatrix& lhs, const value_type& rhs) : _lhs(lhs), _rhs(rhs) {}                                                                                                                  \
+                                                                                                                                                                                                                                     \
+        KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const                                                                                                                                           \
+        {                                                                                                                                                                                                                            \
+            _lhs(i, j) ASSIGN_OP _rhs;                                                                                                                                                                                               \
+        }                                                                                                                                                                                                                            \
+    };                                                                                                                                                                                                                               \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator OP(const DataType& lhs, const Matrix<DataType, ExecutionSpace>& rhs)                                                                                                   \
+    {                                                                                                                                                                                                                                \
+        const size_type m = rhs.nrows();                                                                                                                                                                                             \
+        const size_type n = rhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(std::to_string(lhs) + #OP + rhs.label(), m, n);                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::ScalarMatrix##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                                                          \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator OP(const Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                                                   \
+    {                                                                                                                                                                                                                                \
+        const size_type m = lhs.nrows();                                                                                                                                                                                             \
+        const size_type n = lhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #OP + std::to_string(rhs), m, n);                                                                                                                                           \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixScalar##OP_NAME##Functor<Matrix<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs, rhs);                                                                                          \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME, policy, f);                                                                                                                                                                              \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
+    }                                                                                                                                                                                                                                \
+                                                                                                                                                                                                                                     \
+    template<FloatingPoint DataType, class ExecutionSpace>                                                                                                                                                                           \
+    __inline static Matrix<DataType, ExecutionSpace> operator ASSIGN_OP(Matrix<DataType, ExecutionSpace>& lhs, const DataType& rhs)                                                                                                  \
+    {                                                                                                                                                                                                                                \
+        const size_type m = lhs.nrows();                                                                                                                                                                                             \
+        const size_type n = lhs.ncolumns();                                                                                                                                                                                          \
+                                                                                                                                                                                                                                     \
+        Matrix<DataType, ExecutionSpace> r(lhs.label() + #ASSIGN_OP + std::to_string(rhs), m, n);                                                                                                                                    \
+                                                                                                                                                                                                                                     \
+        MatrixOperators::MatrixScalar##OP_NAME##AssignFunctor<Matrix<DataType, ExecutionSpace>> f(lhs, rhs);                                                                                                                         \
+                                                                                                                                                                                                                                     \
+        mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});                                                                                                                 \
+                                                                                                                                                                                                                                     \
+        Kokkos::parallel_for("V_" #OP_NAME "Scalar", policy, f);                                                                                                                                                                     \
+                                                                                                                                                                                                                                     \
+        Kokkos::fence();                                                                                                                                                                                                             \
+                                                                                                                                                                                                                                     \
+        return r;                                                                                                                                                                                                                    \
     }
             MATRIX_OPS_FUNCTORS(Multiply, *, *=)
             MATRIX_OPS_FUNCTORS(Divide, /, /=)
@@ -663,18 +952,18 @@ namespace Kokkos
                 typedef typename LhsMatrix::const_value_type             const_value_type;
                 typedef typename LhsMatrix::traits::non_const_value_type value_type;
 
-                RMatrix                        _r;
-                typename LhsMatrix::const_type _lhs;
-                typename RhsMatrix::const_type _rhs;
-                const_value_type               n;
+                const_value_type                             n;
+                RMatrix                                      _r;
+                /*typename LhsMatrix::const_type*/ LhsMatrix _lhs;
+                /*typename RhsMatrix::const_type*/ RhsMatrix _rhs;
 
-                MatrixMatrixMultiplyFunctor(RMatrix& r, const LhsMatrix& lhs, const RhsMatrix& rhs) : _r(r), _lhs(lhs), _rhs(rhs), n(lhs.ncolumns()) {}
+                MatrixMatrixMultiplyFunctor(RMatrix& r, const LhsMatrix& lhs, const RhsMatrix& rhs) : n(lhs.ncolumns()), _r(r), _lhs(lhs), _rhs(rhs) {}
 
                 KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type k) const
                 {
                     value_type sum = Constants<value_type>::Zero();
 
-                    for (size_type j = 0; j < n; ++j)
+                    for(size_type j = 0; j < n; ++j)
                     {
                         sum += (_lhs(i, j) * _rhs(j, k));
                     }
@@ -705,7 +994,7 @@ namespace Kokkos
                 {
                     value_type sum = 0.0;
 
-                    for (size_type j = 0; j < n; ++j)
+                    for(size_type j = 0; j < n; ++j)
                     {
                         sum += _lhs(i, j) * _rhs(j);
                     }
@@ -745,8 +1034,8 @@ namespace Kokkos
                 typedef typename LhsMatrix::const_value_type             const_value_type;
                 typedef typename LhsMatrix::traits::non_const_value_type value_type;
 
-                RVector                        _r;
-                typename LhsMatrix::const_type _lhs;
+                RVector   _r;
+                LhsMatrix _lhs;
 
                 MatrixDiagonalFunctor(RVector& r, const LhsMatrix& lhs) : _r(r), _lhs(lhs) {}
 
@@ -773,7 +1062,7 @@ namespace Kokkos
 
                 KOKKOS_INLINE_FUNCTION void operator()(const size_type i, const size_type j) const
                 {
-                    if (i == j)
+                    if(i == j)
                     {
                         _r(i, j) = _lhs(i, j);
                     }
@@ -833,7 +1122,7 @@ namespace Kokkos
         using MatrixOperators::operator*=;
         using MatrixOperators::operator/=;
 
-        template<typename DataType, class ExecutionSpace>
+        template<FloatingPoint DataType, class ExecutionSpace>
         __inline static Matrix<DataType, ExecutionSpace> operator-(const Matrix<DataType, ExecutionSpace>& lhs)
         {
             const size_type m = lhs.nrows();
@@ -846,11 +1135,12 @@ namespace Kokkos
             mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});
 
             Kokkos::parallel_for("M_Negate", policy, f);
+            Kokkos::fence();
 
             return r;
         }
 
-        template<typename DataType, class ExecutionSpace>
+        template<FloatingPoint DataType, class ExecutionSpace>
         __inline static Matrix<DataType, ExecutionSpace> operator*(const Matrix<DataType, ExecutionSpace>& lhs, const Matrix<DataType, ExecutionSpace>& rhs)
         {
             const size_type m = lhs.nrows();
@@ -866,11 +1156,12 @@ namespace Kokkos
             mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, k}});
 
             Kokkos::parallel_for("M_Multiply", policy, f);
+            Kokkos::fence();
 
             return r;
         }
 
-        template<typename DataType, class ExecutionSpace>
+        template<FloatingPoint DataType, class ExecutionSpace>
         __inline static Vector<DataType, ExecutionSpace> operator*(const Matrix<DataType, ExecutionSpace>& lhs, const Vector<DataType, ExecutionSpace>& rhs)
         {
             const size_type m = lhs.nrows();
@@ -885,6 +1176,7 @@ namespace Kokkos
             Kokkos::RangePolicy<ExecutionSpace> policy(0, m);
 
             Kokkos::parallel_for("M_Multiply", policy, f);
+            Kokkos::fence();
 
             return r;
         }
@@ -902,6 +1194,7 @@ namespace Kokkos
             mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{m, n}});
 
             Kokkos::parallel_reduce("V_Norm", policy, f, sum);
+            Kokkos::fence();
 
             return sqrt(sum);
         }
@@ -912,13 +1205,14 @@ namespace Kokkos
             const size_type m = lhs.nrows();
             const size_type n = lhs.ncolumns();
 
-            const size_type v = std::min(n, m);
+            const size_type v = System::min(n, m);
 
             Vector<DataType, ExecutionSpace> r(lhs.label(), v);
 
             MatrixOperators::MatrixDiagonalFunctor<Vector<DataType, ExecutionSpace>, Matrix<DataType, ExecutionSpace>> f(r, lhs);
 
-            Kokkos::parallel_for(v, f);
+            Kokkos::parallel_for(Kokkos::RangePolicy<ExecutionSpace>(0, v), f);
+            Kokkos::fence();
 
             return r;
         }
@@ -944,14 +1238,35 @@ namespace Kokkos
             MatrixOperators::MatrixDiagonalMatrixFunctor<Matrix<std::remove_cv_t<DataType>, ExecutionSpace>, Matrix<std::remove_cv_t<DataType>, ExecutionSpace>> f(r, lhs);
 
             Kokkos::parallel_for(policy, f);
+            Kokkos::fence();
 
             return r;
         }
 
         template<typename DataType, class ExecutionSpace>
+        __inline static void identity(Matrix<DataType, ExecutionSpace>& matrix)
+        {
+            mdrange_type<ExecutionSpace> policy(point_type<ExecutionSpace>{{0, 0}}, point_type<ExecutionSpace>{{matrix.nrows(), matrix.ncolumns()}});
+
+            Kokkos::parallel_for(policy,
+                                 [=] __host__ __device__(const size_type i, const size_type j)
+                                 {
+                                     if(i == j)
+                                     {
+                                         matrix(i, j) = 1.0;
+                                     }
+                                     else
+                                     {
+                                         matrix(i, j) = 0.0;
+                                     }
+                                 });
+            Kokkos::fence();
+        }
+
+        template<typename DataType, class ExecutionSpace>
         __inline static Matrix<DataType, ExecutionSpace> identity(const size_type m, const size_type n)
         {
-            const size_type v = std::min(n, m);
+            const size_type v = System::min(n, m);
 
             Matrix<DataType, ExecutionSpace> r("I", m, n);
 
@@ -960,7 +1275,7 @@ namespace Kokkos
             Kokkos::parallel_for(policy,
                                  [=] __host__ __device__(const size_type i, const size_type j)
                                  {
-                                     if (i == j)
+                                     if(i == j)
                                      {
                                          r(i, j) = 1.0;
                                      }
@@ -969,6 +1284,7 @@ namespace Kokkos
                                          r(i, j) = 0.0;
                                      }
                                  });
+            Kokkos::fence();
 
             return r;
         }
@@ -1004,7 +1320,7 @@ namespace Kokkos
 
             Matrix<DataType, ExecutionSpace> r(lhs.label() + STRING("^T"), n, m);
 
-            if constexpr (std::is_same_v<ExecutionSpace, Kokkos::Cuda>)
+            if constexpr(std::is_same_v<ExecutionSpace, Kokkos::Cuda>)
             {
                 cudaMemcpy(r.View().data(), lhs.View().data(), lhs.size() * sizeof(DataType), cudaMemcpyKind::cudaMemcpyDeviceToDevice);
             }
@@ -1045,17 +1361,17 @@ namespace Kokkos
                                      double dum;
                                      double pivinv;
 
-                                     for (int32 i = 0; i < n; i++)
+                                     for(int32 i = 0; i < n; i++)
                                      {
                                          big = 0.0;
 
-                                         for (int32 j = 0; j < n; j++)
+                                         for(int32 j = 0; j < n; j++)
                                          {
-                                             if (ipiv(j) != 1)
+                                             if(ipiv(j) != 1)
                                              {
-                                                 for (int32 k = 0; k < n; k++)
+                                                 for(int32 k = 0; k < n; k++)
                                                  {
-                                                     if (ipiv(k) == 0 && abs<DataType>(a(j, k)) >= big)
+                                                     if(ipiv(k) == 0 && abs<DataType>(a(j, k)) >= big)
                                                      {
                                                          big  = abs<DataType>(a(j, k));
                                                          irow = j;
@@ -1067,14 +1383,14 @@ namespace Kokkos
 
                                          ++ipiv(icol);
 
-                                         if (irow != icol)
+                                         if(irow != icol)
                                          {
-                                             for (int32 l = 0; l < n; l++)
+                                             for(int32 l = 0; l < n; l++)
                                              {
                                                  swap(a(irow, l), a(icol, l));
                                              }
 
-                                             for (int32 l = 0; l < m; l++)
+                                             for(int32 l = 0; l < m; l++)
                                              {
                                                  swap(b(irow, l), b(icol, l));
                                              }
@@ -1083,7 +1399,7 @@ namespace Kokkos
                                          indxr(i) = irow;
                                          indxc(i) = icol;
 
-                                         if (a(icol, icol) == 0.0)
+                                         if(a(icol, icol) == 0.0)
                                          {
                                              ThrowException("gaussj: Singular Matrix");
                                          }
@@ -1092,30 +1408,30 @@ namespace Kokkos
 
                                          a(icol, icol) = 1.0;
 
-                                         for (int32 l = 0; l < n; l++)
+                                         for(int32 l = 0; l < n; l++)
                                          {
                                              a(icol, l) *= pivinv;
                                          }
 
-                                         for (int32 l = 0; l < m; l++)
+                                         for(int32 l = 0; l < m; l++)
                                          {
                                              b(icol, l) *= pivinv;
                                          }
 
-                                         for (int32 ll = 0; ll < n; ll++)
+                                         for(int32 ll = 0; ll < n; ll++)
                                          {
-                                             if (ll != icol)
+                                             if(ll != icol)
                                              {
                                                  dum = a(ll, icol);
 
                                                  a(ll, icol) = 0.0;
 
-                                                 for (int32 l = 0; l < n; l++)
+                                                 for(int32 l = 0; l < n; l++)
                                                  {
                                                      a(ll, l) -= a(icol, l) * dum;
                                                  }
 
-                                                 for (int32 l = 0; l < m; l++)
+                                                 for(int32 l = 0; l < m; l++)
                                                  {
                                                      b(ll, l) -= b(icol, l) * dum;
                                                  }
@@ -1123,17 +1439,19 @@ namespace Kokkos
                                          }
                                      }
                                      // p
-                                     for (int32 l = n - 1; l >= 0; --l)
+                                     for(int32 l = n - 1; l >= 0; --l)
                                      {
-                                         if (indxr(l) != indxc(l))
+                                         if(indxr(l) != indxc(l))
                                          {
-                                             for (int32 k = 0; k < n; k++)
+                                             for(int32 k = 0; k < n; k++)
                                              {
                                                  swap(a(k, indxr(l)), a(k, indxc(l)));
                                              }
                                          }
                                      }
                                  });
+
+            Kokkos::fence();
 
             return a;
         }
@@ -1158,9 +1476,9 @@ namespace Kokkos
 
             Kokkos::deep_copy(U.View(), 0.0);
 
-            for (uint32 i = 0; i < n; ++i)
+            for(uint32 i = 0; i < n; ++i)
             {
-                for (uint32 j = 0; j < m; ++j)
+                for(uint32 j = 0; j < m; ++j)
                 {
                     U(i, j) = svd.u(i, j);
                 }
@@ -1171,9 +1489,9 @@ namespace Kokkos
             DataType cutoff = rcond * max(u);
 
             DataType x;
-            for (uint32 i = 0; i < m; ++i)
+            for(uint32 i = 0; i < m; ++i)
             {
-                if (u(i) > cutoff)
+                if(u(i) > cutoff)
                 {
                     x = 1.0 / u(i);
                 }
@@ -1210,11 +1528,13 @@ namespace Kokkos
             Kokkos::parallel_for(Kokkos::RangePolicy<ExecutionSpace>(0, n),
                                  [=] __host__ __device__(const size_type col_idx)
                                  {
-                                     for (size_type row_idx = 0; row_idx < m; ++row_idx)
+                                     for(size_type row_idx = 0; row_idx < m; ++row_idx)
                                      {
                                          B(row_idx, col_idx) -= means(col_idx);
                                      }
                                  });
+
+            Kokkos::fence();
 
             // Covariance Matrix
             Matrix CovarianceMatrix = (1.0 / (DataType(m) - 1.0)) * (transpose(B) * B);
@@ -1225,7 +1545,7 @@ namespace Kokkos
         }
 
         template<typename DataType, Integer TIndex>
-        KOKKOS_FORCEINLINE_FUNCTION static constexpr DataType checkerboard_pattern(REF(TIndex) i, REF(TIndex) j)
+        KOKKOS_FORCEINLINE_FUNCTION static constexpr DataType checkerboard_pattern(CONST(TIndex) i, CONST(TIndex) j)
         {
             return ((i + j) % 2 == 0) ? 1.0 : -1.0;
         }
@@ -1238,15 +1558,15 @@ namespace Kokkos
             uint32 i = 0;
             uint32 j = 0;
 
-            for (uint32 row = 0; row < A.nrows(); row++)
+            for(uint32 row = 0; row < A.nrows(); row++)
             {
-                for (uint32 col = 0; col < A.ncolumns(); col++)
+                for(uint32 col = 0; col < A.ncolumns(); col++)
                 {
-                    if (row != p && col != q)
+                    if(row != p && col != q)
                     {
                         cfm(i, j++) = A(row, col);
 
-                        if (j == col_end)
+                        if(j == col_end)
                         {
                             j = 0;
                             i++;
@@ -1264,14 +1584,14 @@ namespace Kokkos
             const uint32 m = A.nrows();
             const uint32 n = A.ncolumns();
 
-            if (m == n)
+            if(m == n)
             {
                 ThrowException("determinant() can only only support a square Matrix.");
             }
 
             DataType D = 0.0;
 
-            if (n == 1)
+            if(n == 1)
             {
                 return A[0];
             }
@@ -1281,7 +1601,7 @@ namespace Kokkos
             DataType sign = 1.0;
 
             // Iterate for each element of first row
-            for (uint32 f = 0; f < n; f++)
+            for(uint32 f = 0; f < n; f++)
             {
                 // Getting Cofactor of A[0][f]
                 cofactor(A, temp, 0, f);
@@ -1303,7 +1623,7 @@ namespace Kokkos
             const uint32 m = A.nrows();
             const uint32 n = A.ncolumns();
 
-            if (n == 1)
+            if(n == 1)
             {
                 adj(0, 0) = 1;
 
@@ -1314,9 +1634,9 @@ namespace Kokkos
 
             Matrix<DataType, ExecutionSpace> temp("temp", m, n);
 
-            for (uint32 i = 0; i < m; i++)
+            for(uint32 i = 0; i < m; i++)
             {
-                for (uint32 j = 0; j < n; j++)
+                for(uint32 j = 0; j < n; j++)
                 {
                     cofactor(A, temp, i, j);
 
@@ -1334,11 +1654,11 @@ namespace Kokkos
 
             Vector<DataType, ExecutionSpace> x(new DataType[b], b);
 
-            for (uint32 k = n; k >= 1; --k)
+            for(uint32 k = n; k >= 1; --k)
             {
                 x(k) /= A(k, k);
 
-                for (uint32 i = 1; i < k; ++i)
+                for(uint32 i = 1; i < k; ++i)
                 {
                     x(i) -= x(k) * A(i, k);
                 }
@@ -1354,11 +1674,11 @@ namespace Kokkos
 
             Vector<DataType, ExecutionSpace> x(new DataType[b], b);
 
-            for (uint32 k = 1; k <= n; k++)
+            for(uint32 k = 1; k <= n; k++)
             {
                 x(k) /= A(k, k);
 
-                for (uint32 i = k + 1; i <= n; ++i)
+                for(uint32 i = k + 1; i <= n; ++i)
                 {
                     x(i) -= x(k) * A(i, k);
                 }

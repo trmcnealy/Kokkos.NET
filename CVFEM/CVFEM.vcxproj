@@ -24,7 +24,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{976873A3-E47B-4775-AD8B-C742FA417CC1}</ProjectGuid>
     <UseMultiToolTask>true</UseMultiToolTask>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
@@ -46,7 +46,7 @@
     <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" />
+  <!-- <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.props" /> -->
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared">
     <Import Project="D:\TFS_Sources\EngineeringTools\Native\Core\Core.vcxitems" Label="Shared" />
@@ -167,7 +167,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)/../kokkos/lib,-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -331,7 +331,7 @@
       <TypeLibraryResourceID>
       </TypeLibraryResourceID>
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)/../kokkos/lib,-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <Lib>
       <SubSystem>
@@ -354,7 +354,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -377,7 +377,7 @@
       </PrecompiledHeaderFile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <SupportJustMyCode>false</SupportJustMyCode>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory>
       </PrecompiledHeaderOutputFileDirectory>
@@ -401,7 +401,7 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)../Trilinos/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(PACKAGE_CACHE)/../Trilinos/include</AdditionalIncludeDirectories>
       <AdditionalOptions>--target=x86_64-w64-windows-gnu-coff %(AdditionalOptions)</AdditionalOptions>
       <PrecompiledHeaderOutputFileDirectory />
       <PrecompiledHeaderCompileAs />
@@ -506,7 +506,7 @@
       <CLRSupportLastError />
       <TypeLibraryResourceID />
       <OutputFile>$(OutPosixDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)../kokkos/lib,-L$(PACKAGE_CACHE)../Trilinos/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>-L$(PACKAGE_CACHE)/../kokkos/lib,-L$(PACKAGE_CACHE)/../Trilinos/lib</AdditionalLibraryDirectories>
     </Link>
     <ProjectReference />
     <Lib>
@@ -517,10 +517,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" />
-  <Target Name="Link">
-    <CallTarget Targets="ClangLink" />
-  </Target>
+  <!-- <Import Project="D:\TFS_Sources\EngineeringTools\BuildTools\Msbuild\Clang.targets" /> -->
+  <!-- <Target Name="Link"> -->
+    <!-- <CallTarget Targets="ClangLink" /> -->
+  <!-- </Target> -->
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

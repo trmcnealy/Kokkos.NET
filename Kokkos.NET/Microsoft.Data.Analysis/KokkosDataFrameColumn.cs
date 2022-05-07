@@ -54,6 +54,12 @@ namespace Microsoft.Data.Analysis
             return GetEnumerator();
         }
 
+        public override Dictionary<long, ICollection<long>> GetGroupedOccurrences(DataFrameColumn   other,
+                                                                                  out HashSet<long> otherColumnNullIndices)
+        {
+            return base.GetGroupedOccurrences<TDataType>(other, out otherColumnNullIndices);
+        }
+
         public override long NullCount { get { return 0; } }
 
         public IEnumerator<TDataType> GetEnumerator()

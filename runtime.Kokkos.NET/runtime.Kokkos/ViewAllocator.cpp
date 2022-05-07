@@ -580,77 +580,77 @@ void CreateView(void* instance, NdArray* ndArray) noexcept
         }
         case 1:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
             CreateViewRank1(instance, ndArray, dim0);
             break;
         }
         case 2:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
             CreateViewRank2(instance, ndArray, dim0, dim1);
             break;
         }
         case 3:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
             CreateViewRank3(instance, ndArray, dim0, dim1, dim2);
             break;
         }
         case 4:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
-            const uint64 dim3 = std::max(ndArray->dims[3], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
+            const uint64 dim3 = System::max(ndArray->dims[3], 1ull);
             CreateViewRank4(instance, ndArray, dim0, dim1, dim2, dim3);
             break;
         }
         case 5:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
-            const uint64 dim3 = std::max(ndArray->dims[3], 1ull);
-            const uint64 dim4 = std::max(ndArray->dims[4], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
+            const uint64 dim3 = System::max(ndArray->dims[3], 1ull);
+            const uint64 dim4 = System::max(ndArray->dims[4], 1ull);
             CreateViewRank5(instance, ndArray, dim0, dim1, dim2, dim3, dim4);
             break;
         }
         case 6:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
-            const uint64 dim3 = std::max(ndArray->dims[3], 1ull);
-            const uint64 dim4 = std::max(ndArray->dims[4], 1ull);
-            const uint64 dim5 = std::max(ndArray->dims[5], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
+            const uint64 dim3 = System::max(ndArray->dims[3], 1ull);
+            const uint64 dim4 = System::max(ndArray->dims[4], 1ull);
+            const uint64 dim5 = System::max(ndArray->dims[5], 1ull);
             CreateViewRank6(instance, ndArray, dim0, dim1, dim2, dim3, dim4, dim5);
             break;
         }
         case 7:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
-            const uint64 dim3 = std::max(ndArray->dims[3], 1ull);
-            const uint64 dim4 = std::max(ndArray->dims[4], 1ull);
-            const uint64 dim5 = std::max(ndArray->dims[5], 1ull);
-            const uint64 dim6 = std::max(ndArray->dims[6], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
+            const uint64 dim3 = System::max(ndArray->dims[3], 1ull);
+            const uint64 dim4 = System::max(ndArray->dims[4], 1ull);
+            const uint64 dim5 = System::max(ndArray->dims[5], 1ull);
+            const uint64 dim6 = System::max(ndArray->dims[6], 1ull);
             CreateViewRank7(instance, ndArray, dim0, dim1, dim2, dim3, dim4, dim5, dim6);
             break;
         }
         case 8:
         {
-            const uint64 dim0 = std::max(ndArray->dims[0], 1ull);
-            const uint64 dim1 = std::max(ndArray->dims[1], 1ull);
-            const uint64 dim2 = std::max(ndArray->dims[2], 1ull);
-            const uint64 dim3 = std::max(ndArray->dims[3], 1ull);
-            const uint64 dim4 = std::max(ndArray->dims[4], 1ull);
-            const uint64 dim5 = std::max(ndArray->dims[5], 1ull);
-            const uint64 dim6 = std::max(ndArray->dims[6], 1ull);
-            const uint64 dim7 = std::max(ndArray->dims[7], 1ull);
+            const uint64 dim0 = System::max(ndArray->dims[0], 1ull);
+            const uint64 dim1 = System::max(ndArray->dims[1], 1ull);
+            const uint64 dim2 = System::max(ndArray->dims[2], 1ull);
+            const uint64 dim3 = System::max(ndArray->dims[3], 1ull);
+            const uint64 dim4 = System::max(ndArray->dims[4], 1ull);
+            const uint64 dim5 = System::max(ndArray->dims[5], 1ull);
+            const uint64 dim6 = System::max(ndArray->dims[6], 1ull);
+            const uint64 dim7 = System::max(ndArray->dims[7], 1ull);
             CreateViewRank8(instance, ndArray, dim0, dim1, dim2, dim3, dim4, dim5, dim6, dim7);
             break;
         }

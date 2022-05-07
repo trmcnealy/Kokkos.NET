@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS0465
 
 using System;
+using System.Drawing;
 using System.IO;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -212,6 +213,12 @@ namespace Kokkos
                 IpcMakeViewFromPointer = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromPointerDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "IpcMakeViewFromPointer"));
 
                 IpcMakeViewFromHandle = Marshal.GetDelegateForFunctionPointer<IpcMakeViewFromHandleDelegate>(PlatformApi.NativeLibrary.GetExport(Handle, "IpcMakeViewFromHandle"));
+                
+                SharedMemoryCreate           = (delegate* <string, ulong, out SharedMemoryData, int>)PlatformApi.NativeLibrary.GetExport(Handle, "SharedMemoryCreate");
+                SharedMemoryOpen             = (delegate* <string, ulong, out SharedMemoryData, int>)PlatformApi.NativeLibrary.GetExport(Handle, "SharedMemoryOpen");
+                SharedMemoryResize           = (delegate* <string, ulong, ref SharedMemoryData, int>)PlatformApi.NativeLibrary.GetExport(Handle, "SharedMemoryResize");
+                SharedMemoryClose            = (delegate* <ref SharedMemoryData, void>)PlatformApi.NativeLibrary.GetExport(Handle,               "SharedMemoryClose");
+                SharedMemoryRegisterWithCuda = (delegate* <ref SharedMemoryData, int>)PlatformApi.NativeLibrary.GetExport(Handle,                "SharedMemoryRegisterWithCuda");
 
 #if DEBUG
                 Console.WriteLine("Loaded " + RuntimeKokkosLibraryName + $"@ 0x{Handle.ToString("X")}");
@@ -230,7 +237,7 @@ namespace Kokkos
             }
             else
             {
-                Handle       = (nint)0;
+                Handle = (nint)0;
                 //ModuleHandle = (nint)0;
             }
 
@@ -350,8 +357,9 @@ namespace Kokkos
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
-        public delegate void InitializeDelegate(int                                                                             narg,
-                                                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] arg);
+        public delegate void InitializeDelegate(int narg,
+                                                [MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)]
+                                                string[] arg);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         [SuppressUnmanagedCodeSecurity]
@@ -689,6 +697,17 @@ namespace Kokkos
         [SuppressUnmanagedCodeSecurity]
         public delegate uint GetThreadsPerCoreDelegate();
 
+
+        public static unsafe delegate* <string, ulong, out SharedMemoryData, int> SharedMemoryCreate;
+
+        public static unsafe delegate* <string, ulong, out SharedMemoryData, int> SharedMemoryOpen;
+
+        public static unsafe delegate* <string, ulong, ref SharedMemoryData, int> SharedMemoryResize;
+
+        public static unsafe delegate* <ref SharedMemoryData, void> SharedMemoryClose;
+
+        public static unsafe delegate* <ref SharedMemoryData, int> SharedMemoryRegisterWithCuda;
+
         #endregion
 
         #region Calli
@@ -1003,9 +1022,9 @@ namespace Kokkos
 
         public static ViewToNdArrayDelegate ViewToNdArray;
 
-        public static GetNumaCountDelegate      GetNumaCount;
+        public static GetNumaCountDelegate GetNumaCount;
 
-        public static GetCoresPerNumaDelegate   GetCoresPerNuma;
+        public static GetCoresPerNumaDelegate GetCoresPerNuma;
 
         public static GetThreadsPerCoreDelegate GetThreadsPerCore;
 

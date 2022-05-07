@@ -120,6 +120,12 @@
     <ClCompile Include="runtime.Kokkos\KokkosApi.cpp">
       <Filter>runtime.Kokkos\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Utilities\SharedMemory.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Utilities\SharedDataTable.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="KokkosAPI.hpp" />
@@ -309,6 +315,15 @@
     <ClInclude Include="runtime.Kokkos\Extensions\TensorOps.hpp">
       <Filter>runtime.Kokkos\Extensions</Filter>
     </ClInclude>
+    <ClInclude Include="Utilities\SharedMemory.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Utilities\SharedDataTable.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="runtime.Kokkos\Extensions\Linq.hpp">
+      <Filter>runtime.Kokkos\Extensions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -322,6 +337,7 @@
     </None>
     <None Include="cpp.hint" />
     <None Include="runtime.Kokkos.NET.targets" />
+    <None Include="runtime.Kokkos.NET.Debug.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="runtime.Kokkos.NET.manifest">
@@ -340,5 +356,10 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Kokkos.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xsd Include="Utilities\SharedDataTableSchema.xsd">
+      <Filter>Utilities</Filter>
+    </Xsd>
   </ItemGroup>
 </Project>

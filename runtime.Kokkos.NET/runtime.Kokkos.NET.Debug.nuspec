@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>native.Kokkos.NET</id>
+        <version>$RUNTIME_KOKKOS$</version>
+        <authors>Timothy R. McNealy</authors>
+        <owners>Timothy R. McNealy</owners>
+        <license type="expression">MIT</license>
+        <projectUrl>https://github.com/trmcnealy/Kokkos.NET</projectUrl>
+    <repository type="git" url="https://github.com/trmcnealy/Kokkos.NET.git"/>
+        <icon>nindra.png</icon>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Kokkos .NET</description>
+        <releaseNotes></releaseNotes>
+        <copyright>© Timothy R. McNealy</copyright>
+        <tags></tags>
+        <dependencies>
+            <dependency id="Trilinos" version="13.1.1"/>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="D:\TFS_Sources\EngineeringTools\Web\trmcnealy.github.io\Assets\nindra.png"
+              target=""/>
+
+
+        <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\x64\runtime.Kokkos.NET.x64.dll.a"
+              target="runtimes\win-x64\native"/>
+
+        <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\x64\runtime.Kokkos.NET.x64.dll"
+              target="runtimes\win-x64\native"/>
+
+        <file src="D:\TFS_Sources\EngineeringTools\bin\Debug\x64\runtime.Kokkos.NET.x64.pdb"
+              target="runtimes\win-x64\native"/>
+
+
+
+
+
+    </files>
+</package>

@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace Kokkos.Utilities
+namespace Kokkos
 {
     public readonly ref struct NullableReadOnlyRef<T>
     {

@@ -2,24 +2,94 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="test_hgrad.cpp">
-      <Filter>test</Filter>
+    <ClCompile Include="MultiPorosityModel.cpp" />
+    <ClCompile Include="Tests\TestGramSchmidt.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestKolmogorovZurbenko.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestLU.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNelderMead.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNestedHybridLoop.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestPCA.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestPInv.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestQR.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestSVD.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestTrapezoid.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\test_hgrad.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCombinations.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCombinations2.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestFractions.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestGaussNewton.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\cudaDeviceProperties.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestCumulativeSum.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestHardware.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\SharedDataTable.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\CgalTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TriangulationTests.cpp">
+      <Filter>Tests</Filter>
+    </ClCompile>
+    <ClCompile Include="Tests\TestNonLinearLeastSquares.cpp">
+      <Filter>Tests</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="test">
+    <Filter Include="Tests">
       <UniqueIdentifier>{7355a021-641a-4c7d-8047-856ea1d23b96}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test_functors.hpp">
-      <Filter>test</Filter>
+    <ClInclude Include="Tests\test_functors.hpp">
+      <Filter>Tests</Filter>
     </ClInclude>
-    <ClInclude Include="test_hgrad.hpp">
-      <Filter>test</Filter>
+    <ClInclude Include="Tests\test_hgrad.hpp">
+      <Filter>Tests</Filter>
     </ClInclude>
-    <ClInclude Include="test_util.hpp">
-      <Filter>test</Filter>
+    <ClInclude Include="Tests\test_util.hpp">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\Tests.hpp">
+      <Filter>Tests</Filter>
+    </ClInclude>
+    <ClInclude Include="Tests\TestTpetra.hpp">
+      <Filter>Tests</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

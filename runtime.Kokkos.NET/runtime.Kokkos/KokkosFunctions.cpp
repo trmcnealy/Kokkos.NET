@@ -172,6 +172,8 @@ void Free(const ExecutionSpaceKind execution_space, void* instance) noexcept
 
 void Initialize(const int narg, char* arg[]) noexcept
 {
+    cudaDeviceReset();
+
     std::cout << "Initializing Kokkos." << std::endl;
 
     Kokkos::initialize((int&)narg, arg);
@@ -193,6 +195,8 @@ void InitializeOpenMP(const int num_threads) noexcept
 
 void InitializeCuda(const int use_gpu) noexcept
 {
+    cudaDeviceReset();
+
     std::cout << "Initializing Kokkos::Cuda." << std::endl;
 
     if (use_gpu > -1)
@@ -207,6 +211,8 @@ void InitializeCuda(const int use_gpu) noexcept
 
 void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexcept
 {
+    cudaDeviceReset();
+
     std::cout << "Initializing Kokkos." << std::endl;
 
     Kokkos::InitArguments arguments;
@@ -216,12 +222,37 @@ void InitializeThreads(const int num_cpu_threads, const int gpu_device_id) noexc
     arguments.ndevices         = 1;
     arguments.skip_device      = 9999;
     arguments.disable_warnings = false;
-
-    Kokkos::initialize(arguments);
+    
+    try
+    {
+        Kokkos::initialize(arguments);
+    }
+    catch (const std::exception& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::logic_error& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::runtime_error& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::bad_exception& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Caught unknown exception." << std::endl;
+    }
 }
 
 void InitializeArguments(Kokkos::InitArguments args) noexcept
 {
+    cudaDeviceReset();
+
     std::cout << "Initializing Kokkos." << std::endl;
 
     Kokkos::InitArguments arguments;
@@ -232,7 +263,30 @@ void InitializeArguments(Kokkos::InitArguments args) noexcept
     arguments.skip_device      = args.skip_device;
     arguments.disable_warnings = args.disable_warnings;
 
-    Kokkos::initialize(arguments);
+    try
+    {
+        Kokkos::initialize(arguments);
+    }
+    catch (const std::exception& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::logic_error& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::runtime_error& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (const std::bad_exception& exp)
+    {
+        std::cerr << exp.what() << std::endl;
+    }
+    catch (...)
+    {
+        std::cerr << "Caught unknown exception." << std::endl;
+    }
 }
 
 void Finalize() noexcept

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "runtime.Kokkos/ViewTypes.hpp"
+#include <runtime.Kokkos/ViewTypes.hpp>
 
 //#include <fileapi.h>
 #include <handleapi.h>
@@ -14,56 +14,56 @@ namespace Kokkos
     struct InterprocessMemory;
 }
 
-KOKKOS_NET_API_EXTERNC void* IpcCreate(REF(ExecutionSpaceKind) execution_space, REF(size_type) size, REF(NativeString) label) noexcept;
+KOKKOS_NET_API_EXTERNC void* IpcCreate(CONST(ExecutionSpaceKind) execution_space, CONST(size_type) size, CONST(NativeString) label) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcCreateFrom(REF(ExecutionSpaceKind) execution_space, void* memoryPtr, REF(size_type) size, REF(NativeString) label) noexcept;
+KOKKOS_NET_API_EXTERNC void* IpcCreateFrom(CONST(ExecutionSpaceKind) execution_space, void* memoryPtr, CONST(size_type) size, CONST(NativeString) label) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcOpenExisting(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC void* IpcOpenExisting(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC void IpcDestory(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC void IpcDestory(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC void IpcClose(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC void IpcClose(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcGetMemoryPointer(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC void* IpcGetMemoryPointer(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcGetDeviceHandle(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC void* IpcGetDeviceHandle(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC size_type IpcGetSize(REF(ExecutionSpaceKind) execution_space, void* instance) noexcept;
+KOKKOS_NET_API_EXTERNC size_type IpcGetSize(CONST(ExecutionSpaceKind) execution_space, void* instance) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcMakeViewFromPointer(REF(ExecutionSpaceKind) execution_space,
-                                                    REF(DataTypeKind) data_type,
+KOKKOS_NET_API_EXTERNC void* IpcMakeViewFromPointer(CONST(ExecutionSpaceKind) execution_space,
+                                                    CONST(DataTypeKind) data_type,
                                                     void* instance,
-                                                    REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
+                                                    CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
 
-KOKKOS_NET_API_EXTERNC void* IpcMakeViewFromHandle(REF(ExecutionSpaceKind) execution_space,
-                                                   REF(DataTypeKind) data_type,
+KOKKOS_NET_API_EXTERNC void* IpcMakeViewFromHandle(CONST(ExecutionSpaceKind) execution_space,
+                                                   CONST(DataTypeKind) data_type,
                                                    void* instance,
-                                                   REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                   REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
+                                                   CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                   CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) noexcept;
 
 namespace Kokkos
 {
-    KOKKOS_INLINE_FUNCTION static size_type GetRank(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                    REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG)
+    KOKKOS_INLINE_FUNCTION static size_type GetRank(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                    CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG)
     {
         if (arg_N0 == KOKKOS_IMPL_CTOR_DEFAULT_ARG)
         {
@@ -101,7 +101,7 @@ namespace Kokkos
     }
 
     template<>
-    struct InterprocessMemory<Kokkos::Serial>
+    struct InterprocessMemory<Serial>
     {
     private:
         void*       _memoryPtr;
@@ -110,13 +110,7 @@ namespace Kokkos
         const char* _label;
 
     public:
-        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, REF(size_type) size, const char* label) :
-            _memoryPtr(memory_ptr),
-            _memoryHandle(memory_handle),
-            _size(size),
-            _label(label)
-        {
-        }
+        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, CONST(size_type) size, const char* label) : _memoryPtr(memory_ptr), _memoryHandle(memory_handle), _size(size), _label(label) {}
 
         ~InterprocessMemory()
         {
@@ -143,161 +137,130 @@ namespace Kokkos
             return _label;
         }
 
-        template<typename DataType, class Layout = Kokkos::Serial::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = Serial::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                               arg_N0,
-                                                                               arg_N1,
-                                                                               arg_N2,
-                                                                               arg_N3,
-                                                                               arg_N4,
-                                                                               arg_N5,
-                                                                               arg_N6,
-                                                                               arg_N7);
+                auto view = new View<DataType********, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                              arg_N0,
-                                                                              arg_N1,
-                                                                              arg_N2,
-                                                                              arg_N3,
-                                                                              arg_N4,
-                                                                              arg_N5,
-                                                                              arg_N6);
+                auto view = new View<DataType*******, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, Serial>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
             return view;
         }
 
-        template<typename DataType, class Layout = Kokkos::Serial::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = Serial::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
-
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                               arg_N0,
-                                                                               arg_N1,
-                                                                               arg_N2,
-                                                                               arg_N3,
-                                                                               arg_N4,
-                                                                               arg_N5,
-                                                                               arg_N6,
-                                                                               arg_N7);
+                auto view = new View<DataType********, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                              arg_N0,
-                                                                              arg_N1,
-                                                                              arg_N2,
-                                                                              arg_N3,
-                                                                              arg_N4,
-                                                                              arg_N5,
-                                                                              arg_N6);
+                auto view = new View<DataType*******, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, Serial>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::Serial>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, Serial>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
             return view;
         }
@@ -308,7 +271,7 @@ namespace Kokkos
     };
 
     template<>
-    struct InterprocessMemory<Kokkos::OpenMP>
+    struct InterprocessMemory<OpenMP>
     {
     private:
         void*       _memoryPtr;
@@ -317,13 +280,7 @@ namespace Kokkos
         const char* _label;
 
     public:
-        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, REF(size_type) size, const char* label) :
-            _memoryPtr(memory_ptr),
-            _memoryHandle(memory_handle),
-            _size(size),
-            _label(label)
-        {
-        }
+        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, CONST(size_type) size, const char* label) : _memoryPtr(memory_ptr), _memoryHandle(memory_handle), _size(size), _label(label) {}
 
         ~InterprocessMemory()
         {
@@ -350,161 +307,130 @@ namespace Kokkos
             return _label;
         }
 
-        template<typename DataType, class Layout = Kokkos::OpenMP::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = OpenMP::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                               arg_N0,
-                                                                               arg_N1,
-                                                                               arg_N2,
-                                                                               arg_N3,
-                                                                               arg_N4,
-                                                                               arg_N5,
-                                                                               arg_N6,
-                                                                               arg_N7);
+                auto view = new View<DataType********, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                              arg_N0,
-                                                                              arg_N1,
-                                                                              arg_N2,
-                                                                              arg_N3,
-                                                                              arg_N4,
-                                                                              arg_N5,
-                                                                              arg_N6);
+                auto view = new View<DataType*******, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
             return view;
         }
 
-        template<typename DataType, class Layout = Kokkos::OpenMP::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = OpenMP::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
-
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                               arg_N0,
-                                                                               arg_N1,
-                                                                               arg_N2,
-                                                                               arg_N3,
-                                                                               arg_N4,
-                                                                               arg_N5,
-                                                                               arg_N6,
-                                                                               arg_N7);
+                auto view = new View<DataType********, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                              arg_N0,
-                                                                              arg_N1,
-                                                                              arg_N2,
-                                                                              arg_N3,
-                                                                              arg_N4,
-                                                                              arg_N5,
-                                                                              arg_N6);
+                auto view = new View<DataType*******, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::OpenMP>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, OpenMP>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
             return view;
         }
@@ -515,7 +441,7 @@ namespace Kokkos
     };
 
     template<>
-    struct InterprocessMemory<Kokkos::Cuda>
+    struct InterprocessMemory<Cuda>
     {
     private:
         void*       _memoryPtr;
@@ -524,13 +450,7 @@ namespace Kokkos
         const char* _label;
 
     public:
-        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, REF(size_type) size, const char* label) :
-            _memoryPtr(memory_ptr),
-            _memoryHandle(memory_handle),
-            _size(size),
-            _label(label)
-        {
-        }
+        explicit InterprocessMemory(void* memory_ptr, void* memory_handle, CONST(size_type) size, const char* label) : _memoryPtr(memory_ptr), _memoryHandle(memory_handle), _size(size), _label(label) {}
 
         ~InterprocessMemory()
         {
@@ -557,161 +477,130 @@ namespace Kokkos
             return _label;
         }
 
-        template<typename DataType, class Layout = Kokkos::Cuda::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                  REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = Cuda::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromPointer(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                  CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                             arg_N0,
-                                                                             arg_N1,
-                                                                             arg_N2,
-                                                                             arg_N3,
-                                                                             arg_N4,
-                                                                             arg_N5,
-                                                                             arg_N6,
-                                                                             arg_N7);
+                auto view = new View<DataType********, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                            arg_N0,
-                                                                            arg_N1,
-                                                                            arg_N2,
-                                                                            arg_N3,
-                                                                            arg_N4,
-                                                                            arg_N5,
-                                                                            arg_N6);
+                auto view = new View<DataType*******, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, Cuda>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryPtr));
             return view;
         }
 
-        template<typename DataType, class Layout = Kokkos::Cuda::array_layout>
-        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(REF(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
-                                                                 REF(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
+        template<typename DataType, class Layout = Cuda::array_layout>
+        [[nodiscard]] __inline __host__ void* MakeViewFromHandle(CONST(size_type) arg_N0 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N1 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N2 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N3 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N4 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N5 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N6 = KOKKOS_IMPL_CTOR_DEFAULT_ARG,
+                                                                 CONST(size_type) arg_N7 = KOKKOS_IMPL_CTOR_DEFAULT_ARG) const
         {
-
             if (arg_N7 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType********, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                             arg_N0,
-                                                                             arg_N1,
-                                                                             arg_N2,
-                                                                             arg_N3,
-                                                                             arg_N4,
-                                                                             arg_N5,
-                                                                             arg_N6,
-                                                                             arg_N7);
+                auto view = new View<DataType********, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6, arg_N7);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N6 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*******, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label),
-                                                                            arg_N0,
-                                                                            arg_N1,
-                                                                            arg_N2,
-                                                                            arg_N3,
-                                                                            arg_N4,
-                                                                            arg_N5,
-                                                                            arg_N6);
+                auto view = new View<DataType*******, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5, arg_N6);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N5 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType******, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
+                auto view = new View<DataType******, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4, arg_N5);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N4 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType*****, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
+                auto view = new View<DataType*****, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3, arg_N4);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N3 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType****, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
+                auto view = new View<DataType****, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2, arg_N3);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N2 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType***, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
+                auto view = new View<DataType***, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1, arg_N2);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N1 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
+                auto view = new View<DataType**, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0, arg_N1);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
             if (arg_N0 != KOKKOS_IMPL_CTOR_DEFAULT_ARG)
             {
-                auto view = new View<DataType**, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label), arg_N0);
+                auto view = new View<DataType**, Layout, Cuda>(ViewAllocateWithoutInitializing(_label), arg_N0);
                 view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
                 return view;
             }
 
-            auto view = new View<DataType*, Layout, Kokkos::Cuda>(Kokkos::ViewAllocateWithoutInitializing(_label));
+            auto view = new View<DataType*, Layout, Cuda>(ViewAllocateWithoutInitializing(_label));
             view->assign_data(reinterpret_cast<DataType*>(_memoryHandle));
             return view;
         }
@@ -720,5 +609,4 @@ namespace Kokkos
         InterprocessMemory(const InterprocessMemory&) = default;
         InterprocessMemory& operator=(const InterprocessMemory&) = default;
     };
-
 }
