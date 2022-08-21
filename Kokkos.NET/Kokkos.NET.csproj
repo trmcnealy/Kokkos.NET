@@ -42,15 +42,15 @@
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>TRACE;X64</DefineConstants>
-        <NoWarn>0649;0169;0414;1416</NoWarn>
+        <NoWarn>0649;0169;0414;1416;CS8618</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <NoWarn>0649;0169;0414;1416</NoWarn>
+        <NoWarn>0649;0169;0414;1416;CS8618</NoWarn>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|AnyCPU'">
-      <NoWarn>0649;0169;0414;1416</NoWarn>
+      <NoWarn>0649;0169;0414;1416;CS8618</NoWarn>
     </PropertyGroup>
 
     <ItemGroup>

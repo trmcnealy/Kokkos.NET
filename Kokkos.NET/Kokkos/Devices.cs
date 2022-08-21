@@ -269,6 +269,22 @@ namespace Kokkos
                 {
                     return "Volta";
                 }
+                case 750:
+                {
+                    return "Turing";
+                }
+                case 800:
+                {
+                    return "Ampere";
+                }
+                case 860:
+                {
+                    return "Ampere";
+                }
+                case 870:
+                {
+                    return "Ampere";
+                }
                 case 1000:
                 {
                     return "Turing";
